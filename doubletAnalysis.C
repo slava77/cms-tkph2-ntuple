@@ -548,17 +548,17 @@ int ScanChain( TChain* chain, int nEvents = -1, bool drawPlots = false) {
 	//
 	double bbs = std::abs(dotPR2Ds/pts/0.2);
 	double xxs = (ps/pts)*( sqrt(bbs*bbs + (2.*rs/0.2 + 1.)) - bbs);
-	TVector3 nextR3Sim2mm = r3Sim + p3Sim*(dir*0.2/ps);//*xxs;
+	TVector3 nextR3Sim2mm = r3Sim + p3Sim*(dir*0.2/ps)*xxs;
 	bbs = std::abs(dotPR2Ds/pts/miniDeltaBarrel[lay]);
 	xxs = (ps/pts)*( sqrt(bbs*bbs + (2.*rs/miniDeltaBarrel[lay] + 1.)) - bbs);
-	TVector3 nextR3SimDes = r3Sim + p3Sim*(dir*miniDeltaBarrel[lay]/ps);//*xxs;
+	TVector3 nextR3SimDes = r3Sim + p3Sim*(dir*miniDeltaBarrel[lay]/ps)*xxs;
 	TVector3 nextR3SimAct;// filled in the loop over the upper layer
 	bool nextR3SimAct_isValid = false;
 	TVector3 nextR3Rec;
 	bool nextR3Rec_isValid = false;
 	md.upperMatchToTP = false;
 	md.upperMatchFull = false;
-	md.zFiducial = true;// false;
+	md.zFiducial = false;
 	if (nextR3SimDes.z() < (*cboundH)[1] - 0.1 && nextR3SimDes.z() > (*cboundH)[0] + 0.1){
 	  md.zFiducial = true;
 	  // if (isPrimaryTT && pts> 15){
@@ -595,10 +595,10 @@ int ScanChain( TChain* chain, int nEvents = -1, bool drawPlots = false) {
 	    double odir = dotOPR2Ds > 0 ? 1. : -1.;
 	    bbs = std::abs(dotOPR2Ds/apts/0.2);
 	    xxs = (aps/apts)*( sqrt(bbs*bbs + (2.*ars/0.2 + 1.)) - bbs);
-	    TVector3 nr3s2mm = ar3s + ap3s*(dir*0.2/aps);//*xxs;
+	    TVector3 nr3s2mm = ar3s + ap3s*(dir*0.2/aps)*xxs;
 	    bbs = std::abs(dotOPR2Ds/apts/miniDeltaBarrel[lay]);
 	    xxs = (aps/apts)*( sqrt(bbs*bbs + (2.*ars/miniDeltaBarrel[lay] + 1.)) - bbs);	    
-	    TVector3 nr3sDes = ar3s + ap3s*(dir*miniDeltaBarrel[lay]/aps);//*xxs;
+	    TVector3 nr3sDes = ar3s + ap3s*(dir*miniDeltaBarrel[lay]/aps)*xxs;
 	    
 	    otherR3Sim.emplace_back(ar3s);
 	    nextOtherR3Sim2mm.emplace_back(nr3s2mm);
