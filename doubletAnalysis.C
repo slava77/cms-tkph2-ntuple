@@ -87,6 +87,7 @@ struct Hists2DProfWNZ {
 struct HistoSet1D {
   TH1D* den;
   TH1D* denDesMDFid;//fiducial wrt design mini-doublet expectation
+  TH1D* denDesMDFid1TP;//fiducial wrt design mini-doublet expectation; one matching TP
   TH1D* num_aCut;
   TEfficiency* eff_aCut;
 
@@ -95,6 +96,11 @@ struct HistoSet1D {
   TH1D* denAct;
   TEfficiency* effActAnySH;//matching efficiency
   TEfficiency* effAct;//matching efficiency
+  //as above, but starting from denDesMDFid1TP
+  TH1D* denActAnySH1TP;
+  TH1D* denAct1TP;
+  TEfficiency* effActAnySH1TP;//matching efficiency
+  TEfficiency* effAct1TP;//matching efficiency
 
   TH1D* num2SH_aCut;
   TEfficiency* eff2SH_aCut;
@@ -133,10 +139,13 @@ struct HistoSet1D {
     f->cd();
     if (den) den->Write();
     if (denDesMDFid) denDesMDFid->Write();
+    if (denDesMDFid1TP) denDesMDFid1TP->Write();
     if (num_aCut) num_aCut->Write();
 
     if (denActAnySH) denActAnySH->Write();
     if (denAct) denAct->Write();
+    if (denActAnySH1TP) denActAnySH1TP->Write();
+    if (denAct1TP) denAct1TP->Write();
     if (num2SH_aCut) numAct_aCut->Write();
     if (numAct_aCut) numAct_aCut->Write();
     if (numRec_aCut) numRec_aCut->Write();
@@ -260,6 +269,8 @@ void createPtHistograms(std::array<HistoSet1D, nLayers+1>& layerMD, const std::s
     layerMD[iL].den = new TH1D(aS, aS, ptBins.size()-1, &ptBins[0]);
     oS.str(""); oS<< "layer"<<iL<<"MD_denDesMDFid_pt_"<<ext; aS = oS.str().c_str();
     layerMD[iL].denDesMDFid = new TH1D(aS, aS, ptBins.size()-1, &ptBins[0]);
+    oS.str(""); oS<< "layer"<<iL<<"MD_denDesMDFid1TP_pt_"<<ext; aS = oS.str().c_str();
+    layerMD[iL].denDesMDFid1TP = new TH1D(aS, aS, ptBins.size()-1, &ptBins[0]);
     oS.str(""); oS<< "layer"<<iL<<"MD_num_aCut_pt_"<<ext; aS = oS.str().c_str();
     layerMD[iL].num_aCut = new TH1D(aS, aS, ptBins.size()-1, &ptBins[0]);
     
@@ -267,6 +278,11 @@ void createPtHistograms(std::array<HistoSet1D, nLayers+1>& layerMD, const std::s
     layerMD[iL].denActAnySH = new TH1D(aS, aS, ptBins.size()-1, &ptBins[0]);
     oS.str(""); oS<< "layer"<<iL<<"MD_denAct_pt_"<<ext; aS = oS.str().c_str();
     layerMD[iL].denAct = new TH1D(aS, aS, ptBins.size()-1, &ptBins[0]);
+
+    oS.str(""); oS<< "layer"<<iL<<"MD_denActAnySH1TP_pt_"<<ext; aS = oS.str().c_str();
+    layerMD[iL].denActAnySH1TP = new TH1D(aS, aS, ptBins.size()-1, &ptBins[0]);
+    oS.str(""); oS<< "layer"<<iL<<"MD_denAct1TP_pt_"<<ext; aS = oS.str().c_str();
+    layerMD[iL].denAct1TP = new TH1D(aS, aS, ptBins.size()-1, &ptBins[0]);
 
     oS.str(""); oS<< "layer"<<iL<<"MD_num2SH_aCut_pt_"<<ext; aS = oS.str().c_str();
     layerMD[iL].num2SH_aCut = new TH1D(aS, aS, ptBins.size()-1, &ptBins[0]);
@@ -313,6 +329,7 @@ struct MDStats {
 
   bool upperMatchToTP;
   bool upperMatchFull;
+  bool lowerNTP;
   bool zFiducial;
   
   float miniDir;
@@ -325,7 +342,10 @@ struct MDStats {
 
 void fillLayerMD_pt(HistoSet1D& layerMD, double pt, const MDStats& md){
   layerMD.den->Fill(pt);
-  if (md.zFiducial) layerMD.denDesMDFid->Fill(pt);
+  if (md.zFiducial){
+    layerMD.denDesMDFid->Fill(pt);
+    if (md.lowerNTP == 1) layerMD.denDesMDFid1TP->Fill(pt);
+  }
   if (std::abs(md.miniDir) < md. miniCut) layerMD.num_aCut->Fill(pt);
   
   
@@ -338,9 +358,11 @@ void fillLayerMD_pt(HistoSet1D& layerMD, double pt, const MDStats& md){
   layerMD.mdOthersDes_aCutCloser.fill(pt, md.mdOthersDes_aCutCloser);
   if (md.upperMatchToTP && md.zFiducial){
     layerMD.denActAnySH->Fill(pt);
+    if (md.lowerNTP == 1) layerMD.denActAnySH1TP->Fill(pt);
   }
   if (md.upperMatchFull && md.zFiducial){
     layerMD.denAct->Fill(pt);
+    if (md.lowerNTP == 1 ) layerMD.denAct1TP->Fill(pt);
     if (std::abs(md.miniDir)    < md.miniCut) layerMD.num2SH_aCut->Fill(pt);
     if (std::abs(md.miniDirAct) < md.miniCut) layerMD.numAct_aCut->Fill(pt);
     if (std::abs(md.miniDirRec) < md.miniCut) layerMD.numRec_aCut->Fill(pt);
@@ -461,6 +483,8 @@ int ScanChain( TChain* chain, int nEvents = -1, bool drawPlots = false) {
     }
   }//geom range map loop
   
+
+  cout<<__LINE__<<endl;
   TObjArray *listOfFiles = chain->GetListOfFiles();
 
   unsigned int nEventsChain=0;
@@ -483,13 +507,12 @@ int ScanChain( TChain* chain, int nEvents = -1, bool drawPlots = false) {
     for( unsigned int event = 0; event < nEvents; ++event) {
       cms2.GetEntry(event);
       ++nEventsTotal;
-
+      
       //keep track of sims per layer 
       std::array<std::set<int>, nLayers+1> simIdxInLayer;
       int iidStart = -1;
       int iidEnd = -1;
       int iidOld = -1;
-      
       auto nPix = pix_isBarrel().size();
       for (auto ipix = 0U; ipix < nPix; ++ipix){
 	if (pix_isBarrel()[ipix] == false) continue;
@@ -534,6 +557,7 @@ int ScanChain( TChain* chain, int nEvents = -1, bool drawPlots = false) {
 	bool isPrimaryTT = (isPrimaryAny && iev == 0);
 	int iParticle = pix_particle()[ipix];
 	md.pdgId = iParticle;
+	md.lowerNTP = pix_nSimTrk()[ipix];
 
 	double dotPR2Ds = r3Sim.x()*p3Sim.x() + r3Sim.y()*p3Sim.y();
 	double dir = dotPR2Ds > 0 ? 1. : -1.;
@@ -576,6 +600,7 @@ int ScanChain( TChain* chain, int nEvents = -1, bool drawPlots = false) {
 	std::vector<TVector3> otherR3Rec;        otherR3Rec.reserve(128);
 	std::vector<TVector3> nextOtherR3SimAct; nextOtherR3SimAct.reserve(128);
 	std::vector<TVector3> nextOtherR3Rec;    nextOtherR3Rec.reserve(128);
+	//	std::cout<<__LINE__<<" "<<ipix<<std::endl;
 
 	for (auto jpix = iidStart; jpix < static_cast<int>(nPix); ++jpix){
 	  if (jpix == static_cast<int>(ipix)) continue;
@@ -644,7 +669,7 @@ int ScanChain( TChain* chain, int nEvents = -1, bool drawPlots = false) {
 	}//loop over the other pix hits jpix
 
 	//	std::cout<<__LINE__<<" "<<ipix<<std::endl;
-
+	
 	//these two are the same for all layers
 	const float ptCut = 1.0;
 	const float miniSlope = rs/175.67/ptCut;
@@ -776,7 +801,8 @@ int ScanChain( TChain* chain, int nEvents = -1, bool drawPlots = false) {
 	  }
 	}
 
-	
+	//	std::cout<<__LINE__<<" "<<ipix<<std::endl;
+
 	md.nOthers = otherR3Sim.size();
 	md.nOthersRec = otherR3Rec.size();
 	fillLayerMD_pt(layerMD_pt_all[lay], pts, md);
@@ -787,6 +813,7 @@ int ScanChain( TChain* chain, int nEvents = -1, bool drawPlots = false) {
 	  fillLayerMD_pt(layerMD_pt_prim_tt[lay], pts, md);
 	}
 	
+	//	std::cout<<__LINE__<<" "<<ipix<<std::endl;
       }//loop over ipix
 
 
@@ -821,6 +848,13 @@ int ScanChain( TChain* chain, int nEvents = -1, bool drawPlots = false) {
     createEfficiency(layerMD_pt_prim_all[iL].denAct, layerMD_pt_prim_all[iL].denDesMDFid, layerMD_pt_prim_all[iL].effAct);
     createEfficiency(layerMD_pt_prim_tt[iL].denAct, layerMD_pt_prim_tt[iL].denDesMDFid, layerMD_pt_prim_tt[iL].effAct);
 
+    createEfficiency(layerMD_pt_all[iL].denActAnySH1TP, layerMD_pt_all[iL].denDesMDFid1TP, layerMD_pt_all[iL].effActAnySH1TP);
+    createEfficiency(layerMD_pt_prim_all[iL].denActAnySH1TP, layerMD_pt_prim_all[iL].denDesMDFid1TP, layerMD_pt_prim_all[iL].effActAnySH1TP);
+    createEfficiency(layerMD_pt_prim_tt[iL].denActAnySH1TP, layerMD_pt_prim_tt[iL].denDesMDFid1TP, layerMD_pt_prim_tt[iL].effActAnySH1TP);
+    createEfficiency(layerMD_pt_all[iL].denAct1TP, layerMD_pt_all[iL].denDesMDFid1TP, layerMD_pt_all[iL].effAct1TP);
+    createEfficiency(layerMD_pt_prim_all[iL].denAct1TP, layerMD_pt_prim_all[iL].denDesMDFid1TP, layerMD_pt_prim_all[iL].effAct1TP);
+    createEfficiency(layerMD_pt_prim_tt[iL].denAct1TP, layerMD_pt_prim_tt[iL].denDesMDFid1TP, layerMD_pt_prim_tt[iL].effAct1TP);
+
     createEfficiency(layerMD_pt_all[iL].num2SH_aCut, layerMD_pt_all[iL].denAct, layerMD_pt_all[iL].eff2SH_aCut);
     createEfficiency(layerMD_pt_prim_all[iL].num2SH_aCut, layerMD_pt_prim_all[iL].denAct, layerMD_pt_prim_all[iL].eff2SH_aCut);
     createEfficiency(layerMD_pt_prim_tt[iL].num2SH_aCut, layerMD_pt_prim_tt[iL].denAct, layerMD_pt_prim_tt[iL].eff2SH_aCut);
@@ -851,6 +885,13 @@ int ScanChain( TChain* chain, int nEvents = -1, bool drawPlots = false) {
       plotEffOverlay({layerMD_pt_all[iL].effActAnySH, layerMD_pt_prim_all[iL].effActAnySH, layerMD_pt_prim_tt[iL].effActAnySH},
 		     Form("Efficiency to match lower-upper to TP in layer %d; p_{T}^{SimH}, GeV; Efficiency", iL),
 		     Form("layerMD_pt_all_%d_vs_prim_effActAnySH.png", iL), lptypes, 0.0, 1.1);
+
+      plotEffOverlay({layerMD_pt_all[iL].effAct1TP, layerMD_pt_prim_all[iL].effAct1TP, layerMD_pt_prim_tt[iL].effAct1TP},
+		     Form("Efficiency to match (1TP) lower-upper in layer %d; p_{T}^{SimH}, GeV; Efficiency", iL),
+		     Form("layerMD_pt_all_%d_vs_prim_effAct1TP.png", iL), lptypes, 0.0, 1.1);
+      plotEffOverlay({layerMD_pt_all[iL].effActAnySH1TP, layerMD_pt_prim_all[iL].effActAnySH1TP, layerMD_pt_prim_tt[iL].effActAnySH1TP},
+		     Form("Efficiency to match (1TP) lower-upper to TP in layer %d; p_{T}^{SimH}, GeV; Efficiency", iL),
+		     Form("layerMD_pt_all_%d_vs_prim_effActAnySH1TP.png", iL), lptypes, 0.0, 1.1);
 
       plotEffOverlay({layerMD_pt_all[iL].eff2SH_aCut, layerMD_pt_all[iL].effAct_aCut, layerMD_pt_all[iL].effRec_aCut},
 		     Form("#alpha(1 GeV) cut efficiency in layer %d for all; p_{T}^{SimH}, GeV; Efficiency", iL),
