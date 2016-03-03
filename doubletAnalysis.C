@@ -1394,6 +1394,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, bool drawPlots 
 
 	int nAll = 0;
 	int nDeltaZ = 0;
+	int nDeltaZPointed = 0;
 	int nSlope = 0;
 	int nInAlphaCompat = 0;
 	int nOutAlphaCompat = 0;
@@ -1405,7 +1406,9 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, bool drawPlots 
 	  //
 	  float rtIn = sdIn.r3.Pt();
 	  float zIn = sdIn.r3.z();
-
+	  float dSDIn = sdIn.mdOut.r3.Pt() - sdIn.mdRef.r3.Pt();
+	  float dzSDIn = sdIn.mdOut.r3.z() - sdIn.mdRef.r3.z();
+	  
 	  int iOut = -1;
 	  for ( auto sdOut : sdOutV ) {
 	    iOut++;
@@ -1422,6 +1425,13 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, bool drawPlots 
 	    if (zOut < zLo || zOut > zHi) continue;
 	    nDeltaZ++;
 
+	    if (lIn>=5 && lIn <=6){//can point to the z pos in lOut
+	      float zLo = zIn + (dzSDIn - zGeom*sqrt(2.))/dSDIn*(rtOut - rtIn) - zGeom;
+	      float zHi = zIn + (dzSDIn + zGeom*sqrt(2.))/dSDIn*(rtOut - rtIn) + zGeom;
+	      if (zOut < zLo || zOut > zHi) continue;
+	    }
+	    nDeltaZPointed++;
+	    
 	    auto midR3 = 0.5*(sdIn.r3 + sdOut.r3);
 	    double dPhi = midR3.DeltaPhi(sdOut.r3 - sdIn.r3);
 	    double rt = 0.5*(sdIn.r3.Pt() + sdOut.r3.Pt());
@@ -1440,7 +1450,6 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, bool drawPlots 
 	    
 	    //loose angle compatibility
 	    float dAlpha_Bfield = (rtOut - rtIn)/175.67/ptCut;
-	    float dSDIn = sdIn.mdOut.r3.Pt() - sdIn.mdRef.r3.Pt();
 	    float dSDOut = sdOut.mdOut.r3.Pt() - sdOut.mdRef.r3.Pt();	
 	    float dAlpha_res = 0.02/std::min(dSDIn, dSDOut);//2-strip difference; use the smallest SD separation
 	    float dAlpha_compat = dAlpha_Bfield + dAlpha_res;
@@ -1479,8 +1488,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, bool drawPlots 
 	}//sdInV
 	
 	std::cout<<"SD links stat "<<lIn<<"-"<<lOut
-	         <<" nAll "<<nAll<<" nDeltaZ "<<nDeltaZ<<" nSlope "<<nSlope
-         	 <<" nInAlphaCompat "<< nInAlphaCompat<<" nOutAlphaCompat "<<nOutAlphaCompat
+	         <<" nAll "<<nAll<<" nDZ "<<nDeltaZ<<" nDZPnt "<<nDeltaZPointed<<" nAlp "<<nSlope
+         	 <<" nInAlpC "<< nInAlphaCompat<<" nOutAlpC "<<nOutAlphaCompat
 	         <<" ndBeta "<<ndBeta
 	         <<" final "<<sdlV.size()
 	         <<std::endl;
