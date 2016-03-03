@@ -315,6 +315,35 @@ void createPtHistograms(std::array<HistoSet1D, nLayers+1>& layerMD, const std::s
   }
 }
 
+struct MiniDoublet {
+  int pixL;
+  int pixU;
+  TVector3 r3;
+  double alpha;
+};
+
+struct SuperDoublet {
+  MiniDoublet mdRef;
+  MiniDoublet mdOut;
+  int iRef;
+  int iOut;
+  TVector3 r3; //may be different from plain mdRef.r3
+  double alpha;
+};
+
+struct SDLink {
+  SuperDoublet sdIn;
+  SuperDoublet sdOut;
+  int lIn;//layer
+  int iIn;
+  int lOut;//layer
+  int iOut;
+  double alpha; //point-to-point wrt radial
+  double betaIn;//SD angle wrt point-to-point
+  double betaOut;
+  double pt;
+};
+
 struct MDStats {
   int nOthers;
   int nOthersRec;
@@ -384,7 +413,43 @@ void fillLayerMD_pt(HistoSet1D& layerMD, double pt, const MDStats& md){
   }
 }
 
-int ScanChain( TChain* chain, int nEvents = -1, bool drawPlots = false) {
+TVector3 linePropagate(const TVector3& r3, const TVector3& p3, double rDest, int& status, bool useClosest = true, bool verbose = false){
+  double rt = r3.Pt();
+  double d = rDest - rt;
+
+  double dotPR2D = r3.x()*p3.x() + r3.y()*p3.y();
+
+  double pt = p3.Pt();
+  double p =  p3.Mag();
+  
+  // r3 + p3/p*x*|d| = dest : dest.t = rt + d <=> rt^2 + 2*dotPR2D/p*x*|d| + pt^2/p^2*x^2*d^2 = rt^2 + 2*rt*d + d^2
+  // 2*dotPR2D/p*|d|* x + pt^2/p^2*d^2* x^2 - ( 2*rt*d + d^2) = 0
+  // 2*dotPR2D/p/|d|* x + pt^2/p^2* x^2 - ( 2*rt/d + 1) = 0
+  // x^2 + 2*dotPR2D/p/|d|*(p/pt)^2* x  - ( 2*rt/d + 1)*(p/pt)^2 = 0
+  // - dotPR2D/p/|d|*(p/pt)^2  +/- sqrt( (dotPR2D/p/|d|*(p/pt)^2)^2 + ( 2*rt/d + 1)*(p/pt)^2 )
+  // (p/pt)*( - dotPR2D/pt/|d|  +/- sqrt( (dotPR2D/pt/|d| )^2 + ( 2*rt/d + 1) ) )
+  double bb = dotPR2D/pt/std::abs(d);
+  double dSign = useClosest ? 1. : -1.;
+  double disc = bb*bb + (2.*rt/d + 1.);
+  status = 0;
+  if (disc < 0){
+    status = 1;
+    return r3;
+  }
+  double xx = (p/pt)*( dSign*sqrt(bb*bb + (2.*rt/d + 1.)) - bb);
+  TVector3 dest = r3 + p3*(std::abs(d)/p)*xx;
+  if (verbose || std::abs(dest.Pt() - rDest)>0.001){
+    std::cout<<" "<<r3.Pt()<<" "<<r3.Phi()<<" "<<r3.z()<<" "<<pt<<" "<<p
+	     <<" "<<d<<" "<<r3.x()*p3.x()<<" "<<r3.y()*p3.y()<<" "<<dotPR2D<<" "<<bb<<" "<<(2.*rt/d + 1.)<<" "<<bb*bb + (2.*rt/d + 1.)
+	     <<" => "<<rDest
+	     <<" => "<<dest.Pt()<<" "<<dest.Phi()<<" "<<dest.z()
+	     <<std::endl;
+  }
+  return dest;
+
+}
+
+int ScanChainMiniDoublets( TChain* chain, int nEvents = -1, bool drawPlots = false) {
 
   std::vector<double> ptBins {0, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.5, 2.0, 3.0, 5.0, 10, 15., 25, 50};
 
@@ -419,6 +484,8 @@ int ScanChain( TChain* chain, int nEvents = -1, bool drawPlots = false) {
   std::array<float, 4> const* cboundL;
   std::array<float, 4> const* cboundH;
 
+  std::array<int, nLayers+1> maxHitsBarrelLayer {};
+  
   //geomRange loop
   {
     TObjArray *listOfFiles = chain->GetListOfFiles();
@@ -443,17 +510,19 @@ int ScanChain( TChain* chain, int nEvents = -1, bool drawPlots = false) {
       
       //Event Loop
       unsigned int nEvents = tree->GetEntries();
-      for( unsigned int event = 0; event < nEvents; ++event) {
+      for( unsigned int event = 0; event < nEvents && nEventsTotal < nEventsChain; ++event) {
 	cms2.GetEntry(event);
 	++nEventsTotal;
 
 	int iidOld = -1;
 
+	std::array<int, nLayers+1> hitsBarrelLayer {};
 	auto nPix = pix_isBarrel().size();
 	for (auto ipix = 0U; ipix < nPix; ++ipix){
 	  if (pix_isBarrel()[ipix] == false) continue;
 	  int lay = pix_lay()[ipix];
-	  
+
+	  hitsBarrelLayer[lay]++;
 	  int iid = pix_detId()[ipix];
 	  if (iidOld != iid){
 	    iidOld = iid;
@@ -478,6 +547,10 @@ int ScanChain( TChain* chain, int nEvents = -1, bool drawPlots = false) {
 	    if (sin((*cbound)[3]-phi) < 0) (*cbound)[3] = phi;
 	  }
 	  (*cpop)++;
+	}
+
+	for (int i = 0; i<= nLayers; ++i){
+	  maxHitsBarrelLayer[i] = std::max(maxHitsBarrelLayer[i], hitsBarrelLayer[i]);
 	}
       }
     }
@@ -504,10 +577,10 @@ int ScanChain( TChain* chain, int nEvents = -1, bool drawPlots = false) {
     
     //Event Loop
     unsigned int nEvents = tree->GetEntries();
-    for( unsigned int event = 0; event < nEvents; ++event) {
+    for( unsigned int event = 0; event < nEvents && nEventsTotal < nEventsChain; ++event) {
       cms2.GetEntry(event);
       ++nEventsTotal;
-      
+
       //keep track of sims per layer 
       std::array<std::set<int>, nLayers+1> simIdxInLayer;
       int iidStart = -1;
@@ -1052,6 +1125,445 @@ int ScanChain( TChain* chain, int nEvents = -1, bool drawPlots = false) {
   
   std::cout<<__LINE__<<" write to file "<<std::endl;
   TFile* outHistograms = new TFile("outHistograms.root", "RECREATE");
+  for (int iL = 1; iL <= nLayers; ++iL){
+    layerMD_pt_all[iL].write(outHistograms);
+    layerMD_pt_prim_all[iL].write(outHistograms);
+    layerMD_pt_prim_tt[iL].write(outHistograms);
+  }
+  outHistograms->Write();
+  outHistograms->Close();
+  std::cout<<__LINE__<<" Done "<<std::endl;
+
+  return 0;
+}
+
+int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, bool drawPlots = false) {
+
+  std::vector<double> ptBins {0, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.5, 2.0, 3.0, 5.0, 10, 15., 25, 50};
+
+  constexpr int minLayer = 5;
+  
+  std::array<HistoSet1D, nLayers+1> layerMD_pt_all;
+  createPtHistograms(layerMD_pt_all, "all", ptBins);
+  
+  std::array<HistoSet1D, nLayers+1> layerMD_pt_prim_all;
+  createPtHistograms(layerMD_pt_prim_all, "prim_all", ptBins);
+
+  std::array<HistoSet1D, nLayers+1> layerMD_pt_prim_tt;
+  createPtHistograms(layerMD_pt_prim_tt, "prim_tt", ptBins);
+
+  std::array<float, nLayers+1> miniDeltaBarrel {0, 0, 0, 0, 0,
+      0.26, 0.16, 0.16, 0.18, 0.18, 0.18};
+
+  //p2Sim.directionT-r2Sim.directionT smearing around the mean computed with ptSim,rSim
+  //(1 sigma based on 95.45% = 2sigma at 2 GeV)
+  std::array<float, nLayers+1> miniMulsPtScale {0, 0, 0, 0, 0,
+      0.0052, 0.0038, 0.0034, 0.0034, 0.0032, 0.0034};
+
+  //mean of the horizontal layer position in y; treat this as R below
+  std::array<float, nLayers+1> miniRminMean {0, 0, 0, 0, 0, //may want to fill these
+      21.8, 34.6, 49.6, 67.4, 87.6, 106.8};
+
+  //  cout<<__LINE__<<endl;
+  TObjArray *listOfFiles = chain->GetListOfFiles();
+
+  unsigned int nEventsChain=0;
+  if(nEvents==-1) 
+    nEvents = chain->GetEntries();
+  nEventsChain = nEvents;
+  unsigned int nEventsTotal = 0;
+  TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
+
+  constexpr int maxHitsInLayer = 50000;
+  // file loop
+  TIter fileIter(listOfFiles);
+  TFile *currentFile = 0;
+  while (( currentFile = (TFile*)fileIter.Next() )) {
+    TFile f(currentFile->GetTitle());
+    TTree *tree = (TTree*)f.Get("trkTree/tree");
+    cms2.Init(tree);
+    
+    //Event Loop
+    unsigned int nEvents = tree->GetEntries();
+    for( unsigned int event = 0; event < nEvents && nEventsTotal < nEventsChain; ++event) {
+      cms2.GetEntry(event);
+      ++nEventsTotal;
+
+      //this could be filled on-demand and in some regions of interest at some point
+      //assume somewhat hermetic tracker and the only hits in the barrel to be from the barrel
+      //reference layer minidoublet
+      std::array<std::vector<std::pair<int, TVector3> >, nLayers+1 > mockLayerMDfwRefLower;
+      std::array<std::vector<std::pair<int, TVector3> >, nLayers+1 > mockLayerMDfwRefUpper;
+      //offset layer minidoublet (2cm hardcode for now)
+      std::array<std::vector<std::pair<int, TVector3> >, nLayers+1 > mockLayerMDfwD2cmLower;
+      std::array<std::vector<std::pair<int, TVector3> >, nLayers+1 > mockLayerMDfwD2cmUpper;
+      for (int iL = 1; iL <=nLayers; ++iL){
+	mockLayerMDfwRefLower[iL].reserve(maxHitsInLayer);
+	mockLayerMDfwRefUpper[iL].reserve(maxHitsInLayer);
+	mockLayerMDfwD2cmLower[iL].reserve(maxHitsInLayer);
+	mockLayerMDfwD2cmUpper[iL].reserve(maxHitsInLayer);
+      }
+
+      std::array<int, nLayers+1> nHitsLayer1GeV {};
+      std::array<int, nLayers+1> nHitsLayer2GeV {};
+      
+      std::cout<<"Load hits "<<std::endl;
+      std::array<std::set<int>, nLayers+1> simIdxDeltaInLayer;
+      std::array<std::set<int>, nLayers+1> simIdxInLayer;
+      auto nPix = pix_isBarrel().size();
+      for (auto ipix = 0U; ipix < nPix; ++ipix){
+	if (pix_isBarrel()[ipix] == false) continue;
+	int lay = pix_lay()[ipix];
+	if (lay < 5 ) continue;
+
+	int iid = pix_detId()[ipix];
+	if ((iid & 0x4)!= 4) continue; 
+
+	TVector3 r3Sim(pix_xsim()[ipix], pix_ysim()[ipix], pix_zsim()[ipix]);
+	if (r3Sim.x() == 0 && r3Sim.y() == 0) continue; //use only hits with sim info
+	
+	float rs = r3Sim.Pt();
+	TVector3 p3Sim(pix_pxsim()[ipix], pix_pysim()[ipix], pix_pzsim()[ipix]);
+	float pts = p3Sim.Pt();
+	float ps = p3Sim.Mag();
+
+	int iParticle = pix_particle()[ipix];
+
+	int iSimIdx = pix_simTrkIdx()[ipix]; //tp index in ntuple (not a g4 trackId)
+
+	//FIXME: consider to improve to allow multiple deltas
+	if (iParticle == -11 && ps < 0.1){
+	  if (simIdxDeltaInLayer[lay].find(iSimIdx) != simIdxDeltaInLayer[lay].end()) continue; //only one hit per layer per track
+	  else {
+	    simIdxDeltaInLayer[lay].insert(iSimIdx);
+	  }
+	} else {
+	  if (simIdxInLayer[lay].find(iSimIdx) != simIdxInLayer[lay].end()) continue; //only one hit per layer per track
+	  else {
+	    simIdxInLayer[lay].insert(iSimIdx);
+	  }
+	}
+
+	if (pts >1) nHitsLayer1GeV[lay]++;
+	if (pts >2) nHitsLayer2GeV[lay]++;
+	
+	const double sdOffset = 2.0;
+	const double mdOffset = miniDeltaBarrel[lay];
+	const double rNominal = miniRminMean[lay]+1;//this is going to be in between the sector radii
+
+	const double rRefLower = rNominal;
+	const double rRefUpper = rNominal+mdOffset;
+	const double rSDfwLower = rRefLower + sdOffset;
+	const double rSDfwUpper = rRefUpper + sdOffset;
+
+	int pstat = 0;
+	auto r3RefLower = linePropagate(r3Sim, p3Sim, rRefLower, pstat);
+	if (pstat == 0) mockLayerMDfwRefLower[lay].push_back(std::make_pair(ipix,r3RefLower));
+	auto r3RefUpper = linePropagate(r3Sim, p3Sim, rRefUpper, pstat);
+	if (pstat == 0) mockLayerMDfwRefUpper[lay].push_back(std::make_pair(ipix, r3RefUpper));
+	auto r3SDfwLower = linePropagate(r3Sim, p3Sim, rSDfwLower, pstat);
+	if (pstat == 0) mockLayerMDfwD2cmLower[lay].push_back(std::make_pair(ipix, r3SDfwLower));
+	auto r3SDfwUpper = linePropagate(r3Sim, p3Sim, rSDfwUpper, pstat);
+	if (pstat == 0) mockLayerMDfwD2cmUpper[lay].push_back(std::make_pair(ipix, r3SDfwUpper));
+
+
+      }//nPix: filling mock MDs
+
+      
+      constexpr int maxMDexpected = 100;
+      std::array<std::vector<MiniDoublet>, nLayers+1> mockLayerMDfwRef;
+      std::array<std::vector<MiniDoublet>, nLayers+1> mockLayerMDfwD2cm;
+
+      std::array<std::vector<SuperDoublet>, nLayers+1> mockLayerSDfwD2cm;
+
+      std::vector<SDLink> mockLayer5to7SDLfwD2cm;
+      std::vector<SDLink> mockLayer7to9SDLfwD2cm;
+      
+      std::cout<<"Combine MDs "<<std::endl;
+      int nHitsTried = 0;
+      for (int iL = minLayer; iL <= nLayers; ++iL){
+	auto const&  hitsRefLower = mockLayerMDfwRefLower[iL];
+	auto const&  hitsRefUpper = mockLayerMDfwRefUpper[iL];
+	auto const&  hitsOutLower = mockLayerMDfwD2cmLower[iL];
+	auto const&  hitsOutUpper = mockLayerMDfwD2cmUpper[iL];
+	
+	auto& mockMDfwRef = mockLayerMDfwRef[iL];
+
+	auto mdCombine = [&] (decltype(hitsRefLower) hitsL, decltype(hitsRefUpper) hitsU, decltype(mockMDfwRef) mDs){
+	  for (auto hL : hitsL) {
+	    nHitsTried++; //if (nHitsTried>1) exit(0);
+	    float rt = hL.second.Pt();
+	    const float ptCut = 1.0;
+	    const float miniSlope = rt/175.67/ptCut;
+	    
+	    const float miniMuls = miniMulsPtScale[iL]*3./ptCut;
+	    const float rLayNominal = iL >= minLayer ? miniRminMean[iL] : 1e12;
+	    const float miniPVoff = 0.1/rLayNominal;
+	    const float miniCut = miniSlope + sqrt(miniMuls*miniMuls + miniPVoff*miniPVoff);
+	    
+	    const float dzCut = 10.;//may want to adjust this: PS modules are shorter
+	    
+	    for (auto hU : hitsU) {
+	      float dz = hL.second.z() - hU.second.z();
+	      if (std::abs(dz) > dzCut) continue;
+	      
+	      float dPhi = hL.second.DeltaPhi(hU.second-hL.second);
+	      if (std::abs(dPhi) > miniCut) continue;
+	      
+	      MiniDoublet md;
+	      md.pixL = hL.first;
+	      md.pixU = hU.first;
+	      md.r3 = hL.second;
+	      md.alpha = dPhi;
+	      mDs.push_back(md);
+	    }
+	  }
+	};
+	mdCombine(hitsRefLower, hitsRefUpper, mockMDfwRef);
+
+	auto& mockMDfwD2cm = mockLayerMDfwD2cm[iL];
+	mdCombine(hitsOutLower, hitsOutUpper, mockMDfwD2cm);
+
+	//now make super-doublets
+	auto& mockSDfwD2cm = mockLayerSDfwD2cm[iL];
+
+	int iRef = -1;
+	for (auto mdRef : mockMDfwRef){
+	  iRef++;
+	  float rtRef = mdRef.r3.Pt();
+	  float zRef = mdRef.r3.z();
+	  //
+	  int iOut = -1;
+	  for (auto mdOut : mockMDfwD2cm){
+	    iOut++;
+	    float rtOut = mdOut.r3.Pt();
+	    float zOut = mdOut.r3.z();
+
+	    //apply some loose Z compatibility
+	    float zLo = rtOut/rtRef*(zRef - 15.) - 10.; //15 for the luminous ; 10 for module size
+	    float zHi = rtOut/rtRef*(zRef + 15.) + 10.;
+	    if (zOut < zLo || zOut > zHi) continue;
+	    
+	    SuperDoublet sd;
+	    sd.iRef = iRef;
+	    sd.iOut = iOut;
+
+	    float rt = 0.5*(rtRef + rtOut); //take the middle: it matches better the point-to-point
+	    const float ptCut = 1.0;
+	    const float sdSlope = rt/175.67/ptCut;
+	    const float sdMuls = miniMulsPtScale[iL]*3./ptCut*2.;//will need a better guess than x2?
+	    const float sdPVoff = 0.1/rt;
+	    const float sdCut = sdSlope + sqrt(sdMuls*sdMuls + sdPVoff*sdPVoff);
+
+	    //plain SD bend cut
+	    float dPhi = mdRef.r3.DeltaPhi(mdOut.r3 - mdRef.r3);
+	    if (std::abs(dPhi) > sdCut ) continue;
+
+	    
+	    sd.r3 = mdRef.r3;
+	    sd.alpha = dPhi;
+	    //loose angle compatibility
+	    float dAlpha_Bfield = (rtOut - rtRef)/175.67/ptCut;
+	    float dAlpha_res = 0.04/miniDeltaBarrel[iL];//4-strip difference
+	    float dAlpha_compat = dAlpha_Bfield + dAlpha_res;
+	    if (std::abs(mdRef.alpha- sd.alpha) > dAlpha_compat) continue;
+	    if (std::abs(mdOut.alpha- sd.alpha) > dAlpha_compat) continue;
+	    if (std::abs(mdOut.alpha- mdRef.alpha) > dAlpha_compat) continue;
+
+	    sd.mdRef = mdRef;
+	    sd.mdOut = mdOut;
+
+	    if ( (sd.mdRef.r3 - sd.mdOut.r3).Pt() > 1.5*(rtOut - rtRef)){
+	      //problem in matching
+	      std::cout<<__LINE__
+		       <<" "<<sd.mdRef.r3.Pt()<<" "<<sd.mdRef.r3.Phi()
+		       <<" "<<sd.mdOut.r3.Pt()<<" "<<sd.mdOut.r3.Phi()
+		       <<std::endl;
+	    }
+	    mockSDfwD2cm.push_back(sd);
+	  }
+	}
+      }//iL
+
+      //try to link segments: do 5-7 and 7-9
+      auto sdLink = [&] (int lIn, int lOut, decltype(mockLayer5to7SDLfwD2cm)& sdlV){
+	auto const& sdInV  = mockLayerSDfwD2cm[lIn];
+	auto const& sdOutV = mockLayerSDfwD2cm[lOut];
+
+	int nAll = 0;
+	int nDeltaZ = 0;
+	int nSlope = 0;
+	int nInAlphaCompat = 0;
+	int nOutAlphaCompat = 0;
+	int ndBeta = 0;
+	
+	int iIn = -1;
+	for ( auto sdIn : sdInV ) {
+	  iIn++;
+	  //
+	  float rtIn = sdIn.r3.Pt();
+	  float zIn = sdIn.r3.z();
+
+	  int iOut = -1;
+	  for ( auto sdOut : sdOutV ) {
+	    iOut++;
+	    //
+	    nAll++;
+	    
+	    float rtOut = sdOut.r3.Pt();
+	    float zOut = sdOut.r3.z();
+	    //apply some loose Z compatibility
+	    //FIXME: refine using inner layer directions (can prune later)
+	    float zLo = rtOut/rtIn*(zIn - 15.) - 10.; //15 for the luminous ; 10 for module size
+	    float zHi = rtOut/rtIn*(zIn + 15.) + 10.;
+	    if (zOut < zLo || zOut > zHi) continue;
+	    nDeltaZ++;
+
+	    auto midR3 = 0.5*(sdIn.r3 + sdOut.r3);
+	    double dPhi = midR3.DeltaPhi(sdOut.r3 - sdIn.r3);
+	    double rt = 0.5*(sdIn.r3.Pt() + sdOut.r3.Pt());
+	    const float ptCut = 1.0;
+	    const float sdlSlope = rt/175.67/ptCut;
+	    const float sdlThetaMulsF = 0.015*sqrt(0.2);
+	    const float sdlMuls = sdlThetaMulsF*3./ptCut*4;//will need a better guess than x4?
+	    const float sdlPVoff = 0.1/rt;
+	    const float sdlCut = sdlSlope + sqrt(sdlMuls*sdlMuls + sdlPVoff*sdlPVoff);
+	    
+	    if (std::abs(dPhi) > sdlCut ) continue;
+	    nSlope++;
+	    
+	    double betaIn = sdIn.alpha - sdIn.r3.DeltaPhi(sdOut.r3 - sdIn.r3);
+	    double betaOut = - sdOut.alpha + sdOut.r3.DeltaPhi(sdOut.r3 - sdIn.r3); //to match sign for correct match
+	    
+	    //loose angle compatibility
+	    float dAlpha_Bfield = (rtOut - rtIn)/175.67/ptCut;
+	    float dSDIn = sdIn.mdOut.r3.Pt() - sdIn.mdRef.r3.Pt();
+	    float dSDOut = sdOut.mdOut.r3.Pt() - sdOut.mdRef.r3.Pt();	
+	    float dAlpha_res = 0.02/std::min(dSDIn, dSDOut);//2-strip difference; use the smallest SD separation
+	    float dAlpha_compat = dAlpha_Bfield + dAlpha_res;
+	    if (std::abs(sdIn.alpha- dPhi) > dAlpha_compat) continue;
+	    nInAlphaCompat++;
+	    if (std::abs(sdOut.alpha- dPhi) > dAlpha_compat) continue;
+	    nOutAlphaCompat++;
+	    
+	    //now the actual segment linking magic
+	    float betaAv = 0.5*(betaIn + betaOut);
+	    float dr = (sdOut.r3 - sdIn.r3).Mag();
+	    //pt*175.67/2. = R
+	    //R*sin(betaAv) = pt*175.67/2*sin(betaAv) = dr/2 => pt = dr/175.67/sin(betaAv);
+	    float pt_beta = dr/175.67/sin(betaAv);
+	    float dBetaRes = dAlpha_res;
+	    float dBetaMuls = sdlThetaMulsF*3./std::min(pt_beta, 7.0f);//need to confirm the range-out value of 7 GeV
+	    float dBetaCut = sqrt(dBetaRes*dBetaRes*2.0 + dBetaMuls*dBetaMuls);
+	    if (std::abs(betaIn - betaOut) > dBetaCut) continue;
+	    ndBeta++;
+	    
+	    SDLink sdl;
+	    sdl.sdIn = sdIn;
+	    sdl.sdOut = sdOut;
+	    sdl.lIn = lIn;
+	    sdl.iIn = iIn;
+	    sdl.lOut = lOut;
+	    sdl.iOut = iOut;
+	    
+	    sdl.alpha = dPhi;
+	    sdl.betaIn = betaIn;
+	    sdl.betaOut = betaOut;
+	    sdl.pt = pt_beta;
+	    
+	    sdlV.push_back(sdl);
+	  }//sdOutV
+	}//sdInV
+	
+	std::cout<<"SD links stat "<<lIn<<"-"<<lOut
+	         <<" nAll "<<nAll<<" nDeltaZ "<<nDeltaZ<<" nSlope "<<nSlope
+         	 <<" nInAlphaCompat "<< nInAlphaCompat<<" nOutAlphaCompat "<<nOutAlphaCompat
+	         <<" ndBeta "<<ndBeta
+	         <<" final "<<sdlV.size()
+	         <<std::endl;
+      };//auto sdLink
+
+      sdLink(5, 7, mockLayer5to7SDLfwD2cm);
+      sdLink(7, 9, mockLayer7to9SDLfwD2cm);
+
+      
+      std::cout<<"Print stats"<<std::endl;
+      for (int iL = minLayer; iL <= nLayers; ++iL){
+	int nSDs1GeV = 0;
+	int nSDs1GeVMatch4 = 0;
+	int nSDs2GeV = 0;
+	int nSDs2GeVMatch4 = 0;
+	for (auto sd : mockLayerSDfwD2cm[iL]){
+	  int ipix = sd.mdRef.pixL;
+	  TVector3 p3RL(pix_pxsim()[ipix], pix_pysim()[ipix], pix_pzsim()[ipix]);
+	  ipix = sd.mdRef.pixU;
+	  TVector3 p3RU(pix_pxsim()[ipix], pix_pysim()[ipix], pix_pzsim()[ipix]);
+	  ipix = sd.mdOut.pixL;
+	  TVector3 p3OL(pix_pxsim()[ipix], pix_pysim()[ipix], pix_pzsim()[ipix]);
+	  ipix = sd.mdOut.pixU;
+	  TVector3 p3OU(pix_pxsim()[ipix], pix_pysim()[ipix], pix_pzsim()[ipix]);
+
+	  if (p3RL.Pt() > 1 || p3RU.Pt() > 1 || p3OL.Pt() > 1 || p3OU.Pt() > 1){
+	    nSDs1GeV++;
+	    if (p3RL.Pt() > 2 || p3RU.Pt() > 2 || p3OL.Pt() > 2 || p3OU.Pt() > 2){
+	      nSDs2GeV++;
+	    }
+	  }
+	  if (sd.mdRef.pixL == sd.mdRef.pixU
+	      && sd.mdOut.pixL == sd.mdOut.pixU
+	      && sd.mdRef.pixL == sd.mdOut.pixL){
+	    if ( p3RL.Pt() > 1 ) nSDs1GeVMatch4++;
+	    if ( p3RL.Pt() > 2 ) nSDs2GeVMatch4++;
+	  }
+	}
+	std::cout<<"Summary for layer "<<iL
+		 <<" h1GeV "<<nHitsLayer1GeV[iL]
+		 <<" h2GeV "<<nHitsLayer2GeV[iL]
+		 <<" refLos "<<mockLayerMDfwRefLower[iL].size()
+		 <<" refUps "<<mockLayerMDfwRefUpper[iL].size()
+		 <<" refMDs " <<mockLayerMDfwRef[iL].size()
+		 <<" outLos " <<mockLayerMDfwD2cmLower[iL].size()
+		 <<" outUps " <<mockLayerMDfwD2cmUpper[iL].size()
+		 <<" outMDs " <<mockLayerMDfwD2cm[iL].size()
+		 <<" outSDs "<< mockLayerSDfwD2cm[iL].size()
+		 <<" n1Any "<<nSDs1GeV<<" n1All "<<nSDs1GeVMatch4
+		 <<" n2Any "<<nSDs2GeV<<" n2All "<<nSDs2GeVMatch4
+		 <<std::endl;
+      }//iL
+      std::cout<<"\t\tsdl5-7 "<<mockLayer5to7SDLfwD2cm.size()
+	       <<" sdl7-9 "<<mockLayer7to9SDLfwD2cm.size()
+	       <<std::endl;
+      
+      // Progress feedback to the user
+      if(nEventsTotal%1 == 0) {
+        // xterm magic from L. Vacavant and A. Cerri
+        if (isatty(1)) {
+          printf("\015\033[32m ---> \033[1m\033[31m%4.1f%%"
+          "\033[0m\033[32m <---\033[0m\015", (float)nEventsTotal/(nEventsChain*0.01));
+          fflush(stdout);
+        }
+      }//if(nEventsTotal%20000 == 0) {
+
+
+    }
+  }
+
+  if ( nEventsChain != nEventsTotal ) {
+    std::cout << "ERROR: number of events from files is not equal to total number of events" << std::endl;
+  }
+
+  std::cout<<__LINE__<<" make efficiencies "<<std::endl;
+
+  if (drawPlots){
+    std::cout<<__LINE__<<" draw and print "<<std::endl;
+    for (int iL = 5; iL <= nLayers; ++iL){
+      if (iL != 5 && iL != 10) continue;
+
+    }//nLayers
+  }//if drawPlots
+  
+  std::cout<<__LINE__<<" write to file "<<std::endl;
+  TFile* outHistograms = new TFile("outHistogramsSuperD.root", "RECREATE");
   for (int iL = 1; iL <= nLayers; ++iL){
     layerMD_pt_all[iL].write(outHistograms);
     layerMD_pt_prim_all[iL].write(outHistograms);
