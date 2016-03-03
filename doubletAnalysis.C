@@ -1340,8 +1340,10 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, bool drawPlots 
 	    float zOut = mdOut.r3.z();
 
 	    //apply some loose Z compatibility
-	    float zLo = rtOut/rtRef*(zRef - 15.) - 10.; //15 for the luminous ; 10 for module size
-	    float zHi = rtOut/rtRef*(zRef + 15.) + 10.;
+	    float zGeom = iL >= 5 && iL <= 6 ? 0.3 : 10;//twice the macro-pixel or strip size
+	                                                //assume that the mock layer is the n+1 layer
+	    float zLo = rtOut/rtRef*(zRef - 15.) - zGeom; //15 for the luminous ; 10 for module size
+	    float zHi = rtOut/rtRef*(zRef + 15.) + zGeom;
 	    if (zOut < zLo || zOut > zHi) continue;
 	    
 	    SuperDoublet sd;
@@ -1414,8 +1416,9 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, bool drawPlots 
 	    float zOut = sdOut.r3.z();
 	    //apply some loose Z compatibility
 	    //FIXME: refine using inner layer directions (can prune later)
-	    float zLo = rtOut/rtIn*(zIn - 15.) - 10.; //15 for the luminous ; 10 for module size
-	    float zHi = rtOut/rtIn*(zIn + 15.) + 10.;
+	    float zGeom = lIn >= 5 && lIn <= 7 && lOut >= 5 && lOut <= 7 ? 0.3 : 10;//twice the macro-pixel or strip size
+	    float zLo = rtOut/rtIn*(zIn - 15.) - zGeom; //15 for the luminous ; zGeom for z geom unit size
+	    float zHi = rtOut/rtIn*(zIn + 15.) + zGeom;
 	    if (zOut < zLo || zOut > zHi) continue;
 	    nDeltaZ++;
 
