@@ -344,6 +344,14 @@ struct SDLink {
   double pt;
 };
 
+struct TrackLink {
+  std::vector<const SDLink*> links;
+  
+  double pt;
+  double eta;
+  double phi;
+};
+
 struct MDStats {
   int nOthers;
   int nOthersRec;
@@ -1164,6 +1172,12 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, bool drawPlots 
   std::array<float, nLayers+1> miniRminMean {0, 0, 0, 0, 0, //may want to fill these
       21.8, 34.6, 49.6, 67.4, 87.6, 106.8};
 
+  TH1F* h_sdl5to7_dBeta_all = new TH1F("h_sdl5to7_dBeta_all", "h_sdl5to7_dBeta_all", 400, -0.5, 0.5);
+  TH1F* h_sdl5to7_dBeta_pass = new TH1F("h_sdl5to7_dBeta_pass", "h_sdl5to7_dBeta_pass", 400, -0.5, 0.5);
+
+  TH1F* h_sdl7to9_dBeta_all = new TH1F("h_sdl7to9_dBeta_all", "h_sdl7to9_dBeta_all", 400, -0.5, 0.5);
+  TH1F* h_sdl7to9_dBeta_pass = new TH1F("h_sdl7to9_dBeta_pass", "h_sdl7to9_dBeta_pass", 400, -0.5, 0.5);
+
   //  cout<<__LINE__<<endl;
   TObjArray *listOfFiles = chain->GetListOfFiles();
 
@@ -1467,7 +1481,21 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, bool drawPlots 
 	    float dBetaRes = dAlpha_res;
 	    float dBetaMuls = sdlThetaMulsF*3./std::min(pt_beta, 7.0f);//need to confirm the range-out value of 7 GeV
 	    float dBetaCut = sqrt(dBetaRes*dBetaRes*2.0 + dBetaMuls*dBetaMuls);
-	    if (std::abs(betaIn - betaOut) > dBetaCut) continue;
+	    float dBeta = betaIn - betaOut;
+
+	    if (lIn == 5 && lOut == 7){
+	      h_sdl5to7_dBeta_all->Fill(dBeta);
+	    } else if (lIn == 7 && lOut == 9){
+	      h_sdl7to9_dBeta_all->Fill(dBeta);
+	    }
+
+	    if (std::abs(dBeta) > dBetaCut) continue;
+	    if (lIn == 5 && lOut == 7){
+	      h_sdl5to7_dBeta_pass->Fill(dBeta);
+	    } else if (lIn == 7 && lOut == 9){
+	      h_sdl7to9_dBeta_pass->Fill(dBeta);
+	    }
+
 	    ndBeta++;
 	    
 	    SDLink sdl;
@@ -1498,6 +1526,93 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, bool drawPlots 
       sdLink(5, 7, mockLayer5to7SDLfwD2cm);
       sdLink(7, 9, mockLayer7to9SDLfwD2cm);
 
+
+      int nSim = sim_nPixel().size();
+      for (int iSim = 0; iSim < nSim; ++iSim){
+	TVector3 p3(sim_px()[iSim], sim_py()[iSim], sim_pz()[iSim]);
+	if (p3.Pt() > 10 && std::abs(p3.Eta())< 1){
+	  std::cout<<"TP: "<<p3.Pt()<<" "<<p3.Eta()<<" "<<p3.Phi();
+	  int nPix = sim_nPixel()[iSim];
+	  for (int iPix = 0; iPix< nPix; ++iPix){
+	    
+	    int iipix = sim_pixelIdx()[iSim][iPix];
+	    
+	    int lay = pix_lay()[iipix];
+	    if (lay >= minLayer){
+	      std::cout<<" "<<lay<<" "<<iipix;
+	    }
+	  }
+	  std::cout<<std::endl;
+	}
+	
+      }
+      
+      //link the links to TrackLinks
+      std::vector<TrackLink> tracks;
+      int countMatchMidPoint = 0;
+      for (auto sdlIn : mockLayer5to7SDLfwD2cm ){
+	bool hasOuter = false;
+
+	for (auto sdlOut : mockLayer7to9SDLfwD2cm){
+	  if (sdlIn.lOut == sdlOut.lIn && sdlIn.iOut == sdlOut.iIn){
+	    //shared mid-point
+	    double dPt = sdlIn.pt - sdlOut.pt;
+	    int iirL = sdlIn.sdIn.mdRef.pixL;
+	    int iirU = sdlIn.sdIn.mdRef.pixU;
+	    int iioL = sdlIn.sdIn.mdOut.pixL;
+	    int iioU = sdlIn.sdIn.mdOut.pixU;
+
+	    int iorL = sdlIn.sdOut.mdRef.pixL;
+	    int iorU = sdlIn.sdOut.mdRef.pixU;
+	    int iooL = sdlIn.sdOut.mdOut.pixL;
+	    int iooU = sdlIn.sdOut.mdOut.pixU;
+	    
+	    int oorL = sdlOut.sdOut.mdRef.pixL;
+	    int oorU = sdlOut.sdOut.mdRef.pixU;
+	    int oooL = sdlOut.sdOut.mdOut.pixL;
+	    int oooU = sdlOut.sdOut.mdOut.pixU;
+	    
+	    TVector3 iirLp3(pix_pxsim()[iirL], pix_pysim()[iirL], pix_pzsim()[iirL]);
+	    TVector3 iirUp3(pix_pxsim()[iirU], pix_pysim()[iirU], pix_pzsim()[iirU]);
+	    TVector3 iioLp3(pix_pxsim()[iioL], pix_pysim()[iioL], pix_pzsim()[iioL]);
+	    TVector3 iioUp3(pix_pxsim()[iioU], pix_pysim()[iioU], pix_pzsim()[iioU]);
+
+	    TVector3 iorLp3(pix_pxsim()[iorL], pix_pysim()[iorL], pix_pzsim()[iorL]);
+	    TVector3 iorUp3(pix_pxsim()[iorU], pix_pysim()[iorU], pix_pzsim()[iorU]);
+	    TVector3 iooLp3(pix_pxsim()[iooL], pix_pysim()[iooL], pix_pzsim()[iooL]);
+	    TVector3 iooUp3(pix_pxsim()[iooU], pix_pysim()[iooU], pix_pzsim()[iooU]);
+
+	    TVector3 oorLp3(pix_pxsim()[oorL], pix_pysim()[oorL], pix_pzsim()[oorL]);
+	    TVector3 oorUp3(pix_pxsim()[oorU], pix_pysim()[oorU], pix_pzsim()[oorU]);
+	    TVector3 oooLp3(pix_pxsim()[oooL], pix_pysim()[oooL], pix_pzsim()[oooL]);
+	    TVector3 oooUp3(pix_pxsim()[oooU], pix_pysim()[oooU], pix_pzsim()[oooU]);
+
+
+	    /*
+	    std::cout<<countMatchMidPoint<<"\t"<<sdlIn.pt<<" "<<sdlOut.pt
+		     <<" vs MC "
+		     <<" "<<iirL<<" "<<iirLp3.Pt()<<";"
+		     <<" "<<iirU<<" "<<iirUp3.Pt()<<";"
+		     <<" "<<iioL<<" "<<iioLp3.Pt()<<";"
+		     <<" "<<iioU<<" "<<iioUp3.Pt()<<";;"
+
+		     <<" "<<iorL<<" "<<iorLp3.Pt()<<";"
+		     <<" "<<iorU<<" "<<iorUp3.Pt()<<";"
+		     <<" "<<iooL<<" "<<iooLp3.Pt()<<";"
+		     <<" "<<iooU<<" "<<iooUp3.Pt()<<";;"
+	      
+		     <<" "<<oorL<<" "<<oorLp3.Pt()<<";"
+		     <<" "<<oorU<<" "<<oorUp3.Pt()<<";"
+		     <<" "<<oooL<<" "<<oooLp3.Pt()<<";"
+		     <<" "<<oooU<<" "<<oooUp3.Pt()<<""
+		     <<std::endl;
+	    */
+	    countMatchMidPoint++;
+	  }//match in-out at mid-point
+	  
+	}//sdlOut
+      }//sdlIn
+      
       
       std::cout<<"Print stats"<<std::endl;
       for (int iL = minLayer; iL <= nLayers; ++iL){
@@ -1572,6 +1687,39 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, bool drawPlots 
       if (iL != 5 && iL != 10) continue;
 
     }//nLayers
+
+    {
+      auto h_all = h_sdl5to7_dBeta_all;
+      auto h_pass = h_sdl5to7_dBeta_pass;
+      auto cn = h_all->GetTitle();
+      TCanvas* cv = new TCanvas(cn, cn, 600, 600);
+      cv->cd();
+
+      h_all->SetLineWidth(2);
+      h_pass->SetLineWidth(2);
+      h_pass->SetLineColor(2);
+
+      h_all->SetStats(0);
+      h_all->Draw();
+      h_pass->Draw("same");
+      gPad->SaveAs("h_sdl5to7_dBeta_all_vs_pass.png");
+    }
+    {
+      auto h_all = h_sdl7to9_dBeta_all;
+      auto h_pass = h_sdl7to9_dBeta_pass;
+      auto cn = h_all->GetTitle();
+      TCanvas* cv = new TCanvas(cn, cn, 600, 600);
+      cv->cd();
+
+      h_all->SetLineWidth(2);
+      h_pass->SetLineWidth(2);
+      h_pass->SetLineColor(2);
+
+      h_all->SetStats(0);
+      h_all->Draw();
+      h_pass->Draw("same");
+      gPad->SaveAs("h_sdl7to9_dBeta_all_vs_pass.png");
+    }
   }//if drawPlots
   
   std::cout<<__LINE__<<" write to file "<<std::endl;
