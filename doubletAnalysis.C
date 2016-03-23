@@ -1172,12 +1172,38 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, bool drawPlots 
   std::array<float, nLayers+1> miniRminMean {0, 0, 0, 0, 0, //may want to fill these
       21.8, 34.6, 49.6, 67.4, 87.6, 106.8};
 
-  TH1F* h_sdl5to7_dBeta_all = new TH1F("h_sdl5to7_dBeta_all", "h_sdl5to7_dBeta_all", 400, -0.5, 0.5);
-  TH1F* h_sdl5to7_dBeta_pass = new TH1F("h_sdl5to7_dBeta_pass", "h_sdl5to7_dBeta_pass", 400, -0.5, 0.5);
+  TH2F* h2_sdl5to7_dBeta_betaIn_NM1dBeta_all = new TH2F("h2_sdl5to7_dBeta_betaIn_NM1dBeta_all", "h2_sdl5to7_dBeta_betaIn_NM1dBeta_all", 400, -1, 1, 400, -0.5, 0.5);
+  TH2F* h2_sdl7to9_dBeta_betaIn_NM1dBeta_all = new TH2F("h2_sdl7to9_dBeta_betaIn_NM1dBeta_all", "h2_sdl7to9_dBeta_betaIn_NM1dBeta_all", 400, -1, 1, 400, -0.5, 0.5);
 
-  TH1F* h_sdl7to9_dBeta_all = new TH1F("h_sdl7to9_dBeta_all", "h_sdl7to9_dBeta_all", 400, -0.5, 0.5);
-  TH1F* h_sdl7to9_dBeta_pass = new TH1F("h_sdl7to9_dBeta_pass", "h_sdl7to9_dBeta_pass", 400, -0.5, 0.5);
+  
+  TH1F* h_sdl5to7_dBeta_NM1dBeta_all = new TH1F("h_sdl5to7_dBeta_NM1dBeta_all", "h_sdl5to7_dBeta_NM1dBeta_all", 400, -0.5, 0.5);
+  TH1F* h_sdl5to7_dBeta_NM1dBeta_pass = new TH1F("h_sdl5to7_dBeta_NM1dBeta_pass", "h_sdl5to7_dBeta_NM1dBeta_pass", 400, -0.5, 0.5);
 
+  TH1F* h_sdl7to9_dBeta_NM1dBeta_all = new TH1F("h_sdl7to9_dBeta_NM1dBeta_all", "h_sdl7to9_dBeta_NM1dBeta_all", 400, -0.5, 0.5);
+  TH1F* h_sdl7to9_dBeta_NM1dBeta_pass = new TH1F("h_sdl7to9_dBeta_NM1dBeta_pass", "h_sdl7to9_dBeta_NM1dBeta_pass", 400, -0.5, 0.5);
+
+  TH1F* h_sdl5to7_dBeta_zoom_NM1dBeta_all = new TH1F("h_sdl5to7_dBeta_zoom_NM1dBeta_all", "h_sdl5to7_dBeta_zoom_NM1dBeta_all", 400, -0.15, 0.15);
+  TH1F* h_sdl5to7_dBeta_zoom_NM1dBeta_pass = new TH1F("h_sdl5to7_dBeta_zoom_NM1dBeta_pass", "h_sdl5to7_dBeta_zoom_NM1dBeta_pass", 400, -0.15, 0.15);
+
+  TH1F* h_sdl7to9_dBeta_zoom_NM1dBeta_all = new TH1F("h_sdl7to9_dBeta_zoom_NM1dBeta_all", "h_sdl7to9_dBeta_zoom_NM1dBeta_all", 400, -0.15, 0.15);
+  TH1F* h_sdl7to9_dBeta_zoom_NM1dBeta_pass = new TH1F("h_sdl7to9_dBeta_zoom_NM1dBeta_pass", "h_sdl7to9_dBeta_zoom_NM1dBeta_pass", 400, -0.15, 0.15);
+
+  enum SDLayers {SDL_L5to7=0, SDL_L7to9, SDL_L5to9, SDL_LMAX};
+  std::array<TH1F*, SDL_LMAX> ha_denSDL_pt;
+  std::array<TH1F*, SDL_LMAX> ha_numSDL_4of4_pt;
+  std::array<TH1F*, SDL_LMAX> ha_numSDL_3of4_any_pt;
+  std::array<std::array<int, 2>, SDL_LMAX> layersSDL {{ {5, 7}, {7, 9}, {5, 9} }};
+  for (int i = 0; i< SDL_LMAX; ++i){
+    std::string hn = Form("h_denSDL_%dto%d_pt", layersSDL[0][i], layersSDL[1][i]);
+    ha_denSDL_pt[i] = new TH1F(hn.c_str(), hn.c_str(), ptBins.size()-1, ptBins.data());
+
+    hn = Form("h_numSDL_4of4_%dto%d_pt", layersSDL[0][i], layersSDL[1][i]);
+    ha_numSDL_4of4_pt[i] = new TH1F(hn.c_str(), hn.c_str(), ptBins.size()-1, ptBins.data());
+    
+    hn = Form("h_numSDL_3of4_any_%dto%d_pt", layersSDL[0][i], layersSDL[1][i]);
+    ha_numSDL_3of4_any_pt[i] = new TH1F(hn.c_str(), hn.c_str(), ptBins.size()-1, ptBins.data());
+}
+  
   //  cout<<__LINE__<<endl;
   TObjArray *listOfFiles = chain->GetListOfFiles();
 
@@ -1484,16 +1510,22 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, bool drawPlots 
 	    float dBeta = betaIn - betaOut;
 
 	    if (lIn == 5 && lOut == 7){
-	      h_sdl5to7_dBeta_all->Fill(dBeta);
+	      h_sdl5to7_dBeta_NM1dBeta_all->Fill(dBeta);
+	      h2_sdl5to7_dBeta_betaIn_NM1dBeta_all->Fill(betaIn, dBeta);
+	      h_sdl5to7_dBeta_zoom_NM1dBeta_all->Fill(dBeta);
 	    } else if (lIn == 7 && lOut == 9){
-	      h_sdl7to9_dBeta_all->Fill(dBeta);
+	      h_sdl7to9_dBeta_NM1dBeta_all->Fill(dBeta);
+	      h2_sdl7to9_dBeta_betaIn_NM1dBeta_all->Fill(betaIn, dBeta);
+	      h_sdl7to9_dBeta_zoom_NM1dBeta_all->Fill(dBeta);
 	    }
 
 	    if (std::abs(dBeta) > dBetaCut) continue;
 	    if (lIn == 5 && lOut == 7){
-	      h_sdl5to7_dBeta_pass->Fill(dBeta);
+	      h_sdl5to7_dBeta_NM1dBeta_pass->Fill(dBeta);
+	      h_sdl5to7_dBeta_zoom_NM1dBeta_pass->Fill(dBeta);
 	    } else if (lIn == 7 && lOut == 9){
-	      h_sdl7to9_dBeta_pass->Fill(dBeta);
+	      h_sdl7to9_dBeta_NM1dBeta_pass->Fill(dBeta);
+	      h_sdl7to9_dBeta_zoom_NM1dBeta_pass->Fill(dBeta);
 	    }
 
 	    ndBeta++;
@@ -1526,26 +1558,119 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, bool drawPlots 
       sdLink(5, 7, mockLayer5to7SDLfwD2cm);
       sdLink(7, 9, mockLayer7to9SDLfwD2cm);
 
+      std::array<decltype(mockLayer5to7SDLfwD2cm) const*, SDL_LMAX> mockLayerSDLsD2cm {};
+      mockLayerSDLsD2cm[SDL_L5to7] = &mockLayer5to7SDLfwD2cm;
+      mockLayerSDLsD2cm[SDL_L7to9] = &mockLayer7to9SDLfwD2cm;
+      
 
       int nSim = sim_nPixel().size();
       for (int iSim = 0; iSim < nSim; ++iSim){
 	TVector3 p3(sim_px()[iSim], sim_py()[iSim], sim_pz()[iSim]);
-	if (p3.Pt() > 10 && std::abs(p3.Eta())< 1){
-	  std::cout<<"TP: "<<p3.Pt()<<" "<<p3.Eta()<<" "<<p3.Phi();
-	  int nPix = sim_nPixel()[iSim];
-	  for (int iPix = 0; iPix< nPix; ++iPix){
-	    
-	    int iipix = sim_pixelIdx()[iSim][iPix];
-	    
-	    int lay = pix_lay()[iipix];
-	    if (lay >= minLayer){
-	      std::cout<<" "<<lay<<" "<<iipix;
-	    }
-	  }
-	  std::cout<<std::endl;
-	}
+	bool debug = false;
+	auto tpPt = p3.Pt();
+	if (tpPt > 10 && std::abs(p3.Eta())< 1) debug = true;
+	if (debug) std::cout<<"TP: "<<p3.Pt()<<" "<<p3.Eta()<<" "<<p3.Phi();
 	
-      }
+	std::map<int, int> nHitsMap;
+	std::array<std::vector<SDLink>, SDL_LMAX > matchingSDLs_byHit3of4 {};
+	std::array<std::vector<SDLink>, SDL_LMAX > matchingSDLs_byHit4of4 {};
+	std::array<std::vector<int>, nLayers+1> simHits {};
+	
+	int nPix = sim_nPixel()[iSim];
+	for (int iPix = 0; iPix< nPix; ++iPix){
+	  
+	  int iipix = sim_pixelIdx()[iSim][iPix];
+	  int lay = pix_lay()[iipix];
+	  
+	  if (pix_isBarrel()[iipix]){
+	    if (lay >= minLayer){
+	      if (debug) std::cout<<" "<<lay<<" "<<iipix;
+	    }
+	    nHitsMap[lay]++;
+	    simHits[lay].push_back(iipix);
+	  }
+	}
+	if (debug) std::cout<<std::endl;
+
+	for (int iSDLL = 0; iSDLL< SDL_LMAX; ++iSDLL){
+	  if (nHitsMap[layersSDL[0][iSDLL]] > 0 && nHitsMap[layersSDL[1][iSDLL]] > 0){
+	    ha_denSDL_pt[iSDLL]->Fill(tpPt);
+
+	    if (mockLayerSDLsD2cm[iSDLL]){
+	      for (auto sdl : *mockLayerSDLsD2cm[iSDLL]){
+		if (! (sdl.lIn == layersSDL[0][iSDLL] && sdl.lOut == layersSDL[1][iSDLL] )) continue;
+		auto const& shIn = simHits[sdl.lIn];
+		auto const& shOut = simHits[sdl.lOut];
+
+		bool debugHitLevel = false;
+		bool hasIRL = std::find(shIn.begin(), shIn.end(), sdl.sdIn.mdRef.pixL) != shIn.end();
+		if (debug && debugHitLevel && hasIRL){
+		  std::cout<<"found matching hit for "<<sdl.lIn<<" IRL at "<<sdl.sdIn.mdRef.pixL<<std::endl;
+		}
+		bool hasIRU = std::find(shIn.begin(), shIn.end(), sdl.sdIn.mdRef.pixU) != shIn.end();
+		if (debug && debugHitLevel && hasIRU){
+		  std::cout<<"found matching hit for "<<sdl.lIn<<" IRU at "<<sdl.sdIn.mdRef.pixU<<std::endl;
+		}
+		bool hasIOL = std::find(shIn.begin(), shIn.end(), sdl.sdIn.mdOut.pixL) != shIn.end();
+		if (debug && debugHitLevel && hasIOL){
+		  std::cout<<"found matching hit for "<<sdl.lIn<<" IOL at "<<sdl.sdIn.mdOut.pixL<<std::endl;
+		}
+		bool hasIOU = std::find(shIn.begin(), shIn.end(), sdl.sdIn.mdOut.pixU) != shIn.end();
+		if (debug && debugHitLevel && hasIOU){
+		  std::cout<<"found matching hit for "<<sdl.lIn<<" IOU at "<<sdl.sdIn.mdOut.pixU<<std::endl;
+		}
+		int scoreIn = hasIRL + hasIRU + hasIOL + hasIOU;
+		int patternIn = hasIRL + (hasIRU<<1) + (hasIOL<<2) + (hasIOU<<3);
+		if (debug && scoreIn > 1){
+		  std::cout<<"Inner match: Have "<<scoreIn<<" matches with pattern "<<patternIn<<std::endl;
+		}
+
+		bool hasORL = std::find(shOut.begin(), shOut.end(), sdl.sdOut.mdRef.pixL) != shOut.end();
+		if (debug && debugHitLevel && hasORL){
+		  std::cout<<"found matching hit for "<<sdl.lOut<<" IRL at "<<sdl.sdOut.mdRef.pixL<<std::endl;
+		}
+		bool hasORU = std::find(shOut.begin(), shOut.end(), sdl.sdOut.mdRef.pixU) != shOut.end();
+		if (debug && debugHitLevel && hasORU){
+		  std::cout<<"found matching hit for "<<sdl.lOut<<" IRU at "<<sdl.sdOut.mdRef.pixU<<std::endl;
+		}
+		bool hasOOL = std::find(shOut.begin(), shOut.end(), sdl.sdOut.mdOut.pixL) != shOut.end();
+		if (debug && debugHitLevel && hasOOL){
+		  std::cout<<"found matching hit for "<<sdl.lOut<<" IOL at "<<sdl.sdOut.mdOut.pixL<<std::endl;
+		}
+		bool hasOOU = std::find(shOut.begin(), shOut.end(), sdl.sdOut.mdOut.pixU) != shOut.end();
+		if (debug && debugHitLevel && hasOOU){
+		  std::cout<<"found matching hit for "<<sdl.lOut<<" IOU at "<<sdl.sdOut.mdOut.pixU<<std::endl;
+		}
+		int scoreOut = hasORL + hasORU + hasOOL + hasOOU;
+		int patternOut = hasORL + (hasORU<<1) + (hasOOL<<2) + (hasOOU<<3);
+		if (debug && scoreOut > 1){
+		  std::cout<<"Outer match: Have "<<scoreOut<<" matches with pattern "<<patternOut<<std::endl;
+		}
+
+		if (scoreIn >=3 && scoreOut>= 3){
+		  matchingSDLs_byHit3of4[iSDLL].push_back(sdl);
+		  if (scoreIn >=4 && scoreOut>= 4){
+		    matchingSDLs_byHit4of4[iSDLL].push_back(sdl);
+		  }
+		}
+	      }//for (auto sdl : mockLayerSDLsD2cm[iSDLL]){
+	    }//	if (mockLayerSDLsD2cm[iSDLL]){
+
+	    //matching is done: fill numerators
+	    if (! matchingSDLs_byHit3of4[iSDLL].empty()){
+	      ha_numSDL_3of4_any_pt[iSDLL]->Fill(tpPt);
+	      if (debug) std::cout<<"\t have 3/4 match "<<std::endl;
+	    }
+	    if (! matchingSDLs_byHit4of4[iSDLL].empty()){
+	      ha_numSDL_4of4_pt[iSDLL]->Fill(tpPt);
+	      if (debug) std::cout<<"\t have 4/4 match "<<std::endl;
+	    }
+	    
+	  }// TP has hits in SDL layers	 	  
+	}//for (int iSDLL = 0; iSDLL< SDL_LMAX; ++iSDLL){
+      }//TPs
+	
+      
       
       //link the links to TrackLinks
       std::vector<TrackLink> tracks;
@@ -1689,8 +1814,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, bool drawPlots 
     }//nLayers
 
     {
-      auto h_all = h_sdl5to7_dBeta_all;
-      auto h_pass = h_sdl5to7_dBeta_pass;
+      auto h_all = h_sdl5to7_dBeta_NM1dBeta_all;
+      auto h_pass = h_sdl5to7_dBeta_NM1dBeta_pass;
       auto cn = h_all->GetTitle();
       TCanvas* cv = new TCanvas(cn, cn, 600, 600);
       cv->cd();
@@ -1702,11 +1827,11 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, bool drawPlots 
       h_all->SetStats(0);
       h_all->Draw();
       h_pass->Draw("same");
-      gPad->SaveAs("h_sdl5to7_dBeta_all_vs_pass.png");
+      gPad->SaveAs("h_sdl5to7_dBeta_NM1dBeta_all_vs_pass.png");
     }
     {
-      auto h_all = h_sdl7to9_dBeta_all;
-      auto h_pass = h_sdl7to9_dBeta_pass;
+      auto h_all = h_sdl7to9_dBeta_NM1dBeta_all;
+      auto h_pass = h_sdl7to9_dBeta_NM1dBeta_pass;
       auto cn = h_all->GetTitle();
       TCanvas* cv = new TCanvas(cn, cn, 600, 600);
       cv->cd();
@@ -1718,7 +1843,67 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, bool drawPlots 
       h_all->SetStats(0);
       h_all->Draw();
       h_pass->Draw("same");
-      gPad->SaveAs("h_sdl7to9_dBeta_all_vs_pass.png");
+      gPad->SaveAs("h_sdl7to9_dBeta_NM1dBeta_all_vs_pass.png");
+    }
+    {
+      auto h_all = h_sdl5to7_dBeta_zoom_NM1dBeta_all;
+      auto h_pass = h_sdl5to7_dBeta_zoom_NM1dBeta_pass;
+      auto cn = h_all->GetTitle();
+      TCanvas* cv = new TCanvas(cn, cn, 600, 600);
+      cv->cd();
+
+      h_all->SetLineWidth(2);
+      h_all->SetMinimum(0);
+      h_pass->SetLineWidth(2);
+      h_pass->SetLineColor(2);
+
+      h_all->SetStats(0);
+      h_all->Draw();
+      h_pass->Draw("same");
+      gPad->SaveAs("h_sdl5to7_dBeta_zoom_NM1dBeta_all_vs_pass.png");
+    }
+    {
+      auto h_all = h_sdl7to9_dBeta_zoom_NM1dBeta_all;
+      auto h_pass = h_sdl7to9_dBeta_zoom_NM1dBeta_pass;
+      auto cn = h_all->GetTitle();
+      TCanvas* cv = new TCanvas(cn, cn, 600, 600);
+      cv->cd();
+
+      h_all->SetLineWidth(2);
+      h_all->SetMinimum(0);
+      h_pass->SetLineWidth(2);
+      h_pass->SetLineColor(2);
+
+      h_all->SetStats(0);
+      h_all->Draw();
+      h_pass->Draw("same");
+      gPad->SaveAs("h_sdl7to9_dBeta_zoom_NM1dBeta_all_vs_pass.png");
+    }
+    {
+      auto h2 = h2_sdl5to7_dBeta_betaIn_NM1dBeta_all;
+      auto cn = h2->GetTitle();
+      TCanvas* cv = new TCanvas(cn, cn, 600, 600);
+      cv->cd();
+      gPad->SetRightMargin(gPad->GetRightMargin()*1.1);
+      h2->SetStats(0);
+      h2->Draw("colz");
+      gPad->SetGridx();
+      gPad->SetLogx(0);
+      gPad->SetLogz();
+      gPad->SaveAs("h2_sdl5to7_dBeta_betaIn_NM1dBeta_all.png");
+    }
+    {
+      auto h2 = h2_sdl7to9_dBeta_betaIn_NM1dBeta_all;
+      auto cn = h2->GetTitle();
+      TCanvas* cv = new TCanvas(cn, cn, 600, 600);
+      cv->cd();
+      gPad->SetRightMargin(gPad->GetRightMargin()*1.1);
+      h2->SetStats(0);
+      h2->Draw("colz");
+      gPad->SetGridx();
+      gPad->SetLogx(0);
+      gPad->SetLogz();
+      gPad->SaveAs("h2_sdl7to9_dBeta_betaIn_NM1dBeta_all.png");
     }
   }//if drawPlots
   
