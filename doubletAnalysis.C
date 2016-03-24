@@ -377,6 +377,35 @@ struct MDStats {
   int pdgId;
 };
 
+struct PixelHit {
+  PixelHit(int i):
+    r3s(pix_xsim()[i], pix_ysim()[i], pix_zsim()[i]),
+    p3s(pix_pxsim()[i], pix_pysim()[i], pix_pzsim()[i]),
+    ind(i),
+    lay(pix_lay()[i]),
+    pdgId(pix_particle()[i]),
+    process(pix_process()[i]),
+    bx(pix_bunchXing()[i]),
+    evt(pix_event()[i]),
+    isBarrel(pix_isBarrel()[i])
+  {}
+  TVector3 r3s;
+  TVector3 p3s;
+  int ind;
+  int lay;
+  int pdgId;
+  int process;
+  int bx;
+  int evt;
+  bool isBarrel;
+  void print(const std::string& pfx){
+    std::cout<<pfx<<" "<<ind<<" L"<<lay<<(isBarrel? "b ": "e ")<<evt<<":"<<bx<<" "<<pdgId<<":"<<process
+	     <<" ("<<r3s.Pt()<<", "<<r3s.Eta()<<","<<r3s.Phi()<<") "
+	     <<" ("<<p3s.Pt()<<", "<<p3s.Eta()<<","<<p3s.Phi()<<") "
+	     <<std::endl;
+  }
+};
+
 void fillLayerMD_pt(HistoSet1D& layerMD, double pt, const MDStats& md){
   layerMD.den->Fill(pt);
   if (md.zFiducial){
@@ -1194,13 +1223,13 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, bool drawPlots 
   std::array<TH1F*, SDL_LMAX> ha_numSDL_3of4_any_pt;
   std::array<std::array<int, 2>, SDL_LMAX> layersSDL {{ {5, 7}, {7, 9}, {5, 9} }};
   for (int i = 0; i< SDL_LMAX; ++i){
-    std::string hn = Form("h_denSDL_%dto%d_pt", layersSDL[0][i], layersSDL[1][i]);
+    std::string hn = Form("h_denSDL_%dto%d_pt", layersSDL[i][0], layersSDL[i][1]);
     ha_denSDL_pt[i] = new TH1F(hn.c_str(), hn.c_str(), ptBins.size()-1, ptBins.data());
 
-    hn = Form("h_numSDL_4of4_%dto%d_pt", layersSDL[0][i], layersSDL[1][i]);
+    hn = Form("h_numSDL_4of4_%dto%d_pt", layersSDL[i][0], layersSDL[i][1]);
     ha_numSDL_4of4_pt[i] = new TH1F(hn.c_str(), hn.c_str(), ptBins.size()-1, ptBins.data());
     
-    hn = Form("h_numSDL_3of4_any_%dto%d_pt", layersSDL[0][i], layersSDL[1][i]);
+    hn = Form("h_numSDL_3of4_any_%dto%d_pt", layersSDL[i][0], layersSDL[i][1]);
     ha_numSDL_3of4_any_pt[i] = new TH1F(hn.c_str(), hn.c_str(), ptBins.size()-1, ptBins.data());
 }
   
@@ -1249,6 +1278,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, bool drawPlots 
       
       std::cout<<"Load hits "<<std::endl;
       std::array<std::set<int>, nLayers+1> simIdxDeltaInLayer;
+      std::array<std::set<int>, nLayers+1> simIdxPositronLowPInLayer;
       std::array<std::set<int>, nLayers+1> simIdxInLayer;
       auto nPix = pix_isBarrel().size();
       for (auto ipix = 0U; ipix < nPix; ++ipix){
@@ -1257,7 +1287,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, bool drawPlots 
 	if (lay < 5 ) continue;
 
 	int iid = pix_detId()[ipix];
-	if ((iid & 0x4)!= 4) continue; 
+	//Too restrictive for reverse TP matching??//	if ((iid & 0x4)!= 4) continue; 
 
 	TVector3 r3Sim(pix_xsim()[ipix], pix_ysim()[ipix], pix_zsim()[ipix]);
 	if (r3Sim.x() == 0 && r3Sim.y() == 0) continue; //use only hits with sim info
@@ -1277,6 +1307,11 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, bool drawPlots 
 	  else {
 	    simIdxDeltaInLayer[lay].insert(iSimIdx);
 	  }
+	} else if (iParticle == 11 && ps < 0.1) {
+	  if (simIdxPositronLowPInLayer[lay].find(iSimIdx) != simIdxPositronLowPInLayer[lay].end()) continue; //only one hit per layer per track
+	  else {
+	    simIdxPositronLowPInLayer[lay].insert(iSimIdx);
+	  }	  
 	} else {
 	  if (simIdxInLayer[lay].find(iSimIdx) != simIdxInLayer[lay].end()) continue; //only one hit per layer per track
 	  else {
@@ -1580,71 +1615,131 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, bool drawPlots 
 	for (int iPix = 0; iPix< nPix; ++iPix){
 	  
 	  int iipix = sim_pixelIdx()[iSim][iPix];
-	  int lay = pix_lay()[iipix];
+	  PixelHit pixH(iipix);
+	  int lay = pixH.lay;
 	  
-	  if (pix_isBarrel()[iipix]){
+	  if (pixH.isBarrel){
 	    if (lay >= minLayer){
 	      if (debug) std::cout<<" "<<lay<<" "<<iipix;
 	    }
-	    nHitsMap[lay]++;
+	    if (pixH.p3s.Pt()>0.1*tpPt) nHitsMap[lay]++;
 	    simHits[lay].push_back(iipix);
 	  }
 	}
 	if (debug) std::cout<<std::endl;
 
 	for (int iSDLL = 0; iSDLL< SDL_LMAX; ++iSDLL){
-	  if (nHitsMap[layersSDL[0][iSDLL]] > 0 && nHitsMap[layersSDL[1][iSDLL]] > 0){
+	  int lIn = layersSDL[iSDLL][0];
+	  int lOut = layersSDL[iSDLL][1];
+	  
+	  if (nHitsMap[lIn] > 0 && nHitsMap[lOut] > 0){
 	    ha_denSDL_pt[iSDLL]->Fill(tpPt);
-
+	    bool debugHitLevel = false;
+	    if (debug){
+	      std::cout<<"\tTP is good for denSDL in L"<<lIn<<"-L"<<lOut<<std::endl;
+	      if (debugHitLevel){
+		for (auto i : simHits[lIn]){ auto ph = PixelHit(i); ph.print("\t");}
+		for (auto i : simHits[lOut]){ auto ph = PixelHit(i); ph.print("\t");}
+	      }
+	    }
+	    for (auto sd : mockLayerSDfwD2cm[lIn]){
+	      auto const& shIn = simHits[lIn];
+	      
+	      bool hasIRL = std::find(shIn.begin(), shIn.end(), sd.mdRef.pixL) != shIn.end();
+	      if (debug && debugHitLevel && hasIRL){
+		std::cout<<"SDI: found matching hit for "<<lIn<<" IRL at "<<sd.mdRef.pixL<<std::endl;
+	      }
+	      bool hasIRU = std::find(shIn.begin(), shIn.end(), sd.mdRef.pixU) != shIn.end();
+	      if (debug && debugHitLevel && hasIRU){
+		std::cout<<"SDI: found matching hit for "<<lIn<<" IRU at "<<sd.mdRef.pixU<<std::endl;
+	      }
+	      bool hasIOL = std::find(shIn.begin(), shIn.end(), sd.mdOut.pixL) != shIn.end();
+	      if (debug && debugHitLevel && hasIOL){
+		std::cout<<"SDI: found matching hit for "<<lIn<<" IOL at "<<sd.mdOut.pixL<<std::endl;
+	      }
+	      bool hasIOU = std::find(shIn.begin(), shIn.end(), sd.mdOut.pixU) != shIn.end();
+	      if (debug && debugHitLevel && hasIOU){
+		std::cout<<"SDI: found matching hit for "<<lIn<<" IOU at "<<sd.mdOut.pixU<<std::endl;
+	      }
+	      int scoreIn = hasIRL + hasIRU + hasIOL + hasIOU;
+	      int patternIn = hasIRL + (hasIRU<<1) + (hasIOL<<2) + (hasIOU<<3);
+	      if (debug && scoreIn > 1){
+		std::cout<<"SDI: match on L"<< lIn <<": Have "<<scoreIn<<" matches with pattern "<<patternIn<<std::endl;
+	      }
+	    }//SD matching
+	    for (auto sd : mockLayerSDfwD2cm[lOut]){
+	      auto const& shOut = simHits[lOut];
+	      
+	      bool hasIRL = std::find(shOut.begin(), shOut.end(), sd.mdRef.pixL) != shOut.end();
+	      if (debug && debugHitLevel && hasIRL){
+		std::cout<<"SDO: found matching hit for "<<lOut<<" IRL at "<<sd.mdRef.pixL<<std::endl;
+	      }
+	      bool hasIRU = std::find(shOut.begin(), shOut.end(), sd.mdRef.pixU) != shOut.end();
+	      if (debug && debugHitLevel && hasIRU){
+		std::cout<<"SDO: found matching hit for "<<lOut<<" IRU at "<<sd.mdRef.pixU<<std::endl;
+	      }
+	      bool hasIOL = std::find(shOut.begin(), shOut.end(), sd.mdOut.pixL) != shOut.end();
+	      if (debug && debugHitLevel && hasIOL){
+		std::cout<<"SDO: found matching hit for "<<lOut<<" IOL at "<<sd.mdOut.pixL<<std::endl;
+	      }
+	      bool hasIOU = std::find(shOut.begin(), shOut.end(), sd.mdOut.pixU) != shOut.end();
+	      if (debug && debugHitLevel && hasIOU){
+		std::cout<<"SDO: found matching hit for "<<lOut<<" IOU at "<<sd.mdOut.pixU<<std::endl;
+	      }
+	      int scoreOut = hasIRL + hasIRU + hasIOL + hasIOU;
+	      int patternOut = hasIRL + (hasIRU<<1) + (hasIOL<<2) + (hasIOU<<3);
+	      if (debug && scoreOut > 1){
+		std::cout<<"SDO: match on L"<< lOut <<": Have "<<scoreOut<<" matches with pattern "<<patternOut<<std::endl;
+	      }
+	    }//SD matching
 	    if (mockLayerSDLsD2cm[iSDLL]){
 	      for (auto sdl : *mockLayerSDLsD2cm[iSDLL]){
-		if (! (sdl.lIn == layersSDL[0][iSDLL] && sdl.lOut == layersSDL[1][iSDLL] )) continue;
+		if (! (sdl.lIn == lIn && sdl.lOut == lOut )) continue;
 		auto const& shIn = simHits[sdl.lIn];
 		auto const& shOut = simHits[sdl.lOut];
 
-		bool debugHitLevel = false;
 		bool hasIRL = std::find(shIn.begin(), shIn.end(), sdl.sdIn.mdRef.pixL) != shIn.end();
 		if (debug && debugHitLevel && hasIRL){
-		  std::cout<<"found matching hit for "<<sdl.lIn<<" IRL at "<<sdl.sdIn.mdRef.pixL<<std::endl;
+		  std::cout<<"SDL: found matching hit for "<<sdl.lIn<<" IRL at "<<sdl.sdIn.mdRef.pixL<<std::endl;
 		}
 		bool hasIRU = std::find(shIn.begin(), shIn.end(), sdl.sdIn.mdRef.pixU) != shIn.end();
 		if (debug && debugHitLevel && hasIRU){
-		  std::cout<<"found matching hit for "<<sdl.lIn<<" IRU at "<<sdl.sdIn.mdRef.pixU<<std::endl;
+		  std::cout<<"SDL: found matching hit for "<<sdl.lIn<<" IRU at "<<sdl.sdIn.mdRef.pixU<<std::endl;
 		}
 		bool hasIOL = std::find(shIn.begin(), shIn.end(), sdl.sdIn.mdOut.pixL) != shIn.end();
 		if (debug && debugHitLevel && hasIOL){
-		  std::cout<<"found matching hit for "<<sdl.lIn<<" IOL at "<<sdl.sdIn.mdOut.pixL<<std::endl;
+		  std::cout<<"SDL: found matching hit for "<<sdl.lIn<<" IOL at "<<sdl.sdIn.mdOut.pixL<<std::endl;
 		}
 		bool hasIOU = std::find(shIn.begin(), shIn.end(), sdl.sdIn.mdOut.pixU) != shIn.end();
 		if (debug && debugHitLevel && hasIOU){
-		  std::cout<<"found matching hit for "<<sdl.lIn<<" IOU at "<<sdl.sdIn.mdOut.pixU<<std::endl;
+		  std::cout<<"SDL: found matching hit for "<<sdl.lIn<<" IOU at "<<sdl.sdIn.mdOut.pixU<<std::endl;
 		}
 		int scoreIn = hasIRL + hasIRU + hasIOL + hasIOU;
 		int patternIn = hasIRL + (hasIRU<<1) + (hasIOL<<2) + (hasIOU<<3);
 		if (debug && scoreIn > 1){
-		  std::cout<<"Inner match: Have "<<scoreIn<<" matches with pattern "<<patternIn<<std::endl;
+		  std::cout<<"Inner match on L"<< sdl.lIn <<": Have "<<scoreIn<<" matches with pattern "<<patternIn<<std::endl;
 		}
 
 		bool hasORL = std::find(shOut.begin(), shOut.end(), sdl.sdOut.mdRef.pixL) != shOut.end();
 		if (debug && debugHitLevel && hasORL){
-		  std::cout<<"found matching hit for "<<sdl.lOut<<" IRL at "<<sdl.sdOut.mdRef.pixL<<std::endl;
+		  std::cout<<"SDL: found matching hit for "<<sdl.lOut<<" IRL at "<<sdl.sdOut.mdRef.pixL<<std::endl;
 		}
 		bool hasORU = std::find(shOut.begin(), shOut.end(), sdl.sdOut.mdRef.pixU) != shOut.end();
 		if (debug && debugHitLevel && hasORU){
-		  std::cout<<"found matching hit for "<<sdl.lOut<<" IRU at "<<sdl.sdOut.mdRef.pixU<<std::endl;
+		  std::cout<<"SDL: found matching hit for "<<sdl.lOut<<" IRU at "<<sdl.sdOut.mdRef.pixU<<std::endl;
 		}
 		bool hasOOL = std::find(shOut.begin(), shOut.end(), sdl.sdOut.mdOut.pixL) != shOut.end();
 		if (debug && debugHitLevel && hasOOL){
-		  std::cout<<"found matching hit for "<<sdl.lOut<<" IOL at "<<sdl.sdOut.mdOut.pixL<<std::endl;
+		  std::cout<<"SDL: found matching hit for "<<sdl.lOut<<" IOL at "<<sdl.sdOut.mdOut.pixL<<std::endl;
 		}
 		bool hasOOU = std::find(shOut.begin(), shOut.end(), sdl.sdOut.mdOut.pixU) != shOut.end();
 		if (debug && debugHitLevel && hasOOU){
-		  std::cout<<"found matching hit for "<<sdl.lOut<<" IOU at "<<sdl.sdOut.mdOut.pixU<<std::endl;
+		  std::cout<<"SDL: found matching hit for "<<sdl.lOut<<" IOU at "<<sdl.sdOut.mdOut.pixU<<std::endl;
 		}
 		int scoreOut = hasORL + hasORU + hasOOL + hasOOU;
 		int patternOut = hasORL + (hasORU<<1) + (hasOOL<<2) + (hasOOU<<3);
 		if (debug && scoreOut > 1){
-		  std::cout<<"Outer match: Have "<<scoreOut<<" matches with pattern "<<patternOut<<std::endl;
+		  std::cout<<"Outer match on L"<< sdl.lOut<<": Have "<<scoreOut<<" matches with pattern "<<patternOut<<std::endl;
 		}
 
 		if (scoreIn >=3 && scoreOut>= 3){
@@ -1656,16 +1751,24 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, bool drawPlots 
 	      }//for (auto sdl : mockLayerSDLsD2cm[iSDLL]){
 	    }//	if (mockLayerSDLsD2cm[iSDLL]){
 
+	    bool hasMatch = false;
 	    //matching is done: fill numerators
 	    if (! matchingSDLs_byHit3of4[iSDLL].empty()){
 	      ha_numSDL_3of4_any_pt[iSDLL]->Fill(tpPt);
 	      if (debug) std::cout<<"\t have 3/4 match "<<std::endl;
+	      hasMatch = true;
 	    }
 	    if (! matchingSDLs_byHit4of4[iSDLL].empty()){
 	      ha_numSDL_4of4_pt[iSDLL]->Fill(tpPt);
 	      if (debug) std::cout<<"\t have 4/4 match "<<std::endl;
+	      hasMatch = true;
 	    }
 	    
+	    if (debug && ! hasMatch && iSDLL != SDL_L5to9){
+	      for (auto i : simHits[lIn]){ auto ph = PixelHit(i); ph.print("\tNM for: ");}
+	      for (auto i : simHits[lOut]){ auto ph = PixelHit(i); ph.print("\tNM for: ");}
+	    }
+
 	  }// TP has hits in SDL layers	 	  
 	}//for (int iSDLL = 0; iSDLL< SDL_LMAX; ++iSDLL){
       }//TPs
