@@ -1597,7 +1597,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, bool drawPlots 
 	    
 	    //now the actual segment linking magic
 	    float betaAv = 0.5*(betaIn + betaOut);
-	    float dr = (sdOut.r3 - sdIn.r3).Mag();
+	    float dr = (sdOut.r3 - sdIn.r3).Perp();
 	    //pt*175.67/2. = R
 	    //R*sin(betaAv) = pt*175.67/2*sin(betaAv) = dr/2 => pt = dr/175.67/sin(betaAv);
 	    float pt_beta = dr/175.67/sin(betaAv);
@@ -1899,7 +1899,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, bool drawPlots 
 
 		//now the actual segment linking magic
 		float betaAv = 0.5*(betaIn + betaOut);
-		float dr = (sdOut.r3 - sdIn.r3).Mag();
+		float dr = (sdOut.r3 - sdIn.r3).Perp();
 		//pt*175.67/2. = R
 		//R*sin(betaAv) = pt*175.67/2*sin(betaAv) = dr/2 => pt = dr/175.67/sin(betaAv);
 		float pt_beta = dr/175.67/sin(betaAv);
