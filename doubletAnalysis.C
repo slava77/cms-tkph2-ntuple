@@ -1225,6 +1225,14 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, bool drawPlots 
   std::array<TH1F*, SDL_LMAX> ha_num4MD_pt;
   std::array<TH1F*, SDL_LMAX> ha_num2SD_4of4_pt;
   std::array<TH1F*, SDL_LMAX> ha_num2SD_3of4_any_pt;
+
+  std::array<TH1F*, SDL_LMAX> ha_num2SD_w0_4of4_pt;//see SDLSelectFlags definitions
+  std::array<TH1F*, SDL_LMAX> ha_num2SD_w01_4of4_pt;//see SDLSelectFlags definitions
+  std::array<TH1F*, SDL_LMAX> ha_num2SD_w012_4of4_pt;//see SDLSelectFlags definitions
+  std::array<TH1F*, SDL_LMAX> ha_num2SD_w0123_4of4_pt;//see SDLSelectFlags definitions
+  std::array<TH1F*, SDL_LMAX> ha_num2SD_w01234_4of4_pt;//see SDLSelectFlags definitions
+  std::array<TH1F*, SDL_LMAX> ha_num2SD_w012345_4of4_pt;//see SDLSelectFlags definitions
+  
   std::array<TH1F*, SDL_LMAX> ha_numSDL_4of4_pt;
   std::array<TH1F*, SDL_LMAX> ha_numSDL_3of4_any_pt;
 
@@ -1253,6 +1261,19 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, bool drawPlots 
     ha_num2SD_4of4_pt[i] = new TH1F(hn.c_str(), hn.c_str(), ptBins.size()-1, ptBins.data());    
     hn = Form("h_num2SD_3of4_any_%dto%d_pt", iMin, iMax);
     ha_num2SD_3of4_any_pt[i] = new TH1F(hn.c_str(), hn.c_str(), ptBins.size()-1, ptBins.data());
+
+    hn = Form("h_num2SD_w0_4of4_%dto%d_pt", iMin, iMax);
+    ha_num2SD_w0_4of4_pt[i] = new TH1F(hn.c_str(), hn.c_str(), ptBins.size()-1, ptBins.data());    
+    hn = Form("h_num2SD_w01_4of4_%dto%d_pt", iMin, iMax);
+    ha_num2SD_w01_4of4_pt[i] = new TH1F(hn.c_str(), hn.c_str(), ptBins.size()-1, ptBins.data());    
+    hn = Form("h_num2SD_w012_4of4_%dto%d_pt", iMin, iMax);
+    ha_num2SD_w012_4of4_pt[i] = new TH1F(hn.c_str(), hn.c_str(), ptBins.size()-1, ptBins.data());    
+    hn = Form("h_num2SD_w0123_4of4_%dto%d_pt", iMin, iMax);
+    ha_num2SD_w0123_4of4_pt[i] = new TH1F(hn.c_str(), hn.c_str(), ptBins.size()-1, ptBins.data());    
+    hn = Form("h_num2SD_w01234_4of4_%dto%d_pt", iMin, iMax);
+    ha_num2SD_w01234_4of4_pt[i] = new TH1F(hn.c_str(), hn.c_str(), ptBins.size()-1, ptBins.data());    
+    hn = Form("h_num2SD_w012345_4of4_%dto%d_pt", iMin, iMax);
+    ha_num2SD_w012345_4of4_pt[i] = new TH1F(hn.c_str(), hn.c_str(), ptBins.size()-1, ptBins.data());
 
     hn = Form("h_numSDL_4of4_%dto%d_pt", iMin, iMax);
     ha_numSDL_4of4_pt[i] = new TH1F(hn.c_str(), hn.c_str(), ptBins.size()-1, ptBins.data());    
@@ -1662,8 +1683,10 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, bool drawPlots 
 	    if (lay >= minLayer){
 	      if (debug) std::cout<<" "<<lay<<" "<<iipix;
 	    }
-	    if (pixH.p3s.Pt()>0.1*tpPt) nHitsMap[lay]++;
-	    simHits[lay].push_back(iipix);
+	    if (pixH.p3s.Pt()>0.8*tpPt){
+	      nHitsMap[lay]++;
+	      simHits[lay].push_back(iipix);
+	    }
 	  }
 	}
 	if (debug) std::cout<<std::endl;
@@ -1750,6 +1773,9 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, bool drawPlots 
 	      ha_num4MD_pt[iSDLL]->Fill(tpPt);
 	    }
 
+	    std::vector<SuperDoublet> vSDIn_4of4; vSDIn_4of4.reserve(2);
+	    std::vector<SuperDoublet> vSDOut_4of4; vSDOut_4of4.reserve(2);
+	    
 	    //match inner and outer layer super-doublets
 	    for (auto sd : mockLayerSDfwD2cm[lIn]){
 	      auto const& shIn = simHits[lIn];
@@ -1776,7 +1802,10 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, bool drawPlots 
 		std::cout<<"SDI: match on L"<< lIn <<": Have "<<scoreIn<<" matches with pattern "<<patternIn<<std::endl;
 	      }
 	      if (scoreIn >= 3) hasSDIn_3of4 = true;
-	      if (scoreIn >= 4) hasSDIn_4of4 = true;
+	      if (scoreIn >= 4){
+		hasSDIn_4of4 = true;
+		vSDIn_4of4.push_back(sd);
+	      }
 	    }//SD matching Inner
 	    
 	    for (auto sd : mockLayerSDfwD2cm[lOut]){
@@ -1804,7 +1833,10 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, bool drawPlots 
 		std::cout<<"SDO: match on L"<< lOut <<": Have "<<scoreOut<<" matches with pattern "<<patternOut<<std::endl;
 	      }
 	      if (scoreOut >= 3) hasSDOut_3of4 = true;
-	      if (scoreOut >= 4) hasSDOut_4of4 = true;
+	      if (scoreOut >= 4){
+		hasSDOut_4of4 = true;
+		vSDOut_4of4.push_back(sd);
+	      }
 	    }//SD matching Outer
 	    if (hasSDIn_3of4 && hasSDOut_3of4){
 	      ha_num2SD_3of4_any_pt[iSDLL]->Fill(tpPt);
@@ -1812,6 +1844,110 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, bool drawPlots 
 	    if (hasSDIn_4of4 && hasSDOut_4of4){
 	      ha_num2SD_4of4_pt[iSDLL]->Fill(tpPt);
 	    }
+
+	    enum SDLSelectFlags { deltaZ = 0, deltaZPointed, slope, dAlphaIn, dAlphaOut, dBeta};
+	    std::vector<std::pair<SDLink, int> > vSDLwInfo_4of4;
+	    for (auto const& sdIn : vSDIn_4of4){
+	      float rtIn = sdIn.r3.Pt();
+	      float zIn = sdIn.r3.z();
+	      float dSDIn = sdIn.mdOut.r3.Pt() - sdIn.mdRef.r3.Pt();
+	      float dzSDIn = sdIn.mdOut.r3.z() - sdIn.mdRef.r3.z();
+	      for (auto const& sdOut : vSDOut_4of4){
+		int sdlFlag = 0;
+		
+		float rtOut = sdOut.r3.Pt();
+		float zOut = sdOut.r3.z();
+		//apply some loose Z compatibility
+		//FIXME: refine using inner layer directions (can prune later)
+		float zGeom = lIn >= 5 && lIn <= 7 && lOut >= 5 && lOut <= 7 ? 0.3 : 10;//twice the macro-pixel or strip size
+		float zLo = rtOut/rtIn*(zIn - 15.) - zGeom; //15 for the luminous ; zGeom for z geom unit size
+		float zHi = rtOut/rtIn*(zIn + 15.) + zGeom;
+
+		if (zOut > zLo && zOut < zHi) sdlFlag |= 1 << SDLSelectFlags::deltaZ;
+
+		if (lIn>=5 && lIn <=6){//can point to the z pos in lOut
+		  float zLo = zIn + (dzSDIn - zGeom*sqrt(2.))/dSDIn*(rtOut - rtIn) - zGeom;
+		  float zHi = zIn + (dzSDIn + zGeom*sqrt(2.))/dSDIn*(rtOut - rtIn) + zGeom;
+		  if (zOut > zLo && zOut < zHi) sdlFlag |= 1 << SDLSelectFlags::deltaZPointed;
+		} else {
+		  //the flag is set to pass here
+		  sdlFlag |= 1 << SDLSelectFlags::deltaZPointed;
+		}
+
+		auto midR3 = 0.5*(sdIn.r3 + sdOut.r3);
+		double dPhi = midR3.DeltaPhi(sdOut.r3 - sdIn.r3);
+		double rt = 0.5*(sdIn.r3.Pt() + sdOut.r3.Pt());
+		const float ptCut = 1.0;
+		const float sdlSlope = rt/175.67/ptCut;
+		const float sdlThetaMulsF = 0.015*sqrt(0.2);
+		const float sdlMuls = sdlThetaMulsF*3./ptCut*4;//will need a better guess than x4?
+		const float sdlPVoff = 0.1/rt;
+		const float sdlCut = sdlSlope + sqrt(sdlMuls*sdlMuls + sdlPVoff*sdlPVoff);
+	    
+		if (std::abs(dPhi) < sdlCut ) sdlFlag |= 1 << SDLSelectFlags::slope;
+
+		double betaIn = sdIn.alpha - sdIn.r3.DeltaPhi(sdOut.r3 - sdIn.r3);
+		double betaOut = - sdOut.alpha + sdOut.r3.DeltaPhi(sdOut.r3 - sdIn.r3); //to match sign for correct match
+		
+		//loose angle compatibility
+		float dAlpha_Bfield = (rtOut - rtIn)/175.67/ptCut;
+		float dSDOut = sdOut.mdOut.r3.Pt() - sdOut.mdRef.r3.Pt();	
+		float dAlpha_res = 0.02/std::min(dSDIn, dSDOut);//2-strip difference; use the smallest SD separation
+		float dAlpha_compat = dAlpha_Bfield + dAlpha_res;
+		if (std::abs(sdIn.alpha- dPhi) < dAlpha_compat) sdlFlag |=  1 << SDLSelectFlags::dAlphaIn;
+		if (std::abs(sdOut.alpha- dPhi) < dAlpha_compat) sdlFlag |= 1 << SDLSelectFlags::dAlphaOut;
+
+		//now the actual segment linking magic
+		float betaAv = 0.5*(betaIn + betaOut);
+		float dr = (sdOut.r3 - sdIn.r3).Mag();
+		//pt*175.67/2. = R
+		//R*sin(betaAv) = pt*175.67/2*sin(betaAv) = dr/2 => pt = dr/175.67/sin(betaAv);
+		float pt_beta = dr/175.67/sin(betaAv);
+		float dBetaRes = dAlpha_res;
+		float dBetaMuls = sdlThetaMulsF*3./std::min(pt_beta, 7.0f);//need to confirm the range-out value of 7 GeV
+		float dBetaCut = sqrt(dBetaRes*dBetaRes*2.0 + dBetaMuls*dBetaMuls);
+		float dBeta = betaIn - betaOut;
+
+		if (std::abs(dBeta) < dBetaCut) sdlFlag |= 1 << SDLSelectFlags::dBeta;
+
+		//		std::cout<<"TP with pt "<<tpPt<<" has matching SDL flags "<<sdlFlag<<std::endl;
+		SDLink sdl;
+		sdl.sdIn = sdIn;
+		sdl.sdOut = sdOut;
+		sdl.lIn = lIn;
+		sdl.lOut = lOut;
+		sdl.alpha = dPhi;
+		sdl.betaIn = betaIn;
+		sdl.betaOut = betaOut;
+		sdl.pt = pt_beta;
+		vSDLwInfo_4of4.push_back({sdl, sdlFlag});
+	      }
+	    }
+
+	    const int m_0 = 1;
+	    const int m_01 = m_0 | (1 << 1);
+	    const int m_012 = m_01 | (1 << 2);
+	    const int m_0123 = m_012 | (1 << 3);
+	    const int m_01234 = m_0123 | (1 << 4);
+	    const int m_012345 = m_01234 | (1 << 5);
+
+	    bool h_0, h_01, h_012, h_0123, h_01234, h_012345;
+	    h_0 = h_01 = h_012 = h_0123 = h_01234 = h_012345 = false;
+	    for (auto const& sdlf : vSDLwInfo_4of4){
+	      if ((sdlf.second & m_0) == m_0 ) h_0 = true;
+	      if ((sdlf.second & m_01) == m_01 ) h_01 = true;
+	      if ((sdlf.second & m_012) == m_012 ) h_012 = true;
+	      if ((sdlf.second & m_0123) == m_0123 ) h_0123 = true;
+	      if ((sdlf.second & m_01234) == m_01234 ) h_01234 = true;
+	      if ((sdlf.second & m_012345) == m_012345 ) h_012345 = true;
+	    }
+
+	    if (h_0) ha_num2SD_w0_4of4_pt[iSDLL]->Fill(tpPt);
+	    if (h_01) ha_num2SD_w01_4of4_pt[iSDLL]->Fill(tpPt);
+	    if (h_012) ha_num2SD_w012_4of4_pt[iSDLL]->Fill(tpPt);
+	    if (h_0123) ha_num2SD_w0123_4of4_pt[iSDLL]->Fill(tpPt);
+	    if (h_01234) ha_num2SD_w01234_4of4_pt[iSDLL]->Fill(tpPt);
+	    if (h_012345) ha_num2SD_w012345_4of4_pt[iSDLL]->Fill(tpPt);
 	    
 	    if (mockLayerSDLsD2cm[iSDLL]){
 	      for (auto& sdl : *mockLayerSDLsD2cm[iSDLL]){
@@ -2057,6 +2193,18 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, bool drawPlots 
   std::array<TEfficiency*, SDL_LMAX> ha_effSDL_4of4_pt;
   std::array<TEfficiency*, SDL_LMAX> ha_effSDL_3of4_any_pt;
 
+  std::array<TEfficiency*, SDL_LMAX> ha_eff4MD_den8MH_pt;
+  std::array<TEfficiency*, SDL_LMAX> ha_eff2SD_den8MH_4of4_pt;
+  std::array<TEfficiency*, SDL_LMAX> ha_eff2SD_den8MH_3of4_any_pt;
+  std::array<TEfficiency*, SDL_LMAX> ha_eff2SD_w0_den8MH_4of4_pt;
+  std::array<TEfficiency*, SDL_LMAX> ha_eff2SD_w01_den8MH_4of4_pt;
+  std::array<TEfficiency*, SDL_LMAX> ha_eff2SD_w012_den8MH_4of4_pt;
+  std::array<TEfficiency*, SDL_LMAX> ha_eff2SD_w0123_den8MH_4of4_pt;
+  std::array<TEfficiency*, SDL_LMAX> ha_eff2SD_w01234_den8MH_4of4_pt;
+  std::array<TEfficiency*, SDL_LMAX> ha_eff2SD_w012345_den8MH_4of4_pt;
+  std::array<TEfficiency*, SDL_LMAX> ha_effSDL_den8MH_4of4_pt;
+  std::array<TEfficiency*, SDL_LMAX> ha_effSDL_den8MH_3of4_any_pt;
+
   std::array<TEfficiency*, SDL_LMAX> ha_fakeSDL_4of4_pt;
   std::array<TEfficiency*, SDL_LMAX> ha_fakeSDL_4of4_eta;
   for (int i = 0; i< SDL_LMAX; ++i){
@@ -2067,18 +2215,37 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, bool drawPlots 
 
     ha_eff4MD_pt[i] = new TEfficiency(*ha_num4MD_pt[i], *ha_denSDL_pt[i]);
     ha_eff4MD_pt[i]->SetTitle(Form("h_eff4MD_%dto%d_pt; p_{T} (GeV); Efficiency", iMin, iMax) );
-
     ha_eff2SD_4of4_pt[i] = new TEfficiency(*ha_num2SD_4of4_pt[i], *ha_denSDL_pt[i]);
     ha_eff2SD_4of4_pt[i]->SetTitle(Form("h_eff2SD_%dto%d_4of4_pt; p_{T} (GeV); Efficiency", iMin, iMax) );
-
     ha_eff2SD_3of4_any_pt[i] = new TEfficiency(*ha_num2SD_3of4_any_pt[i], *ha_denSDL_pt[i]);
     ha_eff2SD_3of4_any_pt[i]->SetTitle(Form("h_eff2SD_%dto%d_3of4_any_pt; p_{T} (GeV); Efficiency", iMin, iMax) );
-
     ha_effSDL_4of4_pt[i] = new TEfficiency(*ha_numSDL_4of4_pt[i], *ha_denSDL_pt[i]);
     ha_effSDL_4of4_pt[i]->SetTitle(Form("h_effSDL_%dto%d_4of4_pt; p_{T} (GeV); Efficiency", iMin, iMax) );
-
     ha_effSDL_3of4_any_pt[i] = new TEfficiency(*ha_numSDL_3of4_any_pt[i], *ha_denSDL_pt[i]);
     ha_effSDL_3of4_any_pt[i]->SetTitle(Form("h_effSDL_%dto%d_3of4_any_pt; p_{T} (GeV); Efficiency", iMin, iMax) );
+
+    ha_eff4MD_den8MH_pt[i] = new TEfficiency(*ha_num4MD_pt[i], *ha_num8MH_pt[i]);
+    ha_eff4MD_den8MH_pt[i]->SetTitle(Form("h_eff4MD_den8MH_%dto%d_pt; p_{T} (GeV); Efficiency", iMin, iMax) );
+    ha_eff2SD_den8MH_4of4_pt[i] = new TEfficiency(*ha_num2SD_4of4_pt[i], *ha_num8MH_pt[i]);
+    ha_eff2SD_den8MH_4of4_pt[i]->SetTitle(Form("h_eff2SD_den8MH_%dto%d_4of4_pt; p_{T} (GeV); Efficiency", iMin, iMax) );
+    ha_eff2SD_den8MH_3of4_any_pt[i] = new TEfficiency(*ha_num2SD_3of4_any_pt[i], *ha_num8MH_pt[i]);
+    ha_eff2SD_den8MH_3of4_any_pt[i]->SetTitle(Form("h_eff2SD_den8MH_%dto%d_3of4_any_pt; p_{T} (GeV); Efficiency", iMin, iMax) );
+    ha_eff2SD_w0_den8MH_4of4_pt[i] = new TEfficiency(*ha_num2SD_w0_4of4_pt[i], *ha_num8MH_pt[i]);
+    ha_eff2SD_w0_den8MH_4of4_pt[i]->SetTitle(Form("h_eff2SD_w0_den8MH_%dto%d_4of4_pt; p_{T} (GeV); Efficiency", iMin, iMax) );
+    ha_eff2SD_w01_den8MH_4of4_pt[i] = new TEfficiency(*ha_num2SD_w01_4of4_pt[i], *ha_num8MH_pt[i]);
+    ha_eff2SD_w01_den8MH_4of4_pt[i]->SetTitle(Form("h_eff2SD_w01_den8MH_%dto%d_4of4_pt; p_{T} (GeV); Efficiency", iMin, iMax) );
+    ha_eff2SD_w012_den8MH_4of4_pt[i] = new TEfficiency(*ha_num2SD_w012_4of4_pt[i], *ha_num8MH_pt[i]);
+    ha_eff2SD_w012_den8MH_4of4_pt[i]->SetTitle(Form("h_eff2SD_w012_den8MH_%dto%d_4of4_pt; p_{T} (GeV); Efficiency", iMin, iMax) );
+    ha_eff2SD_w0123_den8MH_4of4_pt[i] = new TEfficiency(*ha_num2SD_w0123_4of4_pt[i], *ha_num8MH_pt[i]);
+    ha_eff2SD_w0123_den8MH_4of4_pt[i]->SetTitle(Form("h_eff2SD_w0123_den8MH_%dto%d_4of4_pt; p_{T} (GeV); Efficiency", iMin, iMax) );
+    ha_eff2SD_w01234_den8MH_4of4_pt[i] = new TEfficiency(*ha_num2SD_w01234_4of4_pt[i], *ha_num8MH_pt[i]);
+    ha_eff2SD_w01234_den8MH_4of4_pt[i]->SetTitle(Form("h_eff2SD_w01234_den8MH_%dto%d_4of4_pt; p_{T} (GeV); Efficiency", iMin, iMax) );
+    ha_eff2SD_w012345_den8MH_4of4_pt[i] = new TEfficiency(*ha_num2SD_w012345_4of4_pt[i], *ha_num8MH_pt[i]);
+    ha_eff2SD_w012345_den8MH_4of4_pt[i]->SetTitle(Form("h_eff2SD_w012345_den8MH_%dto%d_4of4_pt; p_{T} (GeV); Efficiency", iMin, iMax) );
+    ha_effSDL_den8MH_4of4_pt[i] = new TEfficiency(*ha_numSDL_4of4_pt[i], *ha_num8MH_pt[i]);
+    ha_effSDL_den8MH_4of4_pt[i]->SetTitle(Form("h_effSDL_den8MH_%dto%d_4of4_pt; p_{T} (GeV); Efficiency", iMin, iMax) );
+    ha_effSDL_den8MH_3of4_any_pt[i] = new TEfficiency(*ha_numSDL_3of4_any_pt[i], *ha_num8MH_pt[i]);
+    ha_effSDL_den8MH_3of4_any_pt[i]->SetTitle(Form("h_effSDL_den8MH_%dto%d_3of4_any_pt; p_{T} (GeV); Efficiency", iMin, iMax) );
 
     ha_fakeSDL_4of4_pt[i] = new TEfficiency(*ha_SDLreco_no4of4_pt[i], *ha_SDLreco_all_pt[i]);
     ha_fakeSDL_4of4_pt[i]->SetTitle(Form("h_fakeSDL_%dto%d_4of4_pt", iMin, iMax));
@@ -2323,6 +2490,73 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, bool drawPlots 
       leg->AddEntry(heff2, "SDLink match");
       leg->Draw();
       gPad->SaveAs(Form("h_effs_SDL_steps_4of4_%dto%d_pt.png", layersSDL[iSDL][0], layersSDL[iSDL][1]));
+    }
+
+    //efficiencies: eff plots 4/4 in steps
+    for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
+      if (iSDL == SDL_L5to9) continue;
+      
+      auto heff =  ha_eff4MD_den8MH_pt[iSDL];
+      auto heff1 = ha_eff2SD_den8MH_4of4_pt[iSDL];
+      auto heff0      = ha_eff2SD_w0_den8MH_4of4_pt[iSDL];
+      auto heff01     = ha_eff2SD_w01_den8MH_4of4_pt[iSDL];
+      auto heff012    = ha_eff2SD_w012_den8MH_4of4_pt[iSDL];
+      auto heff0123   = ha_eff2SD_w0123_den8MH_4of4_pt[iSDL];
+      auto heff01234  = ha_eff2SD_w01234_den8MH_4of4_pt[iSDL];
+      auto heff012345 = ha_eff2SD_w012345_den8MH_4of4_pt[iSDL];
+      auto heff2 = ha_effSDL_den8MH_4of4_pt[iSDL];
+
+      auto cn = heff->GetName();
+      TCanvas* cv = new TCanvas(cn, cn, 600, 600);
+      cv->cd();
+
+      heff->Draw();
+      heff1->Draw("same");
+      heff01->Draw("same");
+      heff01234->Draw("same");
+      heff2->Draw("same");
+
+      heff->SetLineWidth(2);
+      heff1->SetLineWidth(2);
+      heff01->SetLineWidth(2);
+      heff01234->SetLineWidth(2);
+      heff2->SetLineWidth(2);
+      heff->SetLineColor(kBlack);
+      heff1->SetLineColor(kRed);
+      heff01->SetLineColor(kOrange);
+      heff01234->SetLineColor(kCyan);
+      heff2->SetLineColor(kBlue);
+      heff->SetMarkerSize(0.8);
+      heff1->SetMarkerSize(0.8);
+      heff01->SetMarkerSize(0.8);
+      heff01234->SetMarkerSize(0.8);
+      heff2->SetMarkerSize(0.8);
+      heff->SetMarkerStyle(21);
+      heff1->SetMarkerStyle(22);
+      heff01->SetMarkerStyle(24);
+      heff01234->SetMarkerStyle(25);
+      heff2->SetMarkerStyle(23);
+
+      gPad->SetGridx();
+      gPad->SetGridy();
+      gPad->SetLogx();
+      gPad->PaintModified();
+      auto pg = heff->GetPaintedGraph();
+      pg->SetMinimum(0.0);
+      pg->SetMaximum(1.02);
+      auto ax = pg->GetXaxis();
+      ax->SetLimits(0.51, ax->GetXmax());
+
+      auto leg = new TLegend(0.5, 0.15, 0.87, 0.4);
+      leg->SetBorderSize(0);
+      leg->SetFillColor(0);
+      leg->AddEntry(heff, "4 MD match | 8 MHits");
+      leg->AddEntry(heff1, "2 SD match | 8 MHits");
+      leg->AddEntry(heff01, "2 SD w dZ | 8 MHits");
+      leg->AddEntry(heff01234, "SDLink no #Delta#beta | 8 MHits");
+      leg->AddEntry(heff2, "SDLink match | 8 MHits");
+      leg->Draw();
+      gPad->SaveAs(Form("h_effs_SDL_den8MH_steps_4of4_%dto%d_pt.png", layersSDL[iSDL][0], layersSDL[iSDL][1]));
     }
 
   }//if drawPlots
