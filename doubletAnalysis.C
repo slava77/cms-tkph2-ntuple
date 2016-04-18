@@ -1232,7 +1232,12 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, bool drawPlots 
   std::array<TH1F*, SDL_LMAX> ha_num2SD_w0123_4of4_pt;//see SDLSelectFlags definitions
   std::array<TH1F*, SDL_LMAX> ha_num2SD_w01234_4of4_pt;//see SDLSelectFlags definitions
   std::array<TH1F*, SDL_LMAX> ha_num2SD_w012345_4of4_pt;//see SDLSelectFlags definitions
-  
+
+  std::array<TH2F*, SDL_LMAX> ha_SDL_dBeta_betaIn_NM1dBeta_8MH;
+  std::array<TH2F*, SDL_LMAX> ha_SDL_dBeta_betaIn_zoom_NM1dBeta_8MH;
+  std::array<TH2F*, SDL_LMAX> ha_SDL_dBeta_betaIn_pass;
+  std::array<TH2F*, SDL_LMAX> ha_SDL_dBeta_betaIn_zoom_pass;
+
   std::array<TH1F*, SDL_LMAX> ha_numSDL_4of4_pt;
   std::array<TH1F*, SDL_LMAX> ha_numSDL_3of4_any_pt;
 
@@ -1242,6 +1247,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, bool drawPlots 
   std::array<TH1F*, SDL_LMAX> ha_SDLreco_all_eta;
   std::array<TH1F*, SDL_LMAX> ha_SDLreco_4of4_eta;
   std::array<TH1F*, SDL_LMAX> ha_SDLreco_no4of4_eta;
+
+  
 
   
   std::array<std::array<int, 2>, SDL_LMAX> layersSDL {{ {5, 7}, {7, 9}, {5, 9} }};
@@ -1274,6 +1281,18 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, bool drawPlots 
     ha_num2SD_w01234_4of4_pt[i] = new TH1F(hn.c_str(), hn.c_str(), ptBins.size()-1, ptBins.data());    
     hn = Form("h_num2SD_w012345_4of4_%dto%d_pt", iMin, iMax);
     ha_num2SD_w012345_4of4_pt[i] = new TH1F(hn.c_str(), hn.c_str(), ptBins.size()-1, ptBins.data());
+
+    hn = Form("h2_SDL_dBeta_betaIn_NM1dBeta_8MH_%dto%d_pt", iMin, iMax);
+    ha_SDL_dBeta_betaIn_NM1dBeta_8MH[i] = new TH2F(hn.c_str(), hn.c_str(), 400, -1, 1, 400, -0.5, 0.5);
+
+    hn = Form("h2_SDL_dBeta_betaIn_zoom_NM1dBeta_8MH_%dto%d_pt", iMin, iMax);
+    ha_SDL_dBeta_betaIn_zoom_NM1dBeta_8MH[i] = new TH2F(hn.c_str(), hn.c_str(), 400, -0.35, 0.35, 400, -0.06, 0.06);
+
+    hn = Form("h2_SDL_dBeta_betaIn_pass_%dto%d_pt", iMin, iMax);
+    ha_SDL_dBeta_betaIn_pass[i] = new TH2F(hn.c_str(), hn.c_str(), 400, -1, 1, 400, -0.5, 0.5);
+
+    hn = Form("h2_SDL_dBeta_betaIn_zoom_pass_%dto%d_pt", iMin, iMax);
+    ha_SDL_dBeta_betaIn_zoom_pass[i] = new TH2F(hn.c_str(), hn.c_str(), 400, -0.35, 0.35, 400, -0.06, 0.06);
 
     hn = Form("h_numSDL_4of4_%dto%d_pt", iMin, iMax);
     ha_numSDL_4of4_pt[i] = new TH1F(hn.c_str(), hn.c_str(), ptBins.size()-1, ptBins.data());    
@@ -1939,7 +1958,20 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, bool drawPlots 
 	      if ((sdlf.second & m_012) == m_012 ) h_012 = true;
 	      if ((sdlf.second & m_0123) == m_0123 ) h_0123 = true;
 	      if ((sdlf.second & m_01234) == m_01234 ) h_01234 = true;
+	      
 	      if ((sdlf.second & m_012345) == m_012345 ) h_012345 = true;
+
+	      if (has8MHs && has4MDs && hasSDIn_4of4 && hasSDOut_4of4 && h_01234){
+		auto const& sdl = sdlf.first;
+		ha_SDL_dBeta_betaIn_NM1dBeta_8MH[iSDLL]->Fill(sdl.betaIn, sdl.betaIn - sdl.betaOut);
+		ha_SDL_dBeta_betaIn_zoom_NM1dBeta_8MH[iSDLL]->Fill(sdl.betaIn, sdl.betaIn - sdl.betaOut);
+	      }
+	      if (has8MHs && has4MDs && hasSDIn_4of4 && hasSDOut_4of4 && h_012345){
+		auto const& sdl = sdlf.first;
+		ha_SDL_dBeta_betaIn_pass[iSDLL]->Fill(sdl.betaIn, sdl.betaIn - sdl.betaOut);
+		ha_SDL_dBeta_betaIn_zoom_pass[iSDLL]->Fill(sdl.betaIn, sdl.betaIn - sdl.betaOut);
+	      }
+
 	    }
 
 	    if (h_0) ha_num2SD_w0_4of4_pt[iSDLL]->Fill(tpPt);
@@ -2353,6 +2385,68 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, bool drawPlots 
       gPad->SetLogx(0);
       gPad->SetLogz();
       gPad->SaveAs("h2_sdl7to9_dBeta_betaIn_NM1dBeta_all.png");
+    }
+
+    for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
+      if (iSDL == SDL_L5to9) continue;
+      auto h2 = ha_SDL_dBeta_betaIn_NM1dBeta_8MH[iSDL];
+      auto cn = h2->GetTitle();
+      TCanvas* cv = new TCanvas(cn, cn, 600, 600);
+      cv->cd();
+      gPad->SetRightMargin(gPad->GetRightMargin()*1.1);
+      h2->SetStats(0);
+      h2->Draw("colz");
+      gPad->SetGridx();
+      gPad->SetLogx(0);
+      gPad->SetLogz();
+      gPad->SaveAs(Form("h2_SDL_dBeta_betaIn_NM1dBeta_8MH_%dto%d.png",  layersSDL[iSDL][0], layersSDL[iSDL][1]));
+      
+    }
+    for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
+      if (iSDL == SDL_L5to9) continue;
+      auto h2 = ha_SDL_dBeta_betaIn_zoom_NM1dBeta_8MH[iSDL];
+      auto cn = h2->GetTitle();
+      TCanvas* cv = new TCanvas(cn, cn, 600, 600);
+      cv->cd();
+      gPad->SetRightMargin(gPad->GetRightMargin()*1.1);
+      h2->SetStats(0);
+      h2->Draw("colz");
+      gPad->SetGridx();
+      gPad->SetLogx(0);
+      gPad->SetLogz();
+      gPad->SaveAs(Form("h2_SDL_dBeta_betaIn_zoom_NM1dBeta_8MH_%dto%d.png",  layersSDL[iSDL][0], layersSDL[iSDL][1]));
+      
+    }
+
+    for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
+      if (iSDL == SDL_L5to9) continue;
+      auto h2 = ha_SDL_dBeta_betaIn_pass[iSDL];
+      auto cn = h2->GetTitle();
+      TCanvas* cv = new TCanvas(cn, cn, 600, 600);
+      cv->cd();
+      gPad->SetRightMargin(gPad->GetRightMargin()*1.1);
+      h2->SetStats(0);
+      h2->Draw("colz");
+      gPad->SetGridx();
+      gPad->SetLogx(0);
+      gPad->SetLogz();
+      gPad->SaveAs(Form("h2_SDL_dBeta_betaIn_pass_%dto%d.png",  layersSDL[iSDL][0], layersSDL[iSDL][1]));
+      
+    }
+    for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
+      if (iSDL == SDL_L5to9) continue;
+      auto h2 = ha_SDL_dBeta_betaIn_zoom_pass[iSDL];
+      auto cn = h2->GetTitle();
+      TCanvas* cv = new TCanvas(cn, cn, 600, 600);
+      cv->cd();
+      gPad->SetRightMargin(gPad->GetRightMargin()*1.1);
+      h2->SetStats(0);
+      h2->Draw("colz");
+      gPad->SetGridx();
+      gPad->SetLogx(0);
+      gPad->SetLogz();
+      gPad->SaveAs(Form("h2_SDL_dBeta_betaIn_zoom_pass_%dto%d.png",  layersSDL[iSDL][0], layersSDL[iSDL][1]));
+      
     }
 
     //efficiencies: num/den plots
