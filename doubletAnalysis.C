@@ -1235,8 +1235,10 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, bool drawPlots 
 
   std::array<TH2F*, SDL_LMAX> ha_SDL_dBeta_betaIn_NM1dBeta_8MH;
   std::array<TH2F*, SDL_LMAX> ha_SDL_dBeta_betaIn_zoom_NM1dBeta_8MH;
+  std::array<TH2F*, SDL_LMAX> ha_SDL_dBeta_betaOut_zoom_NM1dBeta_8MH;
   std::array<TH2F*, SDL_LMAX> ha_SDL_dBeta_betaIn_pass;
   std::array<TH2F*, SDL_LMAX> ha_SDL_dBeta_betaIn_zoom_pass;
+  std::array<TH2F*, SDL_LMAX> ha_SDL_dBeta_betaOut_zoom_pass;
 
   std::array<TH1F*, SDL_LMAX> ha_numSDL_4of4_pt;
   std::array<TH1F*, SDL_LMAX> ha_numSDL_3of4_any_pt;
@@ -1288,11 +1290,17 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, bool drawPlots 
     hn = Form("h2_SDL_dBeta_betaIn_zoom_NM1dBeta_8MH_%dto%d_pt", iMin, iMax);
     ha_SDL_dBeta_betaIn_zoom_NM1dBeta_8MH[i] = new TH2F(hn.c_str(), hn.c_str(), 400, -0.35, 0.35, 400, -0.06, 0.06);
 
+    hn = Form("h2_SDL_dBeta_betaOut_zoom_NM1dBeta_8MH_%dto%d_pt", iMin, iMax);
+    ha_SDL_dBeta_betaOut_zoom_NM1dBeta_8MH[i] = new TH2F(hn.c_str(), hn.c_str(), 400, -0.35, 0.35, 400, -0.06, 0.06);
+
     hn = Form("h2_SDL_dBeta_betaIn_pass_%dto%d_pt", iMin, iMax);
     ha_SDL_dBeta_betaIn_pass[i] = new TH2F(hn.c_str(), hn.c_str(), 400, -1, 1, 400, -0.5, 0.5);
 
     hn = Form("h2_SDL_dBeta_betaIn_zoom_pass_%dto%d_pt", iMin, iMax);
     ha_SDL_dBeta_betaIn_zoom_pass[i] = new TH2F(hn.c_str(), hn.c_str(), 400, -0.35, 0.35, 400, -0.06, 0.06);
+
+    hn = Form("h2_SDL_dBeta_betaOut_zoom_pass_%dto%d_pt", iMin, iMax);
+    ha_SDL_dBeta_betaOut_zoom_pass[i] = new TH2F(hn.c_str(), hn.c_str(), 400, -0.35, 0.35, 400, -0.06, 0.06);
 
     hn = Form("h_numSDL_4of4_%dto%d_pt", iMin, iMax);
     ha_numSDL_4of4_pt[i] = new TH1F(hn.c_str(), hn.c_str(), ptBins.size()-1, ptBins.data());    
@@ -1965,11 +1973,13 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, bool drawPlots 
 		auto const& sdl = sdlf.first;
 		ha_SDL_dBeta_betaIn_NM1dBeta_8MH[iSDLL]->Fill(sdl.betaIn, sdl.betaIn - sdl.betaOut);
 		ha_SDL_dBeta_betaIn_zoom_NM1dBeta_8MH[iSDLL]->Fill(sdl.betaIn, sdl.betaIn - sdl.betaOut);
+		ha_SDL_dBeta_betaOut_zoom_NM1dBeta_8MH[iSDLL]->Fill(sdl.betaOut, sdl.betaIn - sdl.betaOut);
 	      }
 	      if (has8MHs && has4MDs && hasSDIn_4of4 && hasSDOut_4of4 && h_012345){
 		auto const& sdl = sdlf.first;
 		ha_SDL_dBeta_betaIn_pass[iSDLL]->Fill(sdl.betaIn, sdl.betaIn - sdl.betaOut);
 		ha_SDL_dBeta_betaIn_zoom_pass[iSDLL]->Fill(sdl.betaIn, sdl.betaIn - sdl.betaOut);
+		ha_SDL_dBeta_betaOut_zoom_pass[iSDLL]->Fill(sdl.betaOut, sdl.betaIn - sdl.betaOut);
 	      }
 
 	    }
@@ -2417,6 +2427,21 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, bool drawPlots 
       gPad->SaveAs(Form("h2_SDL_dBeta_betaIn_zoom_NM1dBeta_8MH_%dto%d.png",  layersSDL[iSDL][0], layersSDL[iSDL][1]));
       
     }
+    for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
+      if (iSDL == SDL_L5to9) continue;
+      auto h2 = ha_SDL_dBeta_betaOut_zoom_NM1dBeta_8MH[iSDL];
+      auto cn = h2->GetTitle();
+      TCanvas* cv = new TCanvas(cn, cn, 600, 600);
+      cv->cd();
+      gPad->SetRightMargin(gPad->GetRightMargin()*1.1);
+      h2->SetStats(0);
+      h2->Draw("colz");
+      gPad->SetGridx();
+      gPad->SetLogx(0);
+      gPad->SetLogz();
+      gPad->SaveAs(Form("h2_SDL_dBeta_betaOut_zoom_NM1dBeta_8MH_%dto%d.png",  layersSDL[iSDL][0], layersSDL[iSDL][1]));
+      
+    }
 
     for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
       if (iSDL == SDL_L5to9) continue;
@@ -2446,6 +2471,21 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, bool drawPlots 
       gPad->SetLogx(0);
       gPad->SetLogz();
       gPad->SaveAs(Form("h2_SDL_dBeta_betaIn_zoom_pass_%dto%d.png",  layersSDL[iSDL][0], layersSDL[iSDL][1]));
+      
+    }
+    for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
+      if (iSDL == SDL_L5to9) continue;
+      auto h2 = ha_SDL_dBeta_betaOut_zoom_pass[iSDL];
+      auto cn = h2->GetTitle();
+      TCanvas* cv = new TCanvas(cn, cn, 600, 600);
+      cv->cd();
+      gPad->SetRightMargin(gPad->GetRightMargin()*1.1);
+      h2->SetStats(0);
+      h2->Draw("colz");
+      gPad->SetGridx();
+      gPad->SetLogx(0);
+      gPad->SetLogz();
+      gPad->SaveAs(Form("h2_SDL_dBeta_betaOut_zoom_pass_%dto%d.png",  layersSDL[iSDL][0], layersSDL[iSDL][1]));
       
     }
 
