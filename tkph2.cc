@@ -134,19 +134,31 @@ namespace tas {
 	float &bsp_sigmax() { return cms2.bsp_sigmax(); }
 	float &bsp_sigmay() { return cms2.bsp_sigmay(); }
 	float &bsp_sigmaz() { return cms2.bsp_sigmaz(); }
-	vector<float> &see_px() { return cms2.see_px(); }
-	vector<float> &see_py() { return cms2.see_py(); }
-	vector<float> &see_pz() { return cms2.see_pz(); }
-	vector<float> &see_pt() { return cms2.see_pt(); }
-	vector<float> &see_eta() { return cms2.see_eta(); }
-	vector<float> &see_phi() { return cms2.see_phi(); }
-	vector<float> &see_dxy() { return cms2.see_dxy(); }
-	vector<float> &see_dz() { return cms2.see_dz(); }
-	vector<float> &see_ptErr() { return cms2.see_ptErr(); }
-	vector<float> &see_etaErr() { return cms2.see_etaErr(); }
-	vector<float> &see_phiErr() { return cms2.see_phiErr(); }
-	vector<float> &see_dxyErr() { return cms2.see_dxyErr(); }
-	vector<float> &see_dzErr() { return cms2.see_dzErr(); }
+	vector<float> &see_lh_px() { return cms2.see_lh_px(); }
+	vector<float> &see_lh_py() { return cms2.see_lh_py(); }
+	vector<float> &see_lh_pz() { return cms2.see_lh_pz(); }
+	vector<float> &see_lh_pt() { return cms2.see_lh_pt(); }
+	vector<float> &see_lh_eta() { return cms2.see_lh_eta(); }
+	vector<float> &see_lh_phi() { return cms2.see_lh_phi(); }
+	vector<float> &see_lh_x() { return cms2.see_lh_x(); }
+	vector<float> &see_lh_y() { return cms2.see_lh_y(); }
+	vector<float> &see_lh_z() { return cms2.see_lh_z(); }
+	vector<float> &see_pca_px() { return cms2.see_pca_px(); }
+	vector<float> &see_pca_py() { return cms2.see_pca_py(); }
+	vector<float> &see_pca_pz() { return cms2.see_pca_pz(); }
+	vector<float> &see_pca_pt() { return cms2.see_pca_pt(); }
+	vector<float> &see_pca_eta() { return cms2.see_pca_eta(); }
+	vector<float> &see_pca_phi() { return cms2.see_pca_phi(); }
+	vector<float> &see_pca_x() { return cms2.see_pca_x(); }
+	vector<float> &see_pca_y() { return cms2.see_pca_y(); }
+	vector<float> &see_pca_z() { return cms2.see_pca_z(); }
+	vector<float> &see_pca_dxy() { return cms2.see_pca_dxy(); }
+	vector<float> &see_pca_dz() { return cms2.see_pca_dz(); }
+	vector<float> &see_pca_ptErr() { return cms2.see_pca_ptErr(); }
+	vector<float> &see_pca_etaErr() { return cms2.see_pca_etaErr(); }
+	vector<float> &see_pca_phiErr() { return cms2.see_pca_phiErr(); }
+	vector<float> &see_pca_dxyErr() { return cms2.see_pca_dxyErr(); }
+	vector<float> &see_pca_dzErr() { return cms2.see_pca_dzErr(); }
 	vector<float> &see_chi2() { return cms2.see_chi2(); }
 	vector<int> &see_q() { return cms2.see_q(); }
 	vector<int> &see_nValid() { return cms2.see_nValid(); }
