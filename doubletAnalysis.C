@@ -1322,102 +1322,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
   std::array<float, nLayers+1> miniRminMean {0, 0, 0, 0, 0, //may want to fill these
       21.8, 34.6, 49.6, 67.4, 87.6, 106.8};
 
-  //0-5
-  TH2F* h2_sdl0to5_dBeta_betaIn_NM1dBeta_all = new TH2F("h2_sdl0to5_dBeta_betaIn_NM1dBeta_all", "h2_sdl0to5_dBeta_betaIn_NM1dBeta_all", 400, -1, 1, 400, -0.5, 0.5);
-  
-  TH1F* h_sdl0to5_dBeta_NM1dBeta_all = new TH1F("h_sdl0to5_dBeta_NM1dBeta_all", "h_sdl0to5_dBeta_NM1dBeta_all", 400, -0.5, 0.5);
-  TH1F* h_sdl0to5_dBeta_NM1dBeta_pass = new TH1F("h_sdl0to5_dBeta_NM1dBeta_pass", "h_sdl0to5_dBeta_NM1dBeta_pass", 400, -0.5, 0.5);
 
-  TH1F* h_sdl0to5_dBeta_zoom_NM1dBeta_all = new TH1F("h_sdl0to5_dBeta_zoom_NM1dBeta_all", "h_sdl0to5_dBeta_zoom_NM1dBeta_all", 400, -0.15, 0.15);
-  TH1F* h_sdl0to5_dBeta_zoom_NM1dBeta_pass = new TH1F("h_sdl0to5_dBeta_zoom_NM1dBeta_pass", "h_sdl0to5_dBeta_zoom_NM1dBeta_pass", 400, -0.15, 0.15);
-
-  std::string hns = "h_sdl0to5_dBeta_zoom_NM1dBeta_ptIn0to2_all";
-  TH1F* h_sdl0to5_dBeta_zoom_NM1dBeta_ptIn0to2_all = new TH1F(hns.c_str(), hns.c_str(), 400, -0.15, 0.15);
-  hns = "h_sdl0to5_dBeta_zoom_NM1dBeta_ptIn0to2_pass";
-  TH1F* h_sdl0to5_dBeta_zoom_NM1dBeta_ptIn0to2_pass = new TH1F(hns.c_str(), hns.c_str(), 400, -0.15, 0.15);
-
-  hns = "h_sdl0to5_dBeta_zoom_NM1dBeta_ptIn3to5_all";
-  TH1F* h_sdl0to5_dBeta_zoom_NM1dBeta_ptIn3to5_all = new TH1F(hns.c_str(), hns.c_str(), 400, -0.15, 0.15);
-  hns = "h_sdl0to5_dBeta_zoom_NM1dBeta_ptIn3to5_pass";
-  TH1F* h_sdl0to5_dBeta_zoom_NM1dBeta_ptIn3to5_pass = new TH1F(hns.c_str(), hns.c_str(), 400, -0.15, 0.15);
-
-  hns = "h_sdl0to5_dBeta_zoom_NM1dBeta_ptIn7toInf_all";
-  TH1F* h_sdl0to5_dBeta_zoom_NM1dBeta_ptIn7toInf_all = new TH1F(hns.c_str(), hns.c_str(), 400, -0.15, 0.15);
-  hns = "h_sdl0to5_dBeta_zoom_NM1dBeta_ptIn7toInf_pass";
-  TH1F* h_sdl0to5_dBeta_zoom_NM1dBeta_ptIn7toInf_pass = new TH1F(hns.c_str(), hns.c_str(), 400, -0.15, 0.15);
-
-  //0-7
-  TH2F* h2_sdl0to7_dBeta_betaIn_NM1dBeta_all = new TH2F("h2_sdl0to7_dBeta_betaIn_NM1dBeta_all", "h2_sdl0to7_dBeta_betaIn_NM1dBeta_all", 400, -1, 1, 400, -0.5, 0.5);
-  
-  TH1F* h_sdl0to7_dBeta_NM1dBeta_all = new TH1F("h_sdl0to7_dBeta_NM1dBeta_all", "h_sdl0to7_dBeta_NM1dBeta_all", 400, -0.5, 0.5);
-  TH1F* h_sdl0to7_dBeta_NM1dBeta_pass = new TH1F("h_sdl0to7_dBeta_NM1dBeta_pass", "h_sdl0to7_dBeta_NM1dBeta_pass", 400, -0.5, 0.5);
-
-  TH1F* h_sdl0to7_dBeta_zoom_NM1dBeta_all = new TH1F("h_sdl0to7_dBeta_zoom_NM1dBeta_all", "h_sdl0to7_dBeta_zoom_NM1dBeta_all", 400, -0.15, 0.15);
-  TH1F* h_sdl0to7_dBeta_zoom_NM1dBeta_pass = new TH1F("h_sdl0to7_dBeta_zoom_NM1dBeta_pass", "h_sdl0to7_dBeta_zoom_NM1dBeta_pass", 400, -0.15, 0.15);
-
-  hns = "h_sdl0to7_dBeta_zoom_NM1dBeta_ptIn0to2_all";
-  TH1F* h_sdl0to7_dBeta_zoom_NM1dBeta_ptIn0to2_all = new TH1F(hns.c_str(), hns.c_str(), 400, -0.15, 0.15);
-  hns = "h_sdl0to7_dBeta_zoom_NM1dBeta_ptIn0to2_pass";
-  TH1F* h_sdl0to7_dBeta_zoom_NM1dBeta_ptIn0to2_pass = new TH1F(hns.c_str(), hns.c_str(), 400, -0.15, 0.15);
-
-  hns = "h_sdl0to7_dBeta_zoom_NM1dBeta_ptIn3to5_all";
-  TH1F* h_sdl0to7_dBeta_zoom_NM1dBeta_ptIn3to5_all = new TH1F(hns.c_str(), hns.c_str(), 400, -0.15, 0.15);
-  hns = "h_sdl0to7_dBeta_zoom_NM1dBeta_ptIn3to5_pass";
-  TH1F* h_sdl0to7_dBeta_zoom_NM1dBeta_ptIn3to5_pass = new TH1F(hns.c_str(), hns.c_str(), 400, -0.15, 0.15);
-
-  hns = "h_sdl0to7_dBeta_zoom_NM1dBeta_ptIn7toInf_all";
-  TH1F* h_sdl0to7_dBeta_zoom_NM1dBeta_ptIn7toInf_all = new TH1F(hns.c_str(), hns.c_str(), 400, -0.15, 0.15);
-  hns = "h_sdl0to7_dBeta_zoom_NM1dBeta_ptIn7toInf_pass";
-  TH1F* h_sdl0to7_dBeta_zoom_NM1dBeta_ptIn7toInf_pass = new TH1F(hns.c_str(), hns.c_str(), 400, -0.15, 0.15);
-
-  //5-7  
-  TH2F* h2_sdl5to7_dBeta_betaIn_NM1dBeta_all = new TH2F("h2_sdl5to7_dBeta_betaIn_NM1dBeta_all", "h2_sdl5to7_dBeta_betaIn_NM1dBeta_all", 400, -1, 1, 400, -0.5, 0.5);
-  TH2F* h2_sdl7to9_dBeta_betaIn_NM1dBeta_all = new TH2F("h2_sdl7to9_dBeta_betaIn_NM1dBeta_all", "h2_sdl7to9_dBeta_betaIn_NM1dBeta_all", 400, -1, 1, 400, -0.5, 0.5);
-  
-  TH1F* h_sdl5to7_dBeta_NM1dBeta_all = new TH1F("h_sdl5to7_dBeta_NM1dBeta_all", "h_sdl5to7_dBeta_NM1dBeta_all", 400, -0.5, 0.5);
-  TH1F* h_sdl5to7_dBeta_NM1dBeta_pass = new TH1F("h_sdl5to7_dBeta_NM1dBeta_pass", "h_sdl5to7_dBeta_NM1dBeta_pass", 400, -0.5, 0.5);
-
-  TH1F* h_sdl7to9_dBeta_NM1dBeta_all = new TH1F("h_sdl7to9_dBeta_NM1dBeta_all", "h_sdl7to9_dBeta_NM1dBeta_all", 400, -0.5, 0.5);
-  TH1F* h_sdl7to9_dBeta_NM1dBeta_pass = new TH1F("h_sdl7to9_dBeta_NM1dBeta_pass", "h_sdl7to9_dBeta_NM1dBeta_pass", 400, -0.5, 0.5);
-
-  TH1F* h_sdl5to7_dBeta_zoom_NM1dBeta_all = new TH1F("h_sdl5to7_dBeta_zoom_NM1dBeta_all", "h_sdl5to7_dBeta_zoom_NM1dBeta_all", 400, -0.15, 0.15);
-  TH1F* h_sdl5to7_dBeta_zoom_NM1dBeta_pass = new TH1F("h_sdl5to7_dBeta_zoom_NM1dBeta_pass", "h_sdl5to7_dBeta_zoom_NM1dBeta_pass", 400, -0.15, 0.15);
-
-  hns = "h_sdl5to7_dBeta_zoom_NM1dBeta_ptIn0to2_all";
-  TH1F* h_sdl5to7_dBeta_zoom_NM1dBeta_ptIn0to2_all = new TH1F(hns.c_str(), hns.c_str(), 400, -0.15, 0.15);
-  hns = "h_sdl5to7_dBeta_zoom_NM1dBeta_ptIn0to2_pass";
-  TH1F* h_sdl5to7_dBeta_zoom_NM1dBeta_ptIn0to2_pass = new TH1F(hns.c_str(), hns.c_str(), 400, -0.15, 0.15);
-
-  hns = "h_sdl5to7_dBeta_zoom_NM1dBeta_ptIn3to5_all";
-  TH1F* h_sdl5to7_dBeta_zoom_NM1dBeta_ptIn3to5_all = new TH1F(hns.c_str(), hns.c_str(), 400, -0.15, 0.15);
-  hns = "h_sdl5to7_dBeta_zoom_NM1dBeta_ptIn3to5_pass";
-  TH1F* h_sdl5to7_dBeta_zoom_NM1dBeta_ptIn3to5_pass = new TH1F(hns.c_str(), hns.c_str(), 400, -0.15, 0.15);
-
-  hns = "h_sdl5to7_dBeta_zoom_NM1dBeta_ptIn7toInf_all";
-  TH1F* h_sdl5to7_dBeta_zoom_NM1dBeta_ptIn7toInf_all = new TH1F(hns.c_str(), hns.c_str(), 400, -0.15, 0.15);
-  hns = "h_sdl5to7_dBeta_zoom_NM1dBeta_ptIn7toInf_pass";
-  TH1F* h_sdl5to7_dBeta_zoom_NM1dBeta_ptIn7toInf_pass = new TH1F(hns.c_str(), hns.c_str(), 400, -0.15, 0.15);
-
-  
-  TH1F* h_sdl7to9_dBeta_zoom_NM1dBeta_all = new TH1F("h_sdl7to9_dBeta_zoom_NM1dBeta_all", "h_sdl7to9_dBeta_zoom_NM1dBeta_all", 400, -0.15, 0.15);
-  TH1F* h_sdl7to9_dBeta_zoom_NM1dBeta_pass = new TH1F("h_sdl7to9_dBeta_zoom_NM1dBeta_pass", "h_sdl7to9_dBeta_zoom_NM1dBeta_pass", 400, -0.15, 0.15);
-
-  hns = "h_sdl7to9_dBeta_zoom_NM1dBeta_ptIn0to2_all";
-  TH1F* h_sdl7to9_dBeta_zoom_NM1dBeta_ptIn0to2_all = new TH1F(hns.c_str(), hns.c_str(), 400, -0.15, 0.15);
-  hns = "h_sdl7to9_dBeta_zoom_NM1dBeta_ptIn0to2_pass";
-  TH1F* h_sdl7to9_dBeta_zoom_NM1dBeta_ptIn0to2_pass = new TH1F(hns.c_str(), hns.c_str(), 400, -0.15, 0.15);
-
-  hns = "h_sdl7to9_dBeta_zoom_NM1dBeta_ptIn3to5_all";
-  TH1F* h_sdl7to9_dBeta_zoom_NM1dBeta_ptIn3to5_all = new TH1F(hns.c_str(), hns.c_str(), 400, -0.15, 0.15);
-  hns = "h_sdl7to9_dBeta_zoom_NM1dBeta_ptIn3to5_pass";
-  TH1F* h_sdl7to9_dBeta_zoom_NM1dBeta_ptIn3to5_pass = new TH1F(hns.c_str(), hns.c_str(), 400, -0.15, 0.15);
-
-  hns = "h_sdl7to9_dBeta_zoom_NM1dBeta_ptIn7toInf_all";
-  TH1F* h_sdl7to9_dBeta_zoom_NM1dBeta_ptIn7toInf_all = new TH1F(hns.c_str(), hns.c_str(), 400, -0.15, 0.15);
-  hns = "h_sdl7to9_dBeta_zoom_NM1dBeta_ptIn7toInf_pass";
-  TH1F* h_sdl7to9_dBeta_zoom_NM1dBeta_ptIn7toInf_pass = new TH1F(hns.c_str(), hns.c_str(), 400, -0.15, 0.15);
-
-  
   enum SDLayers {SDL_L0to5=0, SDL_L0to7, SDL_L5to7, SDL_L7to9, SDL_L5to9, SDL_LMAX};
   std::array<TH1F*, SDL_LMAX> ha_denSDL_pt;
   std::array<TH1F*, SDL_LMAX> ha_num8MH_pt;
@@ -1432,15 +1337,51 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
   std::array<TH1F*, SDL_LMAX> ha_num2SD_w01234_4of4_pt;//see SDLSelectFlags definitions
   std::array<TH1F*, SDL_LMAX> ha_num2SD_w012345_4of4_pt;//see SDLSelectFlags definitions
 
+  std::array<TH2F*, SDL_LMAX> ha_SDL_dBeta_betaIn_NM1dBeta_all;
+  std::array<TH2F*, SDL_LMAX> ha_SDL_dBeta_betaIn_zoom_NM1dBeta_all;
+
+  std::array<TH1F*, SDL_LMAX> ha_SDL_dBeta_NM1dBeta_all;
+  std::array<TH1F*, SDL_LMAX> ha_SDL_dBeta_NM1dBeta_pass;
+
+  std::array<TH1F*, SDL_LMAX> ha_SDL_dBeta_zoom_NM1dBeta_all;
+  std::array<TH1F*, SDL_LMAX> ha_SDL_dBeta_zoom_NM1dBeta_pass;
+  std::array<TH1F*, SDL_LMAX> ha_SDL_dBeta_zoom_NM1dBeta_ptIn0to2_all;
+  std::array<TH1F*, SDL_LMAX> ha_SDL_dBeta_zoom_NM1dBeta_ptIn0to2_pass;
+  std::array<TH1F*, SDL_LMAX> ha_SDL_dBeta_zoom_NM1dBeta_ptIn3to5_all;
+  std::array<TH1F*, SDL_LMAX> ha_SDL_dBeta_zoom_NM1dBeta_ptIn3to5_pass;
+  std::array<TH1F*, SDL_LMAX> ha_SDL_dBeta_zoom_NM1dBeta_ptIn7toInf_all;
+  std::array<TH1F*, SDL_LMAX> ha_SDL_dBeta_zoom_NM1dBeta_ptIn7toInf_pass;
+
+  std::array<TH1F*, SDL_LMAX> ha_SDL_dBeta_0_all;
+  std::array<TH1F*, SDL_LMAX> ha_SDL_dBeta_0_pass;
+  std::array<TH1F*, SDL_LMAX> ha_SDL_dBeta_zoom_0_all;
+  std::array<TH1F*, SDL_LMAX> ha_SDL_dBeta_zoom_0_pass;
+  std::array<TH1F*, SDL_LMAX> ha_SDL_dBeta_01_all;
+  std::array<TH1F*, SDL_LMAX> ha_SDL_dBeta_01_pass;
+  std::array<TH1F*, SDL_LMAX> ha_SDL_dBeta_zoom_01_all;
+  std::array<TH1F*, SDL_LMAX> ha_SDL_dBeta_zoom_01_pass;
+  std::array<TH1F*, SDL_LMAX> ha_SDL_dBeta_012_all;
+  std::array<TH1F*, SDL_LMAX> ha_SDL_dBeta_012_pass;
+  std::array<TH1F*, SDL_LMAX> ha_SDL_dBeta_zoom_012_all;
+  std::array<TH1F*, SDL_LMAX> ha_SDL_dBeta_zoom_012_pass;
+  std::array<TH1F*, SDL_LMAX> ha_SDL_dBeta_0123_all;
+  std::array<TH1F*, SDL_LMAX> ha_SDL_dBeta_0123_pass;
+  std::array<TH1F*, SDL_LMAX> ha_SDL_dBeta_zoom_0123_all;
+  std::array<TH1F*, SDL_LMAX> ha_SDL_dBeta_zoom_0123_pass;
+  std::array<TH1F*, SDL_LMAX> ha_SDL_dBeta_01234_all;
+  std::array<TH1F*, SDL_LMAX> ha_SDL_dBeta_01234_pass;
+  std::array<TH1F*, SDL_LMAX> ha_SDL_dBeta_zoom_01234_all;
+  std::array<TH1F*, SDL_LMAX> ha_SDL_dBeta_zoom_01234_pass;
+  
   std::array<TH1F*, SDL_LMAX> ha_SDL_dBeta_zoom_NM1dBeta_8MH;
   std::array<TH1F*, SDL_LMAX> ha_SDL_dBeta_zoom2_NM1dBeta_8MH;
-
+  
   std::array<TH2F*, SDL_LMAX> ha_SDL_dBeta_betaIn_NM1dBeta_8MH;
   std::array<TH2F*, SDL_LMAX> ha_SDL_dBeta_betaIn_zoom_NM1dBeta_8MH;
   std::array<TH2F*, SDL_LMAX> ha_SDL_dBeta_betaOut_zoom_NM1dBeta_8MH;
-  std::array<TH2F*, SDL_LMAX> ha_SDL_dBeta_betaIn_pass;
-  std::array<TH2F*, SDL_LMAX> ha_SDL_dBeta_betaIn_zoom_pass;
-  std::array<TH2F*, SDL_LMAX> ha_SDL_dBeta_betaOut_zoom_pass;
+  std::array<TH2F*, SDL_LMAX> ha_SDL_dBeta_betaIn_pass_NM1dBeta_8MH;
+  std::array<TH2F*, SDL_LMAX> ha_SDL_dBeta_betaIn_zoom_pass_NM1dBeta_8MH;
+  std::array<TH2F*, SDL_LMAX> ha_SDL_dBeta_betaOut_zoom_pass_NM1dBeta_8MH;
 
   std::array<TH1F*, SDL_LMAX> ha_numSDL_4of4_pt;
   std::array<TH1F*, SDL_LMAX> ha_numSDL_3of4_any_pt;
@@ -1456,6 +1397,19 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 
   
   std::array<std::array<int, 2>, SDL_LMAX> layersSDL {{ {0, 5}, {0, 7}, {5, 7}, {7, 9}, {5, 9} }};
+  std::array<std::array<SDLayers, nLayers+1>, nLayers+1> sdlFromLayers;
+  for (int i = 0U; i<= nLayers; ++i){
+    for (int j = 0U; j<= nLayers; ++j){
+      sdlFromLayers[i][j] = SDL_LMAX;
+      for (auto k = 0U; k < SDL_LMAX; ++k){
+	if (i == layersSDL[k][0] && j == layersSDL[k][1]){
+	  sdlFromLayers[i][j] = (SDLayers)k;
+	  break;
+	}
+      }
+    }
+  }
+  
   for (int i = 0; i< SDL_LMAX; ++i){
     auto iMin = layersSDL[i][0];
     auto iMax = layersSDL[i][1];
@@ -1486,6 +1440,83 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
     hn = Form("h_num2SD_w012345_4of4_%dto%d_pt", iMin, iMax);
     ha_num2SD_w012345_4of4_pt[i] = new TH1F(hn.c_str(), hn.c_str(), ptBins.size()-1, ptBins.data());
 
+    //plots without MC truth requirement
+    hn = Form("h2_SDL_dBeta_betaIn_NM1dBeta_all_%dto%d_pt", iMin, iMax);
+    ha_SDL_dBeta_betaIn_NM1dBeta_all[i] = new TH2F(hn.c_str(), hn.c_str(), 400, -1, 1, 400, -0.5, 0.5);
+    hn = Form("h2_SDL_dBeta_betaIn_zoom_NM1dBeta_all_%dto%d_pt", iMin, iMax);
+    ha_SDL_dBeta_betaIn_zoom_NM1dBeta_all[i] = new TH2F(hn.c_str(), hn.c_str(), 400, -0.35, 0.35, 400, -0.06, 0.06);
+
+    hn = Form("h_SDL_dBeta_NM1dBeta_all_%dto%d_pt", iMin, iMax);
+    ha_SDL_dBeta_NM1dBeta_all[i] = new TH1F(hn.c_str(), hn.c_str(), 400, -0.5, 0.5);
+    hn = Form("h_SDL_dBeta_NM1dBeta_pass_%dto%d_pt", iMin, iMax);
+    ha_SDL_dBeta_NM1dBeta_pass[i] = new TH1F(hn.c_str(), hn.c_str(), 400, -0.5, 0.5);
+
+    hn = Form("h_SDL_dBeta_zoom_NM1dBeta_all_%dto%d_pt", iMin, iMax);
+    ha_SDL_dBeta_zoom_NM1dBeta_all[i] = new TH1F(hn.c_str(), hn.c_str(), 400, -0.15, 0.15);
+    hn = Form("h_SDL_dBeta_zoom_NM1dBeta_pass_%dto%d_pt", iMin, iMax);
+    ha_SDL_dBeta_zoom_NM1dBeta_pass[i] = new TH1F(hn.c_str(), hn.c_str(), 400, -0.15, 0.15);
+    hn = Form("h_SDL_dBeta_zoom_NM1dBeta_ptIn0to2_all_%dto%d_pt", iMin, iMax);
+    ha_SDL_dBeta_zoom_NM1dBeta_ptIn0to2_all[i] = new TH1F(hn.c_str(), hn.c_str(), 400, -0.15, 0.15);
+    hn = Form("h_SDL_dBeta_zoom_NM1dBeta_ptIn0to2_pass_%dto%d_pt", iMin, iMax);
+    ha_SDL_dBeta_zoom_NM1dBeta_ptIn0to2_pass[i] = new TH1F(hn.c_str(), hn.c_str(), 400, -0.15, 0.15);
+    hn = Form("h_SDL_dBeta_zoom_NM1dBeta_ptIn3to5_all_%dto%d_pt", iMin, iMax);
+    ha_SDL_dBeta_zoom_NM1dBeta_ptIn3to5_all[i] = new TH1F(hn.c_str(), hn.c_str(), 400, -0.15, 0.15);
+    hn = Form("h_SDL_dBeta_zoom_NM1dBeta_ptIn3to5_pass_%dto%d_pt", iMin, iMax);
+    ha_SDL_dBeta_zoom_NM1dBeta_ptIn3to5_pass[i] = new TH1F(hn.c_str(), hn.c_str(), 400, -0.15, 0.15);
+    hn = Form("h_SDL_dBeta_zoom_NM1dBeta_ptIn7toInf_all_%dto%d_pt", iMin, iMax);
+    ha_SDL_dBeta_zoom_NM1dBeta_ptIn7toInf_all[i] = new TH1F(hn.c_str(), hn.c_str(), 400, -0.15, 0.15);
+    hn = Form("h_SDL_dBeta_zoom_NM1dBeta_ptIn7toInf_pass_%dto%d_pt", iMin, iMax);
+    ha_SDL_dBeta_zoom_NM1dBeta_ptIn7toInf_pass[i] = new TH1F(hn.c_str(), hn.c_str(), 400, -0.15, 0.15);
+
+    //looser selections
+    hn = Form("h_SDL_dBeta_0_all_%dto%d_pt", iMin, iMax);
+    ha_SDL_dBeta_0_all[i] = new TH1F(hn.c_str(), hn.c_str(), 400, -0.5, 0.5);
+    hn = Form("h_SDL_dBeta_0_pass_%dto%d_pt", iMin, iMax);
+    ha_SDL_dBeta_0_pass[i] = new TH1F(hn.c_str(), hn.c_str(), 400, -0.5, 0.5);
+    hn = Form("h_SDL_dBeta_zoom_0_all_%dto%d_pt", iMin, iMax);
+    ha_SDL_dBeta_zoom_0_all[i] = new TH1F(hn.c_str(), hn.c_str(), 400, -0.15, 0.15);
+    hn = Form("h_SDL_dBeta_zoom_0_pass_%dto%d_pt", iMin, iMax);
+    ha_SDL_dBeta_zoom_0_pass[i] = new TH1F(hn.c_str(), hn.c_str(), 400, -0.15, 0.15);
+
+    //01
+    hn = Form("h_SDL_dBeta_01_all_%dto%d_pt", iMin, iMax);
+    ha_SDL_dBeta_01_all[i] = new TH1F(hn.c_str(), hn.c_str(), 400, -0.5, 0.5);
+    hn = Form("h_SDL_dBeta_01_pass_%dto%d_pt", iMin, iMax);
+    ha_SDL_dBeta_01_pass[i] = new TH1F(hn.c_str(), hn.c_str(), 400, -0.5, 0.5);
+    hn = Form("h_SDL_dBeta_zoom_01_all_%dto%d_pt", iMin, iMax);
+    ha_SDL_dBeta_zoom_01_all[i] = new TH1F(hn.c_str(), hn.c_str(), 400, -0.15, 0.15);
+    hn = Form("h_SDL_dBeta_zoom_01_pass_%dto%d_pt", iMin, iMax);
+    ha_SDL_dBeta_zoom_01_pass[i] = new TH1F(hn.c_str(), hn.c_str(), 400, -0.15, 0.15);
+    //012
+    hn = Form("h_SDL_dBeta_012_all_%dto%d_pt", iMin, iMax);
+    ha_SDL_dBeta_012_all[i] = new TH1F(hn.c_str(), hn.c_str(), 400, -0.5, 0.5);
+    hn = Form("h_SDL_dBeta_012_pass_%dto%d_pt", iMin, iMax);
+    ha_SDL_dBeta_012_pass[i] = new TH1F(hn.c_str(), hn.c_str(), 400, -0.5, 0.5);
+    hn = Form("h_SDL_dBeta_zoom_012_all_%dto%d_pt", iMin, iMax);
+    ha_SDL_dBeta_zoom_012_all[i] = new TH1F(hn.c_str(), hn.c_str(), 400, -0.15, 0.15);
+    hn = Form("h_SDL_dBeta_zoom_012_pass_%dto%d_pt", iMin, iMax);
+    ha_SDL_dBeta_zoom_012_pass[i] = new TH1F(hn.c_str(), hn.c_str(), 400, -0.15, 0.15);
+    //0123
+    hn = Form("h_SDL_dBeta_0123_all_%dto%d_pt", iMin, iMax);
+    ha_SDL_dBeta_0123_all[i] = new TH1F(hn.c_str(), hn.c_str(), 400, -0.5, 0.5);
+    hn = Form("h_SDL_dBeta_0123_pass_%dto%d_pt", iMin, iMax);
+    ha_SDL_dBeta_0123_pass[i] = new TH1F(hn.c_str(), hn.c_str(), 400, -0.5, 0.5);
+    hn = Form("h_SDL_dBeta_zoom_0123_all_%dto%d_pt", iMin, iMax);
+    ha_SDL_dBeta_zoom_0123_all[i] = new TH1F(hn.c_str(), hn.c_str(), 400, -0.15, 0.15);
+    hn = Form("h_SDL_dBeta_zoom_0123_pass_%dto%d_pt", iMin, iMax);
+    ha_SDL_dBeta_zoom_0123_pass[i] = new TH1F(hn.c_str(), hn.c_str(), 400, -0.15, 0.15);
+    //01234
+    hn = Form("h_SDL_dBeta_01234_all_%dto%d_pt", iMin, iMax);
+    ha_SDL_dBeta_01234_all[i] = new TH1F(hn.c_str(), hn.c_str(), 400, -0.5, 0.5);
+    hn = Form("h_SDL_dBeta_01234_pass_%dto%d_pt", iMin, iMax);
+    ha_SDL_dBeta_01234_pass[i] = new TH1F(hn.c_str(), hn.c_str(), 400, -0.5, 0.5);
+    hn = Form("h_SDL_dBeta_zoom_01234_all_%dto%d_pt", iMin, iMax);
+    ha_SDL_dBeta_zoom_01234_all[i] = new TH1F(hn.c_str(), hn.c_str(), 400, -0.15, 0.15);
+    hn = Form("h_SDL_dBeta_zoom_01234_pass_%dto%d_pt", iMin, iMax);
+    ha_SDL_dBeta_zoom_01234_pass[i] = new TH1F(hn.c_str(), hn.c_str(), 400, -0.15, 0.15);
+
+
+    //plots with MC truth requirement
     hn = Form("h_SDL_dBeta_zoom_NM1dBeta_8MH_%dto%d_pt", iMin, iMax);
     ha_SDL_dBeta_zoom_NM1dBeta_8MH[i] = new TH1F(hn.c_str(), hn.c_str(), 400, -0.06, 0.06);
     hn = Form("h_SDL_dBeta_zoom2_NM1dBeta_8MH_%dto%d_pt", iMin, iMax);
@@ -1500,14 +1531,14 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
     hn = Form("h2_SDL_dBeta_betaOut_zoom_NM1dBeta_8MH_%dto%d_pt", iMin, iMax);
     ha_SDL_dBeta_betaOut_zoom_NM1dBeta_8MH[i] = new TH2F(hn.c_str(), hn.c_str(), 400, -0.35, 0.35, 400, -0.06, 0.06);
 
-    hn = Form("h2_SDL_dBeta_betaIn_pass_%dto%d_pt", iMin, iMax);
-    ha_SDL_dBeta_betaIn_pass[i] = new TH2F(hn.c_str(), hn.c_str(), 400, -1, 1, 400, -0.5, 0.5);
+    hn = Form("h2_SDL_dBeta_betaIn_pass_NM1dBeta_8MH_%dto%d_pt", iMin, iMax);
+    ha_SDL_dBeta_betaIn_pass_NM1dBeta_8MH[i] = new TH2F(hn.c_str(), hn.c_str(), 400, -1, 1, 400, -0.5, 0.5);
 
-    hn = Form("h2_SDL_dBeta_betaIn_zoom_pass_%dto%d_pt", iMin, iMax);
-    ha_SDL_dBeta_betaIn_zoom_pass[i] = new TH2F(hn.c_str(), hn.c_str(), 400, -0.35, 0.35, 400, -0.06, 0.06);
+    hn = Form("h2_SDL_dBeta_betaIn_zoom_pass_NM1dBeta_8MH_%dto%d_pt", iMin, iMax);
+    ha_SDL_dBeta_betaIn_zoom_pass_NM1dBeta_8MH[i] = new TH2F(hn.c_str(), hn.c_str(), 400, -0.35, 0.35, 400, -0.06, 0.06);
 
-    hn = Form("h2_SDL_dBeta_betaOut_zoom_pass_%dto%d_pt", iMin, iMax);
-    ha_SDL_dBeta_betaOut_zoom_pass[i] = new TH2F(hn.c_str(), hn.c_str(), 400, -0.35, 0.35, 400, -0.06, 0.06);
+    hn = Form("h2_SDL_dBeta_betaOut_zoom_pass_NM1dBeta_8MH_%dto%d_pt", iMin, iMax);
+    ha_SDL_dBeta_betaOut_zoom_pass_NM1dBeta_8MH[i] = new TH2F(hn.c_str(), hn.c_str(), 400, -0.35, 0.35, 400, -0.06, 0.06);
 
     hn = Form("h_numSDL_4of4_%dto%d_pt", iMin, iMax);
     ha_numSDL_4of4_pt[i] = new TH1F(hn.c_str(), hn.c_str(), ptBins.size()-1, ptBins.data());    
@@ -1827,10 +1858,22 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	}
       }//iL
 
+      enum SDLSelectFlags { deltaZ = 0, deltaZPointed=1, slope=2, dAlphaIn=3, dAlphaOut=4, dBeta=5, max=6};
+      std::array<int, SDLSelectFlags::max> sdlMasksCumulative {};
+      for (int i = 0; i < SDLSelectFlags::max; ++i){
+	if (i > 0 ) sdlMasksCumulative[i] = sdlMasksCumulative[i-1];
+	sdlMasksCumulative[i] |= 1 << i;
+      }
+
+      std::cout<<"Link SuperDoublet pairs to SDLinks"<<std::endl;
+      
       //try to link segments: do 5-7 and 7-9; or 0-X for seeds (special cases for L=0 where needed)
       auto sdLink = [&] (int lIn, int lOut, decltype(mockLayer5to7SDLfwDNcm)& sdlV){
 	auto const& sdInV  = mockLayerSDfwDNcm[lIn];
 	auto const& sdOutV = mockLayerSDfwDNcm[lOut];
+
+	int iSDL = sdlFromLayers[lIn][lOut];
+	assert(iSDL != SDL_LMAX);// "Layer pair is not mapped");
 
 	int nAll = 0;
 	int nDeltaZ = 0;
@@ -1851,6 +1894,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	  
 	  int iOut = -1;
 	  for ( auto sdOut : sdOutV ) {
+	    int sdlFlag = 0;
 	    iOut++;
 	    //
 	    nAll++;
@@ -1862,30 +1906,31 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    float zGeom = lIn >= 0 && lIn <= 7 && lOut >= 5 && lOut <= 7 ? 0.3 : 10;//twice the macro-pixel or strip size
 	    float zLo = rtOut/rtIn*(zIn - 15.) - zGeom; //15 for the luminous ; zGeom for z geom unit size
 	    float zHi = rtOut/rtIn*(zIn + 15.) + zGeom;
-	    if (zOut < zLo || zOut > zHi) continue;
-	    nDeltaZ++;
+	    if (!(zOut < zLo || zOut > zHi)) sdlFlag |= 1 << SDLSelectFlags::deltaZ; //continue;
+	    if (sdlFlag == sdlMasksCumulative[SDLSelectFlags::deltaZ]) nDeltaZ++;
 
 	    if (lIn == 0){
 	      float etaErr = see_pca_etaErr()[sdIn.iRef];
 	      float eta = see_lh_eta()[sdIn.iRef];
-	      float dzErr = (rtOut - rtIn)*etaErr*sinh(eta);
+	      float dzErr = (rtOut - rtIn)*etaErr*cosh(eta);
 	      dzErr *= dzErr;
 	      dzErr += 0.03*0.03; // pixel size x2. ... random for now
 	      dzErr *= 9; //3 sigma
 	      dzErr += zGeom*zGeom;
 	      dzErr = sqrt(dzErr);
-	      float dzDrIn = std::abs(sdIn.p3.Z())/sdIn.p3.Pt();
+	      float dzDrIn = sdIn.p3.Z()/sdIn.p3.Pt();
 	      float zLo = zIn + (dzDrIn - dzErr/dSDIn)*(rtOut - rtIn) - zGeom;
 	      float zHi = zIn + (dzDrIn + dzErr/dSDIn)*(rtOut - rtIn) + zGeom;
-	      if (zOut < zLo || zOut > zHi) continue;
-	      //FIXME: ADD A PLOT HERE
+	      if (!(zOut < zLo || zOut > zHi)) sdlFlag |= 1 << SDLSelectFlags::deltaZPointed; //continue;
 	    }
 	    else if (lIn>=5 && lIn <=6){//can point to the z pos in lOut
 	      float zLo = zIn + (dzSDIn - zGeom*sqrt(2.))/dSDIn*(rtOut - rtIn) - zGeom;
 	      float zHi = zIn + (dzSDIn + zGeom*sqrt(2.))/dSDIn*(rtOut - rtIn) + zGeom;
-	      if (zOut < zLo || zOut > zHi) continue;
+	      if (!(zOut < zLo || zOut > zHi)) sdlFlag |= 1 << SDLSelectFlags::deltaZPointed; //continue;
+	    } else {
+	      sdlFlag |= 1 << SDLSelectFlags::deltaZPointed;
 	    }
-	    nDeltaZPointed++;
+	    if (sdlFlag == sdlMasksCumulative[SDLSelectFlags::deltaZPointed]) nDeltaZPointed++;
 	    
 	    auto midR3 = 0.5*(sdIn.r3 + sdOut.r3);
 	    double dPhi = midR3.DeltaPhi(sdOut.r3 - sdIn.r3);
@@ -1906,8 +1951,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    const float sdlPVoff = 0.1/rt;
 	    const float sdlCut = sdlSlope + sqrt(sdlMuls*sdlMuls + sdlPVoff*sdlPVoff);
 	    
-	    if (std::abs(dPhi) > sdlCut ) continue;
-	    nSlope++;
+	    if (! (std::abs(dPhi) > sdlCut) ) sdlFlag |= 1 << SDLSelectFlags::slope; //continue;
+	    if (sdlFlag == sdlMasksCumulative[SDLSelectFlags::slope]) nSlope++;
 	    
 	    double betaIn;
 	    double betaOut;
@@ -1930,10 +1975,10 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    float dSDOut = sdOut.mdOut.r3.Pt() - sdOut.mdRef.r3.Pt();	
 	    float dAlpha_res = 0.02/std::min(dSDIn, dSDOut);//2-strip difference; use the smallest SD separation
 	    float dAlpha_compat = dAlpha_Bfield + dAlpha_res;
-	    if (std::abs(sdIn.alpha- dPhi) > dAlpha_compat) continue;
-	    nInAlphaCompat++;
-	    if (std::abs(sdOut.alpha- dPhi) > dAlpha_compat) continue;
-	    nOutAlphaCompat++;
+	    if (!(std::abs(sdIn.alpha- dPhi) > dAlpha_compat )) sdlFlag |= 1 << SDLSelectFlags::dAlphaIn; //continue;
+	    if (sdlFlag == sdlMasksCumulative[SDLSelectFlags::dAlphaIn]) nInAlphaCompat++;
+	    if (!(std::abs(sdOut.alpha- dPhi) > dAlpha_compat )) sdlFlag |= 1 << SDLSelectFlags::dAlphaOut; //continue;
+	    if (sdlFlag == sdlMasksCumulative[SDLSelectFlags::dAlphaOut]) nOutAlphaCompat++;
 	    
 	    //now the actual segment linking magic
 	    float betaAv = 0.5*(betaIn + betaOut);
@@ -1950,116 +1995,90 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    float dBetaCut = sqrt(dBetaRes*dBetaRes*2.0 + dBetaMuls*dBetaMuls);
 	    float dBeta = betaIn - betaOut;
 
+	    if (!(std::abs(dBeta) > dBetaCut)) sdlFlag |= 1 << SDLSelectFlags::dBeta; //continue;
+	    if (sdlFlag == sdlMasksCumulative[SDLSelectFlags::dBeta]) ndBeta++;
+
 	    auto ptIn = std::abs(pt_betaIn);
 
-	    //FIXME: need to reduce copy-paste
-	    if (lIn == 0 && lOut == 5){
-	      h_sdl0to5_dBeta_NM1dBeta_all->Fill(dBeta);
-	      h2_sdl0to5_dBeta_betaIn_NM1dBeta_all->Fill(betaIn, dBeta);
-	      h_sdl0to5_dBeta_zoom_NM1dBeta_all->Fill(dBeta);
-	      if (ptIn < 2){
-		h_sdl0to5_dBeta_zoom_NM1dBeta_ptIn0to2_all->Fill(dBeta);
-	      }
-	      if (ptIn > 3 && ptIn < 5 ){
-		h_sdl0to5_dBeta_zoom_NM1dBeta_ptIn3to5_all->Fill(dBeta);
-	      }
-	      if (ptIn > 7) {
-		h_sdl0to5_dBeta_zoom_NM1dBeta_ptIn7toInf_all->Fill(dBeta);
-	      }
-	    } else if (lIn == 0 && lOut == 7){
-	      h_sdl0to7_dBeta_NM1dBeta_all->Fill(dBeta);
-	      h2_sdl0to7_dBeta_betaIn_NM1dBeta_all->Fill(betaIn, dBeta);
-	      h_sdl0to7_dBeta_zoom_NM1dBeta_all->Fill(dBeta);
-	      if (ptIn < 2){
-		h_sdl0to7_dBeta_zoom_NM1dBeta_ptIn0to2_all->Fill(dBeta);
-	      }
-	      if (ptIn > 3 && ptIn < 5 ){
-		h_sdl0to7_dBeta_zoom_NM1dBeta_ptIn3to5_all->Fill(dBeta);
-	      }
-	      if (ptIn > 7) {
-		h_sdl0to7_dBeta_zoom_NM1dBeta_ptIn7toInf_all->Fill(dBeta);
-	      }
-	    } else if (lIn == 5 && lOut == 7){
-	      h_sdl5to7_dBeta_NM1dBeta_all->Fill(dBeta);
-	      h2_sdl5to7_dBeta_betaIn_NM1dBeta_all->Fill(betaIn, dBeta);
-	      h_sdl5to7_dBeta_zoom_NM1dBeta_all->Fill(dBeta);
-	      if (ptIn < 2){
-		h_sdl5to7_dBeta_zoom_NM1dBeta_ptIn0to2_all->Fill(dBeta);
-	      }
-	      if (ptIn > 3 && ptIn < 5 ){
-		h_sdl5to7_dBeta_zoom_NM1dBeta_ptIn3to5_all->Fill(dBeta);
-	      }
-	      if (ptIn > 7) {
-		h_sdl5to7_dBeta_zoom_NM1dBeta_ptIn7toInf_all->Fill(dBeta);
-	      }
-	    } else if (lIn == 7 && lOut == 9){
-	      h_sdl7to9_dBeta_NM1dBeta_all->Fill(dBeta);
-	      h2_sdl7to9_dBeta_betaIn_NM1dBeta_all->Fill(betaIn, dBeta);
-	      h_sdl7to9_dBeta_zoom_NM1dBeta_all->Fill(dBeta);
-	      if (ptIn < 2){
-		h_sdl7to9_dBeta_zoom_NM1dBeta_ptIn0to2_all->Fill(dBeta);
-	      }
-	      if (ptIn > 3 && ptIn < 5 ){
-		h_sdl7to9_dBeta_zoom_NM1dBeta_ptIn3to5_all->Fill(dBeta);
-	      }
-	      if (ptIn > 7) {
-		h_sdl7to9_dBeta_zoom_NM1dBeta_ptIn7toInf_all->Fill(dBeta);
-	      }
+	    //	    std::cout<<"Fill histograms for sdlFlag "<<sdlFlag<<std::endl;
+	    //special case no "-1"
+	    ha_SDL_dBeta_0_all[iSDL]->Fill(dBeta);
+	    ha_SDL_dBeta_zoom_0_all[iSDL]->Fill(dBeta);
+	    if ((sdlFlag & sdlMasksCumulative[SDLSelectFlags::deltaZ]) == sdlMasksCumulative[SDLSelectFlags::deltaZ]){
+	      ha_SDL_dBeta_0_pass[iSDL]->Fill(dBeta);
+	      ha_SDL_dBeta_zoom_0_pass[iSDL]->Fill(dBeta);
 	    }
 
-	    if (std::abs(dBeta) > dBetaCut) continue;
-	    if (lIn == 0 && lOut == 5){
-	      h_sdl0to5_dBeta_NM1dBeta_pass->Fill(dBeta);
-	      h_sdl0to5_dBeta_zoom_NM1dBeta_pass->Fill(dBeta);
-	      if (ptIn < 2){
-		h_sdl0to5_dBeta_zoom_NM1dBeta_ptIn0to2_pass->Fill(dBeta);
-	      }
-	      if (ptIn > 3 && ptIn < 5 ){
-		h_sdl0to5_dBeta_zoom_NM1dBeta_ptIn3to5_pass->Fill(dBeta);
-	      }
-	      if (ptIn > 7) {
-		h_sdl0to5_dBeta_zoom_NM1dBeta_ptIn7toInf_pass->Fill(dBeta);
-	      }
-	    } else if (lIn == 0 && lOut == 7){
-	      h_sdl0to7_dBeta_NM1dBeta_pass->Fill(dBeta);
-	      h_sdl0to7_dBeta_zoom_NM1dBeta_pass->Fill(dBeta);
-	      if (ptIn < 2){
-		h_sdl0to7_dBeta_zoom_NM1dBeta_ptIn0to2_pass->Fill(dBeta);
-	      }
-	      if (ptIn > 3 && ptIn < 5 ){
-		h_sdl0to7_dBeta_zoom_NM1dBeta_ptIn3to5_pass->Fill(dBeta);
-	      }
-	      if (ptIn > 7) {
-		h_sdl0to7_dBeta_zoom_NM1dBeta_ptIn7toInf_pass->Fill(dBeta);
-	      }
-	    } else if (lIn == 5 && lOut == 7){
-	      h_sdl5to7_dBeta_NM1dBeta_pass->Fill(dBeta);
-	      h_sdl5to7_dBeta_zoom_NM1dBeta_pass->Fill(dBeta);
-	      if (ptIn < 2){
-		h_sdl5to7_dBeta_zoom_NM1dBeta_ptIn0to2_pass->Fill(dBeta);
-	      }
-	      if (ptIn > 3 && ptIn < 5 ){
-		h_sdl5to7_dBeta_zoom_NM1dBeta_ptIn3to5_pass->Fill(dBeta);
-	      }
-	      if (ptIn > 7) {
-		h_sdl5to7_dBeta_zoom_NM1dBeta_ptIn7toInf_pass->Fill(dBeta);
-	      }
-	    } else if (lIn == 7 && lOut == 9){
-	      h_sdl7to9_dBeta_NM1dBeta_pass->Fill(dBeta);
-	      h_sdl7to9_dBeta_zoom_NM1dBeta_pass->Fill(dBeta);
-	      if (ptIn < 2){
-		h_sdl7to9_dBeta_zoom_NM1dBeta_ptIn0to2_pass->Fill(dBeta);
-	      }
-	      if (ptIn > 3 && ptIn < 5 ){
-		h_sdl7to9_dBeta_zoom_NM1dBeta_ptIn3to5_pass->Fill(dBeta);
-	      }
-	      if (ptIn > 7) {
-		h_sdl7to9_dBeta_zoom_NM1dBeta_ptIn7toInf_pass->Fill(dBeta);
-	      }
-	    }
-
-	    ndBeta++;
 	    
+	    if ((sdlFlag & sdlMasksCumulative[SDLSelectFlags::deltaZPointed-1]) == sdlMasksCumulative[SDLSelectFlags::deltaZPointed-1] ){
+	      ha_SDL_dBeta_01_all[iSDL]->Fill(dBeta);
+	      ha_SDL_dBeta_zoom_01_all[iSDL]->Fill(dBeta);
+	    }
+	    if ((sdlFlag & sdlMasksCumulative[SDLSelectFlags::deltaZPointed]) == sdlMasksCumulative[SDLSelectFlags::deltaZPointed] ){
+	      ha_SDL_dBeta_01_pass[iSDL]->Fill(dBeta);
+	      ha_SDL_dBeta_zoom_01_pass[iSDL]->Fill(dBeta);
+	    }
+	    
+	    if ((sdlFlag & sdlMasksCumulative[SDLSelectFlags::slope-1]) == sdlMasksCumulative[SDLSelectFlags::slope-1]){
+	      ha_SDL_dBeta_012_all[iSDL]->Fill(dBeta);
+	      ha_SDL_dBeta_zoom_012_all[iSDL]->Fill(dBeta);
+	    }
+	    if ((sdlFlag & sdlMasksCumulative[SDLSelectFlags::slope]) == sdlMasksCumulative[SDLSelectFlags::slope]){
+	      ha_SDL_dBeta_012_pass[iSDL]->Fill(dBeta);
+	      ha_SDL_dBeta_zoom_012_pass[iSDL]->Fill(dBeta);
+	    }
+	    
+	    if ((sdlFlag & sdlMasksCumulative[SDLSelectFlags::dAlphaIn-1]) == sdlMasksCumulative[SDLSelectFlags::dAlphaIn-1]){
+	      ha_SDL_dBeta_0123_all[iSDL]->Fill(dBeta);
+	      ha_SDL_dBeta_zoom_0123_all[iSDL]->Fill(dBeta);
+	    }
+	    if ((sdlFlag & sdlMasksCumulative[SDLSelectFlags::dAlphaIn]) == sdlMasksCumulative[SDLSelectFlags::dAlphaIn]){
+	      ha_SDL_dBeta_0123_pass[iSDL]->Fill(dBeta);
+	      ha_SDL_dBeta_zoom_0123_pass[iSDL]->Fill(dBeta);
+	    }
+	    
+	    if ((sdlFlag & sdlMasksCumulative[SDLSelectFlags::dAlphaOut-1]) == sdlMasksCumulative[SDLSelectFlags::dAlphaOut-1]){
+	      ha_SDL_dBeta_01234_all[iSDL]->Fill(dBeta);
+	      ha_SDL_dBeta_zoom_01234_all[iSDL]->Fill(dBeta);
+	    }
+	    if ((sdlFlag & sdlMasksCumulative[SDLSelectFlags::dAlphaOut]) == sdlMasksCumulative[SDLSelectFlags::dAlphaOut]){
+	      ha_SDL_dBeta_01234_pass[iSDL]->Fill(dBeta);
+	      ha_SDL_dBeta_zoom_01234_pass[iSDL]->Fill(dBeta);
+	    }
+	    
+	    if ((sdlFlag & sdlMasksCumulative[SDLSelectFlags::dBeta-1]) == sdlMasksCumulative[SDLSelectFlags::dBeta-1]){
+	      ha_SDL_dBeta_NM1dBeta_all[iSDL]->Fill(dBeta);
+	      ha_SDL_dBeta_betaIn_NM1dBeta_all[iSDL]->Fill(betaIn, dBeta);
+	      
+	      ha_SDL_dBeta_zoom_NM1dBeta_all[iSDL]->Fill(dBeta);
+	      if (ptIn < 2){
+		ha_SDL_dBeta_zoom_NM1dBeta_ptIn0to2_all[iSDL]->Fill(dBeta);
+	      }
+	      if (ptIn > 3 && ptIn < 5 ){
+		ha_SDL_dBeta_zoom_NM1dBeta_ptIn3to5_all[iSDL]->Fill(dBeta);
+	      }
+	      if (ptIn > 7) {
+		ha_SDL_dBeta_zoom_NM1dBeta_ptIn7toInf_all[iSDL]->Fill(dBeta);
+	      }
+	    }
+	    
+	    if ((sdlFlag & sdlMasksCumulative[SDLSelectFlags::dBeta]) == sdlMasksCumulative[SDLSelectFlags::dBeta]){
+	      ha_SDL_dBeta_NM1dBeta_pass[iSDL]->Fill(dBeta);
+	      ha_SDL_dBeta_zoom_NM1dBeta_pass[iSDL]->Fill(dBeta);
+	      if (ptIn < 2){
+		ha_SDL_dBeta_zoom_NM1dBeta_ptIn0to2_pass[iSDL]->Fill(dBeta);
+	      }
+	      if (ptIn > 3 && ptIn < 5 ){
+		ha_SDL_dBeta_zoom_NM1dBeta_ptIn3to5_pass[iSDL]->Fill(dBeta);
+	      }
+	      if (ptIn > 7) {
+		ha_SDL_dBeta_zoom_NM1dBeta_ptIn7toInf_pass[iSDL]->Fill(dBeta);
+	      }
+	    }
+
+	    //	    std::cout<<"Done filling histograms"<<std::endl;
+
+	    if (sdlFlag != sdlMasksCumulative[SDLSelectFlags::dBeta]) continue; //apply all cuts up to including dBeta
 	    SDLink sdl;
 	    sdl.sdIn = sdIn;
 	    sdl.sdOut = sdOut;
@@ -2076,6 +2095,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    sdl.ptOut = pt_betaOut;
 	    
 	    sdlV.push_back(sdl);
+	    //	    std::cout<<"Appended a new SDLink "<<std::endl;
 	  }//sdOutV
 	}//sdInV
 	
@@ -2296,7 +2316,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      ha_num2SD_4of4_pt[iSDLL]->Fill(tpPt);
 	    }
 
-	    enum SDLSelectFlags { deltaZ = 0, deltaZPointed, slope, dAlphaIn, dAlphaOut, dBeta};
+	    //enum SDLSelectFlags { deltaZ = 0, deltaZPointed, slope, dAlphaIn, dAlphaOut, dBeta};
 	    std::vector<std::pair<SDLink, int> > vSDLwInfo_4of4;
 	    for (auto const& sdIn : vSDIn_4of4){
 	      float rtIn = sdIn.r3.Pt();
@@ -2487,9 +2507,9 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      }
 	      if (has8MHs && has4MDs && hasSDIn_4of4 && hasSDOut_4of4 && h_012345){
 		auto const& sdl = sdlf.first;
-		ha_SDL_dBeta_betaIn_pass[iSDLL]->Fill(sdl.betaIn, sdl.betaIn - sdl.betaOut);
-		ha_SDL_dBeta_betaIn_zoom_pass[iSDLL]->Fill(sdl.betaIn, sdl.betaIn - sdl.betaOut);
-		ha_SDL_dBeta_betaOut_zoom_pass[iSDLL]->Fill(sdl.betaOut, sdl.betaIn - sdl.betaOut);
+		ha_SDL_dBeta_betaIn_pass_NM1dBeta_8MH[iSDLL]->Fill(sdl.betaIn, sdl.betaIn - sdl.betaOut);
+		ha_SDL_dBeta_betaIn_zoom_pass_NM1dBeta_8MH[iSDLL]->Fill(sdl.betaIn, sdl.betaIn - sdl.betaOut);
+		ha_SDL_dBeta_betaOut_zoom_pass_NM1dBeta_8MH[iSDLL]->Fill(sdl.betaOut, sdl.betaIn - sdl.betaOut);
 	      }
 
 	    }
@@ -2821,9 +2841,10 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 
     }//nLayers
 
-    {
-      auto h_all = h_sdl0to5_dBeta_NM1dBeta_all;
-      auto h_pass = h_sdl0to5_dBeta_NM1dBeta_pass;
+    for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
+      if (iSDL == SDL_L5to9) continue;
+      auto h_all = ha_SDL_dBeta_NM1dBeta_all[iSDL];
+      auto h_pass = ha_SDL_dBeta_NM1dBeta_pass[iSDL];
       auto cn = h_all->GetTitle();
       TCanvas* cv = new TCanvas(cn, cn, 600, 600);
       cv->cd();
@@ -2835,11 +2856,12 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       h_all->SetStats(0);
       h_all->Draw();
       h_pass->Draw("same");
-      gPad->SaveAs(Form("h_sdl0to5_dBeta_NM1dBeta_all_vs_pass_mm%d_D%1.1fcm_us%d.png", mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_NM1dBeta_all_vs_pass_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
     }
-    {
-      auto h_all = h_sdl0to7_dBeta_NM1dBeta_all;
-      auto h_pass = h_sdl0to7_dBeta_NM1dBeta_pass;
+    for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
+      if (iSDL == SDL_L5to9) continue;
+      auto h_all = ha_SDL_dBeta_zoom_NM1dBeta_all[iSDL];
+      auto h_pass = ha_SDL_dBeta_zoom_NM1dBeta_pass[iSDL];
       auto cn = h_all->GetTitle();
       TCanvas* cv = new TCanvas(cn, cn, 600, 600);
       cv->cd();
@@ -2851,316 +2873,249 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       h_all->SetStats(0);
       h_all->Draw();
       h_pass->Draw("same");
-      gPad->SaveAs(Form("h_sdl0to7_dBeta_NM1dBeta_all_vs_pass_mm%d_D%1.1fcm_us%d.png", mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_zoom_NM1dBeta_all_vs_pass_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
     }
-    {
-      auto h_all = h_sdl5to7_dBeta_NM1dBeta_all;
-      auto h_pass = h_sdl5to7_dBeta_NM1dBeta_pass;
-      auto cn = h_all->GetTitle();
-      TCanvas* cv = new TCanvas(cn, cn, 600, 600);
-      cv->cd();
 
-      h_all->SetLineWidth(2);
-      h_pass->SetLineWidth(2);
-      h_pass->SetLineColor(2);
-
-      h_all->SetStats(0);
-      h_all->Draw();
-      h_pass->Draw("same");
-      gPad->SaveAs(Form("h_sdl5to7_dBeta_NM1dBeta_all_vs_pass_mm%d_D%1.1fcm_us%d.png", mockMode, sdOffset, useSeeds));
-    }
-    {
-      auto h_all = h_sdl7to9_dBeta_NM1dBeta_all;
-      auto h_pass = h_sdl7to9_dBeta_NM1dBeta_pass;
-      auto cn = h_all->GetTitle();
-      TCanvas* cv = new TCanvas(cn, cn, 600, 600);
-      cv->cd();
-
-      h_all->SetLineWidth(2);
-      h_pass->SetLineWidth(2);
-      h_pass->SetLineColor(2);
-
-      h_all->SetStats(0);
-      h_all->Draw();
-      h_pass->Draw("same");
-      gPad->SaveAs(Form("h_sdl7to9_dBeta_NM1dBeta_all_vs_pass_mm%d_D%1.1fcm_us%d.png", mockMode, sdOffset, useSeeds));
-    }
-    {
-      auto h_all = h_sdl0to5_dBeta_zoom_NM1dBeta_all;
-      auto h_pass = h_sdl0to5_dBeta_zoom_NM1dBeta_pass;
-      auto cn = h_all->GetTitle();
-      TCanvas* cv = new TCanvas(cn, cn, 600, 600);
-      cv->cd();
-
-      h_all->SetLineWidth(2);
-      h_all->SetMinimum(0);
-      h_pass->SetLineWidth(2);
-      h_pass->SetLineColor(2);
-
-      h_all->SetStats(0);
-      h_all->Draw();
-      h_pass->Draw("same");
-      gPad->SaveAs(Form("h_sdl0to5_dBeta_zoom_NM1dBeta_all_vs_pass_mm%d_D%1.1fcm_us%d.png", mockMode, sdOffset, useSeeds));
-    }
-    {
-      auto h_all = h_sdl0to7_dBeta_zoom_NM1dBeta_all;
-      auto h_pass = h_sdl0to7_dBeta_zoom_NM1dBeta_pass;
-      auto cn = h_all->GetTitle();
-      TCanvas* cv = new TCanvas(cn, cn, 600, 600);
-      cv->cd();
-
-      h_all->SetLineWidth(2);
-      h_all->SetMinimum(0);
-      h_pass->SetLineWidth(2);
-      h_pass->SetLineColor(2);
-
-      h_all->SetStats(0);
-      h_all->Draw();
-      h_pass->Draw("same");
-      gPad->SaveAs(Form("h_sdl0to7_dBeta_zoom_NM1dBeta_all_vs_pass_mm%d_D%1.1fcm_us%d.png", mockMode, sdOffset, useSeeds));
-    }
-    {
-      auto h_all = h_sdl5to7_dBeta_zoom_NM1dBeta_all;
-      auto h_pass = h_sdl5to7_dBeta_zoom_NM1dBeta_pass;
-      auto cn = h_all->GetTitle();
-      TCanvas* cv = new TCanvas(cn, cn, 600, 600);
-      cv->cd();
-
-      h_all->SetLineWidth(2);
-      h_all->SetMinimum(0);
-      h_pass->SetLineWidth(2);
-      h_pass->SetLineColor(2);
-
-      h_all->SetStats(0);
-      h_all->Draw();
-      h_pass->Draw("same");
-      gPad->SaveAs(Form("h_sdl5to7_dBeta_zoom_NM1dBeta_all_vs_pass_mm%d_D%1.1fcm_us%d.png", mockMode, sdOffset, useSeeds));
-    }
-    {
-      auto h_all = h_sdl7to9_dBeta_zoom_NM1dBeta_all;
-      auto h_pass = h_sdl7to9_dBeta_zoom_NM1dBeta_pass;
-      auto cn = h_all->GetTitle();
-      TCanvas* cv = new TCanvas(cn, cn, 600, 600);
-      cv->cd();
-
-      h_all->SetLineWidth(2);
-      h_all->SetMinimum(0);
-      h_pass->SetLineWidth(2);
-      h_pass->SetLineColor(2);
-
-      h_all->SetStats(0);
-      h_all->Draw();
-      h_pass->Draw("same");
-      gPad->SaveAs(Form("h_sdl7to9_dBeta_zoom_NM1dBeta_all_vs_pass_mm%d_D%1.1fcm_us%d.png", mockMode, sdOffset, useSeeds));
-    }
     // << slices in betaIn or ptIn
-    {
-      auto h_all = h_sdl0to5_dBeta_zoom_NM1dBeta_ptIn0to2_all;
-      auto h_pass = h_sdl0to5_dBeta_zoom_NM1dBeta_ptIn0to2_pass;
+    for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
+      if (iSDL == SDL_L5to9) continue;
+      auto h_all = ha_SDL_dBeta_zoom_NM1dBeta_ptIn0to2_all[iSDL];
+      auto h_pass = ha_SDL_dBeta_zoom_NM1dBeta_ptIn0to2_pass[iSDL];
       auto cn = h_all->GetTitle();
       TCanvas* cv = new TCanvas(cn, cn, 600, 600);
       cv->cd();
 
       h_all->SetLineWidth(2);
-      h_all->SetMinimum(0);
       h_pass->SetLineWidth(2);
       h_pass->SetLineColor(2);
 
       h_all->SetStats(0);
       h_all->Draw();
       h_pass->Draw("same");
-      gPad->SaveAs(Form("h_sdl0to5_dBeta_zoom_NM1dBeta_ptIn0to2_all_vs_pass_mm%d_D%1.1fcm_us%d.png", mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_zoom_NM1dBeta_ptIn0to2_all_vs_pass_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
     }
-    {
-      auto h_all = h_sdl0to7_dBeta_zoom_NM1dBeta_ptIn0to2_all;
-      auto h_pass = h_sdl0to7_dBeta_zoom_NM1dBeta_ptIn0to2_pass;
+    for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
+      if (iSDL == SDL_L5to9) continue;
+      auto h_all = ha_SDL_dBeta_zoom_NM1dBeta_ptIn3to5_all[iSDL];
+      auto h_pass = ha_SDL_dBeta_zoom_NM1dBeta_ptIn3to5_pass[iSDL];
       auto cn = h_all->GetTitle();
       TCanvas* cv = new TCanvas(cn, cn, 600, 600);
       cv->cd();
 
       h_all->SetLineWidth(2);
-      h_all->SetMinimum(0);
       h_pass->SetLineWidth(2);
       h_pass->SetLineColor(2);
 
       h_all->SetStats(0);
       h_all->Draw();
       h_pass->Draw("same");
-      gPad->SaveAs(Form("h_sdl0to7_dBeta_zoom_NM1dBeta_ptIn0to2_all_vs_pass_mm%d_D%1.1fcm_us%d.png", mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_zoom_NM1dBeta_ptIn3to5_all_vs_pass_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
     }
-    {
-      auto h_all = h_sdl5to7_dBeta_zoom_NM1dBeta_ptIn0to2_all;
-      auto h_pass = h_sdl5to7_dBeta_zoom_NM1dBeta_ptIn0to2_pass;
+    for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
+      if (iSDL == SDL_L5to9) continue;
+      auto h_all = ha_SDL_dBeta_zoom_NM1dBeta_ptIn7toInf_all[iSDL];
+      auto h_pass = ha_SDL_dBeta_zoom_NM1dBeta_ptIn7toInf_pass[iSDL];
       auto cn = h_all->GetTitle();
       TCanvas* cv = new TCanvas(cn, cn, 600, 600);
       cv->cd();
 
       h_all->SetLineWidth(2);
-      h_all->SetMinimum(0);
       h_pass->SetLineWidth(2);
       h_pass->SetLineColor(2);
 
       h_all->SetStats(0);
       h_all->Draw();
       h_pass->Draw("same");
-      gPad->SaveAs(Form("h_sdl5to7_dBeta_zoom_NM1dBeta_ptIn0to2_all_vs_pass_mm%d_D%1.1fcm_us%d.png", mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_zoom_NM1dBeta_ptIn7toInf_all_vs_pass_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
     }
-    {
-      auto h_all = h_sdl7to9_dBeta_zoom_NM1dBeta_ptIn0to2_all;
-      auto h_pass = h_sdl7to9_dBeta_zoom_NM1dBeta_ptIn0to2_pass;
+
+    for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
+      if (iSDL == SDL_L5to9) continue;
+      auto h_all = ha_SDL_dBeta_0_all[iSDL];
+      auto h_pass = ha_SDL_dBeta_0_pass[iSDL];
       auto cn = h_all->GetTitle();
       TCanvas* cv = new TCanvas(cn, cn, 600, 600);
       cv->cd();
 
       h_all->SetLineWidth(2);
-      h_all->SetMinimum(0);
       h_pass->SetLineWidth(2);
       h_pass->SetLineColor(2);
 
       h_all->SetStats(0);
       h_all->Draw();
+      h_all->SetMinimum(0);
       h_pass->Draw("same");
-      gPad->SaveAs(Form("h_sdl7to9_dBeta_zoom_NM1dBeta_ptIn0to2_all_vs_pass_mm%d_D%1.1fcm_us%d.png", mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_0_all_vs_pass_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
     }
-    {
-      auto h_all = h_sdl0to5_dBeta_zoom_NM1dBeta_ptIn3to5_all;
-      auto h_pass = h_sdl0to5_dBeta_zoom_NM1dBeta_ptIn3to5_pass;
+    for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
+      if (iSDL == SDL_L5to9) continue;
+      auto h_all = ha_SDL_dBeta_zoom_0_all[iSDL];
+      auto h_pass = ha_SDL_dBeta_zoom_0_pass[iSDL];
       auto cn = h_all->GetTitle();
       TCanvas* cv = new TCanvas(cn, cn, 600, 600);
       cv->cd();
 
       h_all->SetLineWidth(2);
-      h_all->SetMinimum(0);
       h_pass->SetLineWidth(2);
       h_pass->SetLineColor(2);
 
       h_all->SetStats(0);
       h_all->Draw();
+      h_all->SetMinimum(0);
       h_pass->Draw("same");
-      gPad->SaveAs(Form("h_sdl0to5_dBeta_zoom_NM1dBeta_ptIn3to5_all_vs_pass_mm%d_D%1.1fcm_us%d.png", mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_zoom_0_all_vs_pass_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
     }
-    {
-      auto h_all = h_sdl0to7_dBeta_zoom_NM1dBeta_ptIn3to5_all;
-      auto h_pass = h_sdl0to7_dBeta_zoom_NM1dBeta_ptIn3to5_pass;
+    for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
+      if (iSDL == SDL_L5to9) continue;
+      auto h_all = ha_SDL_dBeta_01_all[iSDL];
+      auto h_pass = ha_SDL_dBeta_01_pass[iSDL];
       auto cn = h_all->GetTitle();
       TCanvas* cv = new TCanvas(cn, cn, 600, 600);
       cv->cd();
 
       h_all->SetLineWidth(2);
-      h_all->SetMinimum(0);
       h_pass->SetLineWidth(2);
       h_pass->SetLineColor(2);
 
       h_all->SetStats(0);
       h_all->Draw();
+      h_all->SetMinimum(0);
       h_pass->Draw("same");
-      gPad->SaveAs(Form("h_sdl0to7_dBeta_zoom_NM1dBeta_ptIn3to5_all_vs_pass_mm%d_D%1.1fcm_us%d.png", mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_01_all_vs_pass_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
     }
-    {
-      auto h_all = h_sdl5to7_dBeta_zoom_NM1dBeta_ptIn3to5_all;
-      auto h_pass = h_sdl5to7_dBeta_zoom_NM1dBeta_ptIn3to5_pass;
+    for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
+      if (iSDL == SDL_L5to9) continue;
+      auto h_all = ha_SDL_dBeta_zoom_01_all[iSDL];
+      auto h_pass = ha_SDL_dBeta_zoom_01_pass[iSDL];
       auto cn = h_all->GetTitle();
       TCanvas* cv = new TCanvas(cn, cn, 600, 600);
       cv->cd();
 
       h_all->SetLineWidth(2);
-      h_all->SetMinimum(0);
       h_pass->SetLineWidth(2);
       h_pass->SetLineColor(2);
 
       h_all->SetStats(0);
       h_all->Draw();
+      h_all->SetMinimum(0);
       h_pass->Draw("same");
-      gPad->SaveAs(Form("h_sdl5to7_dBeta_zoom_NM1dBeta_ptIn3to5_all_vs_pass_mm%d_D%1.1fcm_us%d.png", mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_zoom_01_all_vs_pass_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
     }
-    {
-      auto h_all = h_sdl7to9_dBeta_zoom_NM1dBeta_ptIn3to5_all;
-      auto h_pass = h_sdl7to9_dBeta_zoom_NM1dBeta_ptIn3to5_pass;
+    for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
+      if (iSDL == SDL_L5to9) continue;
+      auto h_all = ha_SDL_dBeta_012_all[iSDL];
+      auto h_pass = ha_SDL_dBeta_012_pass[iSDL];
       auto cn = h_all->GetTitle();
       TCanvas* cv = new TCanvas(cn, cn, 600, 600);
       cv->cd();
 
       h_all->SetLineWidth(2);
-      h_all->SetMinimum(0);
       h_pass->SetLineWidth(2);
       h_pass->SetLineColor(2);
 
       h_all->SetStats(0);
       h_all->Draw();
+      h_all->SetMinimum(0);
       h_pass->Draw("same");
-      gPad->SaveAs(Form("h_sdl7to9_dBeta_zoom_NM1dBeta_ptIn3to5_all_vs_pass_mm%d_D%1.1fcm_us%d.png", mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_012_all_vs_pass_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
     }
-    {
-      auto h_all = h_sdl0to5_dBeta_zoom_NM1dBeta_ptIn7toInf_all;
-      auto h_pass = h_sdl0to5_dBeta_zoom_NM1dBeta_ptIn7toInf_pass;
+    for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
+      if (iSDL == SDL_L5to9) continue;
+      auto h_all = ha_SDL_dBeta_zoom_012_all[iSDL];
+      auto h_pass = ha_SDL_dBeta_zoom_012_pass[iSDL];
       auto cn = h_all->GetTitle();
       TCanvas* cv = new TCanvas(cn, cn, 600, 600);
       cv->cd();
 
       h_all->SetLineWidth(2);
-      h_all->SetMinimum(0);
       h_pass->SetLineWidth(2);
       h_pass->SetLineColor(2);
 
       h_all->SetStats(0);
       h_all->Draw();
+      h_all->SetMinimum(0);
       h_pass->Draw("same");
-      gPad->SaveAs(Form("h_sdl0to5_dBeta_zoom_NM1dBeta_ptIn7toInf_all_vs_pass_mm%d_D%1.1fcm_us%d.png", mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_zoom_012_all_vs_pass_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
     }
-    {
-      auto h_all = h_sdl0to7_dBeta_zoom_NM1dBeta_ptIn7toInf_all;
-      auto h_pass = h_sdl0to7_dBeta_zoom_NM1dBeta_ptIn7toInf_pass;
+    
+    for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
+      if (iSDL == SDL_L5to9) continue;
+      auto h_all = ha_SDL_dBeta_0123_all[iSDL];
+      auto h_pass = ha_SDL_dBeta_0123_pass[iSDL];
       auto cn = h_all->GetTitle();
       TCanvas* cv = new TCanvas(cn, cn, 600, 600);
       cv->cd();
 
       h_all->SetLineWidth(2);
-      h_all->SetMinimum(0);
       h_pass->SetLineWidth(2);
       h_pass->SetLineColor(2);
 
       h_all->SetStats(0);
       h_all->Draw();
+      h_all->SetMinimum(0);
       h_pass->Draw("same");
-      gPad->SaveAs(Form("h_sdl0to7_dBeta_zoom_NM1dBeta_ptIn7toInf_all_vs_pass_mm%d_D%1.1fcm_us%d.png", mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_0123_all_vs_pass_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
     }
-    {
-      auto h_all = h_sdl5to7_dBeta_zoom_NM1dBeta_ptIn7toInf_all;
-      auto h_pass = h_sdl5to7_dBeta_zoom_NM1dBeta_ptIn7toInf_pass;
+    for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
+      if (iSDL == SDL_L5to9) continue;
+      auto h_all = ha_SDL_dBeta_zoom_0123_all[iSDL];
+      auto h_pass = ha_SDL_dBeta_zoom_0123_pass[iSDL];
       auto cn = h_all->GetTitle();
       TCanvas* cv = new TCanvas(cn, cn, 600, 600);
       cv->cd();
 
       h_all->SetLineWidth(2);
-      h_all->SetMinimum(0);
       h_pass->SetLineWidth(2);
       h_pass->SetLineColor(2);
 
       h_all->SetStats(0);
       h_all->Draw();
+      h_all->SetMinimum(0);
       h_pass->Draw("same");
-      gPad->SaveAs(Form("h_sdl5to7_dBeta_zoom_NM1dBeta_ptIn7toInf_all_vs_pass_mm%d_D%1.1fcm_us%d.png", mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_zoom_0123_all_vs_pass_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
     }
-    {
-      auto h_all = h_sdl7to9_dBeta_zoom_NM1dBeta_ptIn7toInf_all;
-      auto h_pass = h_sdl7to9_dBeta_zoom_NM1dBeta_ptIn7toInf_pass;
+    for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
+      if (iSDL == SDL_L5to9) continue;
+      auto h_all = ha_SDL_dBeta_01234_all[iSDL];
+      auto h_pass = ha_SDL_dBeta_01234_pass[iSDL];
       auto cn = h_all->GetTitle();
       TCanvas* cv = new TCanvas(cn, cn, 600, 600);
       cv->cd();
 
       h_all->SetLineWidth(2);
-      h_all->SetMinimum(0);
       h_pass->SetLineWidth(2);
       h_pass->SetLineColor(2);
 
       h_all->SetStats(0);
       h_all->Draw();
+      h_all->SetMinimum(0);
       h_pass->Draw("same");
-      gPad->SaveAs(Form("h_sdl7to9_dBeta_zoom_NM1dBeta_ptIn7toInf_all_vs_pass_mm%d_D%1.1fcm_us%d.png", mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_01234_all_vs_pass_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
     }
-    // >> in pt slices 
-    {
-      auto h2 = h2_sdl0to5_dBeta_betaIn_NM1dBeta_all;
+    for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
+      if (iSDL == SDL_L5to9) continue;
+      auto h_all = ha_SDL_dBeta_zoom_01234_all[iSDL];
+      auto h_pass = ha_SDL_dBeta_zoom_01234_pass[iSDL];
+      auto cn = h_all->GetTitle();
+      TCanvas* cv = new TCanvas(cn, cn, 600, 600);
+      cv->cd();
+
+      h_all->SetLineWidth(2);
+      h_pass->SetLineWidth(2);
+      h_pass->SetLineColor(2);
+
+      h_all->SetStats(0);
+      h_all->Draw();
+      h_all->SetMinimum(0);
+      h_pass->Draw("same");
+      gPad->SaveAs(Form("h_SDL_dBeta_zoom_01234_all_vs_pass_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+    }
+
+
+    // >> in pt slices
+    for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
+      if (iSDL == SDL_L5to9) continue;
+      auto h2 = ha_SDL_dBeta_betaIn_NM1dBeta_all[iSDL];
       auto cn = h2->GetTitle();
       TCanvas* cv = new TCanvas(cn, cn, 600, 600);
       cv->cd();
@@ -3170,46 +3125,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       gPad->SetGridx();
       gPad->SetLogx(0);
       gPad->SetLogz();
-      gPad->SaveAs(Form("h2_sdl0to5_dBeta_betaIn_NM1dBeta_all_mm%d_D%1.1fcm_us%d.png", mockMode, sdOffset, useSeeds));
-    }
-    {
-      auto h2 = h2_sdl0to7_dBeta_betaIn_NM1dBeta_all;
-      auto cn = h2->GetTitle();
-      TCanvas* cv = new TCanvas(cn, cn, 600, 600);
-      cv->cd();
-      gPad->SetRightMargin(gPad->GetRightMargin()*1.1);
-      h2->SetStats(0);
-      h2->Draw("colz");
-      gPad->SetGridx();
-      gPad->SetLogx(0);
-      gPad->SetLogz();
-      gPad->SaveAs(Form("h2_sdl0to7_dBeta_betaIn_NM1dBeta_all_mm%d_D%1.1fcm_us%d.png", mockMode, sdOffset, useSeeds));
-    }
-    {
-      auto h2 = h2_sdl5to7_dBeta_betaIn_NM1dBeta_all;
-      auto cn = h2->GetTitle();
-      TCanvas* cv = new TCanvas(cn, cn, 600, 600);
-      cv->cd();
-      gPad->SetRightMargin(gPad->GetRightMargin()*1.1);
-      h2->SetStats(0);
-      h2->Draw("colz");
-      gPad->SetGridx();
-      gPad->SetLogx(0);
-      gPad->SetLogz();
-      gPad->SaveAs(Form("h2_sdl5to7_dBeta_betaIn_NM1dBeta_all_mm%d_D%1.1fcm_us%d.png", mockMode, sdOffset, useSeeds));
-    }
-    {
-      auto h2 = h2_sdl7to9_dBeta_betaIn_NM1dBeta_all;
-      auto cn = h2->GetTitle();
-      TCanvas* cv = new TCanvas(cn, cn, 600, 600);
-      cv->cd();
-      gPad->SetRightMargin(gPad->GetRightMargin()*1.1);
-      h2->SetStats(0);
-      h2->Draw("colz");
-      gPad->SetGridx();
-      gPad->SetLogx(0);
-      gPad->SetLogz();
-      gPad->SaveAs(Form("h2_sdl7to9_dBeta_betaIn_NM1dBeta_all_mm%d_D%1.1fcm_us%d.png", mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h2_SDL_dBeta_betaIn_NM1dBeta_%dto%d_mm%d_D%1.1fcm_us%d.png",  layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
     }
 
     for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
@@ -3290,7 +3206,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 
     for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
       if (iSDL == SDL_L5to9) continue;
-      auto h2 = ha_SDL_dBeta_betaIn_pass[iSDL];
+      auto h2 = ha_SDL_dBeta_betaIn_pass_NM1dBeta_8MH[iSDL];
       auto cn = h2->GetTitle();
       TCanvas* cv = new TCanvas(cn, cn, 600, 600);
       cv->cd();
@@ -3305,7 +3221,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
     }
     for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
       if (iSDL == SDL_L5to9) continue;
-      auto h2 = ha_SDL_dBeta_betaIn_zoom_pass[iSDL];
+      auto h2 = ha_SDL_dBeta_betaIn_zoom_pass_NM1dBeta_8MH[iSDL];
       auto cn = h2->GetTitle();
       TCanvas* cv = new TCanvas(cn, cn, 600, 600);
       cv->cd();
@@ -3320,7 +3236,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
     }
     for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
       if (iSDL == SDL_L5to9) continue;
-      auto h2 = ha_SDL_dBeta_betaOut_zoom_pass[iSDL];
+      auto h2 = ha_SDL_dBeta_betaOut_zoom_pass_NM1dBeta_8MH[iSDL];
       auto cn = h2->GetTitle();
       TCanvas* cv = new TCanvas(cn, cn, 600, 600);
       cv->cd();
@@ -3578,7 +3494,43 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       leg->Draw();
       gPad->SaveAs(Form("h_fake_SDL_4of4_pt_mm%d_D%1.1fcm_us%d.png", mockMode, sdOffset, useSeeds));
     }
-    //fakes vs pt
+    //fakes vs eta
+    {      
+      auto h57 =  ha_fakeSDL_4of4_eta[SDL_L5to7];
+      auto h79 =  ha_fakeSDL_4of4_eta[SDL_L7to9];
+      
+      auto cn = h57->GetName();
+      TCanvas* cv = new TCanvas(cn, cn, 600, 600);
+      cv->cd();
+
+      h57->Draw();
+      h79->Draw("same");
+
+      h57->SetLineWidth(2);
+      h79->SetLineWidth(2);
+      h57->SetLineColor(kBlack);
+      h79->SetLineColor(kRed);
+      h57->SetMarkerSize(0.8);
+      h79->SetMarkerSize(0.8);
+      h57->SetMarkerStyle(21);
+      h79->SetMarkerStyle(22);
+
+      gPad->SetGridx();
+      gPad->SetGridy();
+      gPad->PaintModified();
+      auto pg = h57->GetPaintedGraph();
+      pg->SetMinimum(0.0);
+      pg->SetMaximum(1.02);
+
+      auto leg = new TLegend(0.5, 0.15, 0.86, 0.22);
+      leg->SetBorderSize(0);
+      leg->SetFillColor(0);
+      leg->SetNColumns(2);
+      leg->AddEntry(h57, "L5-L7", "LP");
+      leg->AddEntry(h79, "L7-L9", "LP");
+      leg->Draw();
+      gPad->SaveAs(Form("h_fake_SDL_4of4_eta2_mm%d_D%1.1fcm_us%d.png", mockMode, sdOffset, useSeeds));
+    }
     {      
       auto h57 =  ha_fakeSDL_4of4_eta[SDL_L5to7];
       auto h79 =  ha_fakeSDL_4of4_eta[SDL_L7to9];
