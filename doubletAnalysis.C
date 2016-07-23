@@ -406,7 +406,7 @@ struct PixelHit {
   bool isBarrel;
   void print(const std::string& pfx){
     std::cout<<pfx<<" "<<ind<<" L"<<lay<<(isBarrel? "b ": "e ")<<evt<<":"<<bx<<" "<<pdgId<<":"<<process
-	     <<" ("<<r3s.Pt()<<", "<<r3s.Eta()<<","<<r3s.Phi()<<") "
+	     <<" ("<<r3s.Pt()<<", "<<r3s.Eta()<<","<<r3s.Phi()<<","<<r3s.Z() <<") "
 	     <<" ("<<p3s.Pt()<<", "<<p3s.Eta()<<","<<p3s.Phi()<<") "
 	     <<std::endl;
   }
@@ -1908,6 +1908,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	  float zIn = sdIn.r3.z();
 	  float dSDIn = sdIn.mdOut.r3.Pt() - sdIn.mdRef.r3.Pt();
 	  float dzSDIn = sdIn.mdOut.r3.z() - sdIn.mdRef.r3.z();
+	  float dr3SDIn = sdIn.mdOut.r3.Mag() - sdIn.mdRef.r3.Mag();
 	  
 	  int iOut = -1;
 	  for ( auto sdOut : sdOutV ) {
@@ -1926,23 +1927,46 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    if (!(zOut < zLo || zOut > zHi)) sdlFlag |= 1 << SDLSelectFlags::deltaZ; //continue;
 	    if (sdlFlag == sdlMasksCumulative[SDLSelectFlags::deltaZ]) nDeltaZ++;
 
+	    float ptSLo = 1.0;
+	    if (lIn == 0){
+	      //try to use seed pt: the lower bound is good
+	      ptSLo = sdIn.p3.Pt();
+	      float ptErr = see_pca_ptErr()[sdIn.iRef];
+	      ptSLo = std::max(1.0f, ptSLo - 10.0f*ptErr);
+	      ptSLo = std::min(10.0f, ptSLo); //don't let this run away either
+	    }
+	    const float ptCut = ptSLo;
+	    const float sdlThetaMulsF = 0.015*sqrt(0.2);
+	    const float sdlMuls = sdlThetaMulsF*3./ptCut*4;//will need a better guess than x4?
+	    const float drOutIn = (rtOut - rtIn);
+
 	    if (lIn == 0){
 	      float etaErr = see_pca_etaErr()[sdIn.iRef];
 	      float eta = see_lh_eta()[sdIn.iRef];
-	      float dzErr = (rtOut - rtIn)*etaErr*cosh(eta);
+	      float coshEta = cosh(eta);
+	      float dzErr = (rtOut - rtIn)*etaErr*coshEta;
 	      dzErr *= dzErr;
 	      dzErr += 0.03*0.03; // pixel size x2. ... random for now
 	      dzErr *= 9; //3 sigma
+	      dzErr += sdlMuls*sdlMuls*drOutIn*drOutIn/3.*coshEta*coshEta;//sloppy
 	      dzErr += zGeom*zGeom;
 	      dzErr = sqrt(dzErr);
 	      float dzDrIn = sdIn.p3.Z()/sdIn.p3.Pt();
-	      float zLo = zIn + (dzDrIn - dzErr/dSDIn)*(rtOut - rtIn) - zGeom;
-	      float zHi = zIn + (dzDrIn + dzErr/dSDIn)*(rtOut - rtIn) + zGeom;
+	      float zWindow = dzErr/dSDIn*drOutIn + zGeom;
+	      float dzMean = dzDrIn*drOutIn*(1. + drOutIn*drOutIn/87.8/87.8/sdIn.p3.Pt()/sdIn.p3.Pt()/24.);//with curved path correction
+	      float zLo = zIn + dzMean - zWindow;
+	      float zHi = zIn + dzMean + zWindow;
 	      if (!(zOut < zLo || zOut > zHi)) sdlFlag |= 1 << SDLSelectFlags::deltaZPointed; //continue;
 	    }
 	    else if (lIn>=5 && lIn <=6){//can point to the z pos in lOut
-	      float zLo = zIn + (dzSDIn - zGeom*sqrt(2.))/dSDIn*(rtOut - rtIn) - zGeom;
-	      float zHi = zIn + (dzSDIn + zGeom*sqrt(2.))/dSDIn*(rtOut - rtIn) + zGeom;
+	      float coshEta = dr3SDIn/dSDIn;//direction estimate
+	      float dzErr = zGeom*zGeom*2.;//both sides contribute to direction uncertainty
+	      dzErr += sdlMuls*sdlMuls*drOutIn*drOutIn/3.*coshEta*coshEta;//sloppy
+	      dzErr = sqrt(dzErr);
+	      float dzMean = dzSDIn/dSDIn*drOutIn;
+	      float zWindow = dzErr/dSDIn*drOutIn + zGeom; //FIXME for ptCut lower than ~0.8 need to add curv path correction
+	      float zLo = zIn + dzMean - zWindow;
+	      float zHi = zIn + dzMean + zWindow;
 	      if (!(zOut < zLo || zOut > zHi)) sdlFlag |= 1 << SDLSelectFlags::deltaZPointed; //continue;
 	    } else {
 	      sdlFlag |= 1 << SDLSelectFlags::deltaZPointed;
@@ -1953,18 +1977,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    double dPhi = midR3.DeltaPhi(sdOut.r3 - sdIn.r3);
 	    double rt = 0.5*(sdIn.r3.Pt() + sdOut.r3.Pt());
 
-	    float ptSLo = 1.0;
-	    if (lIn == 0){
-	      //try to use seed pt: the lower bound is good
-	      ptSLo = sdIn.p3.Pt();
-	      float ptErr = see_pca_ptErr()[sdIn.iRef];
-	      ptSLo = std::max(1.0f, ptSLo - 10.0f*ptErr);
-	      ptSLo = std::min(10.0f, ptSLo); //don't let this run away either
-	    }
-	    const float ptCut = ptSLo;
 	    const float sdlSlope = rt/175.67/ptCut;
-	    const float sdlThetaMulsF = 0.015*sqrt(0.2);
-	    const float sdlMuls = sdlThetaMulsF*3./ptCut*4;//will need a better guess than x4?
 	    const float sdlPVoff = 0.1/rt;
 	    const float sdlCut = sdlSlope + sqrt(sdlMuls*sdlMuls + sdlPVoff*sdlPVoff);
 	    
@@ -2148,7 +2161,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	auto tpPhi = p3.Phi();
 
 	
-	if (tpPt > 15 && std::abs(p3.Eta())< 1) debug = true;
+	if (tpPt < 1.5 && std::abs(p3.Eta())< 1) debug = false;
 	if (debug) std::cout<<"TP: "<<p3.Pt()<<" "<<p3.Eta()<<" "<<p3.Phi();
 	
 	std::map<int, int> nHitsMap;
@@ -2376,12 +2389,14 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 
 	    //enum SDLSelectFlags { deltaZ = 0, deltaZPointed, slope, dAlphaIn, dAlphaOut, dBeta};
 	    std::vector<std::pair<SDLink, int> > vSDLwInfo_4of4;
-	    bool debugSimMatching = tpPt > 15 && hasSDIn_4of4 && hasSDOut_4of4 && has8MHs && has4MDs && debug;
+	    bool debugSimMatching = tpPt < 2 && hasSDIn_4of4 && hasSDOut_4of4 && has8MHs && has4MDs && debug;
 	    for (auto const& sdIn : vSDIn_4of4){
 	      float rtIn = sdIn.r3.Pt();
 	      float zIn = sdIn.r3.z();
 	      float dSDIn = sdIn.mdOut.r3.Pt() - sdIn.mdRef.r3.Pt();
 	      float dzSDIn = sdIn.mdOut.r3.z() - sdIn.mdRef.r3.z();
+	      float dr3SDIn = sdIn.mdOut.r3.Mag() - sdIn.mdRef.r3.Mag();
+	      
 	      for (auto const& sdOut : vSDOut_4of4){
 		int sdlFlag = 0;
 		
@@ -2393,42 +2408,10 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		float zLo = rtOut/rtIn*(zIn - 15.) - zGeom; //15 for the luminous ; zGeom for z geom unit size
 		float zHi = rtOut/rtIn*(zIn + 15.) + zGeom;
 
-		if (debugSimMatching){
-		  std::cout<<"Lum region: tpPt "<<tpPt<<" lIn "<<lIn <<" zLo "<<zLo<<" zHi "<<zHi<<" vs zOut "<<zOut<<std::endl;
-		}
 		if (zOut > zLo && zOut < zHi) sdlFlag |= 1 << SDLSelectFlags::deltaZ;
-
-		if (lIn == 0){
-		  float etaErr = see_pca_etaErr()[sdIn.iRef];
-		  float eta = see_lh_eta()[sdIn.iRef];
-		  float dzErr = (rtOut - rtIn)*etaErr*cosh(eta);
-		  dzErr *= dzErr;
-		  dzErr += 0.03*0.03; // pixel size x2. ... random for now
-		  dzErr *= 9; //3 sigma
-		  dzErr += zGeom*zGeom;
-		  dzErr = sqrt(dzErr);
-		  float dzDrIn = sdIn.p3.Z()/sdIn.p3.Pt();
-		  float zLo = zIn + (dzDrIn - dzErr/dSDIn)*(rtOut - rtIn) - zGeom;
-		  float zHi = zIn + (dzDrIn + dzErr/dSDIn)*(rtOut - rtIn) + zGeom;
-		  if (!(zOut < zLo || zOut > zHi)) sdlFlag |= 1 << SDLSelectFlags::deltaZPointed; //continue;
-		  if (debugSimMatching){
-		    std::cout<<"ZPointing: tpPt "<<tpPt<<" lIn "<<lIn <<" zLo "<<zLo<<" zHi "<<zHi<<" vs zOut "<<zOut
-			     <<" : dzDrIn "<<dzDrIn<<" dSDIn "<<dSDIn<<" dzErr "<<dzErr<<" (rtOut - rtIn) "<<(rtOut - rtIn)<<std::endl;
-		    std::cout<<"\t\t RefL "<<sdIn.mdRef.pixL<<" RefU "<<sdIn.mdRef.pixU
-			     <<" OutL "<<sdIn.mdOut.pixL<<" OutU "<<sdIn.mdOut.pixU<<std::endl;
-		  }
-		} else if (lIn>=5 && lIn <=6){//can point to the z pos in lOut
-		  float zLo = zIn + (dzSDIn - zGeom*sqrt(2.))/dSDIn*(rtOut - rtIn) - zGeom;
-		  float zHi = zIn + (dzSDIn + zGeom*sqrt(2.))/dSDIn*(rtOut - rtIn) + zGeom;
-		  if (zOut > zLo && zOut < zHi) sdlFlag |= 1 << SDLSelectFlags::deltaZPointed;
-		} else {
-		  //the flag is set to pass here
-		  sdlFlag |= 1 << SDLSelectFlags::deltaZPointed;
+		if (debugSimMatching && !(sdlFlag & 1 << SDLSelectFlags::deltaZ) ){
+		  std::cout<<"Lum region failed: tpPt "<<tpPt<<" lIn "<<lIn <<" zLo "<<zLo<<" zHi "<<zHi<<" vs zOut "<<zOut<<std::endl;
 		}
-
-		auto midR3 = 0.5*(sdIn.r3 + sdOut.r3);
-		double dPhi = midR3.DeltaPhi(sdOut.r3 - sdIn.r3);
-		double rt = 0.5*(sdIn.r3.Pt() + sdOut.r3.Pt());
 
 		float ptSLo = 1.0;
 		if (lIn == 0){
@@ -2439,9 +2422,53 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		  ptSLo = std::min(10.0f, ptSLo); //don't let this run away either
 		}			    
 		const float ptCut = ptSLo;
-		const float sdlSlope = rt/175.67/ptCut;
 		const float sdlThetaMulsF = 0.015*sqrt(0.2);
 		const float sdlMuls = sdlThetaMulsF*3./ptCut*4;//will need a better guess than x4?
+		const float drOutIn = (rtOut - rtIn);
+
+		if (lIn == 0){
+		  float etaErr = see_pca_etaErr()[sdIn.iRef];
+		  float eta = see_lh_eta()[sdIn.iRef];
+		  float coshEta = cosh(eta);
+		  float dzErr = (rtOut - rtIn)*etaErr*coshEta;
+		  dzErr *= dzErr;
+		  dzErr += 0.03*0.03; // pixel size x2. ... random for now
+		  dzErr *= 9; //3 sigma
+		  dzErr += sdlMuls*sdlMuls*drOutIn*drOutIn/3.*coshEta*coshEta;//sloppy
+		  dzErr += zGeom*zGeom;
+		  dzErr = sqrt(dzErr);
+		  float dzDrIn = sdIn.p3.Z()/sdIn.p3.Pt();
+		  float zWindow = dzErr/dSDIn*drOutIn + zGeom;
+		  float dzMean = dzDrIn*drOutIn*(1. + drOutIn*drOutIn/87.8/87.8/sdIn.p3.Pt()/sdIn.p3.Pt()/24.);//with curved path correction
+		  float zLo = zIn + dzMean - zWindow;
+		  float zHi = zIn + dzMean + zWindow;		  
+		  if (!(zOut < zLo || zOut > zHi)) sdlFlag |= 1 << SDLSelectFlags::deltaZPointed; //continue;
+		  if (debugSimMatching && !(sdlFlag & 1 << SDLSelectFlags::deltaZPointed)){
+		    std::cout<<"ZPointing failed: tpPt "<<tpPt<<" lIn "<<lIn <<" zLo "<<zLo<<" zHi "<<zHi<<" vs zOut "<<zOut
+			     <<" : dzDrIn "<<dzDrIn<<" dSDIn "<<dSDIn<<" dzErr "<<dzErr<<" (rtOut - rtIn) "<<(rtOut - rtIn)<<std::endl;
+		    std::cout<<"\t\t RefL "<<sdIn.mdRef.pixL<<" RefU "<<sdIn.mdRef.pixU
+			     <<" OutL "<<sdIn.mdOut.pixL<<" OutU "<<sdIn.mdOut.pixU<<std::endl;
+		  }
+		} else if (lIn>=5 && lIn <=6){//can point to the z pos in lOut
+		  float coshEta = dr3SDIn/dSDIn;//direction estimate
+		  float dzErr = zGeom*zGeom*2.;//both sides contribute to direction uncertainty
+		  dzErr += sdlMuls*sdlMuls*drOutIn*drOutIn/3.*coshEta*coshEta;//sloppy
+		  dzErr = sqrt(dzErr);
+		  float dzMean = dzSDIn/dSDIn*drOutIn;
+		  float zWindow = dzErr/dSDIn*drOutIn + zGeom; //FIXME for ptCut lower than ~0.8 need to add curv path correction range
+		  float zLo = zIn + dzMean - zWindow;
+		  float zHi = zIn + dzMean + zWindow;
+		  if (zOut > zLo && zOut < zHi) sdlFlag |= 1 << SDLSelectFlags::deltaZPointed;
+		} else {
+		  //the flag is set to pass here
+		  sdlFlag |= 1 << SDLSelectFlags::deltaZPointed;
+		}
+
+		auto midR3 = 0.5*(sdIn.r3 + sdOut.r3);
+		double dPhi = midR3.DeltaPhi(sdOut.r3 - sdIn.r3);
+		double rt = 0.5*(sdIn.r3.Pt() + sdOut.r3.Pt());
+
+		const float sdlSlope = rt/175.67/ptCut;
 		const float sdlPVoff = 0.1/rt;
 		const float sdlCut = sdlSlope + sqrt(sdlMuls*sdlMuls + sdlPVoff*sdlPVoff);
 	    
