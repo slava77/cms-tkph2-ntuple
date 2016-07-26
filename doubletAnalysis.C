@@ -3576,6 +3576,122 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 
     //fakes vs pt
     {      
+      auto h05 =  ha_fakeSDL_4of4_pt[SDL_L0to5];
+      auto h07 =  ha_fakeSDL_4of4_pt[SDL_L0to7];
+      
+      auto cn = h05->GetName();
+      TCanvas* cv = new TCanvas(cn, cn, 600, 600);
+      cv->cd();
+
+      h05->Draw();
+      h07->Draw("same");
+
+      h05->SetLineWidth(2);
+      h07->SetLineWidth(2);
+      h05->SetLineColor(kBlack);
+      h07->SetLineColor(kRed);
+      h05->SetMarkerSize(0.8);
+      h07->SetMarkerSize(0.8);
+      h05->SetMarkerStyle(21);
+      h07->SetMarkerStyle(22);
+
+      gPad->SetGridx();
+      gPad->SetGridy();
+      gPad->SetLogx();
+      gPad->PaintModified();
+      auto pg = h05->GetPaintedGraph();
+      pg->SetMinimum(0.0);
+      pg->SetMaximum(1.02);
+      auto ax = pg->GetXaxis();
+      ax->SetLimits(1.0, ax->GetXmax());
+
+      auto leg = new TLegend(0.5, 0.15, 0.86, 0.22);
+      leg->SetBorderSize(0);
+      leg->SetFillColor(0);
+      leg->SetNColumns(2);
+      leg->AddEntry(h05, "L0-L5", "LP");
+      leg->AddEntry(h07, "L0-L7", "LP");
+      leg->Draw();
+      gPad->SaveAs(Form("h_fake_SDL_0-5_0-7_4of4_pt_mm%d_D%1.1fcm_us%d.png", mockMode, sdOffset, useSeeds));
+    }
+    //fakes vs eta
+    {      
+      auto h05 =  ha_fakeSDL_4of4_eta[SDL_L0to5];
+      auto h07 =  ha_fakeSDL_4of4_eta[SDL_L0to7];
+      
+      auto cn = h05->GetName();
+      TCanvas* cv = new TCanvas(cn, cn, 600, 600);
+      cv->cd();
+
+      h05->Draw();
+      h07->Draw("same");
+
+      h05->SetLineWidth(2);
+      h07->SetLineWidth(2);
+      h05->SetLineColor(kBlack);
+      h07->SetLineColor(kRed);
+      h05->SetMarkerSize(0.8);
+      h07->SetMarkerSize(0.8);
+      h05->SetMarkerStyle(21);
+      h07->SetMarkerStyle(22);
+
+      gPad->SetGridx();
+      gPad->SetGridy();
+      gPad->PaintModified();
+      auto pg = h05->GetPaintedGraph();
+      pg->SetMinimum(0.0);
+      pg->SetMaximum(1.02);
+
+      auto leg = new TLegend(0.5, 0.15, 0.86, 0.22);
+      leg->SetBorderSize(0);
+      leg->SetFillColor(0);
+      leg->SetNColumns(2);
+      leg->AddEntry(h05, "L0-L5", "LP");
+      leg->AddEntry(h07, "L0-L7", "LP");
+      leg->Draw();
+      gPad->SaveAs(Form("h_fake_SDL_0-5_0-7_4of4_eta2_mm%d_D%1.1fcm_us%d.png", mockMode, sdOffset, useSeeds));
+    }
+    {      
+      auto h05 =  ha_fakeSDL_4of4_eta[SDL_L0to5];
+      auto h07 =  ha_fakeSDL_4of4_eta[SDL_L0to7];
+      
+      auto cn = h05->GetName();
+      TCanvas* cv = new TCanvas(cn, cn, 600, 600);
+      cv->cd();
+
+      h05->Draw();
+      h07->Draw("same");
+
+      h05->SetLineWidth(2);
+      h07->SetLineWidth(2);
+      h05->SetLineColor(kBlack);
+      h07->SetLineColor(kRed);
+      h05->SetMarkerSize(0.8);
+      h07->SetMarkerSize(0.8);
+      h05->SetMarkerStyle(21);
+      h07->SetMarkerStyle(22);
+
+      gPad->SetGridx();
+      gPad->SetGridy();
+      gPad->PaintModified();
+      auto pg = h05->GetPaintedGraph();
+      pg->SetMinimum(0.0);
+      pg->SetMaximum(1.02);
+      auto ax = pg->GetXaxis();
+      ax->SetLimits(-1.5, 1.5);
+
+      auto leg = new TLegend(0.5, 0.15, 0.86, 0.22);
+      leg->SetBorderSize(0);
+      leg->SetFillColor(0);
+      leg->SetNColumns(2);
+      leg->AddEntry(h05, "L0-L5", "LP");
+      leg->AddEntry(h07, "L0-L7", "LP");
+      leg->Draw();
+      gPad->SaveAs(Form("h_fake_SDL_0-5_0-7_4of4_eta_mm%d_D%1.1fcm_us%d.png", mockMode, sdOffset, useSeeds));
+    }
+
+    //fakes vs pt 5-7 and 7-9
+    {      
       auto h57 =  ha_fakeSDL_4of4_pt[SDL_L5to7];
       auto h79 =  ha_fakeSDL_4of4_pt[SDL_L7to9];
       
@@ -3612,7 +3728,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       leg->AddEntry(h57, "L5-L7", "LP");
       leg->AddEntry(h79, "L7-L9", "LP");
       leg->Draw();
-      gPad->SaveAs(Form("h_fake_SDL_4of4_pt_mm%d_D%1.1fcm_us%d.png", mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_fake_SDL_5-7_7-9_4of4_pt_mm%d_D%1.1fcm_us%d.png", mockMode, sdOffset, useSeeds));
     }
     //fakes vs eta
     {      
@@ -3649,7 +3765,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       leg->AddEntry(h57, "L5-L7", "LP");
       leg->AddEntry(h79, "L7-L9", "LP");
       leg->Draw();
-      gPad->SaveAs(Form("h_fake_SDL_4of4_eta2_mm%d_D%1.1fcm_us%d.png", mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_fake_SDL_5-7_7-9_4of4_eta2_mm%d_D%1.1fcm_us%d.png", mockMode, sdOffset, useSeeds));
     }
     {      
       auto h57 =  ha_fakeSDL_4of4_eta[SDL_L5to7];
@@ -3687,7 +3803,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       leg->AddEntry(h57, "L5-L7", "LP");
       leg->AddEntry(h79, "L7-L9", "LP");
       leg->Draw();
-      gPad->SaveAs(Form("h_fake_SDL_4of4_eta_mm%d_D%1.1fcm_us%d.png", mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_fake_SDL_5-7_7-9_4of4_eta_mm%d_D%1.1fcm_us%d.png", mockMode, sdOffset, useSeeds));
     }
 
   }//if drawPlots
