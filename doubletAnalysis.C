@@ -321,6 +321,7 @@ struct MiniDoublet {
   int pixU;
   TVector3 r3;
   double alpha;
+  double rt;
 };
 
 struct SuperDoublet {
@@ -329,8 +330,11 @@ struct SuperDoublet {
   int iRef;
   int iOut;
   TVector3 r3; //may be different from plain mdRef.r3
+  double rt;
   TVector3 p3; //makes sense mostly for seed-based
   double alpha;
+  double alphaOut;
+  double dr;
 };
 
 struct SDLink {
@@ -1719,10 +1723,10 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 
       std::array<std::vector<SuperDoublet>, nLayers+1> mockLayerSDfwDNcm;
 
-      std::vector<SDLink> mockLayer0to5SDLfwDNcm;
-      std::vector<SDLink> mockLayer0to7SDLfwDNcm;
-      std::vector<SDLink> mockLayer5to7SDLfwDNcm;
-      std::vector<SDLink> mockLayer7to9SDLfwDNcm;
+      std::vector<SDLink> mockLayer0to5SDLfwDNcm; mockLayer0to5SDLfwDNcm.reserve(100000);
+      std::vector<SDLink> mockLayer0to7SDLfwDNcm; mockLayer0to7SDLfwDNcm.reserve(100000);
+      std::vector<SDLink> mockLayer5to7SDLfwDNcm; mockLayer5to7SDLfwDNcm.reserve(100000);
+      std::vector<SDLink> mockLayer7to9SDLfwDNcm; mockLayer7to9SDLfwDNcm.reserve(100000);
       
       if (useSeeds == 1){
 	std::cout<<"Convert seeds to SuperDoublets"<<std::endl;
@@ -1752,16 +1756,20 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	  seedSD.mdRef.pixL = see_pixelIdx()[iSeed][0];
 	  seedSD.mdRef.pixU = see_pixelIdx()[iSeed][1];
 	  seedSD.mdRef.r3 = r3PCA;
+	  seedSD.mdRef.rt = r3PCA.Pt();	  
 	  seedSD.mdRef.alpha = r3PCA.DeltaPhi(p3PCA);
 	  seedSD.mdOut.pixL = see_pixelIdx()[iSeed][2];
 	  if (nPix >= 4) seedSD.mdOut.pixU = see_pixelIdx()[iSeed][3];
 	  seedSD.mdOut.r3 = r3LH;
+	  seedSD.mdOut.rt = r3LH.Pt();
 	  seedSD.mdOut.alpha = r3LH.DeltaPhi(p3LH);	  
 	  seedSD.iRef = iSeed;
 	  seedSD.iOut = iSeed;
 	  seedSD.r3 = r3LH;
+	  seedSD.rt = r3LH.Pt();
 	  seedSD.p3 = p3LH;
 	  seedSD.alpha = r3LH.DeltaPhi(p3LH);
+	  seedSD.dr = (r3LH - r3PCA).Pt();
 	  mockLayerSDfwDNcm[0].emplace_back(seedSD);
 	}
 	std::cout<<"Loaded nSeeds (pt>1 and |eta|<1.6) "<<mockLayerSDfwDNcm[0].size()<<std::endl;
@@ -1802,6 +1810,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      md.pixL = hL.first;
 	      md.pixU = hU.first;
 	      md.r3 = hL.second;
+	      md.rt = hL.second.Pt();
 	      md.alpha = dPhi;
 	      mDs.push_back(md);
 	    }
@@ -1845,15 +1854,19 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    const float sdPVoff = 0.1/rt;
 	    const float sdCut = sdSlope + sqrt(sdMuls*sdMuls + sdPVoff*sdPVoff);
 
+	    auto const dr3 = mdOut.r3 - mdRef.r3;
 	    //plain SD bend cut
-	    float dPhi = mdRef.r3.DeltaPhi(mdOut.r3 - mdRef.r3);
+	    float dPhi = mdRef.r3.DeltaPhi(dr3);
 	    if (std::abs(dPhi) > sdCut ) continue;
 
 	    
 	    sd.r3 = mdRef.r3;
+	    sd.rt = mdRef.rt;
 	    sd.alpha = dPhi;
+	    sd.alphaOut = mdOut.r3.DeltaPhi(dr3);
+	    sd.dr = dr3.Pt();
 	    //loose angle compatibility
-	    float dAlpha_Bfield = (rtOut - rtRef)/175.67/ptCut;
+	    float dAlpha_Bfield = sd.dr/175.67/ptCut;
 	    float dAlpha_res = 0.04/miniDeltaBarrel[iL];//4-strip difference
 	    float dAlpha_compat = dAlpha_Bfield + dAlpha_res;
 	    if (std::abs(mdRef.alpha- sd.alpha) > dAlpha_compat) continue;
@@ -1863,7 +1876,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    sd.mdRef = mdRef;
 	    sd.mdOut = mdOut;
 
-	    if ( (sd.mdRef.r3 - sd.mdOut.r3).Pt() > 1.5*(rtOut - rtRef)){
+	    if ( sd.dr > 1.5*(rtOut - rtRef)){
 	      //problem in matching
 	      std::cout<<__LINE__
 		       <<" "<<sd.mdRef.r3.Pt()<<" "<<sd.mdRef.r3.Phi()
@@ -1901,135 +1914,153 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	int ndBeta = 0;
 	
 	int iIn = -1;
-	for ( auto sdIn : sdInV ) {
+	for ( auto const& sdIn : sdInV ) {
 	  iIn++;
 	  //
-	  float rtIn = sdIn.r3.Pt();
+	  float rtIn = sdIn.rt;
+	  float ptIn = sdIn.p3.Pt();
 	  float zIn = sdIn.r3.z();
-	  float dSDIn = sdIn.mdOut.r3.Pt() - sdIn.mdRef.r3.Pt();
+	  float dSDIn = sdIn.mdOut.rt - sdIn.mdRef.rt;
 	  float dzSDIn = sdIn.mdOut.r3.z() - sdIn.mdRef.r3.z();
 	  float dr3SDIn = sdIn.mdOut.r3.Mag() - sdIn.mdRef.r3.Mag();
 	  
+	  float ptSLo = 1.0;
+	  if (lIn == 0){
+	    //try to use seed pt: the lower bound is good
+	    ptSLo = ptIn;
+	    float ptErr = see_pca_ptErr()[sdIn.iRef];
+	    ptSLo = std::max(1.0f, ptSLo - 10.0f*ptErr);
+	    ptSLo = std::min(10.0f, ptSLo); //don't let this run away either
+	  }
+	  const float ptCut = ptSLo;
+	  const float sdlThetaMulsF = 0.015f*sqrt(0.2f);
+	  const float sdlMuls = sdlThetaMulsF*3.f/ptCut*4.f;//will need a better guess than x4?
+	  
 	  int iOut = -1;
-	  for ( auto sdOut : sdOutV ) {
+	  for ( auto const& sdOut : sdOutV ) {
 	    int sdlFlag = 0;
 	    iOut++;
 	    //
 	    nAll++;
 	    
-	    float rtOut = sdOut.r3.Pt();
-	    float zOut = sdOut.r3.z();
+	    const float rtOut = sdOut.rt;
+	    const float zOut = sdOut.r3.z();	    
+	    const float dSDOut = sdOut.mdOut.rt - sdOut.mdRef.rt;
 	    //apply some loose Z compatibility
 	    //FIXME: refine using inner layer directions (can prune later)
-	    float zGeom = lIn >= 0 && lIn <= 7 && lOut >= 5 && lOut <= 7 ? 0.3 : 10;//twice the macro-pixel or strip size
-	    float zLo = rtOut/rtIn*(zIn - 15.) - zGeom; //15 for the luminous ; zGeom for z geom unit size
-	    float zHi = rtOut/rtIn*(zIn + 15.) + zGeom;
+	    const float zGeom = lIn >= 0 && lIn <= 7 && lOut >= 5 && lOut <= 7 ? 0.3 : 10;//twice the macro-pixel or strip size
+
+	    const float rtOut_o_rtIn = rtOut/rtIn;
+	    const float zLo = rtOut_o_rtIn*(zIn - 15.f) - zGeom; //15 for the luminous ; zGeom for z geom unit size
+	    const float zHi = rtOut_o_rtIn*(zIn + 15.f) + zGeom;
 	    if (!(zOut < zLo || zOut > zHi)) sdlFlag |= 1 << SDLSelectFlags::deltaZ; //continue;
 	    if (sdlFlag == sdlMasksCumulative[SDLSelectFlags::deltaZ]) nDeltaZ++;
 
-	    float ptSLo = 1.0;
-	    if (lIn == 0){
-	      //try to use seed pt: the lower bound is good
-	      ptSLo = sdIn.p3.Pt();
-	      float ptErr = see_pca_ptErr()[sdIn.iRef];
-	      ptSLo = std::max(1.0f, ptSLo - 10.0f*ptErr);
-	      ptSLo = std::min(10.0f, ptSLo); //don't let this run away either
-	    }
-	    const float ptCut = ptSLo;
-	    const float sdlThetaMulsF = 0.015*sqrt(0.2);
-	    const float sdlMuls = sdlThetaMulsF*3./ptCut*4;//will need a better guess than x4?
 	    const float drOutIn = (rtOut - rtIn);
+	    
 
 	    if (lIn == 0){
-	      float etaErr = see_pca_etaErr()[sdIn.iRef];
-	      float eta = see_lh_eta()[sdIn.iRef];
-	      float coshEta = cosh(eta);
-	      float dzErr = (rtOut - rtIn)*etaErr*coshEta;
+	      const float etaErr = see_pca_etaErr()[sdIn.iRef];
+	      const float eta = see_lh_eta()[sdIn.iRef];
+	      const float coshEta = cosh(eta);
+	      float dzErr = drOutIn*etaErr*coshEta;
 	      dzErr *= dzErr;
-	      dzErr += 0.03*0.03; // pixel size x2. ... random for now
-	      dzErr *= 9; //3 sigma
-	      dzErr += sdlMuls*sdlMuls*drOutIn*drOutIn/3.*coshEta*coshEta;//sloppy
+	      dzErr += 0.03f*0.03f; // pixel size x2. ... random for now
+	      dzErr *= 9.f; //3 sigma
+	      dzErr += sdlMuls*sdlMuls*drOutIn*drOutIn/3.f*coshEta*coshEta;//sloppy
 	      dzErr += zGeom*zGeom;
 	      dzErr = sqrt(dzErr);
-	      float dzDrIn = sdIn.p3.Z()/sdIn.p3.Pt();
-	      float zWindow = dzErr/dSDIn*drOutIn + zGeom;
-	      float dzMean = dzDrIn*drOutIn*(1. + drOutIn*drOutIn/87.8/87.8/sdIn.p3.Pt()/sdIn.p3.Pt()/24.);//with curved path correction
-	      float zLo = zIn + dzMean - zWindow;
-	      float zHi = zIn + dzMean + zWindow;
+	      const float dzDrIn = sdIn.p3.Z()/ptIn;
+	      const float zWindow = dzErr/dSDIn*drOutIn + zGeom;
+	      const float dzMean = dzDrIn*drOutIn*(1.f + drOutIn*drOutIn/87.8f/87.8f/ptIn/ptIn/24.f);//with curved path correction
+	      const float zLo = zIn + dzMean - zWindow;
+	      const float zHi = zIn + dzMean + zWindow;
 	      if (!(zOut < zLo || zOut > zHi)) sdlFlag |= 1 << SDLSelectFlags::deltaZPointed; //continue;
 	    }
 	    else if (lIn>=5 && lIn <=6){//can point to the z pos in lOut
-	      float coshEta = dr3SDIn/dSDIn;//direction estimate
+	      const float coshEta = dr3SDIn/dSDIn;//direction estimate
 	      float dzErr = zGeom*zGeom*2.;//both sides contribute to direction uncertainty
-	      dzErr += sdlMuls*sdlMuls*drOutIn*drOutIn/3.*coshEta*coshEta;//sloppy
+	      dzErr += sdlMuls*sdlMuls*drOutIn*drOutIn/3.f*coshEta*coshEta;//sloppy
 	      dzErr = sqrt(dzErr);
-	      float dzMean = dzSDIn/dSDIn*drOutIn;
-	      float zWindow = dzErr/dSDIn*drOutIn + zGeom; //FIXME for ptCut lower than ~0.8 need to add curv path correction
-	      float zLo = zIn + dzMean - zWindow;
-	      float zHi = zIn + dzMean + zWindow;
+	      const float dzMean = dzSDIn/dSDIn*drOutIn;
+	      const float zWindow = dzErr/dSDIn*drOutIn + zGeom; //FIXME for ptCut lower than ~0.8 need to add curv path correction
+	      const float zLo = zIn + dzMean - zWindow;
+	      const float zHi = zIn + dzMean + zWindow;
 	      if (!(zOut < zLo || zOut > zHi)) sdlFlag |= 1 << SDLSelectFlags::deltaZPointed; //continue;
 	    } else {
 	      sdlFlag |= 1 << SDLSelectFlags::deltaZPointed;
 	    }
 	    if (sdlFlag == sdlMasksCumulative[SDLSelectFlags::deltaZPointed]) nDeltaZPointed++;
 	    
-	    auto midR3 = 0.5*(sdIn.r3 + sdOut.r3);
-	    double dPhi = midR3.DeltaPhi(sdOut.r3 - sdIn.r3);
-	    double rt = 0.5*(sdIn.r3.Pt() + sdOut.r3.Pt());
+	    auto const midR3 = 0.5*(sdIn.r3 + sdOut.r3);
+	    const float dPhi = midR3.DeltaPhi(sdOut.r3 - sdIn.r3);
+	    const float rt = 0.5f*(rtIn + rtOut);
 
-	    const float sdlSlope = rt/175.67/ptCut;
-	    const float sdlPVoff = 0.1/rt;
+	    const float sdlSlope = rt/175.67f/ptCut;
+	    const float sdlPVoff = 0.1f/rt;
 	    const float sdlCut = sdlSlope + sqrt(sdlMuls*sdlMuls + sdlPVoff*sdlPVoff);
 	    
 	    if (! (std::abs(dPhi) > sdlCut) ) sdlFlag |= 1 << SDLSelectFlags::slope; //continue;
 	    if (sdlFlag == sdlMasksCumulative[SDLSelectFlags::slope]) nSlope++;
 	    
-	    double betaIn;
-	    double betaOut;
+	    float betaIn;
+	    float betaOut;
 	    if (mockMode == 0){
 	      betaIn = sdIn.alpha - sdIn.r3.DeltaPhi(sdOut.r3 - sdIn.r3);
 	      betaOut = - sdOut.alpha + sdOut.r3.DeltaPhi(sdOut.r3 - sdIn.r3); //to match sign for correct match	      
 	    }
 	    else if (mockMode == 1 || mockMode == 3){
-	      //need a symmetric choice of end-points to achieve partial cancelation
-	      betaIn  = sdIn.alpha - sdIn.r3.DeltaPhi(sdOut.mdOut.r3 - sdIn.r3);
-	      betaOut = -sdOut.mdOut.r3.DeltaPhi(sdOut.mdOut.r3 - sdOut.mdRef.r3) + sdOut.mdOut.r3.DeltaPhi(sdOut.mdOut.r3 - sdIn.r3);	      
+	      if (lIn == 0){
+		auto const sdOutR3 = sdOut.mdOut.r3;
+		auto const dsdOutInR3 = sdOutR3 - sdIn.r3;
+		betaIn  = sdIn.p3.DeltaPhi(dsdOutInR3);
+		betaOut = dsdOutInR3.DeltaPhi(sdOut.mdOut.r3 - sdOut.mdRef.r3);
+		betaOut += copysign(sdOut.dr/175.67f/ptIn, betaOut);
+	      } else {
+		//need a symmetric choice of end-points to achieve partial cancelation
+		auto const r3A = sdOut.mdOut.r3 - sdIn.r3;
+		betaIn  = sdIn.alpha - sdIn.r3.DeltaPhi(r3A);
+		betaOut = -sdOut.alphaOut + sdOut.mdOut.r3.DeltaPhi(r3A);
+	      }
 	    }
 	    else{
 	      betaIn = -99;
 	      betaOut = 999;
 	    }
 	    
+	    const float dr = (sdOut.r3 - sdIn.r3).Perp();
 	    //loose angle compatibility
-	    float dAlpha_Bfield = (rtOut - rtIn)/175.67/ptCut;
-	    float dSDOut = sdOut.mdOut.r3.Pt() - sdOut.mdRef.r3.Pt();	
-	    float dAlpha_res = 0.02/std::min(dSDIn, dSDOut);//2-strip difference; use the smallest SD separation
+	    const float dAlpha_Bfield = dr/175.67f/ptCut;
+	    const float dAlpha_res = 0.02f/std::min(dSDIn, dSDOut);//2-strip difference; use the smallest SD separation
 	    float dAlpha_compat = dAlpha_Bfield + dAlpha_res;
 	    if (!(std::abs(sdIn.alpha- dPhi) > dAlpha_compat )) sdlFlag |= 1 << SDLSelectFlags::dAlphaIn; //continue;
 	    if (sdlFlag == sdlMasksCumulative[SDLSelectFlags::dAlphaIn]) nInAlphaCompat++;
+	    if (lIn == 0 ){//FIXME: THIS COMPATIBILITY SHOULD BE MADE MORE CORRECT FOR UNEVEN SD point definition
+	      dAlpha_compat = (dSDOut +dr)/175.67f/ptCut + dAlpha_res; //L0 is a tangent while LX is a chord
+	    }
 	    if (!(std::abs(sdOut.alpha- dPhi) > dAlpha_compat )) sdlFlag |= 1 << SDLSelectFlags::dAlphaOut; //continue;
 	    if (sdlFlag == sdlMasksCumulative[SDLSelectFlags::dAlphaOut]) nOutAlphaCompat++;
 	    
 	    //now the actual segment linking magic
-	    float betaAv = 0.5*(betaIn + betaOut);
-	    float dr = (sdOut.r3 - sdIn.r3).Perp();
+	    const float betaAv = 0.5f*(betaIn + betaOut);
 	    //pt*175.67/2. = R
 	    //R*sin(betaAv) = pt*175.67/2*sin(betaAv) = dr/2 => pt = dr/175.67/sin(betaAv);
-	    float pt_beta = dr/175.67/sin(betaAv);
-	    if (lIn == 0) pt_beta = sdIn.p3.Pt();
-	    float pt_betaIn = dr/175.67/sin(betaIn);
+	    float pt_beta = dr/175.67f/sin(betaAv);
+	    if (lIn == 0) pt_beta = ptIn;
+	    float pt_betaIn = dr/175.67f/sin(betaIn);
 	    if (lIn == 0) pt_betaIn = pt_beta;
-	    float pt_betaOut = dr/175.67/sin(betaOut);
-	    float dBetaRes = dAlpha_res;
-	    float dBetaMuls = sdlThetaMulsF*3./std::min(pt_beta, 7.0f);//need to confirm the range-out value of 7 GeV
-	    float dBetaCut = sqrt(dBetaRes*dBetaRes*2.0 + dBetaMuls*dBetaMuls);
-	    float dBeta = betaIn - betaOut;
+	    const float pt_betaOut = dr/175.67f/sin(betaOut);
+	    const float dBetaRes = dAlpha_res;
+	    const float dBetaMuls = sdlThetaMulsF*3.f/std::min(pt_beta, 7.0f);//need to confirm the range-out value of 7 GeV
+	    const float dBetaCut2 = dBetaRes*dBetaRes*2.0f + dBetaMuls*dBetaMuls;
+	    const float dBeta = betaIn - betaOut;
 
-	    if (!(std::abs(dBeta) > dBetaCut)) sdlFlag |= 1 << SDLSelectFlags::dBeta; //continue;
+	    if (!(dBeta*dBeta > dBetaCut2)) sdlFlag |= 1 << SDLSelectFlags::dBeta; //continue;
 	    if (sdlFlag == sdlMasksCumulative[SDLSelectFlags::dBeta]) ndBeta++;
 
-	    auto ptIn = std::abs(pt_betaIn);
+	    auto const ptInEst = std::abs(pt_betaIn);
 
+	    
 	    //	    std::cout<<"Fill histograms for sdlFlag "<<sdlFlag<<std::endl;
 	    //special case no "-1"
 	    ha_SDL_dBeta_0_all[iSDL]->Fill(dBeta);
@@ -2081,13 +2112,13 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      ha_SDL_dBeta_betaIn_NM1dBeta_all[iSDL]->Fill(betaIn, dBeta);
 	      
 	      ha_SDL_dBeta_zoom_NM1dBeta_all[iSDL]->Fill(dBeta);
-	      if (ptIn < 2){
+	      if (ptInEst < 2){
 		ha_SDL_dBeta_zoom_NM1dBeta_ptIn0to2_all[iSDL]->Fill(dBeta);
 	      }
-	      if (ptIn > 3 && ptIn < 5 ){
+	      if (ptInEst > 3 && ptInEst < 5 ){
 		ha_SDL_dBeta_zoom_NM1dBeta_ptIn3to5_all[iSDL]->Fill(dBeta);
 	      }
-	      if (ptIn > 7) {
+	      if (ptInEst > 7) {
 		ha_SDL_dBeta_zoom_NM1dBeta_ptIn7toInf_all[iSDL]->Fill(dBeta);
 	      }
 	    }
@@ -2095,19 +2126,18 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    if ((sdlFlag & sdlMasksCumulative[SDLSelectFlags::dBeta]) == sdlMasksCumulative[SDLSelectFlags::dBeta]){
 	      ha_SDL_dBeta_NM1dBeta_pass[iSDL]->Fill(dBeta);
 	      ha_SDL_dBeta_zoom_NM1dBeta_pass[iSDL]->Fill(dBeta);
-	      if (ptIn < 2){
+	      if (ptInEst < 2){
 		ha_SDL_dBeta_zoom_NM1dBeta_ptIn0to2_pass[iSDL]->Fill(dBeta);
 	      }
-	      if (ptIn > 3 && ptIn < 5 ){
+	      if (ptInEst > 3 && ptInEst < 5 ){
 		ha_SDL_dBeta_zoom_NM1dBeta_ptIn3to5_pass[iSDL]->Fill(dBeta);
 	      }
-	      if (ptIn > 7) {
+	      if (ptInEst > 7) {
 		ha_SDL_dBeta_zoom_NM1dBeta_ptIn7toInf_pass[iSDL]->Fill(dBeta);
 	      }
 	    }
-
+	    
 	    //	    std::cout<<"Done filling histograms"<<std::endl;
-
 	    if (sdlFlag != sdlMasksCumulative[SDLSelectFlags::dBeta]) continue; //apply all cuts up to including dBeta
 	    SDLink sdl;
 	    sdl.sdIn = sdIn;
@@ -2124,7 +2154,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    sdl.ptIn = pt_betaIn;
 	    sdl.ptOut = pt_betaOut;
 	    
-	    sdlV.push_back(sdl);
+	    sdlV.emplace_back(sdl);
 	    //	    std::cout<<"Appended a new SDLink "<<std::endl;
 	  }//sdOutV
 	}//sdInV
@@ -2391,57 +2421,62 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    std::vector<std::pair<SDLink, int> > vSDLwInfo_4of4;
 	    bool debugSimMatching = tpPt < 2 && hasSDIn_4of4 && hasSDOut_4of4 && has8MHs && has4MDs && debug;
 	    for (auto const& sdIn : vSDIn_4of4){
-	      float rtIn = sdIn.r3.Pt();
+	      float rtIn = sdIn.rt;
+	      float ptIn = sdIn.p3.Pt();
 	      float zIn = sdIn.r3.z();
-	      float dSDIn = sdIn.mdOut.r3.Pt() - sdIn.mdRef.r3.Pt();
+	      float dSDIn = sdIn.mdOut.rt - sdIn.mdRef.rt;
 	      float dzSDIn = sdIn.mdOut.r3.z() - sdIn.mdRef.r3.z();
 	      float dr3SDIn = sdIn.mdOut.r3.Mag() - sdIn.mdRef.r3.Mag();
+	      
+	      float ptSLo = 1.0;
+	      if (lIn == 0){
+		//try to use seed pt: the lower bound is good
+		ptSLo = ptIn;
+		float ptErr = see_pca_ptErr()[sdIn.iRef];
+		ptSLo = std::max(1.0f, ptSLo - 10.0f*ptErr);
+		ptSLo = std::min(10.0f, ptSLo); //don't let this run away either
+	      }
+	      const float ptCut = ptSLo;
+	      const float sdlThetaMulsF = 0.015f*sqrt(0.2f);
+	      const float sdlMuls = sdlThetaMulsF*3.f/ptCut*4.f;//will need a better guess than x4?
 	      
 	      for (auto const& sdOut : vSDOut_4of4){
 		int sdlFlag = 0;
 		
-		float rtOut = sdOut.r3.Pt();
-		float zOut = sdOut.r3.z();
+		const float rtOut = sdOut.rt;
+		const float zOut = sdOut.r3.z();	    
+		const float dSDOut = sdOut.mdOut.rt - sdOut.mdRef.rt;
 		//apply some loose Z compatibility
 		//FIXME: refine using inner layer directions (can prune later)
-		float zGeom = lIn >= 0 && lIn <= 7 && lOut >= 5 && lOut <= 7 ? 0.3 : 10;//twice the macro-pixel or strip size
-		float zLo = rtOut/rtIn*(zIn - 15.) - zGeom; //15 for the luminous ; zGeom for z geom unit size
-		float zHi = rtOut/rtIn*(zIn + 15.) + zGeom;
-
+		const float zGeom = lIn >= 0 && lIn <= 7 && lOut >= 5 && lOut <= 7 ? 0.3 : 10;//twice the macro-pixel or strip size
+		
+		const float rtOut_o_rtIn = rtOut/rtIn;
+		const float zLo = rtOut_o_rtIn*(zIn - 15.f) - zGeom; //15 for the luminous ; zGeom for z geom unit size
+		const float zHi = rtOut_o_rtIn*(zIn + 15.f) + zGeom;
+		
 		if (zOut > zLo && zOut < zHi) sdlFlag |= 1 << SDLSelectFlags::deltaZ;
 		if (debugSimMatching && !(sdlFlag & 1 << SDLSelectFlags::deltaZ) ){
 		  std::cout<<"Lum region failed: tpPt "<<tpPt<<" lIn "<<lIn <<" zLo "<<zLo<<" zHi "<<zHi<<" vs zOut "<<zOut<<std::endl;
 		}
 
-		float ptSLo = 1.0;
-		if (lIn == 0){
-		  //try to use seed pt: the lower bound is good
-		  ptSLo = sdIn.p3.Pt();
-		  float ptErr = see_pca_ptErr()[sdIn.iRef];
-		  ptSLo = std::max(1.0f, ptSLo - 10.0f*ptErr);
-		  ptSLo = std::min(10.0f, ptSLo); //don't let this run away either
-		}			    
-		const float ptCut = ptSLo;
-		const float sdlThetaMulsF = 0.015*sqrt(0.2);
-		const float sdlMuls = sdlThetaMulsF*3./ptCut*4;//will need a better guess than x4?
 		const float drOutIn = (rtOut - rtIn);
 
 		if (lIn == 0){
-		  float etaErr = see_pca_etaErr()[sdIn.iRef];
-		  float eta = see_lh_eta()[sdIn.iRef];
-		  float coshEta = cosh(eta);
-		  float dzErr = (rtOut - rtIn)*etaErr*coshEta;
+		  const float etaErr = see_pca_etaErr()[sdIn.iRef];
+		  const float eta = see_lh_eta()[sdIn.iRef];
+		  const float coshEta = cosh(eta);
+		  float dzErr = drOutIn*etaErr*coshEta;
 		  dzErr *= dzErr;
-		  dzErr += 0.03*0.03; // pixel size x2. ... random for now
-		  dzErr *= 9; //3 sigma
-		  dzErr += sdlMuls*sdlMuls*drOutIn*drOutIn/3.*coshEta*coshEta;//sloppy
+		  dzErr += 0.03f*0.03f; // pixel size x2. ... random for now
+		  dzErr *= 9.f; //3 sigma
+		  dzErr += sdlMuls*sdlMuls*drOutIn*drOutIn/3.f*coshEta*coshEta;//sloppy
 		  dzErr += zGeom*zGeom;
 		  dzErr = sqrt(dzErr);
-		  float dzDrIn = sdIn.p3.Z()/sdIn.p3.Pt();
-		  float zWindow = dzErr/dSDIn*drOutIn + zGeom;
-		  float dzMean = dzDrIn*drOutIn*(1. + drOutIn*drOutIn/87.8/87.8/sdIn.p3.Pt()/sdIn.p3.Pt()/24.);//with curved path correction
-		  float zLo = zIn + dzMean - zWindow;
-		  float zHi = zIn + dzMean + zWindow;		  
+		  const float dzDrIn = sdIn.p3.Z()/ptIn;
+		  const float zWindow = dzErr/dSDIn*drOutIn + zGeom;
+		  const float dzMean = dzDrIn*drOutIn*(1.f + drOutIn*drOutIn/87.8f/87.8f/ptIn/ptIn/24.f);//with curved path correction
+		  const float zLo = zIn + dzMean - zWindow;
+		  const float zHi = zIn + dzMean + zWindow;
 		  if (!(zOut < zLo || zOut > zHi)) sdlFlag |= 1 << SDLSelectFlags::deltaZPointed; //continue;
 		  if (debugSimMatching && !(sdlFlag & 1 << SDLSelectFlags::deltaZPointed)){
 		    std::cout<<"ZPointing failed: tpPt "<<tpPt<<" lIn "<<lIn <<" zLo "<<zLo<<" zHi "<<zHi<<" vs zOut "<<zOut
@@ -2450,28 +2485,28 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 			     <<" OutL "<<sdIn.mdOut.pixL<<" OutU "<<sdIn.mdOut.pixU<<std::endl;
 		  }
 		} else if (lIn>=5 && lIn <=6){//can point to the z pos in lOut
-		  float coshEta = dr3SDIn/dSDIn;//direction estimate
+		  const float coshEta = dr3SDIn/dSDIn;//direction estimate
 		  float dzErr = zGeom*zGeom*2.;//both sides contribute to direction uncertainty
-		  dzErr += sdlMuls*sdlMuls*drOutIn*drOutIn/3.*coshEta*coshEta;//sloppy
+		  dzErr += sdlMuls*sdlMuls*drOutIn*drOutIn/3.f*coshEta*coshEta;//sloppy
 		  dzErr = sqrt(dzErr);
-		  float dzMean = dzSDIn/dSDIn*drOutIn;
-		  float zWindow = dzErr/dSDIn*drOutIn + zGeom; //FIXME for ptCut lower than ~0.8 need to add curv path correction range
-		  float zLo = zIn + dzMean - zWindow;
-		  float zHi = zIn + dzMean + zWindow;
+		  const float dzMean = dzSDIn/dSDIn*drOutIn;
+		  const float zWindow = dzErr/dSDIn*drOutIn + zGeom; //FIXME for ptCut lower than ~0.8 need to add curv path correction
+		  const float zLo = zIn + dzMean - zWindow;
+		  const float zHi = zIn + dzMean + zWindow;
 		  if (zOut > zLo && zOut < zHi) sdlFlag |= 1 << SDLSelectFlags::deltaZPointed;
 		} else {
 		  //the flag is set to pass here
 		  sdlFlag |= 1 << SDLSelectFlags::deltaZPointed;
 		}
 
-		auto midR3 = 0.5*(sdIn.r3 + sdOut.r3);
-		double dPhi = midR3.DeltaPhi(sdOut.r3 - sdIn.r3);
-		double rt = 0.5*(sdIn.r3.Pt() + sdOut.r3.Pt());
-
-		const float sdlSlope = rt/175.67/ptCut;
-		const float sdlPVoff = 0.1/rt;
+		auto const midR3 = 0.5*(sdIn.r3 + sdOut.r3);
+		const float dPhi = midR3.DeltaPhi(sdOut.r3 - sdIn.r3);
+		const float rt = 0.5f*(rtIn + rtOut);
+		
+		const float sdlSlope = rt/175.67f/ptCut;
+		const float sdlPVoff = 0.1f/rt;
 		const float sdlCut = sdlSlope + sqrt(sdlMuls*sdlMuls + sdlPVoff*sdlPVoff);
-	    
+		
 		if (std::abs(dPhi) < sdlCut ) sdlFlag |= 1 << SDLSelectFlags::slope;
 
 		double betaIn;
@@ -2481,39 +2516,50 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		  betaOut = - sdOut.alpha + sdOut.r3.DeltaPhi(sdOut.r3 - sdIn.r3); //to match sign for correct match	      
 		}
 		else if (mockMode == 1 || mockMode == 3){
-		  //need a symmetric choice of end-points to achieve partial cancelation
-		  betaIn  = sdIn.alpha - sdIn.r3.DeltaPhi(sdOut.mdOut.r3 - sdIn.r3);
-		  betaOut = -sdOut.mdOut.r3.DeltaPhi(sdOut.mdOut.r3 - sdOut.mdRef.r3) + sdOut.mdOut.r3.DeltaPhi(sdOut.mdOut.r3 - sdIn.r3);	      
+		  if (lIn == 0){
+		    auto const sdOutR3 = sdOut.mdOut.r3;
+		    auto const dsdOutInR3 = sdOutR3 - sdIn.r3;
+		    betaIn  = sdIn.p3.DeltaPhi(dsdOutInR3);
+		    betaOut = dsdOutInR3.DeltaPhi(sdOut.mdOut.r3 - sdOut.mdRef.r3);
+		    betaOut += copysign(sdOut.dr/175.67f/ptIn, betaOut);
+		  } else {
+		    //need a symmetric choice of end-points to achieve partial cancelation
+		    auto const r3A = sdOut.mdOut.r3 - sdIn.r3;
+		    betaIn  = sdIn.alpha - sdIn.r3.DeltaPhi(r3A);
+		    betaOut = -sdOut.alphaOut + sdOut.mdOut.r3.DeltaPhi(r3A);
+		  }
 		}
 		else{
 		  betaIn = -99;
 		  betaOut = 999;
 		}
 		
+		const float dr = (sdOut.r3 - sdIn.r3).Perp();
 		//loose angle compatibility
-		float dAlpha_Bfield = (rtOut - rtIn)/175.67/ptCut;
-		float dSDOut = sdOut.mdOut.r3.Pt() - sdOut.mdRef.r3.Pt();	
-		float dAlpha_res = 0.02/std::min(dSDIn, dSDOut);//2-strip difference; use the smallest SD separation
+		const float dAlpha_Bfield = dr/175.67f/ptCut;
+		const float dAlpha_res = 0.02f/std::min(dSDIn, dSDOut);//2-strip difference; use the smallest SD separation
 		float dAlpha_compat = dAlpha_Bfield + dAlpha_res;
 		if (std::abs(sdIn.alpha- dPhi) < dAlpha_compat) sdlFlag |=  1 << SDLSelectFlags::dAlphaIn;
+		if (lIn == 0 ){//FIXME: THIS COMPATIBILITY SHOULD BE MADE MORE CORRECT FOR UNEVEN SD point definition
+		  dAlpha_compat = (dSDOut +dr)/175.67f/ptCut + dAlpha_res; //L0 is a tangent while LX is a chord
+		}
 		if (std::abs(sdOut.alpha- dPhi) < dAlpha_compat) sdlFlag |= 1 << SDLSelectFlags::dAlphaOut;
 
 		//now the actual segment linking magic
-		float betaAv = 0.5*(betaIn + betaOut);
-		float dr = (sdOut.r3 - sdIn.r3).Perp();
+		const float betaAv = 0.5f*(betaIn + betaOut);
 		//pt*175.67/2. = R
 		//R*sin(betaAv) = pt*175.67/2*sin(betaAv) = dr/2 => pt = dr/175.67/sin(betaAv);
-		float pt_beta = dr/175.67/sin(betaAv);
-		if (lIn == 0) pt_beta = sdIn.p3.Pt();
-		float pt_betaIn = dr/175.67/sin(betaIn);
+		float pt_beta = dr/175.67f/sin(betaAv);
+		if (lIn == 0) pt_beta = ptIn;
+		float pt_betaIn = dr/175.67f/sin(betaIn);
 		if (lIn == 0) pt_betaIn = pt_beta;
-		float pt_betaOut = dr/175.67/sin(betaOut);
-		float dBetaRes = dAlpha_res;
-		float dBetaMuls = sdlThetaMulsF*3./std::min(pt_beta, 7.0f);//need to confirm the range-out value of 7 GeV
-		float dBetaCut = sqrt(dBetaRes*dBetaRes*2.0 + dBetaMuls*dBetaMuls);
-		float dBeta = betaIn - betaOut;
-
-		if (std::abs(dBeta) < dBetaCut) sdlFlag |= 1 << SDLSelectFlags::dBeta;
+		const float pt_betaOut = dr/175.67f/sin(betaOut);
+		const float dBetaRes = dAlpha_res;
+		const float dBetaMuls = sdlThetaMulsF*3.f/std::min(pt_beta, 7.0f);//need to confirm the range-out value of 7 GeV
+		const float dBetaCut2 = dBetaRes*dBetaRes*2.0f + dBetaMuls*dBetaMuls;
+		const float dBeta = betaIn - betaOut;
+		
+		if (dBeta*dBeta < dBetaCut2) sdlFlag |= 1 << SDLSelectFlags::dBeta;
 
 		//		std::cout<<"TP with pt "<<tpPt<<" has matching SDL flags "<<sdlFlag<<std::endl;
 		SDLink sdl;
@@ -2975,6 +3021,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 
       h_all->SetStats(0);
       h_all->Draw();
+      h_all->SetMinimum(0);
       h_pass->Draw("same");
       gPad->SaveAs(Form("h_SDL_dBeta_NM1dBeta_all_vs_pass_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
     }
@@ -2992,6 +3039,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 
       h_all->SetStats(0);
       h_all->Draw();
+      h_all->SetMinimum(0);
       h_pass->Draw("same");
       gPad->SaveAs(Form("h_SDL_dBeta_zoom_NM1dBeta_all_vs_pass_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
     }
@@ -3011,6 +3059,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 
       h_all->SetStats(0);
       h_all->Draw();
+      h_all->SetMinimum(0);
       h_pass->Draw("same");
       gPad->SaveAs(Form("h_SDL_dBeta_zoom_NM1dBeta_ptIn0to2_all_vs_pass_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
     }
@@ -3028,6 +3077,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 
       h_all->SetStats(0);
       h_all->Draw();
+      h_all->SetMinimum(0);
       h_pass->Draw("same");
       gPad->SaveAs(Form("h_SDL_dBeta_zoom_NM1dBeta_ptIn3to5_all_vs_pass_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
     }
@@ -3045,6 +3095,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 
       h_all->SetStats(0);
       h_all->Draw();
+      h_all->SetMinimum(0);
       h_pass->Draw("same");
       gPad->SaveAs(Form("h_SDL_dBeta_zoom_NM1dBeta_ptIn7toInf_all_vs_pass_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
     }
@@ -3258,6 +3309,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       h->SetStats(0);
       h->SetLineWidth(2);
       h->Draw();
+      h->SetMinimum(0);
       gPad->SetGridx();
       gPad->SetLogy();
       gPad->SaveAs(Form("h_SDL_dBeta_zoom_NM1dBeta_8MH_%dto%d_mm%d_D%1.1fcm_us%d.png",  layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
@@ -3273,6 +3325,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       h->SetStats(0);
       h->SetLineWidth(2);
       h->Draw();
+      h->SetMinimum(0);
       gPad->SetGridx();
       gPad->SetLogy();
       gPad->SaveAs(Form("h_SDL_dBeta_zoom2_NM1dBeta_8MH_%dto%d_mm%d_D%1.1fcm_us%d.png",  layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
@@ -3572,6 +3625,73 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       leg->AddEntry(heff2, "SDLink match | 8 MHits");
       leg->Draw();
       gPad->SaveAs(Form("h_effs_SDL_den8MH_steps_4of4_%dto%d_pt_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+    }
+
+    //efficiencies: eff plots 4/4 in steps
+    for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
+      if (iSDL == SDL_L5to9) continue;
+      
+      auto heff =  ha_eff4MD_den8MH_pt[iSDL];
+      auto heff1 = ha_eff2SD_den8MH_4of4_pt[iSDL];
+      auto heff0      = ha_eff2SD_w0_den8MH_4of4_pt[iSDL];
+      auto heff01     = ha_eff2SD_w01_den8MH_4of4_pt[iSDL];
+      auto heff012    = ha_eff2SD_w012_den8MH_4of4_pt[iSDL];
+      auto heff0123   = ha_eff2SD_w0123_den8MH_4of4_pt[iSDL];
+      auto heff01234  = ha_eff2SD_w01234_den8MH_4of4_pt[iSDL];
+      auto heff012345 = ha_eff2SD_w012345_den8MH_4of4_pt[iSDL];
+      auto heff2 = ha_effSDL_den8MH_4of4_pt[iSDL];
+
+      auto cn = heff->GetName();
+      TCanvas* cv = new TCanvas(cn, cn, 600, 600);
+      cv->cd();
+
+      heff->Draw();
+      heff1->Draw("same");
+      heff01->Draw("same");
+      heff01234->Draw("same");
+      heff2->Draw("same");
+
+      heff->SetLineWidth(2);
+      heff1->SetLineWidth(2);
+      heff01->SetLineWidth(2);
+      heff01234->SetLineWidth(2);
+      heff2->SetLineWidth(2);
+      heff->SetLineColor(kBlack);
+      heff1->SetLineColor(kRed);
+      heff01->SetLineColor(kOrange);
+      heff01234->SetLineColor(kCyan);
+      heff2->SetLineColor(kBlue);
+      heff->SetMarkerSize(0.8);
+      heff1->SetMarkerSize(0.8);
+      heff01->SetMarkerSize(0.8);
+      heff01234->SetMarkerSize(0.8);
+      heff2->SetMarkerSize(0.8);
+      heff->SetMarkerStyle(21);
+      heff1->SetMarkerStyle(22);
+      heff01->SetMarkerStyle(24);
+      heff01234->SetMarkerStyle(25);
+      heff2->SetMarkerStyle(23);
+
+      gPad->SetGridx();
+      gPad->SetGridy();
+      gPad->SetLogx();
+      gPad->PaintModified();
+      auto pg = heff->GetPaintedGraph();
+      pg->SetMinimum(0.9);
+      pg->SetMaximum(1.02);
+      auto ax = pg->GetXaxis();
+      ax->SetLimits(0.51, ax->GetXmax());
+
+      auto leg = new TLegend(0.5, 0.15, 0.87, 0.4);
+      leg->SetBorderSize(0);
+      leg->SetFillColor(0);
+      leg->AddEntry(heff, "4 MD match | 8 MHits");
+      leg->AddEntry(heff1, "2 SD match | 8 MHits");
+      leg->AddEntry(heff01, "2 SD w dZ | 8 MHits");
+      leg->AddEntry(heff01234, "SDLink no #Delta#beta | 8 MHits");
+      leg->AddEntry(heff2, "SDLink match | 8 MHits");
+      leg->Draw();
+      gPad->SaveAs(Form("h_effs_SDL_den8MH_steps_4of4_min0.9_%dto%d_pt_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
     }
 
     //fakes vs pt
