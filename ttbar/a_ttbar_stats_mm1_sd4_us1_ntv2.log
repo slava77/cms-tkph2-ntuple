@@ -6,522 +6,522 @@ Convert seeds to SuperDoublets
 Loaded nSeeds (pt>1 and |eta|<1.6) 285
 Combine MDs 
 Link SuperDoublet pairs to SDLinks
-SD links stat 0-5 nAll 2952315 nDZ 787362 nDZPnt 20810 nAlp 2392 nInAlpC 1842 nOutAlpC 622 ndBeta 275 final 275
-SD links stat 0-7 nAll 470820 nDZ 177403 nDZPnt 14922 nAlp 3514 nInAlpC 2706 nOutAlpC 1508 ndBeta 180 final 180
-SD links stat 5-7 nAll 17113068 nDZ 3249660 nDZPnt 566790 nAlp 120886 nInAlpC 71026 nOutAlpC 40025 ndBeta 2493 final 2493
-SD links stat 7-9 nAll 794612 nDZ 150768 nDZPnt 150768 nAlp 32762 nInAlpC 15534 nOutAlpC 7253 ndBeta 465 final 465
+SD links stat 0-5 nAll 2954880 nDZ 787940 nDZPnt 20817 nAlp 2393 nInAlpC 2069 nOutAlpC 1245 ndBeta 784 final 784
+SD links stat 0-7 nAll 470820 nDZ 177403 nDZPnt 14922 nAlp 3514 nInAlpC 3033 nOutAlpC 2176 ndBeta 323 final 323
+SD links stat 5-7 nAll 17127936 nDZ 3252128 nDZPnt 567300 nAlp 120988 nInAlpC 94357 nOutAlpC 71475 ndBeta 2500 final 2500
+SD links stat 7-9 nAll 794612 nDZ 150768 nDZPnt 150768 nAlp 32762 nInAlpC 24090 nOutAlpC 18786 ndBeta 467 final 467
 Print stats
-Summary for layer 5 h1GeV 575 h2GeV 129 refLos 6826 refUps 6857 refMDs 3623 outLos 6959 outUps 6960 outMDs 3296 outSDs 10359 n1Any 4917 n1All 545 n2Any 1592 n2All 128
-Summary for layer 6 h1GeV 474 h2GeV 116 refLos 4723 refUps 4723 refMDs 1636 outLos 4739 outUps 4735 outMDs 1572 outSDs 3006 n1Any 1774 n1All 461 n2Any 580 n2All 116
+Summary for layer 5 h1GeV 575 h2GeV 129 refLos 6826 refUps 6857 refMDs 3623 outLos 6959 outUps 6960 outMDs 3296 outSDs 10368 n1Any 4918 n1All 545 n2Any 1592 n2All 128
+Summary for layer 6 h1GeV 474 h2GeV 116 refLos 4723 refUps 4723 refMDs 1636 outLos 4739 outUps 4735 outMDs 1572 outSDs 3007 n1Any 1774 n1All 461 n2Any 580 n2All 116
 Summary for layer 7 h1GeV 397 h2GeV 97 refLos 3311 refUps 3304 refMDs 1114 outLos 3235 outUps 3234 outMDs 1065 outSDs 1652 n1Any 993 n1All 389 n2Any 345 n2All 97
-Summary for layer 8 h1GeV 317 h2GeV 81 refLos 2120 refUps 2119 refMDs 749 outLos 2058 outUps 2057 outMDs 745 outSDs 864 n1Any 548 n1All 306 n2Any 202 n2All 81
+Summary for layer 8 h1GeV 317 h2GeV 81 refLos 2120 refUps 2119 refMDs 749 outLos 2058 outUps 2057 outMDs 745 outSDs 865 n1Any 549 n1All 306 n2Any 202 n2All 81
 Summary for layer 9 h1GeV 256 h2GeV 64 refLos 1273 refUps 1271 refMDs 498 outLos 1246 outUps 1241 outMDs 485 outSDs 481 n1Any 295 n1All 227 n2Any 105 n2All 64
 Summary for layer 10 h1GeV 208 h2GeV 47 refLos 738 refUps 736 refMDs 357 outLos 729 outUps 729 outMDs 342 outSDs 346 n1Any 208 n1All 181 n2Any 57 n2All 47
-		sdl5-7 2493 sdl7-9 465
+		sdl5-7 2500 sdl7-9 467
 Load hits 
 Convert seeds to SuperDoublets
 Loaded nSeeds (pt>1 and |eta|<1.6) 436
 Combine MDs 
 Link SuperDoublet pairs to SDLinks
-SD links stat 0-5 nAll 10895640 nDZ 3366572 nDZPnt 82713 nAlp 6932 nInAlpC 4270 nOutAlpC 1439 ndBeta 427 final 427
-SD links stat 0-7 nAll 1459292 nDZ 580677 nDZPnt 48779 nAlp 10628 nInAlpC 8014 nOutAlpC 4313 ndBeta 369 final 369
-SD links stat 5-7 nAll 83641530 nDZ 18798852 nDZPnt 2624017 nAlp 513721 nInAlpC 289361 nOutAlpC 152013 ndBeta 7150 final 7150
-SD links stat 7-9 nAll 2871726 nDZ 612117 nDZPnt 612117 nAlp 131443 nInAlpC 58648 nOutAlpC 22704 ndBeta 1264 final 1264
+SD links stat 0-5 nAll 10899564 nDZ 3367722 nDZPnt 82744 nAlp 6935 nInAlpC 5395 nOutAlpC 3300 ndBeta 1495 final 1495
+SD links stat 0-7 nAll 1461036 nDZ 581379 nDZPnt 48841 nAlp 10640 nInAlpC 9319 nOutAlpC 6796 ndBeta 685 final 685
+SD links stat 5-7 nAll 83771649 nDZ 18826594 nDZPnt 2628771 nAlp 514971 nInAlpC 396813 nOutAlpC 300059 ndBeta 7190 final 7190
+SD links stat 7-9 nAll 2881860 nDZ 614091 nDZPnt 614091 nAlp 131820 nInAlpC 95916 nOutAlpC 72945 ndBeta 1282 final 1282
 Print stats
-Summary for layer 5 h1GeV 794 h2GeV 151 refLos 8990 refUps 9011 refMDs 5700 outLos 9147 outUps 9142 outMDs 5185 outSDs 24990 n1Any 12283 n1All 774 n2Any 3238 n2All 151
-Summary for layer 6 h1GeV 676 h2GeV 133 refLos 6298 refUps 6302 refMDs 2521 outLos 6311 outUps 6314 outMDs 2409 outSDs 5990 n1Any 3440 n1All 663 n2Any 936 n2All 132
-Summary for layer 7 h1GeV 584 h2GeV 121 refLos 4523 refUps 4520 refMDs 1769 outLos 4454 outUps 4452 outMDs 1673 outSDs 3347 n1Any 2032 n1All 576 n2Any 571 n2All 120
+Summary for layer 5 h1GeV 794 h2GeV 151 refLos 8990 refUps 9011 refMDs 5700 outLos 9147 outUps 9142 outMDs 5185 outSDs 24999 n1Any 12289 n1All 774 n2Any 3240 n2All 151
+Summary for layer 6 h1GeV 676 h2GeV 133 refLos 6298 refUps 6302 refMDs 2521 outLos 6311 outUps 6314 outMDs 2409 outSDs 5994 n1Any 3444 n1All 663 n2Any 937 n2All 132
+Summary for layer 7 h1GeV 584 h2GeV 121 refLos 4523 refUps 4520 refMDs 1769 outLos 4454 outUps 4452 outMDs 1673 outSDs 3351 n1Any 2036 n1All 576 n2Any 572 n2All 120
 Summary for layer 8 h1GeV 483 h2GeV 107 refLos 3067 refUps 3059 refMDs 1240 outLos 3034 outUps 3028 outMDs 1165 outSDs 1473 n1Any 898 n1All 473 n2Any 237 n2All 106
-Summary for layer 9 h1GeV 394 h2GeV 94 refLos 1832 refUps 1832 refMDs 802 outLos 1788 outUps 1786 outMDs 767 outSDs 858 n1Any 551 n1All 371 n2Any 160 n2All 94
+Summary for layer 9 h1GeV 394 h2GeV 94 refLos 1832 refUps 1832 refMDs 802 outLos 1788 outUps 1786 outMDs 767 outSDs 860 n1Any 553 n1All 371 n2Any 161 n2All 94
 Summary for layer 10 h1GeV 326 h2GeV 81 refLos 1128 refUps 1128 refMDs 575 outLos 1109 outUps 1109 outMDs 600 outSDs 588 n1Any 362 n1All 291 n2Any 112 n2All 81
-		sdl5-7 7150 sdl7-9 1264
+		sdl5-7 7190 sdl7-9 1282
 Load hits 
 Convert seeds to SuperDoublets
 Loaded nSeeds (pt>1 and |eta|<1.6) 323
 Combine MDs 
 Link SuperDoublet pairs to SDLinks
-SD links stat 0-5 nAll 4176713 nDZ 1185114 nDZPnt 30632 nAlp 2854 nInAlpC 2300 nOutAlpC 779 ndBeta 271 final 271
-SD links stat 0-7 nAll 675393 nDZ 261290 nDZPnt 21567 nAlp 4794 nInAlpC 3689 nOutAlpC 2074 ndBeta 231 final 231
-SD links stat 5-7 nAll 27038721 nDZ 5415101 nDZPnt 848601 nAlp 154917 nInAlpC 88489 nOutAlpC 44691 ndBeta 2787 final 2787
-SD links stat 7-9 nAll 1365423 nDZ 277250 nDZPnt 277250 nAlp 56149 nInAlpC 25242 nOutAlpC 10336 ndBeta 801 final 801
+SD links stat 0-5 nAll 4179620 nDZ 1185653 nDZPnt 30646 nAlp 2855 nInAlpC 2516 nOutAlpC 1392 ndBeta 880 final 880
+SD links stat 0-7 nAll 676039 nDZ 261566 nDZPnt 21590 nAlp 4799 nInAlpC 4180 nOutAlpC 3012 ndBeta 407 final 407
+SD links stat 5-7 nAll 27083420 nDZ 5422691 nDZPnt 849598 nAlp 155094 nInAlpC 118885 nOutAlpC 87862 ndBeta 2794 final 2794
+SD links stat 7-9 nAll 1373008 nDZ 278961 nDZPnt 278961 nAlp 56458 nInAlpC 40242 nOutAlpC 30656 ndBeta 805 final 805
 Print stats
-Summary for layer 5 h1GeV 639 h2GeV 135 refLos 7459 refUps 7476 refMDs 4107 outLos 7598 outUps 7596 outMDs 3819 outSDs 12931 n1Any 6377 n1All 623 n2Any 1891 n2All 135
-Summary for layer 6 h1GeV 539 h2GeV 117 refLos 5114 refUps 5114 refMDs 1845 outLos 5120 outUps 5120 outMDs 1717 outSDs 3729 n1Any 2223 n1All 529 n2Any 699 n2All 117
-Summary for layer 7 h1GeV 460 h2GeV 102 refLos 3713 refUps 3718 refMDs 1329 outLos 3665 outUps 3659 outMDs 1234 outSDs 2091 n1Any 1263 n1All 450 n2Any 384 n2All 102
-Summary for layer 8 h1GeV 398 h2GeV 86 refLos 2460 refUps 2447 refMDs 963 outLos 2402 outUps 2399 outMDs 913 outSDs 1075 n1Any 689 n1All 389 n2Any 191 n2All 86
-Summary for layer 9 h1GeV 324 h2GeV 77 refLos 1470 refUps 1467 refMDs 644 outLos 1432 outUps 1430 outMDs 601 outSDs 653 n1Any 399 n1All 304 n2Any 98 n2All 77
-Summary for layer 10 h1GeV 279 h2GeV 67 refLos 951 refUps 949 refMDs 479 outLos 920 outUps 918 outMDs 465 outSDs 469 n1Any 312 n1All 253 n2Any 89 n2All 67
-		sdl5-7 2787 sdl7-9 801
+Summary for layer 5 h1GeV 639 h2GeV 135 refLos 7459 refUps 7476 refMDs 4107 outLos 7598 outUps 7596 outMDs 3819 outSDs 12940 n1Any 6380 n1All 623 n2Any 1892 n2All 135
+Summary for layer 6 h1GeV 539 h2GeV 117 refLos 5114 refUps 5114 refMDs 1845 outLos 5120 outUps 5120 outMDs 1717 outSDs 3732 n1Any 2225 n1All 529 n2Any 700 n2All 117
+Summary for layer 7 h1GeV 460 h2GeV 102 refLos 3713 refUps 3718 refMDs 1329 outLos 3665 outUps 3659 outMDs 1234 outSDs 2093 n1Any 1265 n1All 450 n2Any 384 n2All 102
+Summary for layer 8 h1GeV 398 h2GeV 86 refLos 2460 refUps 2447 refMDs 963 outLos 2402 outUps 2399 outMDs 913 outSDs 1076 n1Any 690 n1All 389 n2Any 191 n2All 86
+Summary for layer 9 h1GeV 324 h2GeV 77 refLos 1470 refUps 1467 refMDs 644 outLos 1432 outUps 1430 outMDs 601 outSDs 656 n1Any 400 n1All 304 n2Any 98 n2All 77
+Summary for layer 10 h1GeV 279 h2GeV 67 refLos 951 refUps 949 refMDs 479 outLos 920 outUps 918 outMDs 465 outSDs 470 n1Any 313 n1All 253 n2Any 89 n2All 67
+		sdl5-7 2794 sdl7-9 805
 Load hits 
 Convert seeds to SuperDoublets
 Loaded nSeeds (pt>1 and |eta|<1.6) 431
 Combine MDs 
 Link SuperDoublet pairs to SDLinks
-SD links stat 0-5 nAll 10144878 nDZ 2936522 nDZPnt 74005 nAlp 5187 nInAlpC 3703 nOutAlpC 1220 ndBeta 417 final 417
-SD links stat 0-7 nAll 1275329 nDZ 488170 nDZPnt 39607 nAlp 8023 nInAlpC 6022 nOutAlpC 3220 ndBeta 304 final 304
-SD links stat 5-7 nAll 69648942 nDZ 14287290 nDZPnt 1964958 nAlp 345990 nInAlpC 191199 nOutAlpC 97477 ndBeta 4882 final 4882
-SD links stat 7-9 nAll 2390872 nDZ 478208 nDZPnt 478208 nAlp 98114 nInAlpC 45362 nOutAlpC 17290 ndBeta 1054 final 1054
+SD links stat 0-5 nAll 10152205 nDZ 2938207 nDZPnt 74036 nAlp 5188 nInAlpC 4233 nOutAlpC 2518 ndBeta 1286 final 1286
+SD links stat 0-7 nAll 1277484 nDZ 489053 nDZPnt 39668 nAlp 8033 nInAlpC 6950 nOutAlpC 4877 ndBeta 540 final 540
+SD links stat 5-7 nAll 69817020 nDZ 14322414 nDZPnt 1968716 nAlp 346759 nInAlpC 267039 nOutAlpC 198203 ndBeta 4905 final 4905
+SD links stat 7-9 nAll 2394912 nDZ 479226 nDZPnt 479226 nAlp 98348 nInAlpC 72113 nOutAlpC 54910 ndBeta 1066 final 1066
 Print stats
-Summary for layer 5 h1GeV 805 h2GeV 181 refLos 8885 refUps 8912 refMDs 5719 outLos 9045 outUps 9033 outMDs 5137 outSDs 23538 n1Any 10831 n1All 779 n2Any 3110 n2All 180
-Summary for layer 6 h1GeV 668 h2GeV 159 refLos 6207 refUps 6204 refMDs 2431 outLos 6230 outUps 6232 outMDs 2264 outSDs 5426 n1Any 3058 n1All 659 n2Any 926 n2All 159
-Summary for layer 7 h1GeV 557 h2GeV 135 refLos 4433 refUps 4434 refMDs 1635 outLos 4378 outUps 4374 outMDs 1595 outSDs 2959 n1Any 1800 n1All 552 n2Any 579 n2All 135
-Summary for layer 8 h1GeV 471 h2GeV 118 refLos 2886 refUps 2883 refMDs 1154 outLos 2818 outUps 2812 outMDs 1075 outSDs 1403 n1Any 889 n1All 461 n2Any 267 n2All 118
+Summary for layer 5 h1GeV 805 h2GeV 181 refLos 8885 refUps 8912 refMDs 5719 outLos 9045 outUps 9033 outMDs 5137 outSDs 23555 n1Any 10834 n1All 779 n2Any 3110 n2All 180
+Summary for layer 6 h1GeV 668 h2GeV 159 refLos 6207 refUps 6204 refMDs 2431 outLos 6230 outUps 6232 outMDs 2264 outSDs 5428 n1Any 3060 n1All 659 n2Any 928 n2All 159
+Summary for layer 7 h1GeV 557 h2GeV 135 refLos 4433 refUps 4434 refMDs 1635 outLos 4378 outUps 4374 outMDs 1595 outSDs 2964 n1Any 1804 n1All 552 n2Any 581 n2All 135
+Summary for layer 8 h1GeV 471 h2GeV 118 refLos 2886 refUps 2883 refMDs 1154 outLos 2818 outUps 2812 outMDs 1075 outSDs 1404 n1Any 890 n1All 461 n2Any 267 n2All 118
 Summary for layer 9 h1GeV 386 h2GeV 104 refLos 1765 refUps 1767 refMDs 783 outLos 1732 outUps 1728 outMDs 747 outSDs 808 n1Any 491 n1All 364 n2Any 152 n2All 104
-Summary for layer 10 h1GeV 321 h2GeV 83 refLos 1157 refUps 1160 refMDs 597 outLos 1130 outUps 1130 outMDs 587 outSDs 603 n1Any 362 n1All 294 n2Any 105 n2All 83
-		sdl5-7 4882 sdl7-9 1054
+Summary for layer 10 h1GeV 321 h2GeV 83 refLos 1157 refUps 1160 refMDs 597 outLos 1130 outUps 1130 outMDs 587 outSDs 604 n1Any 363 n1All 294 n2Any 105 n2All 83
+		sdl5-7 4905 sdl7-9 1066
 Load hits 
 Convert seeds to SuperDoublets
 Loaded nSeeds (pt>1 and |eta|<1.6) 313
 Combine MDs 
 Link SuperDoublet pairs to SDLinks
-SD links stat 0-5 nAll 4303437 nDZ 1197329 nDZPnt 32159 nAlp 3151 nInAlpC 2271 nOutAlpC 696 ndBeta 267 final 267
-SD links stat 0-7 nAll 621305 nDZ 234342 nDZPnt 21028 nAlp 4449 nInAlpC 3364 nOutAlpC 1847 ndBeta 215 final 215
-SD links stat 5-7 nAll 27291765 nDZ 5399849 nDZPnt 839016 nAlp 157168 nInAlpC 85809 nOutAlpC 43346 ndBeta 2699 final 2699
-SD links stat 7-9 nAll 1111600 nDZ 222863 nDZPnt 222863 nAlp 44496 nInAlpC 20002 nOutAlpC 8183 ndBeta 659 final 659
+SD links stat 0-5 nAll 4304376 nDZ 1197709 nDZPnt 32170 nAlp 3153 nInAlpC 2647 nOutAlpC 1668 ndBeta 912 final 912
+SD links stat 0-7 nAll 621931 nDZ 234584 nDZPnt 21044 nAlp 4451 nInAlpC 3951 nOutAlpC 2839 ndBeta 400 final 400
+SD links stat 5-7 nAll 27325224 nDZ 5407493 nDZPnt 839868 nAlp 157271 nInAlpC 121320 nOutAlpC 92187 ndBeta 2700 final 2700
+SD links stat 7-9 nAll 1116694 nDZ 223918 nDZPnt 223918 nAlp 44777 nInAlpC 32350 nOutAlpC 24398 ndBeta 666 final 666
 Print stats
-Summary for layer 5 h1GeV 627 h2GeV 132 refLos 7527 refUps 7560 refMDs 4240 outLos 7666 outUps 7662 outMDs 3930 outSDs 13749 n1Any 6526 n1All 596 n2Any 1739 n2All 131
-Summary for layer 6 h1GeV 520 h2GeV 118 refLos 5220 refUps 5219 refMDs 1853 outLos 5197 outUps 5196 outMDs 1723 outSDs 3576 n1Any 2042 n1All 504 n2Any 678 n2All 118
-Summary for layer 7 h1GeV 426 h2GeV 93 refLos 3629 refUps 3626 refMDs 1271 outLos 3574 outUps 3565 outMDs 1243 outSDs 1985 n1Any 1148 n1All 419 n2Any 338 n2All 93
-Summary for layer 8 h1GeV 333 h2GeV 76 refLos 2309 refUps 2306 refMDs 841 outLos 2243 outUps 2241 outMDs 762 outSDs 916 n1Any 543 n1All 326 n2Any 147 n2All 76
-Summary for layer 9 h1GeV 287 h2GeV 69 refLos 1337 refUps 1334 refMDs 551 outLos 1310 outUps 1306 outMDs 544 outSDs 560 n1Any 356 n1All 271 n2Any 90 n2All 69
+Summary for layer 5 h1GeV 627 h2GeV 132 refLos 7527 refUps 7560 refMDs 4240 outLos 7666 outUps 7662 outMDs 3930 outSDs 13752 n1Any 6529 n1All 596 n2Any 1740 n2All 131
+Summary for layer 6 h1GeV 520 h2GeV 118 refLos 5220 refUps 5219 refMDs 1853 outLos 5197 outUps 5196 outMDs 1723 outSDs 3579 n1Any 2043 n1All 504 n2Any 679 n2All 118
+Summary for layer 7 h1GeV 426 h2GeV 93 refLos 3629 refUps 3626 refMDs 1271 outLos 3574 outUps 3565 outMDs 1243 outSDs 1987 n1Any 1150 n1All 419 n2Any 338 n2All 93
+Summary for layer 8 h1GeV 333 h2GeV 76 refLos 2309 refUps 2306 refMDs 841 outLos 2243 outUps 2241 outMDs 762 outSDs 918 n1Any 544 n1All 326 n2Any 147 n2All 76
+Summary for layer 9 h1GeV 287 h2GeV 69 refLos 1337 refUps 1334 refMDs 551 outLos 1310 outUps 1306 outMDs 544 outSDs 562 n1Any 358 n1All 271 n2Any 90 n2All 69
 Summary for layer 10 h1GeV 230 h2GeV 61 refLos 809 refUps 812 refMDs 400 outLos 785 outUps 786 outMDs 386 outSDs 391 n1Any 248 n1All 211 n2Any 80 n2All 61
-		sdl5-7 2699 sdl7-9 659
+		sdl5-7 2700 sdl7-9 666
 Load hits 
 Convert seeds to SuperDoublets
 Loaded nSeeds (pt>1 and |eta|<1.6) 346
 Combine MDs 
 Link SuperDoublet pairs to SDLinks
-SD links stat 0-5 nAll 5540844 nDZ 1592031 nDZPnt 43921 nAlp 4215 nInAlpC 2710 nOutAlpC 797 ndBeta 337 final 337
-SD links stat 0-7 nAll 715528 nDZ 267656 nDZPnt 24407 nAlp 5580 nInAlpC 4137 nOutAlpC 2250 ndBeta 244 final 244
-SD links stat 5-7 nAll 33116952 nDZ 6759480 nDZPnt 1031802 nAlp 212195 nInAlpC 124857 nOutAlpC 69213 ndBeta 3520 final 3520
-SD links stat 7-9 nAll 1100176 nDZ 205991 nDZPnt 205991 nAlp 44801 nInAlpC 20448 nOutAlpC 8446 ndBeta 617 final 617
+SD links stat 0-5 nAll 5546034 nDZ 1593264 nDZPnt 43942 nAlp 4217 nInAlpC 3092 nOutAlpC 1621 ndBeta 968 final 968
+SD links stat 0-7 nAll 715874 nDZ 267804 nDZPnt 24414 nAlp 5580 nInAlpC 4748 nOutAlpC 3380 ndBeta 460 final 460
+SD links stat 5-7 nAll 33164001 nDZ 6768920 nDZPnt 1032617 nAlp 212356 nInAlpC 163131 nOutAlpC 122572 ndBeta 3535 final 3535
+SD links stat 7-9 nAll 1100708 nDZ 206154 nDZPnt 206154 nAlp 44841 nInAlpC 31975 nOutAlpC 24223 ndBeta 622 final 622
 Print stats
-Summary for layer 5 h1GeV 626 h2GeV 137 refLos 7780 refUps 7808 refMDs 4440 outLos 7910 outUps 7910 outMDs 4063 outSDs 16014 n1Any 7637 n1All 609 n2Any 2654 n2All 136
-Summary for layer 6 h1GeV 509 h2GeV 117 refLos 5412 refUps 5420 refMDs 1989 outLos 5431 outUps 5426 outMDs 1871 outSDs 4099 n1Any 2221 n1All 502 n2Any 734 n2All 117
-Summary for layer 7 h1GeV 429 h2GeV 106 refLos 3785 refUps 3795 refMDs 1303 outLos 3727 outUps 3725 outMDs 1235 outSDs 2068 n1Any 1252 n1All 421 n2Any 438 n2All 106
-Summary for layer 8 h1GeV 356 h2GeV 96 refLos 2399 refUps 2397 refMDs 834 outLos 2324 outUps 2320 outMDs 842 outSDs 967 n1Any 601 n1All 347 n2Any 199 n2All 96
+Summary for layer 5 h1GeV 626 h2GeV 137 refLos 7780 refUps 7808 refMDs 4440 outLos 7910 outUps 7910 outMDs 4063 outSDs 16029 n1Any 7644 n1All 609 n2Any 2658 n2All 136
+Summary for layer 6 h1GeV 509 h2GeV 117 refLos 5412 refUps 5420 refMDs 1989 outLos 5431 outUps 5426 outMDs 1871 outSDs 4103 n1Any 2224 n1All 502 n2Any 736 n2All 117
+Summary for layer 7 h1GeV 429 h2GeV 106 refLos 3785 refUps 3795 refMDs 1303 outLos 3727 outUps 3725 outMDs 1235 outSDs 2069 n1Any 1253 n1All 421 n2Any 438 n2All 106
+Summary for layer 8 h1GeV 356 h2GeV 96 refLos 2399 refUps 2397 refMDs 834 outLos 2324 outUps 2320 outMDs 842 outSDs 968 n1Any 602 n1All 347 n2Any 200 n2All 96
 Summary for layer 9 h1GeV 271 h2GeV 77 refLos 1394 refUps 1392 refMDs 541 outLos 1354 outUps 1350 outMDs 526 outSDs 532 n1Any 332 n1All 256 n2Any 108 n2All 77
-Summary for layer 10 h1GeV 224 h2GeV 64 refLos 853 refUps 854 refMDs 409 outLos 837 outUps 837 outMDs 386 outSDs 381 n1Any 249 n1All 204 n2Any 80 n2All 64
-		sdl5-7 3520 sdl7-9 617
+Summary for layer 10 h1GeV 224 h2GeV 64 refLos 853 refUps 854 refMDs 409 outLos 837 outUps 837 outMDs 386 outSDs 382 n1Any 250 n1All 204 n2Any 81 n2All 64
+		sdl5-7 3535 sdl7-9 622
 Load hits 
 Convert seeds to SuperDoublets
 Loaded nSeeds (pt>1 and |eta|<1.6) 333
 Combine MDs 
 Link SuperDoublet pairs to SDLinks
-SD links stat 0-5 nAll 4967028 nDZ 1366208 nDZPnt 35236 nAlp 3286 nInAlpC 2420 nOutAlpC 799 ndBeta 283 final 283
-SD links stat 0-7 nAll 665334 nDZ 245361 nDZPnt 21107 nAlp 4226 nInAlpC 3176 nOutAlpC 1693 ndBeta 188 final 188
-SD links stat 5-7 nAll 29802168 nDZ 5726906 nDZPnt 883959 nAlp 158312 nInAlpC 87517 nOutAlpC 43820 ndBeta 2404 final 2404
-SD links stat 7-9 nAll 1178820 nDZ 214091 nDZPnt 214091 nAlp 43660 nInAlpC 19698 nOutAlpC 7506 ndBeta 610 final 610
+SD links stat 0-5 nAll 4969359 nDZ 1366722 nDZPnt 35244 nAlp 3286 nInAlpC 2755 nOutAlpC 1660 ndBeta 951 final 951
+SD links stat 0-7 nAll 666000 nDZ 245554 nDZPnt 21119 nAlp 4229 nInAlpC 3656 nOutAlpC 2613 ndBeta 367 final 367
+SD links stat 5-7 nAll 29846000 nDZ 5733924 nDZPnt 885451 nAlp 158565 nInAlpC 121083 nOutAlpC 90683 ndBeta 2432 final 2432
+SD links stat 7-9 nAll 1180000 nDZ 214104 nDZPnt 214104 nAlp 43664 nInAlpC 31375 nOutAlpC 23948 ndBeta 611 final 611
 Print stats
-Summary for layer 5 h1GeV 708 h2GeV 126 refLos 7688 refUps 7710 refMDs 4326 outLos 7850 outUps 7851 outMDs 4212 outSDs 14916 n1Any 7411 n1All 682 n2Any 1642 n2All 125
+Summary for layer 5 h1GeV 708 h2GeV 126 refLos 7688 refUps 7710 refMDs 4326 outLos 7850 outUps 7851 outMDs 4212 outSDs 14923 n1Any 7415 n1All 682 n2Any 1643 n2All 125
 Summary for layer 6 h1GeV 588 h2GeV 108 refLos 5302 refUps 5310 refMDs 1960 outLos 5288 outUps 5293 outMDs 1892 outSDs 3886 n1Any 2288 n1All 576 n2Any 546 n2All 108
-Summary for layer 7 h1GeV 494 h2GeV 93 refLos 3765 refUps 3768 refMDs 1336 outLos 3716 outUps 3711 outMDs 1281 outSDs 1998 n1Any 1175 n1All 485 n2Any 295 n2All 93
+Summary for layer 7 h1GeV 494 h2GeV 93 refLos 3765 refUps 3768 refMDs 1336 outLos 3716 outUps 3711 outMDs 1281 outSDs 2000 n1Any 1176 n1All 485 n2Any 295 n2All 93
 Summary for layer 8 h1GeV 391 h2GeV 74 refLos 2369 refUps 2369 refMDs 898 outLos 2318 outUps 2309 outMDs 887 outSDs 973 n1Any 598 n1All 386 n2Any 125 n2All 74
 Summary for layer 9 h1GeV 309 h2GeV 57 refLos 1427 refUps 1425 refMDs 579 outLos 1392 outUps 1392 outMDs 566 outSDs 590 n1Any 372 n1All 284 n2Any 85 n2All 57
-Summary for layer 10 h1GeV 257 h2GeV 52 refLos 889 refUps 885 refMDs 450 outLos 864 outUps 863 outMDs 443 outSDs 450 n1Any 283 n1All 223 n2Any 65 n2All 52
-		sdl5-7 2404 sdl7-9 610
+Summary for layer 10 h1GeV 257 h2GeV 52 refLos 889 refUps 885 refMDs 450 outLos 864 outUps 863 outMDs 443 outSDs 451 n1Any 283 n1All 223 n2Any 65 n2All 52
+		sdl5-7 2432 sdl7-9 611
 Load hits 
 Convert seeds to SuperDoublets
 Loaded nSeeds (pt>1 and |eta|<1.6) 276
 Combine MDs 
 Link SuperDoublet pairs to SDLinks
-SD links stat 0-5 nAll 2954580 nDZ 797884 nDZPnt 20309 nAlp 2055 nInAlpC 1559 nOutAlpC 524 ndBeta 206 final 206
-SD links stat 0-7 nAll 465060 nDZ 180282 nDZPnt 15504 nAlp 3415 nInAlpC 2500 nOutAlpC 1394 ndBeta 173 final 173
-SD links stat 5-7 nAll 18037925 nDZ 3455752 nDZPnt 510052 nAlp 93313 nInAlpC 53926 nOutAlpC 27138 ndBeta 1693 final 1693
-SD links stat 7-9 nAll 903160 nDZ 182672 nDZPnt 182672 nAlp 36979 nInAlpC 16782 nOutAlpC 6740 ndBeta 536 final 536
+SD links stat 0-5 nAll 2955960 nDZ 798176 nDZPnt 20316 nAlp 2056 nInAlpC 1671 nOutAlpC 937 ndBeta 652 final 652
+SD links stat 0-7 nAll 465336 nDZ 180396 nDZPnt 15512 nAlp 3418 nInAlpC 2927 nOutAlpC 2106 ndBeta 307 final 307
+SD links stat 5-7 nAll 18057060 nDZ 3458762 nDZPnt 510503 nAlp 93379 nInAlpC 72397 nOutAlpC 53529 ndBeta 1694 final 1694
+SD links stat 7-9 nAll 905382 nDZ 183141 nDZPnt 183141 nAlp 37060 nInAlpC 27115 nOutAlpC 20802 ndBeta 541 final 541
 Print stats
-Summary for layer 5 h1GeV 551 h2GeV 123 refLos 6997 refUps 7010 refMDs 3699 outLos 7114 outUps 7120 outMDs 3347 outSDs 10705 n1Any 5091 n1All 529 n2Any 1520 n2All 122
-Summary for layer 6 h1GeV 453 h2GeV 102 refLos 4874 refUps 4874 refMDs 1659 outLos 4880 outUps 4878 outMDs 1583 outSDs 2889 n1Any 1619 n1All 440 n2Any 479 n2All 102
-Summary for layer 7 h1GeV 377 h2GeV 90 refLos 3483 refUps 3486 refMDs 1212 outLos 3442 outUps 3436 outMDs 1095 outSDs 1685 n1Any 917 n1All 367 n2Any 321 n2All 90
+Summary for layer 5 h1GeV 551 h2GeV 123 refLos 6997 refUps 7010 refMDs 3699 outLos 7114 outUps 7120 outMDs 3347 outSDs 10710 n1Any 5093 n1All 529 n2Any 1520 n2All 122
+Summary for layer 6 h1GeV 453 h2GeV 102 refLos 4874 refUps 4874 refMDs 1659 outLos 4880 outUps 4878 outMDs 1583 outSDs 2891 n1Any 1620 n1All 440 n2Any 479 n2All 102
+Summary for layer 7 h1GeV 377 h2GeV 90 refLos 3483 refUps 3486 refMDs 1212 outLos 3442 outUps 3436 outMDs 1095 outSDs 1686 n1Any 918 n1All 367 n2Any 321 n2All 90
 Summary for layer 8 h1GeV 303 h2GeV 73 refLos 2214 refUps 2212 refMDs 782 outLos 2181 outUps 2172 outMDs 755 outSDs 854 n1Any 509 n1All 294 n2Any 134 n2All 73
-Summary for layer 9 h1GeV 262 h2GeV 64 refLos 1303 refUps 1302 refMDs 517 outLos 1277 outUps 1274 outMDs 518 outSDs 536 n1Any 310 n1All 243 n2Any 93 n2All 64
-Summary for layer 10 h1GeV 219 h2GeV 56 refLos 798 refUps 800 refMDs 389 outLos 779 outUps 774 outMDs 379 outSDs 354 n1Any 219 n1All 198 n2Any 63 n2All 56
-		sdl5-7 1693 sdl7-9 536
+Summary for layer 9 h1GeV 262 h2GeV 64 refLos 1303 refUps 1302 refMDs 517 outLos 1277 outUps 1274 outMDs 518 outSDs 537 n1Any 311 n1All 243 n2Any 93 n2All 64
+Summary for layer 10 h1GeV 219 h2GeV 56 refLos 798 refUps 800 refMDs 389 outLos 779 outUps 774 outMDs 379 outSDs 355 n1Any 219 n1All 198 n2Any 63 n2All 56
+		sdl5-7 1694 sdl7-9 541
 Load hits 
 Convert seeds to SuperDoublets
 Loaded nSeeds (pt>1 and |eta|<1.6) 519
 Combine MDs 
 Link SuperDoublet pairs to SDLinks
-SD links stat 0-5 nAll 19429803 nDZ 5604616 nDZPnt 136870 nAlp 9757 nInAlpC 5770 nOutAlpC 1683 ndBeta 483 final 483
-SD links stat 0-7 nAll 1960263 nDZ 747827 nDZPnt 62751 nAlp 13042 nInAlpC 9778 nOutAlpC 5332 ndBeta 448 final 448
-SD links stat 5-7 nAll 141399549 nDZ 28988838 nDZPnt 3929706 nAlp 694009 nInAlpC 384897 nOutAlpC 200979 ndBeta 8452 final 8452
-SD links stat 7-9 nAll 3667467 nDZ 723572 nDZPnt 723572 nAlp 146364 nInAlpC 64795 nOutAlpC 24633 ndBeta 1383 final 1383
+SD links stat 0-5 nAll 19440702 nDZ 5607550 nDZPnt 136941 nAlp 9765 nInAlpC 7237 nOutAlpC 4096 ndBeta 1851 final 1851
+SD links stat 0-7 nAll 1963377 nDZ 748996 nDZPnt 62835 nAlp 13066 nInAlpC 11367 nOutAlpC 8199 ndBeta 714 final 714
+SD links stat 5-7 nAll 141703614 nDZ 29047877 nDZPnt 3937980 nAlp 695589 nInAlpC 539174 nOutAlpC 411436 ndBeta 8486 final 8486
+SD links stat 7-9 nAll 3684642 nDZ 727077 nDZPnt 727077 nAlp 147158 nInAlpC 107277 nOutAlpC 81127 ndBeta 1401 final 1401
 Print stats
-Summary for layer 5 h1GeV 949 h2GeV 191 refLos 10177 refUps 10215 refMDs 7021 outLos 10357 outUps 10361 outMDs 6639 outSDs 37437 n1Any 16799 n1All 915 n2Any 4521 n2All 188
-Summary for layer 6 h1GeV 796 h2GeV 165 refLos 7160 refUps 7178 refMDs 3001 outLos 7189 outUps 7181 outMDs 2815 outSDs 7884 n1Any 4430 n1All 776 n2Any 1301 n2All 165
-Summary for layer 7 h1GeV 686 h2GeV 151 refLos 5060 refUps 5060 refMDs 2019 outLos 5000 outUps 4994 outMDs 1917 outSDs 3777 n1Any 2303 n1All 671 n2Any 753 n2All 151
-Summary for layer 8 h1GeV 565 h2GeV 119 refLos 3329 refUps 3325 refMDs 1349 outLos 3288 outUps 3280 outMDs 1314 outSDs 1668 n1Any 1054 n1All 543 n2Any 273 n2All 119
-Summary for layer 9 h1GeV 452 h2GeV 108 refLos 1944 refUps 1938 refMDs 898 outLos 1901 outUps 1896 outMDs 864 outSDs 971 n1Any 641 n1All 423 n2Any 175 n2All 108
-Summary for layer 10 h1GeV 376 h2GeV 89 refLos 1245 refUps 1243 refMDs 651 outLos 1211 outUps 1209 outMDs 611 outSDs 636 n1Any 429 n1All 338 n2Any 115 n2All 89
-		sdl5-7 8452 sdl7-9 1383
+Summary for layer 5 h1GeV 949 h2GeV 191 refLos 10177 refUps 10215 refMDs 7021 outLos 10357 outUps 10361 outMDs 6639 outSDs 37458 n1Any 16806 n1All 915 n2Any 4522 n2All 188
+Summary for layer 6 h1GeV 796 h2GeV 165 refLos 7160 refUps 7178 refMDs 3001 outLos 7189 outUps 7181 outMDs 2815 outSDs 7890 n1Any 4432 n1All 776 n2Any 1302 n2All 165
+Summary for layer 7 h1GeV 686 h2GeV 151 refLos 5060 refUps 5060 refMDs 2019 outLos 5000 outUps 4994 outMDs 1917 outSDs 3783 n1Any 2307 n1All 671 n2Any 754 n2All 151
+Summary for layer 8 h1GeV 565 h2GeV 119 refLos 3329 refUps 3325 refMDs 1349 outLos 3288 outUps 3280 outMDs 1314 outSDs 1672 n1Any 1056 n1All 543 n2Any 274 n2All 119
+Summary for layer 9 h1GeV 452 h2GeV 108 refLos 1944 refUps 1938 refMDs 898 outLos 1901 outUps 1896 outMDs 864 outSDs 974 n1Any 643 n1All 423 n2Any 177 n2All 108
+Summary for layer 10 h1GeV 376 h2GeV 89 refLos 1245 refUps 1243 refMDs 651 outLos 1211 outUps 1209 outMDs 611 outSDs 637 n1Any 430 n1All 338 n2Any 115 n2All 89
+		sdl5-7 8486 sdl7-9 1401
 Load hits 
 Convert seeds to SuperDoublets
 Loaded nSeeds (pt>1 and |eta|<1.6) 417
 Combine MDs 
 Link SuperDoublet pairs to SDLinks
-SD links stat 0-5 nAll 8497209 nDZ 2588259 nDZPnt 67390 nAlp 5004 nInAlpC 3253 nOutAlpC 978 ndBeta 354 final 354
-SD links stat 0-7 nAll 1174272 nDZ 452248 nDZPnt 38651 nAlp 8330 nInAlpC 6074 nOutAlpC 3152 ndBeta 296 final 296
-SD links stat 5-7 nAll 57381632 nDZ 12605282 nDZPnt 1879787 nAlp 338551 nInAlpC 189535 nOutAlpC 99011 ndBeta 4841 final 4841
-SD links stat 7-9 nAll 2204928 nDZ 438681 nDZPnt 438681 nAlp 88086 nInAlpC 39911 nOutAlpC 15169 ndBeta 1035 final 1035
+SD links stat 0-5 nAll 8502630 nDZ 2589737 nDZPnt 67419 nAlp 5005 nInAlpC 3856 nOutAlpC 2163 ndBeta 1248 final 1248
+SD links stat 0-7 nAll 1175940 nDZ 452807 nDZPnt 38688 nAlp 8337 nInAlpC 7097 nOutAlpC 5031 ndBeta 495 final 495
+SD links stat 5-7 nAll 57499800 nDZ 12628611 nDZPnt 1883050 nAlp 339165 nInAlpC 259274 nOutAlpC 195838 ndBeta 4856 final 4856
+SD links stat 7-9 nAll 2213700 nDZ 440249 nDZPnt 440249 nAlp 88371 nInAlpC 64434 nOutAlpC 48210 ndBeta 1047 final 1047
 Print stats
-Summary for layer 5 h1GeV 809 h2GeV 171 refLos 8397 refUps 8413 refMDs 5180 outLos 8562 outUps 8562 outMDs 4726 outSDs 20377 n1Any 10671 n1All 781 n2Any 2909 n2All 171
-Summary for layer 6 h1GeV 697 h2GeV 152 refLos 5854 refUps 5854 refMDs 2312 outLos 5856 outUps 5849 outMDs 2182 outSDs 5172 n1Any 3166 n1All 682 n2Any 1019 n2All 152
-Summary for layer 7 h1GeV 588 h2GeV 128 refLos 4149 refUps 4151 refMDs 1620 outLos 4116 outUps 4111 outMDs 1531 outSDs 2816 n1Any 1798 n1All 577 n2Any 548 n2All 128
-Summary for layer 8 h1GeV 487 h2GeV 99 refLos 2702 refUps 2701 refMDs 1078 outLos 2645 outUps 2643 outMDs 1056 outSDs 1345 n1Any 897 n1All 474 n2Any 223 n2All 99
-Summary for layer 9 h1GeV 406 h2GeV 82 refLos 1741 refUps 1743 refMDs 763 outLos 1687 outUps 1684 outMDs 734 outSDs 783 n1Any 535 n1All 380 n2Any 128 n2All 82
+Summary for layer 5 h1GeV 809 h2GeV 171 refLos 8397 refUps 8413 refMDs 5180 outLos 8562 outUps 8562 outMDs 4726 outSDs 20390 n1Any 10677 n1All 781 n2Any 2913 n2All 171
+Summary for layer 6 h1GeV 697 h2GeV 152 refLos 5854 refUps 5854 refMDs 2312 outLos 5856 outUps 5849 outMDs 2182 outSDs 5175 n1Any 3168 n1All 682 n2Any 1020 n2All 152
+Summary for layer 7 h1GeV 588 h2GeV 128 refLos 4149 refUps 4151 refMDs 1620 outLos 4116 outUps 4111 outMDs 1531 outSDs 2820 n1Any 1799 n1All 577 n2Any 548 n2All 128
+Summary for layer 8 h1GeV 487 h2GeV 99 refLos 2702 refUps 2701 refMDs 1078 outLos 2645 outUps 2643 outMDs 1056 outSDs 1348 n1Any 900 n1All 474 n2Any 225 n2All 99
+Summary for layer 9 h1GeV 406 h2GeV 82 refLos 1741 refUps 1743 refMDs 763 outLos 1687 outUps 1684 outMDs 734 outSDs 785 n1Any 537 n1All 380 n2Any 129 n2All 82
 Summary for layer 10 h1GeV 337 h2GeV 62 refLos 1051 refUps 1050 refMDs 551 outLos 1029 outUps 1028 outMDs 520 outSDs 531 n1Any 351 n1All 298 n2Any 76 n2All 62
-		sdl5-7 4841 sdl7-9 1035
+		sdl5-7 4856 sdl7-9 1047
 Load hits 
 Convert seeds to SuperDoublets
 Loaded nSeeds (pt>1 and |eta|<1.6) 341
 Combine MDs 
 Link SuperDoublet pairs to SDLinks
-SD links stat 0-5 nAll 4370256 nDZ 1295520 nDZPnt 33735 nAlp 3437 nInAlpC 2533 nOutAlpC 824 ndBeta 270 final 270
-SD links stat 0-7 nAll 683023 nDZ 262531 nDZPnt 23331 nAlp 5195 nInAlpC 3904 nOutAlpC 2153 ndBeta 262 final 262
-SD links stat 5-7 nAll 25670448 nDZ 5455355 nDZPnt 815731 nAlp 158075 nInAlpC 91243 nOutAlpC 48459 ndBeta 2615 final 2615
-SD links stat 7-9 nAll 1215821 nDZ 238852 nDZPnt 238852 nAlp 53643 nInAlpC 24633 nOutAlpC 10716 ndBeta 711 final 711
+SD links stat 0-5 nAll 4372302 nDZ 1296150 nDZPnt 33750 nAlp 3438 nInAlpC 2893 nOutAlpC 1659 ndBeta 994 final 994
+SD links stat 0-7 nAll 683364 nDZ 262623 nDZPnt 23342 nAlp 5196 nInAlpC 4522 nOutAlpC 3239 ndBeta 420 final 420
+SD links stat 5-7 nAll 25695288 nDZ 5459921 nDZPnt 816344 nAlp 158244 nInAlpC 121891 nOutAlpC 91113 ndBeta 2629 final 2629
+SD links stat 7-9 nAll 1218432 nDZ 239212 nDZPnt 239212 nAlp 53752 nInAlpC 38395 nOutAlpC 29682 ndBeta 724 final 724
 Print stats
-Summary for layer 5 h1GeV 684 h2GeV 135 refLos 7131 refUps 7157 refMDs 3940 outLos 7285 outUps 7283 outMDs 3636 outSDs 12816 n1Any 6847 n1All 651 n2Any 2057 n2All 134
-Summary for layer 6 h1GeV 583 h2GeV 119 refLos 5030 refUps 5026 refMDs 1928 outLos 5072 outUps 5073 outMDs 1822 outSDs 3913 n1Any 2362 n1All 571 n2Any 707 n2All 119
-Summary for layer 7 h1GeV 485 h2GeV 105 refLos 3610 refUps 3607 refMDs 1280 outLos 3563 outUps 3561 outMDs 1232 outSDs 2003 n1Any 1256 n1All 481 n2Any 446 n2All 105
+Summary for layer 5 h1GeV 684 h2GeV 135 refLos 7131 refUps 7157 refMDs 3940 outLos 7285 outUps 7283 outMDs 3636 outSDs 12822 n1Any 6850 n1All 651 n2Any 2058 n2All 134
+Summary for layer 6 h1GeV 583 h2GeV 119 refLos 5030 refUps 5026 refMDs 1928 outLos 5072 outUps 5073 outMDs 1822 outSDs 3915 n1Any 2364 n1All 571 n2Any 708 n2All 119
+Summary for layer 7 h1GeV 485 h2GeV 105 refLos 3610 refUps 3607 refMDs 1280 outLos 3563 outUps 3561 outMDs 1232 outSDs 2004 n1Any 1257 n1All 481 n2Any 447 n2All 105
 Summary for layer 8 h1GeV 393 h2GeV 87 refLos 2345 refUps 2348 refMDs 920 outLos 2315 outUps 2311 outMDs 851 outSDs 982 n1Any 614 n1All 382 n2Any 167 n2All 87
-Summary for layer 9 h1GeV 318 h2GeV 76 refLos 1411 refUps 1411 refMDs 589 outLos 1369 outUps 1370 outMDs 588 outSDs 607 n1Any 384 n1All 298 n2Any 115 n2All 76
-Summary for layer 10 h1GeV 263 h2GeV 68 refLos 874 refUps 875 refMDs 426 outLos 841 outUps 842 outMDs 422 outSDs 441 n1Any 286 n1All 237 n2Any 88 n2All 68
-		sdl5-7 2615 sdl7-9 711
+Summary for layer 9 h1GeV 318 h2GeV 76 refLos 1411 refUps 1411 refMDs 589 outLos 1369 outUps 1370 outMDs 588 outSDs 608 n1Any 385 n1All 298 n2Any 115 n2All 76
+Summary for layer 10 h1GeV 263 h2GeV 68 refLos 874 refUps 875 refMDs 426 outLos 841 outUps 842 outMDs 422 outSDs 442 n1Any 287 n1All 237 n2Any 88 n2All 68
+		sdl5-7 2629 sdl7-9 724
 Load hits 
 Convert seeds to SuperDoublets
 Loaded nSeeds (pt>1 and |eta|<1.6) 464
 Combine MDs 
 Link SuperDoublet pairs to SDLinks
-SD links stat 0-5 nAll 13711200 nDZ 4231007 nDZPnt 106247 nAlp 8570 nInAlpC 5555 nOutAlpC 1601 ndBeta 488 final 488
-SD links stat 0-7 nAll 1441184 nDZ 596799 nDZPnt 47574 nAlp 10321 nInAlpC 7919 nOutAlpC 4222 ndBeta 328 final 328
-SD links stat 5-7 nAll 91782300 nDZ 20279117 nDZPnt 2683166 nAlp 505071 nInAlpC 288048 nOutAlpC 156321 ndBeta 7680 final 7680
-SD links stat 7-9 nAll 3096682 nDZ 669548 nDZPnt 669548 nAlp 138558 nInAlpC 62227 nOutAlpC 25300 ndBeta 1446 final 1446
+SD links stat 0-5 nAll 13721408 nDZ 4234202 nDZPnt 106315 nAlp 8577 nInAlpC 6357 nOutAlpC 3516 ndBeta 1771 final 1771
+SD links stat 0-7 nAll 1441648 nDZ 597003 nDZPnt 47592 nAlp 10324 nInAlpC 9076 nOutAlpC 6393 ndBeta 616 final 616
+SD links stat 5-7 nAll 91880204 nDZ 20302331 nDZPnt 2687506 nAlp 505966 nInAlpC 388786 nOutAlpC 293708 ndBeta 7738 final 7738
+SD links stat 7-9 nAll 3097679 nDZ 669862 nDZPnt 669862 nAlp 138605 nInAlpC 99123 nOutAlpC 75617 ndBeta 1464 final 1464
 Print stats
-Summary for layer 5 h1GeV 910 h2GeV 186 refLos 9293 refUps 9306 refMDs 6108 outLos 9447 outUps 9440 outMDs 5684 outSDs 29550 n1Any 15421 n1All 878 n2Any 4669 n2All 186
-Summary for layer 6 h1GeV 740 h2GeV 153 refLos 6512 refUps 6503 refMDs 2657 outLos 6476 outUps 6481 outMDs 2435 outSDs 6721 n1Any 4116 n1All 725 n2Any 1144 n2All 152
-Summary for layer 7 h1GeV 635 h2GeV 129 refLos 4608 refUps 4605 refMDs 1766 outLos 4545 outUps 4541 outMDs 1687 outSDs 3106 n1Any 1920 n1All 624 n2Any 572 n2All 128
-Summary for layer 8 h1GeV 548 h2GeV 117 refLos 3059 refUps 3058 refMDs 1273 outLos 3000 outUps 2993 outMDs 1177 outSDs 1484 n1Any 982 n1All 539 n2Any 273 n2All 117
+Summary for layer 5 h1GeV 910 h2GeV 186 refLos 9293 refUps 9306 refMDs 6108 outLos 9447 outUps 9440 outMDs 5684 outSDs 29572 n1Any 15434 n1All 878 n2Any 4674 n2All 186
+Summary for layer 6 h1GeV 740 h2GeV 153 refLos 6512 refUps 6503 refMDs 2657 outLos 6476 outUps 6481 outMDs 2435 outSDs 6729 n1Any 4119 n1All 725 n2Any 1146 n2All 152
+Summary for layer 7 h1GeV 635 h2GeV 129 refLos 4608 refUps 4605 refMDs 1766 outLos 4545 outUps 4541 outMDs 1687 outSDs 3107 n1Any 1921 n1All 624 n2Any 572 n2All 128
+Summary for layer 8 h1GeV 548 h2GeV 117 refLos 3059 refUps 3058 refMDs 1273 outLos 3000 outUps 2993 outMDs 1177 outSDs 1488 n1Any 983 n1All 539 n2Any 274 n2All 117
 Summary for layer 9 h1GeV 476 h2GeV 108 refLos 1902 refUps 1902 refMDs 885 outLos 1850 outUps 1847 outMDs 857 outSDs 997 n1Any 674 n1All 450 n2Any 152 n2All 108
-Summary for layer 10 h1GeV 387 h2GeV 86 refLos 1179 refUps 1171 refMDs 621 outLos 1142 outUps 1141 outMDs 614 outSDs 627 n1Any 428 n1All 354 n2Any 108 n2All 86
-		sdl5-7 7680 sdl7-9 1446
+Summary for layer 10 h1GeV 387 h2GeV 86 refLos 1179 refUps 1171 refMDs 621 outLos 1142 outUps 1141 outMDs 614 outSDs 630 n1Any 431 n1All 354 n2Any 108 n2All 86
+		sdl5-7 7738 sdl7-9 1464
 Load hits 
 Convert seeds to SuperDoublets
 Loaded nSeeds (pt>1 and |eta|<1.6) 322
 Combine MDs 
 Link SuperDoublet pairs to SDLinks
-SD links stat 0-5 nAll 4463242 nDZ 1230439 nDZPnt 30946 nAlp 2814 nInAlpC 2266 nOutAlpC 781 ndBeta 292 final 292
-SD links stat 0-7 nAll 710654 nDZ 279394 nDZPnt 23263 nAlp 4947 nInAlpC 3813 nOutAlpC 2056 ndBeta 218 final 218
-SD links stat 5-7 nAll 30591227 nDZ 5956426 nDZPnt 876591 nAlp 159520 nInAlpC 91769 nOutAlpC 48344 ndBeta 3435 final 3435
-SD links stat 7-9 nAll 1403652 nDZ 288361 nDZPnt 288361 nAlp 57777 nInAlpC 26998 nOutAlpC 10989 ndBeta 831 final 831
+SD links stat 0-5 nAll 4466140 nDZ 1230896 nDZPnt 30956 nAlp 2814 nInAlpC 2398 nOutAlpC 1367 ndBeta 866 final 866
+SD links stat 0-7 nAll 710976 nDZ 279524 nDZPnt 23272 nAlp 4951 nInAlpC 4385 nOutAlpC 3131 ndBeta 386 final 386
+SD links stat 5-7 nAll 30624960 nDZ 5960839 nDZPnt 877056 nAlp 159623 nInAlpC 123770 nOutAlpC 93945 ndBeta 3441 final 3441
+SD links stat 7-9 nAll 1406496 nDZ 288938 nDZPnt 288938 nAlp 57858 nInAlpC 41685 nOutAlpC 31571 ndBeta 847 final 847
 Print stats
-Summary for layer 5 h1GeV 664 h2GeV 155 refLos 7421 refUps 7442 refMDs 4127 outLos 7564 outUps 7575 outMDs 3982 outSDs 13861 n1Any 6546 n1All 646 n2Any 2031 n2All 154
-Summary for layer 6 h1GeV 556 h2GeV 122 refLos 5171 refUps 5177 refMDs 1954 outLos 5164 outUps 5165 outMDs 1825 outSDs 3902 n1Any 2187 n1All 540 n2Any 595 n2All 122
-Summary for layer 7 h1GeV 471 h2GeV 102 refLos 3640 refUps 3639 refMDs 1326 outLos 3574 outUps 3578 outMDs 1291 outSDs 2207 n1Any 1320 n1All 462 n2Any 442 n2All 102
+Summary for layer 5 h1GeV 664 h2GeV 155 refLos 7421 refUps 7442 refMDs 4127 outLos 7564 outUps 7575 outMDs 3982 outSDs 13870 n1Any 6550 n1All 646 n2Any 2031 n2All 154
+Summary for layer 6 h1GeV 556 h2GeV 122 refLos 5171 refUps 5177 refMDs 1954 outLos 5164 outUps 5165 outMDs 1825 outSDs 3904 n1Any 2188 n1All 540 n2Any 595 n2All 122
+Summary for layer 7 h1GeV 471 h2GeV 102 refLos 3640 refUps 3639 refMDs 1326 outLos 3574 outUps 3578 outMDs 1291 outSDs 2208 n1Any 1320 n1All 462 n2Any 442 n2All 102
 Summary for layer 8 h1GeV 368 h2GeV 86 refLos 2334 refUps 2331 refMDs 892 outLos 2283 outUps 2280 outMDs 837 outSDs 983 n1Any 600 n1All 360 n2Any 164 n2All 86
-Summary for layer 9 h1GeV 309 h2GeV 73 refLos 1385 refUps 1387 refMDs 616 outLos 1333 outUps 1334 outMDs 600 outSDs 636 n1Any 400 n1All 298 n2Any 106 n2All 73
+Summary for layer 9 h1GeV 309 h2GeV 73 refLos 1385 refUps 1387 refMDs 616 outLos 1333 outUps 1334 outMDs 600 outSDs 637 n1Any 401 n1All 298 n2Any 107 n2All 73
 Summary for layer 10 h1GeV 253 h2GeV 64 refLos 851 refUps 849 refMDs 419 outLos 833 outUps 831 outMDs 418 outSDs 425 n1Any 291 n1All 236 n2Any 73 n2All 64
-		sdl5-7 3435 sdl7-9 831
+		sdl5-7 3441 sdl7-9 847
 Load hits 
 Convert seeds to SuperDoublets
 Loaded nSeeds (pt>1 and |eta|<1.6) 405
 Combine MDs 
 Link SuperDoublet pairs to SDLinks
-SD links stat 0-5 nAll 9191880 nDZ 2683736 nDZPnt 67909 nAlp 5468 nInAlpC 4046 nOutAlpC 1177 ndBeta 405 final 405
-SD links stat 0-7 nAll 1138455 nDZ 436583 nDZPnt 37141 nAlp 7663 nInAlpC 5724 nOutAlpC 3130 ndBeta 320 final 320
-SD links stat 5-7 nAll 63798456 nDZ 12959488 nDZPnt 1843248 nAlp 332029 nInAlpC 186784 nOutAlpC 97524 ndBeta 4689 final 4689
-SD links stat 7-9 nAll 2130738 nDZ 413478 nDZPnt 413478 nAlp 87702 nInAlpC 40642 nOutAlpC 16652 ndBeta 981 final 981
+SD links stat 0-5 nAll 9199170 nDZ 2685619 nDZPnt 67957 nAlp 5469 nInAlpC 4647 nOutAlpC 2584 ndBeta 1390 final 1390
+SD links stat 0-7 nAll 1140480 nDZ 437387 nDZPnt 37197 nAlp 7668 nInAlpC 6698 nOutAlpC 4804 ndBeta 511 final 511
+SD links stat 5-7 nAll 63962624 nDZ 12993395 nDZPnt 1848102 nAlp 332929 nInAlpC 254831 nOutAlpC 193759 ndBeta 4697 final 4697
+SD links stat 7-9 nAll 2134528 nDZ 414490 nDZPnt 414490 nAlp 87929 nInAlpC 64698 nOutAlpC 49984 ndBeta 989 final 989
 Print stats
-Summary for layer 5 h1GeV 751 h2GeV 177 refLos 8894 refUps 8916 refMDs 5553 outLos 9046 outUps 9035 outMDs 5151 outSDs 22696 n1Any 10527 n1All 726 n2Any 2997 n2All 176
-Summary for layer 6 h1GeV 635 h2GeV 159 refLos 6204 refUps 6202 refMDs 2283 outLos 6214 outUps 6210 outMDs 2291 outSDs 5264 n1Any 3043 n1All 620 n2Any 1146 n2All 158
-Summary for layer 7 h1GeV 536 h2GeV 145 refLos 4323 refUps 4321 refMDs 1581 outLos 4292 outUps 4286 outMDs 1507 outSDs 2811 n1Any 1747 n1All 526 n2Any 699 n2All 145
-Summary for layer 8 h1GeV 428 h2GeV 122 refLos 2810 refUps 2808 refMDs 1042 outLos 2750 outUps 2748 outMDs 1025 outSDs 1185 n1Any 697 n1All 417 n2Any 243 n2All 122
+Summary for layer 5 h1GeV 751 h2GeV 177 refLos 8894 refUps 8916 refMDs 5553 outLos 9046 outUps 9035 outMDs 5151 outSDs 22714 n1Any 10536 n1All 726 n2Any 2998 n2All 176
+Summary for layer 6 h1GeV 635 h2GeV 159 refLos 6204 refUps 6202 refMDs 2283 outLos 6214 outUps 6210 outMDs 2291 outSDs 5268 n1Any 3045 n1All 620 n2Any 1148 n2All 158
+Summary for layer 7 h1GeV 536 h2GeV 145 refLos 4323 refUps 4321 refMDs 1581 outLos 4292 outUps 4286 outMDs 1507 outSDs 2816 n1Any 1749 n1All 526 n2Any 701 n2All 145
+Summary for layer 8 h1GeV 428 h2GeV 122 refLos 2810 refUps 2808 refMDs 1042 outLos 2750 outUps 2748 outMDs 1025 outSDs 1189 n1Any 699 n1All 417 n2Any 245 n2All 122
 Summary for layer 9 h1GeV 356 h2GeV 108 refLos 1655 refUps 1655 refMDs 720 outLos 1604 outUps 1601 outMDs 681 outSDs 758 n1Any 499 n1All 332 n2Any 184 n2All 108
 Summary for layer 10 h1GeV 309 h2GeV 96 refLos 1023 refUps 1022 refMDs 502 outLos 991 outUps 990 outMDs 499 outSDs 508 n1Any 333 n1All 283 n2Any 124 n2All 96
-		sdl5-7 4689 sdl7-9 981
+		sdl5-7 4697 sdl7-9 989
 Load hits 
 Convert seeds to SuperDoublets
 Loaded nSeeds (pt>1 and |eta|<1.6) 357
 Combine MDs 
 Link SuperDoublet pairs to SDLinks
-SD links stat 0-5 nAll 5821956 nDZ 1863271 nDZPnt 46494 nAlp 4506 nInAlpC 3246 nOutAlpC 1033 ndBeta 317 final 317
-SD links stat 0-7 nAll 797538 nDZ 315774 nDZPnt 27388 nAlp 5985 nInAlpC 4524 nOutAlpC 2360 ndBeta 269 final 269
-SD links stat 5-7 nAll 36432072 nDZ 8366965 nDZPnt 1228346 nAlp 242473 nInAlpC 141321 nOutAlpC 72999 ndBeta 4162 final 4162
-SD links stat 7-9 nAll 1559332 nDZ 319969 nDZPnt 319969 nAlp 68032 nInAlpC 31272 nOutAlpC 13619 ndBeta 914 final 914
+SD links stat 0-5 nAll 5824812 nDZ 1864307 nDZPnt 46517 nAlp 4511 nInAlpC 3775 nOutAlpC 2156 ndBeta 1226 final 1226
+SD links stat 0-7 nAll 798609 nDZ 316035 nDZPnt 27438 nAlp 5999 nInAlpC 5279 nOutAlpC 3676 ndBeta 473 final 473
+SD links stat 5-7 nAll 36498892 nDZ 8379228 nDZPnt 1230646 nAlp 243110 nInAlpC 186104 nOutAlpC 132775 ndBeta 4183 final 4183
+SD links stat 7-9 nAll 1561426 nDZ 320036 nDZPnt 320036 nAlp 68047 nInAlpC 48287 nOutAlpC 36961 ndBeta 921 final 921
 Print stats
-Summary for layer 5 h1GeV 687 h2GeV 138 refLos 7630 refUps 7661 refMDs 4317 outLos 7783 outUps 7771 outMDs 4049 outSDs 16308 n1Any 8603 n1All 652 n2Any 2913 n2All 138
-Summary for layer 6 h1GeV 576 h2GeV 115 refLos 5346 refUps 5342 refMDs 1969 outLos 5351 outUps 5346 outMDs 1883 outSDs 4313 n1Any 2581 n1All 553 n2Any 763 n2All 115
-Summary for layer 7 h1GeV 512 h2GeV 107 refLos 3810 refUps 3810 refMDs 1407 outLos 3762 outUps 3758 outMDs 1330 outSDs 2234 n1Any 1405 n1All 494 n2Any 429 n2All 107
-Summary for layer 8 h1GeV 422 h2GeV 92 refLos 2536 refUps 2538 refMDs 963 outLos 2482 outUps 2477 outMDs 943 outSDs 1132 n1Any 701 n1All 405 n2Any 213 n2All 92
+Summary for layer 5 h1GeV 687 h2GeV 138 refLos 7630 refUps 7661 refMDs 4317 outLos 7783 outUps 7771 outMDs 4049 outSDs 16316 n1Any 8610 n1All 652 n2Any 2916 n2All 138
+Summary for layer 6 h1GeV 576 h2GeV 115 refLos 5346 refUps 5342 refMDs 1969 outLos 5351 outUps 5346 outMDs 1883 outSDs 4316 n1Any 2583 n1All 553 n2Any 765 n2All 115
+Summary for layer 7 h1GeV 512 h2GeV 107 refLos 3810 refUps 3810 refMDs 1407 outLos 3762 outUps 3758 outMDs 1330 outSDs 2237 n1Any 1407 n1All 494 n2Any 429 n2All 107
+Summary for layer 8 h1GeV 422 h2GeV 92 refLos 2536 refUps 2538 refMDs 963 outLos 2482 outUps 2477 outMDs 943 outSDs 1138 n1Any 704 n1All 405 n2Any 213 n2All 92
 Summary for layer 9 h1GeV 366 h2GeV 82 refLos 1501 refUps 1502 refMDs 673 outLos 1465 outUps 1464 outMDs 657 outSDs 698 n1Any 485 n1All 342 n2Any 142 n2All 82
 Summary for layer 10 h1GeV 295 h2GeV 78 refLos 939 refUps 934 refMDs 485 outLos 912 outUps 910 outMDs 471 outSDs 484 n1Any 318 n1All 267 n2Any 97 n2All 78
-		sdl5-7 4162 sdl7-9 914
+		sdl5-7 4183 sdl7-9 921
 Load hits 
 Convert seeds to SuperDoublets
 Loaded nSeeds (pt>1 and |eta|<1.6) 304
 Combine MDs 
 Link SuperDoublet pairs to SDLinks
-SD links stat 0-5 nAll 3395376 nDZ 881973 nDZPnt 22991 nAlp 2101 nInAlpC 1677 nOutAlpC 565 ndBeta 255 final 255
-SD links stat 0-7 nAll 507072 nDZ 187040 nDZPnt 16169 nAlp 3554 nInAlpC 2673 nOutAlpC 1550 ndBeta 174 final 174
-SD links stat 5-7 nAll 18629892 nDZ 3391865 nDZPnt 551176 nAlp 100064 nInAlpC 57454 nOutAlpC 30541 ndBeta 1828 final 1828
-SD links stat 7-9 nAll 864024 nDZ 162108 nDZPnt 162108 nAlp 33190 nInAlpC 15166 nOutAlpC 6033 ndBeta 456 final 456
+SD links stat 0-5 nAll 3398112 nDZ 882732 nDZPnt 23004 nAlp 2101 nInAlpC 1796 nOutAlpC 1032 ndBeta 719 final 719
+SD links stat 0-7 nAll 507072 nDZ 187040 nDZPnt 16169 nAlp 3554 nInAlpC 3115 nOutAlpC 2336 ndBeta 322 final 322
+SD links stat 5-7 nAll 18644904 nDZ 3394722 nDZPnt 551176 nAlp 100064 nInAlpC 77942 nOutAlpC 59176 ndBeta 1830 final 1830
+SD links stat 7-9 nAll 869028 nDZ 163059 nDZPnt 163059 nAlp 33415 nInAlpC 24263 nOutAlpC 18613 ndBeta 462 final 462
 Print stats
-Summary for layer 5 h1GeV 589 h2GeV 118 refLos 7269 refUps 7295 refMDs 3819 outLos 7382 outUps 7383 outMDs 3608 outSDs 11169 n1Any 5038 n1All 564 n2Any 1330 n2All 118
-Summary for layer 6 h1GeV 483 h2GeV 99 refLos 5006 refUps 4999 refMDs 1670 outLos 4989 outUps 4984 outMDs 1588 outSDs 2914 n1Any 1582 n1All 471 n2Any 443 n2All 99
+Summary for layer 5 h1GeV 589 h2GeV 118 refLos 7269 refUps 7295 refMDs 3819 outLos 7382 outUps 7383 outMDs 3608 outSDs 11178 n1Any 5041 n1All 564 n2Any 1330 n2All 118
+Summary for layer 6 h1GeV 483 h2GeV 99 refLos 5006 refUps 4999 refMDs 1670 outLos 4989 outUps 4984 outMDs 1588 outSDs 2916 n1Any 1583 n1All 471 n2Any 444 n2All 99
 Summary for layer 7 h1GeV 405 h2GeV 82 refLos 3454 refUps 3451 refMDs 1161 outLos 3406 outUps 3399 outMDs 1116 outSDs 1668 n1Any 962 n1All 395 n2Any 239 n2All 82
-Summary for layer 8 h1GeV 324 h2GeV 74 refLos 2298 refUps 2296 refMDs 834 outLos 2254 outUps 2250 outMDs 818 outSDs 906 n1Any 495 n1All 315 n2Any 129 n2All 74
-Summary for layer 9 h1GeV 264 h2GeV 63 refLos 1336 refUps 1333 refMDs 546 outLos 1317 outUps 1313 outMDs 525 outSDs 518 n1Any 295 n1All 240 n2Any 84 n2All 63
-Summary for layer 10 h1GeV 219 h2GeV 49 refLos 810 refUps 809 refMDs 404 outLos 793 outUps 792 outMDs 384 outSDs 390 n1Any 232 n1All 193 n2Any 54 n2All 49
-		sdl5-7 1828 sdl7-9 456
+Summary for layer 8 h1GeV 324 h2GeV 74 refLos 2298 refUps 2296 refMDs 834 outLos 2254 outUps 2250 outMDs 818 outSDs 907 n1Any 496 n1All 315 n2Any 130 n2All 74
+Summary for layer 9 h1GeV 264 h2GeV 63 refLos 1336 refUps 1333 refMDs 546 outLos 1317 outUps 1313 outMDs 525 outSDs 521 n1Any 297 n1All 240 n2Any 85 n2All 63
+Summary for layer 10 h1GeV 219 h2GeV 49 refLos 810 refUps 809 refMDs 404 outLos 793 outUps 792 outMDs 384 outSDs 391 n1Any 233 n1All 193 n2Any 54 n2All 49
+		sdl5-7 1830 sdl7-9 462
 Load hits 
 Convert seeds to SuperDoublets
 Loaded nSeeds (pt>1 and |eta|<1.6) 257
 Combine MDs 
 Link SuperDoublet pairs to SDLinks
-SD links stat 0-5 nAll 2597499 nDZ 762370 nDZPnt 19661 nAlp 1904 nInAlpC 1418 nOutAlpC 552 ndBeta 166 final 166
-SD links stat 0-7 nAll 351576 nDZ 142180 nDZPnt 11985 nAlp 2713 nInAlpC 2135 nOutAlpC 1209 ndBeta 174 final 174
-SD links stat 5-7 nAll 13826376 nDZ 2822398 nDZPnt 386164 nAlp 68052 nInAlpC 38552 nOutAlpC 19651 ndBeta 1489 final 1489
-SD links stat 7-9 nAll 751032 nDZ 157441 nDZPnt 157441 nAlp 34130 nInAlpC 15258 nOutAlpC 6565 ndBeta 473 final 473
+SD links stat 0-5 nAll 2599041 nDZ 762903 nDZPnt 19676 nAlp 1908 nInAlpC 1559 nOutAlpC 989 ndBeta 610 final 610
+SD links stat 0-7 nAll 351833 nDZ 142278 nDZPnt 11991 nAlp 2714 nInAlpC 2429 nOutAlpC 1748 ndBeta 314 final 314
+SD links stat 5-7 nAll 13844697 nDZ 2826840 nDZPnt 386582 nAlp 68088 nInAlpC 52501 nOutAlpC 39114 ndBeta 1490 final 1490
+SD links stat 7-9 nAll 754319 nDZ 158171 nDZPnt 158171 nAlp 34259 nInAlpC 24732 nOutAlpC 19302 ndBeta 475 final 475
 Print stats
-Summary for layer 5 h1GeV 505 h2GeV 105 refLos 6701 refUps 6728 refMDs 3454 outLos 6827 outUps 6829 outMDs 3162 outSDs 10107 n1Any 4337 n1All 482 n2Any 1475 n2All 104
-Summary for layer 6 h1GeV 415 h2GeV 84 refLos 4662 refUps 4668 refMDs 1563 outLos 4692 outUps 4693 outMDs 1494 outSDs 2790 n1Any 1553 n1All 402 n2Any 441 n2All 83
-Summary for layer 7 h1GeV 351 h2GeV 73 refLos 3191 refUps 3190 refMDs 965 outLos 3146 outUps 3143 outMDs 961 outSDs 1368 n1Any 864 n1All 344 n2Any 250 n2All 73
-Summary for layer 8 h1GeV 299 h2GeV 67 refLos 2103 refUps 2099 refMDs 722 outLos 2028 outUps 2024 outMDs 727 outSDs 795 n1Any 447 n1All 290 n2Any 116 n2All 67
-Summary for layer 9 h1GeV 254 h2GeV 59 refLos 1248 refUps 1247 refMDs 517 outLos 1213 outUps 1206 outMDs 521 outSDs 549 n1Any 326 n1All 238 n2Any 102 n2All 59
-Summary for layer 10 h1GeV 219 h2GeV 51 refLos 774 refUps 775 refMDs 350 outLos 745 outUps 740 outMDs 345 outSDs 364 n1Any 249 n1All 195 n2Any 59 n2All 51
-		sdl5-7 1489 sdl7-9 473
+Summary for layer 5 h1GeV 505 h2GeV 105 refLos 6701 refUps 6728 refMDs 3454 outLos 6827 outUps 6829 outMDs 3162 outSDs 10113 n1Any 4339 n1All 482 n2Any 1476 n2All 104
+Summary for layer 6 h1GeV 415 h2GeV 84 refLos 4662 refUps 4668 refMDs 1563 outLos 4692 outUps 4693 outMDs 1494 outSDs 2793 n1Any 1556 n1All 402 n2Any 442 n2All 83
+Summary for layer 7 h1GeV 351 h2GeV 73 refLos 3191 refUps 3190 refMDs 965 outLos 3146 outUps 3143 outMDs 961 outSDs 1369 n1Any 864 n1All 344 n2Any 250 n2All 73
+Summary for layer 8 h1GeV 299 h2GeV 67 refLos 2103 refUps 2099 refMDs 722 outLos 2028 outUps 2024 outMDs 727 outSDs 796 n1Any 447 n1All 290 n2Any 116 n2All 67
+Summary for layer 9 h1GeV 254 h2GeV 59 refLos 1248 refUps 1247 refMDs 517 outLos 1213 outUps 1206 outMDs 521 outSDs 551 n1Any 328 n1All 238 n2Any 103 n2All 59
+Summary for layer 10 h1GeV 219 h2GeV 51 refLos 774 refUps 775 refMDs 350 outLos 745 outUps 740 outMDs 345 outSDs 366 n1Any 251 n1All 195 n2Any 60 n2All 51
+		sdl5-7 1490 sdl7-9 475
 Load hits 
 Convert seeds to SuperDoublets
 Loaded nSeeds (pt>1 and |eta|<1.6) 276
 Combine MDs 
 Link SuperDoublet pairs to SDLinks
-SD links stat 0-5 nAll 2391816 nDZ 704125 nDZPnt 17656 nAlp 1799 nInAlpC 1429 nOutAlpC 517 ndBeta 181 final 181
-SD links stat 0-7 nAll 442152 nDZ 179484 nDZPnt 15294 nAlp 3460 nInAlpC 2623 nOutAlpC 1494 ndBeta 192 final 192
-SD links stat 5-7 nAll 13882932 nDZ 2853946 nDZPnt 439052 nAlp 76854 nInAlpC 43710 nOutAlpC 23239 ndBeta 1459 final 1459
-SD links stat 7-9 nAll 925956 nDZ 199163 nDZPnt 199163 nAlp 41254 nInAlpC 19127 nOutAlpC 7741 ndBeta 572 final 572
+SD links stat 0-5 nAll 2393196 nDZ 704588 nDZPnt 17668 nAlp 1799 nInAlpC 1573 nOutAlpC 951 ndBeta 623 final 623
+SD links stat 0-7 nAll 442704 nDZ 179630 nDZPnt 15312 nAlp 3467 nInAlpC 3061 nOutAlpC 2198 ndBeta 337 final 337
+SD links stat 5-7 nAll 13908284 nDZ 2858317 nDZPnt 439735 nAlp 76958 nInAlpC 59187 nOutAlpC 45521 ndBeta 1463 final 1463
+SD links stat 7-9 nAll 930320 nDZ 199942 nDZPnt 199942 nAlp 41365 nInAlpC 30064 nOutAlpC 22555 ndBeta 582 final 582
 Print stats
-Summary for layer 5 h1GeV 544 h2GeV 139 refLos 6270 refUps 6291 refMDs 3212 outLos 6420 outUps 6428 outMDs 2981 outSDs 8666 n1Any 4103 n1All 531 n2Any 1479 n2All 139
-Summary for layer 6 h1GeV 452 h2GeV 118 refLos 4514 refUps 4518 refMDs 1516 outLos 4517 outUps 4516 outMDs 1441 outSDs 2553 n1Any 1475 n1All 444 n2Any 479 n2All 118
-Summary for layer 7 h1GeV 401 h2GeV 119 refLos 3199 refUps 3203 refMDs 1138 outLos 3164 outUps 3165 outMDs 1068 outSDs 1602 n1Any 931 n1All 396 n2Any 352 n2All 119
-Summary for layer 8 h1GeV 341 h2GeV 102 refLos 2059 refUps 2062 refMDs 807 outLos 2028 outUps 2021 outMDs 762 outSDs 916 n1Any 586 n1All 336 n2Any 251 n2All 102
-Summary for layer 9 h1GeV 285 h2GeV 90 refLos 1296 refUps 1296 refMDs 544 outLos 1254 outUps 1250 outMDs 549 outSDs 578 n1Any 365 n1All 273 n2Any 128 n2All 90
+Summary for layer 5 h1GeV 544 h2GeV 139 refLos 6270 refUps 6291 refMDs 3212 outLos 6420 outUps 6428 outMDs 2981 outSDs 8671 n1Any 4106 n1All 531 n2Any 1480 n2All 139
+Summary for layer 6 h1GeV 452 h2GeV 118 refLos 4514 refUps 4518 refMDs 1516 outLos 4517 outUps 4516 outMDs 1441 outSDs 2554 n1Any 1476 n1All 444 n2Any 480 n2All 118
+Summary for layer 7 h1GeV 401 h2GeV 119 refLos 3199 refUps 3203 refMDs 1138 outLos 3164 outUps 3165 outMDs 1068 outSDs 1604 n1Any 931 n1All 396 n2Any 352 n2All 119
+Summary for layer 8 h1GeV 341 h2GeV 102 refLos 2059 refUps 2062 refMDs 807 outLos 2028 outUps 2021 outMDs 762 outSDs 917 n1Any 587 n1All 336 n2Any 252 n2All 102
+Summary for layer 9 h1GeV 285 h2GeV 90 refLos 1296 refUps 1296 refMDs 544 outLos 1254 outUps 1250 outMDs 549 outSDs 580 n1Any 367 n1All 273 n2Any 128 n2All 90
 Summary for layer 10 h1GeV 249 h2GeV 84 refLos 848 refUps 848 refMDs 441 outLos 820 outUps 817 outMDs 437 outSDs 429 n1Any 283 n1All 234 n2Any 106 n2All 84
-		sdl5-7 1459 sdl7-9 572
+		sdl5-7 1463 sdl7-9 582
 Load hits 
 Convert seeds to SuperDoublets
 Loaded nSeeds (pt>1 and |eta|<1.6) 331
 Combine MDs 
 Link SuperDoublet pairs to SDLinks
-SD links stat 0-5 nAll 3601611 nDZ 1013590 nDZPnt 26445 nAlp 2636 nInAlpC 2049 nOutAlpC 714 ndBeta 243 final 243
-SD links stat 0-7 nAll 519670 nDZ 200646 nDZPnt 16794 nAlp 3817 nInAlpC 2934 nOutAlpC 1633 ndBeta 219 final 219
-SD links stat 5-7 nAll 17083170 nDZ 3364346 nDZPnt 510983 nAlp 92577 nInAlpC 51902 nOutAlpC 27453 ndBeta 1795 final 1795
-SD links stat 7-9 nAll 985960 nDZ 195097 nDZPnt 195097 nAlp 41974 nInAlpC 19097 nOutAlpC 7446 ndBeta 607 final 607
+SD links stat 0-5 nAll 3603928 nDZ 1014382 nDZPnt 26464 nAlp 2639 nInAlpC 2206 nOutAlpC 1327 ndBeta 863 final 863
+SD links stat 0-7 nAll 520001 nDZ 200814 nDZPnt 16801 nAlp 3820 nInAlpC 3401 nOutAlpC 2400 ndBeta 394 final 394
+SD links stat 5-7 nAll 17105048 nDZ 3369315 nDZPnt 511594 nAlp 92666 nInAlpC 71563 nOutAlpC 54910 ndBeta 1796 final 1796
+SD links stat 7-9 nAll 988159 nDZ 195595 nDZPnt 195595 nAlp 42080 nInAlpC 30912 nOutAlpC 23217 ndBeta 613 final 613
 Print stats
-Summary for layer 5 h1GeV 576 h2GeV 130 refLos 6981 refUps 7008 refMDs 3776 outLos 7092 outUps 7100 outMDs 3391 outSDs 10881 n1Any 5315 n1All 557 n2Any 1622 n2All 130
-Summary for layer 6 h1GeV 488 h2GeV 121 refLos 4790 refUps 4784 refMDs 1642 outLos 4791 outUps 4789 outMDs 1585 outSDs 2896 n1Any 1599 n1All 479 n2Any 599 n2All 121
-Summary for layer 7 h1GeV 424 h2GeV 107 refLos 3385 refUps 3386 refMDs 1121 outLos 3327 outUps 3321 outMDs 1084 outSDs 1570 n1Any 978 n1All 416 n2Any 359 n2All 107
+Summary for layer 5 h1GeV 576 h2GeV 130 refLos 6981 refUps 7008 refMDs 3776 outLos 7092 outUps 7100 outMDs 3391 outSDs 10888 n1Any 5320 n1All 557 n2Any 1624 n2All 130
+Summary for layer 6 h1GeV 488 h2GeV 121 refLos 4790 refUps 4784 refMDs 1642 outLos 4791 outUps 4789 outMDs 1585 outSDs 2897 n1Any 1599 n1All 479 n2Any 599 n2All 121
+Summary for layer 7 h1GeV 424 h2GeV 107 refLos 3385 refUps 3386 refMDs 1121 outLos 3327 outUps 3321 outMDs 1084 outSDs 1571 n1Any 979 n1All 416 n2Any 360 n2All 107
 Summary for layer 8 h1GeV 342 h2GeV 92 refLos 2198 refUps 2194 refMDs 784 outLos 2138 outUps 2134 outMDs 766 outSDs 866 n1Any 520 n1All 333 n2Any 171 n2All 92
-Summary for layer 9 h1GeV 288 h2GeV 85 refLos 1354 refUps 1350 refMDs 577 outLos 1320 outUps 1316 outMDs 579 outSDs 628 n1Any 390 n1All 270 n2Any 117 n2All 85
+Summary for layer 9 h1GeV 288 h2GeV 85 refLos 1354 refUps 1350 refMDs 577 outLos 1320 outUps 1316 outMDs 579 outSDs 629 n1Any 391 n1All 270 n2Any 118 n2All 85
 Summary for layer 10 h1GeV 243 h2GeV 71 refLos 872 refUps 870 refMDs 409 outLos 844 outUps 845 outMDs 406 outSDs 385 n1Any 248 n1All 219 n2Any 80 n2All 71
-		sdl5-7 1795 sdl7-9 607
+		sdl5-7 1796 sdl7-9 613
 Load hits 
 Convert seeds to SuperDoublets
 Loaded nSeeds (pt>1 and |eta|<1.6) 321
 Combine MDs 
 Link SuperDoublet pairs to SDLinks
-SD links stat 0-5 nAll 4042032 nDZ 1174947 nDZPnt 29926 nAlp 2592 nInAlpC 1982 nOutAlpC 684 ndBeta 285 final 285
-SD links stat 0-7 nAll 619530 nDZ 238884 nDZPnt 20738 nAlp 4234 nInAlpC 3269 nOutAlpC 1704 ndBeta 213 final 213
-SD links stat 5-7 nAll 24302560 nDZ 4968355 nDZPnt 730765 nAlp 127930 nInAlpC 72773 nOutAlpC 37312 ndBeta 2203 final 2203
-SD links stat 7-9 nAll 1200460 nDZ 243512 nDZPnt 243512 nAlp 49868 nInAlpC 22147 nOutAlpC 8086 ndBeta 646 final 646
+SD links stat 0-5 nAll 4044279 nDZ 1175823 nDZPnt 29954 nAlp 2593 nInAlpC 2241 nOutAlpC 1328 ndBeta 820 final 820
+SD links stat 0-7 nAll 620814 nDZ 239376 nDZPnt 20773 nAlp 4242 nInAlpC 3704 nOutAlpC 2681 ndBeta 354 final 354
+SD links stat 5-7 nAll 24366466 nDZ 4982296 nDZPnt 732881 nAlp 128362 nInAlpC 100401 nOutAlpC 76119 ndBeta 2207 final 2207
+SD links stat 7-9 nAll 1202948 nDZ 243972 nDZPnt 243972 nAlp 49988 nInAlpC 37269 nOutAlpC 28266 ndBeta 652 final 652
 Print stats
-Summary for layer 5 h1GeV 656 h2GeV 139 refLos 7320 refUps 7333 refMDs 4032 outLos 7446 outUps 7444 outMDs 3643 outSDs 12592 n1Any 6186 n1All 638 n2Any 1780 n2All 139
-Summary for layer 6 h1GeV 540 h2GeV 116 refLos 5215 refUps 5222 refMDs 1849 outLos 5219 outUps 5212 outMDs 1803 outSDs 3494 n1Any 2006 n1All 530 n2Any 562 n2All 115
-Summary for layer 7 h1GeV 431 h2GeV 84 refLos 3649 refUps 3653 refMDs 1280 outLos 3602 outUps 3600 outMDs 1186 outSDs 1930 n1Any 1107 n1All 426 n2Any 280 n2All 84
+Summary for layer 5 h1GeV 656 h2GeV 139 refLos 7320 refUps 7333 refMDs 4032 outLos 7446 outUps 7444 outMDs 3643 outSDs 12599 n1Any 6188 n1All 638 n2Any 1782 n2All 139
+Summary for layer 6 h1GeV 540 h2GeV 116 refLos 5215 refUps 5222 refMDs 1849 outLos 5219 outUps 5212 outMDs 1803 outSDs 3495 n1Any 2006 n1All 530 n2Any 562 n2All 115
+Summary for layer 7 h1GeV 431 h2GeV 84 refLos 3649 refUps 3653 refMDs 1280 outLos 3602 outUps 3600 outMDs 1186 outSDs 1934 n1Any 1110 n1All 426 n2Any 281 n2All 84
 Summary for layer 8 h1GeV 353 h2GeV 71 refLos 2352 refUps 2358 refMDs 846 outLos 2308 outUps 2304 outMDs 840 outSDs 935 n1Any 543 n1All 347 n2Any 131 n2All 71
 Summary for layer 9 h1GeV 307 h2GeV 62 refLos 1427 refUps 1429 refMDs 589 outLos 1390 outUps 1387 outMDs 573 outSDs 622 n1Any 403 n1All 289 n2Any 90 n2All 62
 Summary for layer 10 h1GeV 264 h2GeV 52 refLos 939 refUps 935 refMDs 482 outLos 913 outUps 910 outMDs 460 outSDs 457 n1Any 275 n1All 240 n2Any 62 n2All 52
-		sdl5-7 2203 sdl7-9 646
+		sdl5-7 2207 sdl7-9 652
 Load hits 
 Convert seeds to SuperDoublets
 Loaded nSeeds (pt>1 and |eta|<1.6) 276
 Combine MDs 
 Link SuperDoublet pairs to SDLinks
-SD links stat 0-5 nAll 3431232 nDZ 998246 nDZPnt 25520 nAlp 3076 nInAlpC 2131 nOutAlpC 778 ndBeta 268 final 268
-SD links stat 0-7 nAll 480792 nDZ 197390 nDZPnt 16463 nAlp 3635 nInAlpC 2848 nOutAlpC 1589 ndBeta 218 final 218
-SD links stat 5-7 nAll 21656544 nDZ 4420202 nDZPnt 638615 nAlp 117901 nInAlpC 66745 nOutAlpC 34931 ndBeta 2409 final 2409
-SD links stat 7-9 nAll 985972 nDZ 216712 nDZPnt 216712 nAlp 45084 nInAlpC 20852 nOutAlpC 8511 ndBeta 726 final 726
+SD links stat 0-5 nAll 3432888 nDZ 998756 nDZPnt 25537 nAlp 3079 nInAlpC 2432 nOutAlpC 1481 ndBeta 848 final 848
+SD links stat 0-7 nAll 481068 nDZ 197518 nDZPnt 16469 nAlp 3637 nInAlpC 3185 nOutAlpC 2215 ndBeta 368 final 368
+SD links stat 5-7 nAll 21679434 nDZ 4425524 nDZPnt 639249 nAlp 118040 nInAlpC 90944 nOutAlpC 67761 ndBeta 2415 final 2415
+SD links stat 7-9 nAll 988281 nDZ 217343 nDZPnt 217343 nAlp 45266 nInAlpC 32739 nOutAlpC 24526 ndBeta 731 final 731
 Print stats
-Summary for layer 5 h1GeV 555 h2GeV 126 refLos 7252 refUps 7275 refMDs 3906 outLos 7389 outUps 7384 outMDs 3659 outSDs 12432 n1Any 5612 n1All 536 n2Any 2005 n2All 126
-Summary for layer 6 h1GeV 473 h2GeV 111 refLos 5052 refUps 5043 refMDs 1817 outLos 5050 outUps 5045 outMDs 1692 outSDs 3310 n1Any 1760 n1All 459 n2Any 587 n2All 111
-Summary for layer 7 h1GeV 392 h2GeV 95 refLos 3469 refUps 3470 refMDs 1160 outLos 3423 outUps 3419 outMDs 1112 outSDs 1742 n1Any 1026 n1All 384 n2Any 399 n2All 95
-Summary for layer 8 h1GeV 327 h2GeV 81 refLos 2216 refUps 2214 refMDs 833 outLos 2173 outUps 2175 outMDs 775 outSDs 875 n1Any 534 n1All 318 n2Any 154 n2All 81
-Summary for layer 9 h1GeV 276 h2GeV 73 refLos 1318 refUps 1317 refMDs 543 outLos 1290 outUps 1290 outMDs 532 outSDs 566 n1Any 350 n1All 259 n2Any 98 n2All 73
-Summary for layer 10 h1GeV 236 h2GeV 65 refLos 847 refUps 847 refMDs 433 outLos 829 outUps 830 outMDs 417 outSDs 420 n1Any 258 n1All 213 n2Any 82 n2All 65
-		sdl5-7 2409 sdl7-9 726
+Summary for layer 5 h1GeV 555 h2GeV 126 refLos 7252 refUps 7275 refMDs 3906 outLos 7389 outUps 7384 outMDs 3659 outSDs 12438 n1Any 5616 n1All 536 n2Any 2008 n2All 126
+Summary for layer 6 h1GeV 473 h2GeV 111 refLos 5052 refUps 5043 refMDs 1817 outLos 5050 outUps 5045 outMDs 1692 outSDs 3312 n1Any 1762 n1All 459 n2Any 588 n2All 111
+Summary for layer 7 h1GeV 392 h2GeV 95 refLos 3469 refUps 3470 refMDs 1160 outLos 3423 outUps 3419 outMDs 1112 outSDs 1743 n1Any 1026 n1All 384 n2Any 399 n2All 95
+Summary for layer 8 h1GeV 327 h2GeV 81 refLos 2216 refUps 2214 refMDs 833 outLos 2173 outUps 2175 outMDs 775 outSDs 876 n1Any 535 n1All 318 n2Any 154 n2All 81
+Summary for layer 9 h1GeV 276 h2GeV 73 refLos 1318 refUps 1317 refMDs 543 outLos 1290 outUps 1290 outMDs 532 outSDs 567 n1Any 350 n1All 259 n2Any 98 n2All 73
+Summary for layer 10 h1GeV 236 h2GeV 65 refLos 847 refUps 847 refMDs 433 outLos 829 outUps 830 outMDs 417 outSDs 421 n1Any 259 n1All 213 n2Any 83 n2All 65
+		sdl5-7 2415 sdl7-9 731
 Load hits 
 Convert seeds to SuperDoublets
 Loaded nSeeds (pt>1 and |eta|<1.6) 435
 Combine MDs 
 Link SuperDoublet pairs to SDLinks
-SD links stat 0-5 nAll 10172910 nDZ 2917558 nDZPnt 74755 nAlp 5687 nInAlpC 3990 nOutAlpC 1255 ndBeta 556 final 556
-SD links stat 0-7 nAll 1301955 nDZ 492026 nDZPnt 40681 nAlp 8333 nInAlpC 6197 nOutAlpC 3376 ndBeta 363 final 363
-SD links stat 5-7 nAll 69994298 nDZ 14596020 nDZPnt 2245550 nAlp 401029 nInAlpC 225717 nOutAlpC 120309 ndBeta 6063 final 6063
-SD links stat 7-9 nAll 2409365 nDZ 473005 nDZPnt 473005 nAlp 94519 nInAlpC 42240 nOutAlpC 17350 ndBeta 1107 final 1107
+SD links stat 0-5 nAll 10181175 nDZ 2920551 nDZPnt 74838 nAlp 5689 nInAlpC 4508 nOutAlpC 2436 ndBeta 1422 final 1422
+SD links stat 0-7 nAll 1303695 nDZ 492570 nDZPnt 40742 nAlp 8350 nInAlpC 7233 nOutAlpC 5261 ndBeta 570 final 570
+SD links stat 5-7 nAll 70144785 nDZ 14629770 nDZPnt 2250683 nAlp 402385 nInAlpC 305240 nOutAlpC 230510 ndBeta 6099 final 6099
+SD links stat 7-9 nAll 2415582 nDZ 473989 nDZPnt 473989 nAlp 94722 nInAlpC 67686 nOutAlpC 52042 ndBeta 1121 final 1121
 Print stats
-Summary for layer 5 h1GeV 873 h2GeV 201 refLos 8730 refUps 8743 refMDs 5480 outLos 8871 outUps 8864 outMDs 5057 outSDs 23386 n1Any 12505 n1All 832 n2Any 4482 n2All 199
-Summary for layer 6 h1GeV 737 h2GeV 183 refLos 6287 refUps 6291 refMDs 2552 outLos 6279 outUps 6277 outMDs 2421 outSDs 6409 n1Any 4035 n1All 717 n2Any 1649 n2All 183
-Summary for layer 7 h1GeV 617 h2GeV 169 refLos 4316 refUps 4323 refMDs 1656 outLos 4290 outUps 4287 outMDs 1569 outSDs 2993 n1Any 2009 n1All 602 n2Any 765 n2All 169
-Summary for layer 8 h1GeV 501 h2GeV 138 refLos 2838 refUps 2845 refMDs 1095 outLos 2776 outUps 2778 outMDs 1059 outSDs 1263 n1Any 864 n1All 488 n2Any 306 n2All 138
-Summary for layer 9 h1GeV 402 h2GeV 111 refLos 1677 refUps 1675 refMDs 760 outLos 1640 outUps 1636 outMDs 719 outSDs 805 n1Any 525 n1All 383 n2Any 177 n2All 111
-Summary for layer 10 h1GeV 326 h2GeV 83 refLos 1070 refUps 1069 refMDs 554 outLos 1051 outUps 1050 outMDs 542 outSDs 558 n1Any 378 n1All 306 n2Any 109 n2All 83
-		sdl5-7 6063 sdl7-9 1107
+Summary for layer 5 h1GeV 873 h2GeV 201 refLos 8730 refUps 8743 refMDs 5480 outLos 8871 outUps 8864 outMDs 5057 outSDs 23405 n1Any 12516 n1All 832 n2Any 4484 n2All 199
+Summary for layer 6 h1GeV 737 h2GeV 183 refLos 6287 refUps 6291 refMDs 2552 outLos 6279 outUps 6277 outMDs 2421 outSDs 6416 n1Any 4037 n1All 717 n2Any 1649 n2All 183
+Summary for layer 7 h1GeV 617 h2GeV 169 refLos 4316 refUps 4323 refMDs 1656 outLos 4290 outUps 4287 outMDs 1569 outSDs 2997 n1Any 2012 n1All 602 n2Any 767 n2All 169
+Summary for layer 8 h1GeV 501 h2GeV 138 refLos 2838 refUps 2845 refMDs 1095 outLos 2776 outUps 2778 outMDs 1059 outSDs 1264 n1Any 865 n1All 488 n2Any 307 n2All 138
+Summary for layer 9 h1GeV 402 h2GeV 111 refLos 1677 refUps 1675 refMDs 760 outLos 1640 outUps 1636 outMDs 719 outSDs 806 n1Any 525 n1All 383 n2Any 177 n2All 111
+Summary for layer 10 h1GeV 326 h2GeV 83 refLos 1070 refUps 1069 refMDs 554 outLos 1051 outUps 1050 outMDs 542 outSDs 560 n1Any 380 n1All 306 n2Any 109 n2All 83
+		sdl5-7 6099 sdl7-9 1121
 Load hits 
 Convert seeds to SuperDoublets
 Loaded nSeeds (pt>1 and |eta|<1.6) 322
 Combine MDs 
 Link SuperDoublet pairs to SDLinks
-SD links stat 0-5 nAll 3847256 nDZ 1075379 nDZPnt 28354 nAlp 2929 nInAlpC 2078 nOutAlpC 749 ndBeta 285 final 285
-SD links stat 0-7 nAll 623392 nDZ 236244 nDZPnt 21263 nAlp 4459 nInAlpC 3338 nOutAlpC 1835 ndBeta 206 final 206
-SD links stat 5-7 nAll 23131328 nDZ 4527685 nDZPnt 746775 nAlp 134438 nInAlpC 73219 nOutAlpC 36771 ndBeta 2062 final 2062
-SD links stat 7-9 nAll 1120944 nDZ 216249 nDZPnt 216249 nAlp 44952 nInAlpC 20426 nOutAlpC 8043 ndBeta 600 final 600
+SD links stat 0-5 nAll 3848866 nDZ 1075763 nDZPnt 28362 nAlp 2930 nInAlpC 2341 nOutAlpC 1434 ndBeta 828 final 828
+SD links stat 0-7 nAll 624036 nDZ 236506 nDZPnt 21295 nAlp 4461 nInAlpC 3971 nOutAlpC 2858 ndBeta 347 final 347
+SD links stat 5-7 nAll 23164914 nDZ 4533999 nDZPnt 747941 nAlp 134641 nInAlpC 102640 nOutAlpC 77031 ndBeta 2065 final 2065
+SD links stat 7-9 nAll 1124040 nDZ 216889 nDZPnt 216889 nAlp 45097 nInAlpC 33024 nOutAlpC 25074 ndBeta 606 final 606
 Print stats
-Summary for layer 5 h1GeV 633 h2GeV 130 refLos 6937 refUps 6960 refMDs 3842 outLos 7050 outUps 7048 outMDs 3433 outSDs 11948 n1Any 6311 n1All 607 n2Any 1713 n2All 130
-Summary for layer 6 h1GeV 536 h2GeV 112 refLos 4919 refUps 4917 refMDs 1728 outLos 4914 outUps 4908 outMDs 1679 outSDs 3171 n1Any 1909 n1All 519 n2Any 577 n2All 112
-Summary for layer 7 h1GeV 435 h2GeV 94 refLos 3526 refUps 3523 refMDs 1228 outLos 3479 outUps 3478 outMDs 1164 outSDs 1936 n1Any 1110 n1All 425 n2Any 299 n2All 94
+Summary for layer 5 h1GeV 633 h2GeV 130 refLos 6937 refUps 6960 refMDs 3842 outLos 7050 outUps 7048 outMDs 3433 outSDs 11953 n1Any 6314 n1All 607 n2Any 1713 n2All 130
+Summary for layer 6 h1GeV 536 h2GeV 112 refLos 4919 refUps 4917 refMDs 1728 outLos 4914 outUps 4908 outMDs 1679 outSDs 3174 n1Any 1911 n1All 519 n2Any 577 n2All 112
+Summary for layer 7 h1GeV 435 h2GeV 94 refLos 3526 refUps 3523 refMDs 1228 outLos 3479 outUps 3478 outMDs 1164 outSDs 1938 n1Any 1111 n1All 425 n2Any 300 n2All 94
 Summary for layer 8 h1GeV 353 h2GeV 75 refLos 2319 refUps 2317 refMDs 857 outLos 2264 outUps 2256 outMDs 840 outSDs 918 n1Any 527 n1All 338 n2Any 134 n2All 75
-Summary for layer 9 h1GeV 300 h2GeV 67 refLos 1390 refUps 1388 refMDs 579 outLos 1347 outUps 1343 outMDs 568 outSDs 579 n1Any 364 n1All 277 n2Any 87 n2All 67
-Summary for layer 10 h1GeV 242 h2GeV 56 refLos 846 refUps 845 refMDs 437 outLos 828 outUps 825 outMDs 441 outSDs 433 n1Any 277 n1All 217 n2Any 81 n2All 56
-		sdl5-7 2062 sdl7-9 600
+Summary for layer 9 h1GeV 300 h2GeV 67 refLos 1390 refUps 1388 refMDs 579 outLos 1347 outUps 1343 outMDs 568 outSDs 580 n1Any 365 n1All 277 n2Any 87 n2All 67
+Summary for layer 10 h1GeV 242 h2GeV 56 refLos 846 refUps 845 refMDs 437 outLos 828 outUps 825 outMDs 441 outSDs 436 n1Any 279 n1All 217 n2Any 82 n2All 56
+		sdl5-7 2065 sdl7-9 606
 Load hits 
 Convert seeds to SuperDoublets
 Loaded nSeeds (pt>1 and |eta|<1.6) 346
 Combine MDs 
 Link SuperDoublet pairs to SDLinks
-SD links stat 0-5 nAll 4754732 nDZ 1370820 nDZPnt 35193 nAlp 3302 nInAlpC 2239 nOutAlpC 732 ndBeta 219 final 219
-SD links stat 0-7 nAll 696152 nDZ 270237 nDZPnt 23072 nAlp 5005 nInAlpC 3747 nOutAlpC 2074 ndBeta 217 final 217
-SD links stat 5-7 nAll 27648904 nDZ 5693613 nDZPnt 830032 nAlp 146358 nInAlpC 81556 nOutAlpC 41730 ndBeta 2505 final 2505
-SD links stat 7-9 nAll 1273596 nDZ 250115 nDZPnt 250115 nAlp 50893 nInAlpC 23265 nOutAlpC 9040 ndBeta 648 final 648
+SD links stat 0-5 nAll 4756808 nDZ 1371573 nDZPnt 35220 nAlp 3306 nInAlpC 2650 nOutAlpC 1636 ndBeta 945 final 945
+SD links stat 0-7 nAll 697536 nDZ 270728 nDZPnt 23110 nAlp 5016 nInAlpC 4330 nOutAlpC 3112 ndBeta 416 final 416
+SD links stat 5-7 nAll 27715968 nDZ 5706948 nDZPnt 831884 nAlp 146741 nInAlpC 113539 nOutAlpC 85864 ndBeta 2510 final 2510
+SD links stat 7-9 nAll 1276128 nDZ 250555 nDZPnt 250555 nAlp 51007 nInAlpC 37474 nOutAlpC 28152 ndBeta 652 final 652
 Print stats
-Summary for layer 5 h1GeV 648 h2GeV 103 refLos 7421 refUps 7449 refMDs 4156 outLos 7568 outUps 7569 outMDs 3905 outSDs 13742 n1Any 6236 n1All 625 n2Any 1218 n2All 101
-Summary for layer 6 h1GeV 538 h2GeV 84 refLos 5257 refUps 5273 refMDs 1917 outLos 5280 outUps 5274 outMDs 1808 outSDs 3589 n1Any 1985 n1All 524 n2Any 497 n2All 84
-Summary for layer 7 h1GeV 461 h2GeV 74 refLos 3709 refUps 3710 refMDs 1357 outLos 3668 outUps 3668 outMDs 1240 outSDs 2012 n1Any 1172 n1All 453 n2Any 277 n2All 74
+Summary for layer 5 h1GeV 648 h2GeV 103 refLos 7421 refUps 7449 refMDs 4156 outLos 7568 outUps 7569 outMDs 3905 outSDs 13748 n1Any 6238 n1All 625 n2Any 1218 n2All 101
+Summary for layer 6 h1GeV 538 h2GeV 84 refLos 5257 refUps 5273 refMDs 1917 outLos 5280 outUps 5274 outMDs 1808 outSDs 3590 n1Any 1986 n1All 524 n2Any 498 n2All 84
+Summary for layer 7 h1GeV 461 h2GeV 74 refLos 3709 refUps 3710 refMDs 1357 outLos 3668 outUps 3668 outMDs 1240 outSDs 2016 n1Any 1174 n1All 453 n2Any 277 n2All 74
 Summary for layer 8 h1GeV 385 h2GeV 62 refLos 2490 refUps 2488 refMDs 921 outLos 2453 outUps 2447 outMDs 893 outSDs 997 n1Any 587 n1All 370 n2Any 101 n2All 62
 Summary for layer 9 h1GeV 304 h2GeV 54 refLos 1440 refUps 1435 refMDs 602 outLos 1405 outUps 1398 outMDs 599 outSDs 633 n1Any 382 n1All 282 n2Any 80 n2All 54
-Summary for layer 10 h1GeV 247 h2GeV 42 refLos 895 refUps 892 refMDs 426 outLos 864 outUps 864 outMDs 415 outSDs 407 n1Any 259 n1All 224 n2Any 45 n2All 42
-		sdl5-7 2505 sdl7-9 648
+Summary for layer 10 h1GeV 247 h2GeV 42 refLos 895 refUps 892 refMDs 426 outLos 864 outUps 864 outMDs 415 outSDs 408 n1Any 260 n1All 224 n2Any 45 n2All 42
+		sdl5-7 2510 sdl7-9 652
 Load hits 
 Convert seeds to SuperDoublets
 Loaded nSeeds (pt>1 and |eta|<1.6) 233
 Combine MDs 
 Link SuperDoublet pairs to SDLinks
-SD links stat 0-5 nAll 1683891 nDZ 414723 nDZPnt 10964 nAlp 1428 nInAlpC 1049 nOutAlpC 364 ndBeta 162 final 162
-SD links stat 0-7 nAll 313618 nDZ 122345 nDZPnt 10897 nAlp 2539 nInAlpC 1930 nOutAlpC 1118 ndBeta 152 final 152
-SD links stat 5-7 nAll 9727542 nDZ 1638166 nDZPnt 292739 nAlp 53822 nInAlpC 29855 nOutAlpC 15069 ndBeta 1246 final 1246
-SD links stat 7-9 nAll 574742 nDZ 109439 nDZPnt 109439 nAlp 22923 nInAlpC 10254 nOutAlpC 3924 ndBeta 348 final 348
+SD links stat 0-5 nAll 1684590 nDZ 414923 nDZPnt 10971 nAlp 1430 nInAlpC 1135 nOutAlpC 673 ndBeta 487 final 487
+SD links stat 0-7 nAll 313851 nDZ 122444 nDZPnt 10903 nAlp 2540 nInAlpC 2204 nOutAlpC 1585 ndBeta 296 final 296
+SD links stat 5-7 nAll 9738810 nDZ 1640433 nDZPnt 292990 nAlp 53853 nInAlpC 41567 nOutAlpC 31169 ndBeta 1246 final 1246
+SD links stat 7-9 nAll 575169 nDZ 109555 nDZPnt 109555 nAlp 22959 nInAlpC 16734 nOutAlpC 12624 ndBeta 354 final 354
 Print stats
-Summary for layer 5 h1GeV 529 h2GeV 114 refLos 6205 refUps 6217 refMDs 3035 outLos 6297 outUps 6288 outMDs 2776 outSDs 7227 n1Any 3639 n1All 507 n2Any 1144 n2All 114
+Summary for layer 5 h1GeV 529 h2GeV 114 refLos 6205 refUps 6217 refMDs 3035 outLos 6297 outUps 6288 outMDs 2776 outSDs 7230 n1Any 3640 n1All 507 n2Any 1144 n2All 114
 Summary for layer 6 h1GeV 420 h2GeV 91 refLos 4257 refUps 4254 refMDs 1432 outLos 4256 outUps 4254 outMDs 1374 outSDs 2456 n1Any 1340 n1All 407 n2Any 387 n2All 91
-Summary for layer 7 h1GeV 345 h2GeV 68 refLos 3037 refUps 3039 refMDs 991 outLos 2966 outUps 2959 outMDs 947 outSDs 1346 n1Any 768 n1All 337 n2Any 227 n2All 68
-Summary for layer 8 h1GeV 284 h2GeV 59 refLos 1926 refUps 1927 refMDs 684 outLos 1876 outUps 1875 outMDs 667 outSDs 721 n1Any 426 n1All 277 n2Any 102 n2All 59
+Summary for layer 7 h1GeV 345 h2GeV 68 refLos 3037 refUps 3039 refMDs 991 outLos 2966 outUps 2959 outMDs 947 outSDs 1347 n1Any 768 n1All 337 n2Any 227 n2All 68
+Summary for layer 8 h1GeV 284 h2GeV 59 refLos 1926 refUps 1927 refMDs 684 outLos 1876 outUps 1875 outMDs 667 outSDs 723 n1Any 427 n1All 277 n2Any 103 n2All 59
 Summary for layer 9 h1GeV 220 h2GeV 47 refLos 1084 refUps 1084 refMDs 457 outLos 1043 outUps 1040 outMDs 426 outSDs 427 n1Any 240 n1All 201 n2Any 66 n2All 47
 Summary for layer 10 h1GeV 183 h2GeV 42 refLos 706 refUps 706 refMDs 314 outLos 690 outUps 688 outMDs 316 outSDs 303 n1Any 175 n1All 159 n2Any 48 n2All 42
-		sdl5-7 1246 sdl7-9 348
+		sdl5-7 1246 sdl7-9 354
 Load hits 
 Convert seeds to SuperDoublets
 Loaded nSeeds (pt>1 and |eta|<1.6) 345
 Combine MDs 
 Link SuperDoublet pairs to SDLinks
-SD links stat 0-5 nAll 6257955 nDZ 1734141 nDZPnt 44362 nAlp 3652 nInAlpC 2482 nOutAlpC 799 ndBeta 280 final 280
-SD links stat 0-7 nAll 723465 nDZ 269537 nDZPnt 24727 nAlp 5659 nInAlpC 4297 nOutAlpC 2328 ndBeta 217 final 217
-SD links stat 5-7 nAll 38037483 nDZ 7402093 nDZPnt 1062419 nAlp 193926 nInAlpC 108162 nOutAlpC 52899 ndBeta 2697 final 2697
-SD links stat 7-9 nAll 1228842 nDZ 221796 nDZPnt 221796 nAlp 43998 nInAlpC 20002 nOutAlpC 7977 ndBeta 587 final 587
+SD links stat 0-5 nAll 6265545 nDZ 1735842 nDZPnt 44413 nAlp 3652 nInAlpC 2988 nOutAlpC 1774 ndBeta 911 final 911
+SD links stat 0-7 nAll 723810 nDZ 269594 nDZPnt 24746 nAlp 5664 nInAlpC 4963 nOutAlpC 3628 ndBeta 424 final 424
+SD links stat 5-7 nAll 38101778 nDZ 7411434 nDZPnt 1063420 nAlp 194074 nInAlpC 149330 nOutAlpC 110500 ndBeta 2707 final 2707
+SD links stat 7-9 nAll 1229428 nDZ 221796 nDZPnt 221796 nAlp 43998 nInAlpC 32300 nOutAlpC 24872 ndBeta 601 final 601
 Print stats
-Summary for layer 5 h1GeV 666 h2GeV 150 refLos 8216 refUps 8234 refMDs 4926 outLos 8337 outUps 8327 outMDs 4361 outSDs 18139 n1Any 8405 n1All 638 n2Any 2950 n2All 150
-Summary for layer 6 h1GeV 542 h2GeV 121 refLos 5665 refUps 5671 refMDs 2081 outLos 5674 outUps 5667 outMDs 1940 outSDs 4262 n1Any 2459 n1All 528 n2Any 669 n2All 121
-Summary for layer 7 h1GeV 448 h2GeV 101 refLos 3986 refUps 3983 refMDs 1404 outLos 3925 outUps 3925 outMDs 1261 outSDs 2097 n1Any 1192 n1All 439 n2Any 351 n2All 101
+Summary for layer 5 h1GeV 666 h2GeV 150 refLos 8216 refUps 8234 refMDs 4926 outLos 8337 outUps 8327 outMDs 4361 outSDs 18161 n1Any 8416 n1All 638 n2Any 2951 n2All 150
+Summary for layer 6 h1GeV 542 h2GeV 121 refLos 5665 refUps 5671 refMDs 2081 outLos 5674 outUps 5667 outMDs 1940 outSDs 4268 n1Any 2462 n1All 528 n2Any 670 n2All 121
+Summary for layer 7 h1GeV 448 h2GeV 101 refLos 3986 refUps 3983 refMDs 1404 outLos 3925 outUps 3925 outMDs 1261 outSDs 2098 n1Any 1192 n1All 439 n2Any 351 n2All 101
 Summary for layer 8 h1GeV 360 h2GeV 85 refLos 2563 refUps 2560 refMDs 909 outLos 2488 outUps 2491 outMDs 862 outSDs 990 n1Any 596 n1All 349 n2Any 185 n2All 85
 Summary for layer 9 h1GeV 284 h2GeV 71 refLos 1444 refUps 1439 refMDs 602 outLos 1408 outUps 1409 outMDs 574 outSDs 586 n1Any 346 n1All 268 n2Any 108 n2All 71
-Summary for layer 10 h1GeV 234 h2GeV 59 refLos 857 refUps 856 refMDs 406 outLos 831 outUps 829 outMDs 413 outSDs 399 n1Any 239 n1All 214 n2Any 71 n2All 59
-		sdl5-7 2697 sdl7-9 587
+Summary for layer 10 h1GeV 234 h2GeV 59 refLos 857 refUps 856 refMDs 406 outLos 831 outUps 829 outMDs 413 outSDs 401 n1Any 241 n1All 214 n2Any 72 n2All 59
+		sdl5-7 2707 sdl7-9 601
 Load hits 
 Convert seeds to SuperDoublets
 Loaded nSeeds (pt>1 and |eta|<1.6) 387
 Combine MDs 
 Link SuperDoublet pairs to SDLinks
-SD links stat 0-5 nAll 6129693 nDZ 1882774 nDZPnt 48585 nAlp 4787 nInAlpC 3154 nOutAlpC 967 ndBeta 388 final 388
-SD links stat 0-7 nAll 941571 nDZ 357371 nDZPnt 31385 nAlp 7199 nInAlpC 5315 nOutAlpC 2969 ndBeta 310 final 310
-SD links stat 5-7 nAll 38536287 nDZ 8356065 nDZPnt 1251482 nAlp 252881 nInAlpC 142440 nOutAlpC 75009 ndBeta 4374 final 4374
-SD links stat 7-9 nAll 1530357 nDZ 281689 nDZPnt 281689 nAlp 59628 nInAlpC 27322 nOutAlpC 10742 ndBeta 723 final 723
+SD links stat 0-5 nAll 6133176 nDZ 1883790 nDZPnt 48603 nAlp 4787 nInAlpC 3586 nOutAlpC 2001 ndBeta 1168 final 1168
+SD links stat 0-7 nAll 942345 nDZ 357670 nDZPnt 31412 nAlp 7202 nInAlpC 6053 nOutAlpC 4454 ndBeta 507 final 507
+SD links stat 5-7 nAll 38589880 nDZ 8366483 nDZPnt 1252756 nAlp 253190 nInAlpC 189326 nOutAlpC 140187 ndBeta 4380 final 4380
+SD links stat 7-9 nAll 1536485 nDZ 282846 nDZPnt 282846 nAlp 59886 nInAlpC 44180 nOutAlpC 33469 ndBeta 751 final 751
 Print stats
-Summary for layer 5 h1GeV 692 h2GeV 144 refLos 7733 refUps 7750 refMDs 4532 outLos 7864 outUps 7859 outMDs 4116 outSDs 15839 n1Any 8178 n1All 662 n2Any 2583 n2All 143
-Summary for layer 6 h1GeV 584 h2GeV 122 refLos 5390 refUps 5392 refMDs 1945 outLos 5373 outUps 5376 outMDs 1814 outSDs 3968 n1Any 2349 n1All 566 n2Any 765 n2All 122
-Summary for layer 7 h1GeV 501 h2GeV 110 refLos 3825 refUps 3822 refMDs 1435 outLos 3779 outUps 3775 outMDs 1317 outSDs 2433 n1Any 1500 n1All 491 n2Any 519 n2All 110
+Summary for layer 5 h1GeV 692 h2GeV 144 refLos 7733 refUps 7750 refMDs 4532 outLos 7864 outUps 7859 outMDs 4116 outSDs 15848 n1Any 8182 n1All 662 n2Any 2583 n2All 143
+Summary for layer 6 h1GeV 584 h2GeV 122 refLos 5390 refUps 5392 refMDs 1945 outLos 5373 outUps 5376 outMDs 1814 outSDs 3969 n1Any 2350 n1All 566 n2Any 765 n2All 122
+Summary for layer 7 h1GeV 501 h2GeV 110 refLos 3825 refUps 3822 refMDs 1435 outLos 3779 outUps 3775 outMDs 1317 outSDs 2435 n1Any 1501 n1All 491 n2Any 520 n2All 110
 Summary for layer 8 h1GeV 409 h2GeV 93 refLos 2502 refUps 2505 refMDs 942 outLos 2448 outUps 2444 outMDs 910 outSDs 1039 n1Any 638 n1All 394 n2Any 143 n2All 93
-Summary for layer 9 h1GeV 322 h2GeV 68 refLos 1467 refUps 1463 refMDs 622 outLos 1428 outUps 1426 outMDs 598 outSDs 629 n1Any 394 n1All 302 n2Any 101 n2All 68
+Summary for layer 9 h1GeV 322 h2GeV 68 refLos 1467 refUps 1463 refMDs 622 outLos 1428 outUps 1426 outMDs 598 outSDs 631 n1Any 396 n1All 302 n2Any 103 n2All 68
 Summary for layer 10 h1GeV 250 h2GeV 57 refLos 885 refUps 882 refMDs 449 outLos 874 outUps 873 outMDs 429 outSDs 434 n1Any 265 n1All 226 n2Any 64 n2All 57
-		sdl5-7 4374 sdl7-9 723
+		sdl5-7 4380 sdl7-9 751
 Load hits 
 Convert seeds to SuperDoublets
 Loaded nSeeds (pt>1 and |eta|<1.6) 393
 Combine MDs 
 Link SuperDoublet pairs to SDLinks
-SD links stat 0-5 nAll 8070255 nDZ 2208792 nDZPnt 56421 nAlp 4157 nInAlpC 2946 nOutAlpC 916 ndBeta 318 final 318
-SD links stat 0-7 nAll 1011582 nDZ 392405 nDZPnt 33882 nAlp 7271 nInAlpC 5426 nOutAlpC 2903 ndBeta 291 final 291
-SD links stat 5-7 nAll 52857090 nDZ 10345041 nDZPnt 1592262 nAlp 296031 nInAlpC 166174 nOutAlpC 85998 ndBeta 3974 final 3974
-SD links stat 7-9 nAll 1760616 nDZ 330301 nDZPnt 330301 nAlp 66882 nInAlpC 31304 nOutAlpC 12025 ndBeta 850 final 850
+SD links stat 0-5 nAll 8076936 nDZ 2211018 nDZPnt 56465 nAlp 4157 nInAlpC 3436 nOutAlpC 1994 ndBeta 1113 final 1113
+SD links stat 0-7 nAll 1012761 nDZ 392822 nDZPnt 33924 nAlp 7290 nInAlpC 6417 nOutAlpC 4574 ndBeta 489 final 489
+SD links stat 5-7 nAll 52962504 nDZ 10366726 nDZPnt 1595405 nAlp 296550 nInAlpC 227805 nOutAlpC 171968 ndBeta 3991 final 3991
+SD links stat 7-9 nAll 1762668 nDZ 330549 nDZPnt 330549 nAlp 66935 nInAlpC 49526 nOutAlpC 37670 ndBeta 856 final 856
 Print stats
-Summary for layer 5 h1GeV 768 h2GeV 175 refLos 8648 refUps 8664 refMDs 5291 outLos 8810 outUps 8811 outMDs 4854 outSDs 20535 n1Any 9490 n1All 744 n2Any 3063 n2All 174
-Summary for layer 6 h1GeV 641 h2GeV 153 refLos 5891 refUps 5883 refMDs 2270 outLos 5865 outUps 5864 outMDs 2124 outSDs 4882 n1Any 2865 n1All 632 n2Any 1084 n2All 153
-Summary for layer 7 h1GeV 529 h2GeV 134 refLos 4076 refUps 4079 refMDs 1502 outLos 4013 outUps 4012 outMDs 1467 outSDs 2574 n1Any 1620 n1All 523 n2Any 627 n2All 134
-Summary for layer 8 h1GeV 443 h2GeV 118 refLos 2653 refUps 2652 refMDs 1045 outLos 2604 outUps 2599 outMDs 1017 outSDs 1297 n1Any 808 n1All 430 n2Any 267 n2All 118
+Summary for layer 5 h1GeV 768 h2GeV 175 refLos 8648 refUps 8664 refMDs 5291 outLos 8810 outUps 8811 outMDs 4854 outSDs 20552 n1Any 9499 n1All 744 n2Any 3067 n2All 174
+Summary for layer 6 h1GeV 641 h2GeV 153 refLos 5891 refUps 5883 refMDs 2270 outLos 5865 outUps 5864 outMDs 2124 outSDs 4885 n1Any 2865 n1All 632 n2Any 1084 n2All 153
+Summary for layer 7 h1GeV 529 h2GeV 134 refLos 4076 refUps 4079 refMDs 1502 outLos 4013 outUps 4012 outMDs 1467 outSDs 2577 n1Any 1623 n1All 523 n2Any 627 n2All 134
+Summary for layer 8 h1GeV 443 h2GeV 118 refLos 2653 refUps 2652 refMDs 1045 outLos 2604 outUps 2599 outMDs 1017 outSDs 1299 n1Any 810 n1All 430 n2Any 268 n2All 118
 Summary for layer 9 h1GeV 333 h2GeV 73 refLos 1520 refUps 1520 refMDs 674 outLos 1483 outUps 1479 outMDs 630 outSDs 684 n1Any 457 n1All 314 n2Any 107 n2All 73
 Summary for layer 10 h1GeV 263 h2GeV 64 refLos 968 refUps 968 refMDs 466 outLos 953 outUps 953 outMDs 453 outSDs 436 n1Any 271 n1All 242 n2Any 67 n2All 64
-		sdl5-7 3974 sdl7-9 850
+		sdl5-7 3991 sdl7-9 856
 Load hits 
 Convert seeds to SuperDoublets
 Loaded nSeeds (pt>1 and |eta|<1.6) 376
 Combine MDs 
 Link SuperDoublet pairs to SDLinks
-SD links stat 0-5 nAll 5997952 nDZ 1602948 nDZPnt 42997 nAlp 4012 nInAlpC 2875 nOutAlpC 874 ndBeta 316 final 316
-SD links stat 0-7 nAll 919696 nDZ 338408 nDZPnt 31243 nAlp 6958 nInAlpC 5118 nOutAlpC 2639 ndBeta 262 final 262
-SD links stat 5-7 nAll 39018592 nDZ 7314392 nDZPnt 1155699 nAlp 211011 nInAlpC 117571 nOutAlpC 58046 ndBeta 3131 final 3131
-SD links stat 7-9 nAll 1766012 nDZ 339601 nDZPnt 339601 nAlp 67295 nInAlpC 30419 nOutAlpC 12116 ndBeta 820 final 820
+SD links stat 0-5 nAll 6003216 nDZ 1604185 nDZPnt 43035 nAlp 4015 nInAlpC 3201 nOutAlpC 1820 ndBeta 1051 final 1051
+SD links stat 0-7 nAll 920072 nDZ 338562 nDZPnt 31267 nAlp 6963 nInAlpC 6126 nOutAlpC 4272 ndBeta 495 final 495
+SD links stat 5-7 nAll 39068802 nDZ 7323273 nDZPnt 1157630 nAlp 211341 nInAlpC 161501 nOutAlpC 120054 ndBeta 3135 final 3135
+SD links stat 7-9 nAll 1771628 nDZ 340609 nDZPnt 340609 nAlp 67519 nInAlpC 49101 nOutAlpC 37206 ndBeta 825 final 825
 Print stats
-Summary for layer 5 h1GeV 695 h2GeV 136 refLos 8025 refUps 8036 refMDs 4631 outLos 8150 outUps 8142 outMDs 4227 outSDs 15952 n1Any 7543 n1All 674 n2Any 2050 n2All 136
-Summary for layer 6 h1GeV 581 h2GeV 110 refLos 5657 refUps 5672 refMDs 2077 outLos 5655 outUps 5655 outMDs 1988 outSDs 4275 n1Any 2419 n1All 563 n2Any 612 n2All 110
-Summary for layer 7 h1GeV 479 h2GeV 87 refLos 3990 refUps 3991 refMDs 1465 outLos 3911 outUps 3905 outMDs 1391 outSDs 2446 n1Any 1437 n1All 468 n2Any 329 n2All 87
+Summary for layer 5 h1GeV 695 h2GeV 136 refLos 8025 refUps 8036 refMDs 4631 outLos 8150 outUps 8142 outMDs 4227 outSDs 15966 n1Any 7547 n1All 674 n2Any 2052 n2All 136
+Summary for layer 6 h1GeV 581 h2GeV 110 refLos 5657 refUps 5672 refMDs 2077 outLos 5655 outUps 5655 outMDs 1988 outSDs 4277 n1Any 2421 n1All 563 n2Any 614 n2All 110
+Summary for layer 7 h1GeV 479 h2GeV 87 refLos 3990 refUps 3991 refMDs 1465 outLos 3911 outUps 3905 outMDs 1391 outSDs 2447 n1Any 1437 n1All 468 n2Any 329 n2All 87
 Summary for layer 8 h1GeV 394 h2GeV 74 refLos 2589 refUps 2589 refMDs 1022 outLos 2534 outUps 2533 outMDs 1004 outSDs 1197 n1Any 699 n1All 385 n2Any 153 n2All 74
-Summary for layer 9 h1GeV 317 h2GeV 61 refLos 1537 refUps 1538 refMDs 681 outLos 1500 outUps 1499 outMDs 640 outSDs 722 n1Any 454 n1All 294 n2Any 129 n2All 61
+Summary for layer 9 h1GeV 317 h2GeV 61 refLos 1537 refUps 1538 refMDs 681 outLos 1500 outUps 1499 outMDs 640 outSDs 724 n1Any 456 n1All 294 n2Any 130 n2All 61
 Summary for layer 10 h1GeV 249 h2GeV 45 refLos 919 refUps 920 refMDs 449 outLos 889 outUps 889 outMDs 432 outSDs 431 n1Any 259 n1All 219 n2Any 53 n2All 45
-		sdl5-7 3131 sdl7-9 820
+		sdl5-7 3135 sdl7-9 825
 Load hits 
 Convert seeds to SuperDoublets
 Loaded nSeeds (pt>1 and |eta|<1.6) 307
 Combine MDs 
 Link SuperDoublet pairs to SDLinks
-SD links stat 0-5 nAll 2904527 nDZ 846669 nDZPnt 21751 nAlp 2284 nInAlpC 1719 nOutAlpC 566 ndBeta 277 final 277
-SD links stat 0-7 nAll 504401 nDZ 188742 nDZPnt 16834 nAlp 3728 nInAlpC 2872 nOutAlpC 1522 ndBeta 177 final 177
-SD links stat 5-7 nAll 15544423 nDZ 3151137 nDZPnt 544317 nAlp 104418 nInAlpC 58758 nOutAlpC 30708 ndBeta 1995 final 1995
-SD links stat 7-9 nAll 841216 nDZ 148904 nDZPnt 148904 nAlp 32761 nInAlpC 14988 nOutAlpC 6268 ndBeta 510 final 510
+SD links stat 0-5 nAll 2905755 nDZ 846995 nDZPnt 21759 nAlp 2284 nInAlpC 1881 nOutAlpC 1089 ndBeta 743 final 743
+SD links stat 0-7 nAll 504708 nDZ 188848 nDZPnt 16837 nAlp 3729 nInAlpC 3289 nOutAlpC 2295 ndBeta 358 final 358
+SD links stat 5-7 nAll 15560460 nDZ 3154122 nDZPnt 544941 nAlp 104513 nInAlpC 79815 nOutAlpC 59889 ndBeta 2003 final 2003
+SD links stat 7-9 nAll 841728 nDZ 148918 nDZPnt 148918 nAlp 32764 nInAlpC 23993 nOutAlpC 18920 ndBeta 512 final 512
 Print stats
-Summary for layer 5 h1GeV 604 h2GeV 131 refLos 6647 refUps 6656 refMDs 3381 outLos 6771 outUps 6772 outMDs 3185 outSDs 9461 n1Any 4916 n1All 584 n2Any 1480 n2All 130
-Summary for layer 6 h1GeV 500 h2GeV 117 refLos 4619 refUps 4622 refMDs 1617 outLos 4627 outUps 4627 outMDs 1579 outSDs 2885 n1Any 1725 n1All 491 n2Any 580 n2All 117
-Summary for layer 7 h1GeV 433 h2GeV 107 refLos 3319 refUps 3322 refMDs 1138 outLos 3273 outUps 3270 outMDs 1100 outSDs 1643 n1Any 987 n1All 426 n2Any 330 n2All 107
+Summary for layer 5 h1GeV 604 h2GeV 131 refLos 6647 refUps 6656 refMDs 3381 outLos 6771 outUps 6772 outMDs 3185 outSDs 9465 n1Any 4918 n1All 584 n2Any 1481 n2All 130
+Summary for layer 6 h1GeV 500 h2GeV 117 refLos 4619 refUps 4622 refMDs 1617 outLos 4627 outUps 4627 outMDs 1579 outSDs 2887 n1Any 1727 n1All 491 n2Any 581 n2All 117
+Summary for layer 7 h1GeV 433 h2GeV 107 refLos 3319 refUps 3322 refMDs 1138 outLos 3273 outUps 3270 outMDs 1100 outSDs 1644 n1Any 987 n1All 426 n2Any 330 n2All 107
 Summary for layer 8 h1GeV 346 h2GeV 80 refLos 2071 refUps 2070 refMDs 763 outLos 2029 outUps 2020 outMDs 756 outSDs 800 n1Any 517 n1All 341 n2Any 145 n2All 80
 Summary for layer 9 h1GeV 263 h2GeV 57 refLos 1250 refUps 1247 refMDs 501 outLos 1214 outUps 1215 outMDs 490 outSDs 512 n1Any 323 n1All 241 n2Any 84 n2All 57
-Summary for layer 10 h1GeV 229 h2GeV 56 refLos 755 refUps 753 refMDs 383 outLos 731 outUps 731 outMDs 373 outSDs 366 n1Any 233 n1All 199 n2Any 63 n2All 56
-		sdl5-7 1995 sdl7-9 510
+Summary for layer 10 h1GeV 229 h2GeV 56 refLos 755 refUps 753 refMDs 383 outLos 731 outUps 731 outMDs 373 outSDs 368 n1Any 234 n1All 199 n2Any 63 n2All 56
+		sdl5-7 2003 sdl7-9 512
 Timer results for timeLayout
-Real time 0:00:03.798, CP time 3.840, 31 slices
+Real time 0:00:03.149, CP time 3.140, 31 slices
 ----------------------------------
 Timer results for timeReco
-Real time 0:14:20.837, CP time 859.040, 31 slices
+Real time 0:09:08.139, CP time 547.990, 31 slices
 ----------------------------------
 Timer results for timeValidation
-Real time 0:04:41.341, CP time 280.810, 31 slices
+Real time 0:04:16.719, CP time 256.700, 31 slices
 ----------------------------------
-2887 make efficiencies 
-2958 draw and print 
-3811 write to file 
-3820 Done 
+2933 make efficiencies 
+3004 draw and print 
+3857 write to file 
+3866 Done 
 (int) 0
