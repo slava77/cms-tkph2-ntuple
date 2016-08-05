@@ -1286,7 +1286,7 @@ int ScanChainMiniDoublets( TChain* chain, int nEvents = -1, bool drawPlots = fal
 }
 
 int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool drawPlots = false, const int mockMode = 0, const double sdOffset = 2.0,
-				const int useSeeds = 0) {
+				const int useSeeds = 0, bool layoutOnly = false) {
   //mockMode:
   //0 for helix to ref and then straight line;
   //1 for helix to all ref layers;
@@ -1399,7 +1399,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
   std::array<TH1F*, SDL_LMAX> ha_SDLreco_4of4_eta;
   std::array<TH1F*, SDL_LMAX> ha_SDLreco_no4of4_eta;
 
-  
+  TH2F* h2_hitsXY_ITrec_OTmockLL = new TH2F("h2_hitsXY_ITrec_OTmockLL", "h2_hitsXY_ITrec_OTmockLL", 1200, 0, 120, 1200, 0, 120);
+  TH2F* h2_hitsRZ_ITrec_OTmockLL = new TH2F("h2_hitsRZ_ITrec_OTmockLL", "h2_hitsRZ_ITrec_OTmockLL", 1200, 0, 120, 1200, 0, 120);
 
   
   std::array<std::array<int, 2>, SDL_LMAX> layersSDL {{ {0, 5}, {0, 7}, {5, 7}, {7, 9}, {5, 9} }};
@@ -1622,7 +1623,6 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       for (auto ipix = 0U; ipix < nPix; ++ipix){
 	if (pix_isBarrel()[ipix] == false) continue;
 	int lay = pix_lay()[ipix];
-	if (lay < 5 ) continue;
 
 	int iid = pix_detId()[ipix];
 	//Too restrictive for reverse TP matching??//	if ((iid & 0x4)!= 4) continue; 
@@ -1631,7 +1631,13 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 
 	TVector3 r3Sim(pix_xsim()[ipix], pix_ysim()[ipix], pix_zsim()[ipix]);
 	if (r3Sim.x() == 0 && r3Sim.y() == 0) continue; //use only hits with sim info
-	
+
+	if (lay < 5 ){//fill pixel barrel plot
+	  h2_hitsXY_ITrec_OTmockLL->Fill(r3Rec.X(), r3Rec.Y());
+	  h2_hitsRZ_ITrec_OTmockLL->Fill(std::abs(r3Rec.Z()), r3Rec.Pt());
+	}
+	if (lay < 5 ) continue;
+
 	float rs = r3Sim.Pt();
 	TVector3 p3Sim(pix_pxsim()[ipix], pix_pysim()[ipix], pix_pzsim()[ipix]);
 	float pts = p3Sim.Pt();
@@ -1711,10 +1717,18 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	auto r3SDfwUpper = propagateMH(rSDfwUpper);
 	if (pstat == 0) mockLayerMDfwDNcmUpper[lay].push_back(std::make_pair(ipix, r3SDfwUpper));
 
-
+	if (pstat == 0 && q != 0 && pts>0.8){
+	  if (lay == 5 || lay == 7 || lay == 9){
+	    h2_hitsXY_ITrec_OTmockLL->Fill(r3RefLowerMock.X(), r3RefLowerMock.Y());
+	    h2_hitsXY_ITrec_OTmockLL->Fill(r3SDfwLower.X(), r3SDfwLower.Y());
+	    h2_hitsRZ_ITrec_OTmockLL->Fill(std::abs(r3RefLowerMock.Z()), r3RefLowerMock.Pt());
+	    h2_hitsRZ_ITrec_OTmockLL->Fill(std::abs(r3SDfwLower.Z()), r3SDfwLower.Pt());
+	  }
+	}
       }//nPix: filling mock MDs
       timerA[T_timeLayout].Stop();
 
+      if (layoutOnly ) continue;
 
       timerA[T_timeReco].Start(kFALSE);
       constexpr int maxMDexpected = 100;
@@ -3001,12 +3015,41 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 
   
   if (drawPlots){
+    {
+      auto h2 = h2_hitsXY_ITrec_OTmockLL;
+      auto cn = h2->GetTitle();
+      TCanvas* cv = new TCanvas(cn, cn, 600, 600);
+      cv->cd();
+      h2->SetTitle("Hits (x,y);x (cm);y (cm)");
+      h2->SetStats(0);
+      h2->Draw();
+      auto ax = h2->GetYaxis();
+      ax->SetTitleOffset(ax->GetTitleOffset()+0.25);
+      gPad->SetLogx(0);
+      gPad->SaveAs(Form("h2_hitsXY_ITrec_OTmockLL_mm%d_D%1.1fcm_us%d.png", mockMode, sdOffset, useSeeds));
+    }
+    {
+      auto h2 = h2_hitsRZ_ITrec_OTmockLL;
+      auto cn = h2->GetTitle();
+      TCanvas* cv = new TCanvas(cn, cn, 600, 600);
+      cv->cd();
+      h2->SetTitle("Hits (r,z);z (cm);r (cm)");
+      h2->SetStats(0);
+      h2->Draw();
+      auto ax = h2->GetYaxis();
+      ax->SetTitleOffset(ax->GetTitleOffset()+0.25);
+      gPad->SetLogx(0);
+      gPad->SaveAs(Form("h2_hitsRZ_ITrec_OTmockLL_mm%d_D%1.1fcm_us%d.png", mockMode, sdOffset, useSeeds));
+    }
+  }
+  else if (drawPlots && !layoutOnly){
     std::cout<<__LINE__<<" draw and print "<<std::endl;
     for (int iL = 5; iL <= nLayers; ++iL){
       if (iL != 5 && iL != 10) continue;
-
+      
     }//nLayers
 
+    
     for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
       if (iSDL == SDL_L5to9) continue;
       auto h_all = ha_SDL_dBeta_NM1dBeta_all[iSDL];
