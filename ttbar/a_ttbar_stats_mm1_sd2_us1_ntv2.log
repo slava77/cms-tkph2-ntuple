@@ -512,16 +512,16 @@ Summary for layer 9 h1GeV 263 h2GeV 57 refLos 1250 refUps 1247 refMDs 501 outLos
 Summary for layer 10 h1GeV 229 h2GeV 56 refLos 755 refUps 753 refMDs 383 outLos 744 outUps 744 outMDs 369 outSDs 363 n1Any 220 n1All 201 n2Any 62 n2All 56
 		sdl5-7 2203 sdl7-9 472
 Timer results for timeLayout
-Real time 0:00:03.130, CP time 3.150, 31 slices
+Real time 0:00:03.668, CP time 3.610, 31 slices
 ----------------------------------
 Timer results for timeReco
-Real time 0:05:56.624, CP time 356.580, 31 slices
+Real time 0:06:32.708, CP time 392.020, 31 slices
 ----------------------------------
 Timer results for timeValidation
-Real time 0:03:09.545, CP time 189.460, 31 slices
+Real time 0:03:29.443, CP time 209.120, 31 slices
 ----------------------------------
 2933 make efficiencies 
 3004 draw and print 
-3857 write to file 
-3866 Done 
+3931 write to file 
+3940 Done 
 (int) 0
