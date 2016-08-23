@@ -2257,6 +2257,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	TVector3 p3(sim_px()[iSim], sim_py()[iSim], sim_pz()[iSim]);
 	bool debug = false;
 	auto tpPt = p3.Pt();
+	if (tpPt < 0.5 ) continue;
+	
 	auto tpEta = p3.Eta();
 	auto tpPhi = p3.Phi();
 
@@ -2291,7 +2293,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      }
 	    }
 	  }
-	}
+	}//iPix : 0 to sim_nPixel
 	if (debug) std::cout<<std::endl;
 
 	for (int iSDLL = 0; iSDLL< SDL_LMAX; ++iSDLL){
