@@ -1286,7 +1286,7 @@ int ScanChainMiniDoublets( TChain* chain, int nEvents = -1, bool drawPlots = fal
 }
 
 int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool drawPlots = false, const int mockMode = 0, const double sdOffset = 2.0,
-				const int useSeeds = 0, bool layoutOnly = false) {
+				const int useSeeds = 0, bool layoutOnly = false, bool cumulativeCuts = true) {
   //mockMode:
   //0 for helix to ref and then straight line;
   //1 for helix to all ref layers;
@@ -1295,6 +1295,10 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
   //useSeeds:
   //0: not used
   //1: convert to tangent SuperDoublet at outer hit
+
+  //cumulativeCuts:
+  //false   : computations or analysis of building step is done inclusively (all combinations tried; cuts applied last)
+  //true (D): computations or analysis of building step stop after combination fails a cut on a computed value
   
   std::cout<<"Running in mockMode "<<mockMode<<std::endl;
   std::cout<<"Running with SD distance "<<sdOffset<<std::endl;
@@ -1888,6 +1892,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 
 	    iFlag = SDSelectFlags::slope;
 	    if (!(std::abs(dPhi) > sdCut )) sdFlag |= 1 << iFlag;
+	    else if (cumulativeCuts ) continue;
+	    
 	    if (sdFlag == sdMasksCumulative[iFlag]) nPass[iFlag]++;
 	    
 
@@ -1904,14 +1910,20 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 
 	    iFlag = SDSelectFlags::alphaRef;
 	    if (!(std::abs(mdRef.alpha- sd.alpha) > dAlpha_compat)) sdFlag |= 1 << iFlag;
+	    else if (cumulativeCuts ) continue;
+
 	    if (sdFlag == sdMasksCumulative[iFlag]) nPass[iFlag]++;
 	      
 	    iFlag = SDSelectFlags::alphaOut;
 	    if (!(std::abs(mdOut.alpha- sd.alpha) > dAlpha_compat)) sdFlag |= 1 << iFlag;
+	    else if (cumulativeCuts ) continue;
+
 	    if (sdFlag == sdMasksCumulative[iFlag]) nPass[iFlag]++;
 
 	    iFlag = SDSelectFlags::alphaRefOut;
 	    if (!(std::abs(mdOut.alpha- mdRef.alpha) > dAlpha_compat)) sdFlag |= 1 << iFlag;
+	    else if (cumulativeCuts ) continue;
+
 	    if (sdFlag == sdMasksCumulative[iFlag]) nPass[iFlag]++;
 
 	    if (sdFlag != sdMasksCumulative[SDSelectFlags::max-1]) continue; //apply all cuts 
@@ -2002,7 +2014,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    const float rtOut_o_rtIn = rtOut/rtIn;
 	    const float zLo = rtOut_o_rtIn*(zIn - 15.f) - zGeom; //15 for the luminous ; zGeom for z geom unit size
 	    const float zHi = rtOut_o_rtIn*(zIn + 15.f) + zGeom;
-	    if (!(zOut < zLo || zOut > zHi)) sdlFlag |= 1 << SDLSelectFlags::deltaZ; //continue;
+	    if (!(zOut < zLo || zOut > zHi)) sdlFlag |= 1 << SDLSelectFlags::deltaZ;
+	    else if (cumulativeCuts ) continue;
 	    if (sdlFlag == sdlMasksCumulative[SDLSelectFlags::deltaZ]) nDeltaZ++;
 
 	    const float drOutIn = (rtOut - rtIn);
@@ -2024,7 +2037,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      const float dzMean = dzDrIn*drOutIn*(1.f + drOutIn*drOutIn/87.8f/87.8f/ptIn/ptIn/24.f);//with curved path correction
 	      const float zLo = zIn + dzMean - zWindow;
 	      const float zHi = zIn + dzMean + zWindow;
-	      if (!(zOut < zLo || zOut > zHi)) sdlFlag |= 1 << SDLSelectFlags::deltaZPointed; //continue;
+	      if (!(zOut < zLo || zOut > zHi)) sdlFlag |= 1 << SDLSelectFlags::deltaZPointed;
+	      else if (cumulativeCuts ) continue;
 	    }
 	    else if (lIn>=5 && lIn <=6){//can point to the z pos in lOut
 	      const float coshEta = dr3SDIn/dSDIn;//direction estimate
@@ -2035,7 +2049,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      const float zWindow = dzErr/dSDIn*drOutIn + zGeom; //FIXME for ptCut lower than ~0.8 need to add curv path correction
 	      const float zLo = zIn + dzMean - zWindow;
 	      const float zHi = zIn + dzMean + zWindow;
-	      if (!(zOut < zLo || zOut > zHi)) sdlFlag |= 1 << SDLSelectFlags::deltaZPointed; //continue;
+	      if (!(zOut < zLo || zOut > zHi)) sdlFlag |= 1 << SDLSelectFlags::deltaZPointed;
+	      else if (cumulativeCuts ) continue;
 	    } else {
 	      sdlFlag |= 1 << SDLSelectFlags::deltaZPointed;
 	    }
@@ -2049,7 +2064,9 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    const float sdlPVoff = 0.1f/rt;
 	    const float sdlCut = sdlSlope + sqrt(sdlMuls*sdlMuls + sdlPVoff*sdlPVoff);
 	    
-	    if (! (std::abs(dPhi) > sdlCut) ) sdlFlag |= 1 << SDLSelectFlags::slope; //continue;
+	    if (! (std::abs(dPhi) > sdlCut) ) sdlFlag |= 1 << SDLSelectFlags::slope;
+	    else if (cumulativeCuts ) continue;
+
 	    if (sdlFlag == sdlMasksCumulative[SDLSelectFlags::slope]) nSlope++;
 	    
 	    float betaIn;
@@ -2082,12 +2099,15 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    const float dAlpha_Bfield = dr/175.67f/ptCut;
 	    const float dAlpha_res = 0.02f/std::min(dSDIn, dSDOut);//2-strip difference; use the smallest SD separation
 	    float dAlpha_compat = dAlpha_Bfield + dAlpha_res;
-	    if (!(std::abs(sdIn.alpha- dPhi) > dAlpha_compat )) sdlFlag |= 1 << SDLSelectFlags::dAlphaIn; //continue;
+	    if (!(std::abs(sdIn.alpha- dPhi) > dAlpha_compat )) sdlFlag |= 1 << SDLSelectFlags::dAlphaIn;
+	    else if (cumulativeCuts ) continue;
 	    if (sdlFlag == sdlMasksCumulative[SDLSelectFlags::dAlphaIn]) nInAlphaCompat++;
+
 	    if (lIn == 0 ){//FIXME: THIS COMPATIBILITY SHOULD BE MADE MORE CORRECT FOR UNEVEN SD point definition
 	      dAlpha_compat = (dSDOut +dr)/175.67f/ptCut + dAlpha_res; //L0 is a tangent while LX is a chord
 	    }
-	    if (!(std::abs(sdOut.alpha- dPhi) > dAlpha_compat )) sdlFlag |= 1 << SDLSelectFlags::dAlphaOut; //continue;
+	    if (!(std::abs(sdOut.alpha- dPhi) > dAlpha_compat )) sdlFlag |= 1 << SDLSelectFlags::dAlphaOut;
+	    else if (cumulativeCuts ) continue;
 	    if (sdlFlag == sdlMasksCumulative[SDLSelectFlags::dAlphaOut]) nOutAlphaCompat++;
 	    
 	    //now the actual segment linking magic
@@ -2104,7 +2124,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    const float dBetaCut2 = dBetaRes*dBetaRes*2.0f + dBetaMuls*dBetaMuls;
 	    const float dBeta = betaIn - betaOut;
 
-	    if (!(dBeta*dBeta > dBetaCut2)) sdlFlag |= 1 << SDLSelectFlags::dBeta; //continue;
+	    if (!(dBeta*dBeta > dBetaCut2)) sdlFlag |= 1 << SDLSelectFlags::dBeta;
+	    else if (cumulativeCuts ) continue;
 	    if (sdlFlag == sdlMasksCumulative[SDLSelectFlags::dBeta]) ndBeta++;
 
 	    auto const ptInEst = std::abs(pt_betaIn);
