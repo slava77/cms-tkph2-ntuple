@@ -1756,7 +1756,6 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	  TVector3 p3PCA(see_pca_px()[iSeed], see_pca_py()[iSeed], see_pca_pz()[iSeed]);
 	  TVector3 r3PCA(see_pca_x()[iSeed], see_pca_y()[iSeed], see_pca_z()[iSeed]);
 
-	  
 	  auto nPix = see_nPixel()[iSeed];
 	  if (debugReco){
 	    std::cout<<"Seed with nHits "<<nPix<<std::endl;
@@ -1837,7 +1836,18 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 
 	//now make super-doublets
 	auto& mockSDfwDNcm = mockLayerSDfwDNcm[iL];
-
+	
+	enum SDSelectFlags {deltaZ = 0, slope = 1, alphaRef = 2, alphaOut = 3, alphaRefOut = 4, max = 5};
+	std::array<string, SDSelectFlags::max> sdFlagString {"deltaZ", "slope", "alphaRef", "alphaOut", "alphaRefOut"};
+	std::array<int, SDSelectFlags::max> sdMasksCumulative {};
+	for (int i = 0; i < SDSelectFlags::max; ++i){
+	  if (i > 0 ) sdMasksCumulative[i] = sdMasksCumulative[i-1];
+	  sdMasksCumulative[i] |= 1 << i;
+	}
+	
+	std::array<int, SDSelectFlags::max> nPass {};
+	int nAll = 0;
+	
 	int iRef = -1;
 	for (auto mdRef : mockMDfwRef){
 	  iRef++;
@@ -1846,6 +1856,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	  //
 	  int iOut = -1;
 	  for (auto mdOut : mockMDfwDNcm){
+	    nAll++;
+	    int sdFlag = 0;
 	    iOut++;
 	    float rtOut = mdOut.r3.Pt();
 	    float zOut = mdOut.r3.z();
@@ -1855,7 +1867,9 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	                                                //assume that the mock layer is the n+1 layer
 	    float zLo = rtOut/rtRef*(zRef - 15.) - zGeom; //15 for the luminous ; 10 for module size
 	    float zHi = rtOut/rtRef*(zRef + 15.) + zGeom;
-	    if (zOut < zLo || zOut > zHi) continue;
+	    unsigned int iFlag = SDSelectFlags::deltaZ;
+	    if (!(zOut < zLo || zOut > zHi)) sdFlag |= 1 << iFlag;
+	    if (sdFlag == sdMasksCumulative[iFlag]) nPass[iFlag]++;
 	    
 	    SuperDoublet sd;
 	    sd.iRef = iRef;
@@ -1871,7 +1885,11 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    auto const dr3 = mdOut.r3 - mdRef.r3;
 	    //plain SD bend cut
 	    float dPhi = mdRef.r3.DeltaPhi(dr3);
-	    if (std::abs(dPhi) > sdCut ) continue;
+
+	    iFlag = SDSelectFlags::slope;
+	    if (!(std::abs(dPhi) > sdCut )) sdFlag |= 1 << iFlag;
+	    if (sdFlag == sdMasksCumulative[iFlag]) nPass[iFlag]++;
+	    
 
 	    
 	    sd.r3 = mdRef.r3;
@@ -1883,9 +1901,20 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    float dAlpha_Bfield = sd.dr/175.67/ptCut;
 	    float dAlpha_res = 0.04/miniDeltaBarrel[iL];//4-strip difference
 	    float dAlpha_compat = dAlpha_Bfield + dAlpha_res;
-	    if (std::abs(mdRef.alpha- sd.alpha) > dAlpha_compat) continue;
-	    if (std::abs(mdOut.alpha- sd.alpha) > dAlpha_compat) continue;
-	    if (std::abs(mdOut.alpha- mdRef.alpha) > dAlpha_compat) continue;
+
+	    iFlag = SDSelectFlags::alphaRef;
+	    if (!(std::abs(mdRef.alpha- sd.alpha) > dAlpha_compat)) sdFlag |= 1 << iFlag;
+	    if (sdFlag == sdMasksCumulative[iFlag]) nPass[iFlag]++;
+	      
+	    iFlag = SDSelectFlags::alphaOut;
+	    if (!(std::abs(mdOut.alpha- sd.alpha) > dAlpha_compat)) sdFlag |= 1 << iFlag;
+	    if (sdFlag == sdMasksCumulative[iFlag]) nPass[iFlag]++;
+
+	    iFlag = SDSelectFlags::alphaRefOut;
+	    if (!(std::abs(mdOut.alpha- mdRef.alpha) > dAlpha_compat)) sdFlag |= 1 << iFlag;
+	    if (sdFlag == sdMasksCumulative[iFlag]) nPass[iFlag]++;
+
+	    if (sdFlag != sdMasksCumulative[SDSelectFlags::max-1]) continue; //apply all cuts 
 
 	    sd.mdRef = mdRef;
 	    sd.mdOut = mdOut;
@@ -1898,8 +1927,14 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		       <<std::endl;
 	    }
 	    mockSDfwDNcm.push_back(sd);
-	  }
+	  }//mdOut : mockMDfwDNcm
+	}//mdRef : mockMDfwRef
+	std::cout<<"SD stat "<<iL
+		 <<" nAll "<<nAll;
+	for (unsigned int i = 0; i< SDSelectFlags::max; ++i){
+	  std::cout<<" "<<sdFlagString[i]<<" "<<nPass[i];
 	}
+	std::cout<<std::endl;
       }//iL
 
       enum SDLSelectFlags { deltaZ = 0, deltaZPointed=1, slope=2, dAlphaIn=3, dAlphaOut=4, dBeta=5, max=6};
