@@ -47,6 +47,29 @@ namespace tkph2consts{
 using namespace tas;
 using namespace tkph2consts;
 
+//copy-pasted from reco::deltaPhi
+template<typename T> inline
+T  reduceRange(T x) {
+  constexpr T o2pi = 1./(2.*M_PI);
+  if (std::abs(x) <= T(M_PI)) return x;
+  T n = std::round(x*o2pi);
+  return x - n*T(2.*M_PI);
+}
+inline double deltaPhi(double phi1, double phi2) { 
+  return reduceRange(phi1 - phi2);
+}
+inline double deltaPhi(float phi1, double phi2) {
+  return deltaPhi(static_cast<double>(phi1), phi2);
+}
+
+inline double deltaPhi(double phi1, float phi2) {
+  return deltaPhi(phi1, static_cast<double>(phi2));
+}
+inline float deltaPhi(float phi1, float phi2) { 
+  return reduceRange(phi1 - phi2);
+}
+
+
 //histograms for occupancy and non-zero occupancy vs value-X
 struct Hists2DProfWNZ {
   TH2D* h2D;
@@ -324,6 +347,7 @@ struct MiniDoublet {
   float rt;
   float z;
   float r;
+  float phi;
 };
 
 struct SuperDoublet {
@@ -1348,6 +1372,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
   std::array<TH1F*, SDL_LMAX> ha_num2SD_w0123_4of4_pt;//see SDLSelectFlags definitions
   std::array<TH1F*, SDL_LMAX> ha_num2SD_w01234_4of4_pt;//see SDLSelectFlags definitions
   std::array<TH1F*, SDL_LMAX> ha_num2SD_w012345_4of4_pt;//see SDLSelectFlags definitions
+  std::array<TH1F*, SDL_LMAX> ha_num2SD_w0123456_4of4_pt;//see SDLSelectFlags definitions
 
   std::array<TH2F*, SDL_LMAX> ha_SDL_dBeta_betaIn_NM1dBeta_all;
   std::array<TH2F*, SDL_LMAX> ha_SDL_dBeta_betaIn_zoom_NM1dBeta_all;
@@ -1384,6 +1409,10 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
   std::array<TH1F*, SDL_LMAX> ha_SDL_dBeta_01234_pass;
   std::array<TH1F*, SDL_LMAX> ha_SDL_dBeta_zoom_01234_all;
   std::array<TH1F*, SDL_LMAX> ha_SDL_dBeta_zoom_01234_pass;
+  std::array<TH1F*, SDL_LMAX> ha_SDL_dBeta_012345_all;
+  std::array<TH1F*, SDL_LMAX> ha_SDL_dBeta_012345_pass;
+  std::array<TH1F*, SDL_LMAX> ha_SDL_dBeta_zoom_012345_all;
+  std::array<TH1F*, SDL_LMAX> ha_SDL_dBeta_zoom_012345_pass;
   
   std::array<TH1F*, SDL_LMAX> ha_SDL_dBeta_zoom_NM1dBeta_8MH;
   std::array<TH1F*, SDL_LMAX> ha_SDL_dBeta_zoom2_NM1dBeta_8MH;
@@ -1452,6 +1481,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
     ha_num2SD_w01234_4of4_pt[i] = new TH1F(hn.c_str(), hn.c_str(), ptBins.size()-1, ptBins.data());    
     hn = Form("h_num2SD_w012345_4of4_%dto%d_pt", iMin, iMax);
     ha_num2SD_w012345_4of4_pt[i] = new TH1F(hn.c_str(), hn.c_str(), ptBins.size()-1, ptBins.data());
+    hn = Form("h_num2SD_w0123456_4of4_%dto%d_pt", iMin, iMax);
+    ha_num2SD_w0123456_4of4_pt[i] = new TH1F(hn.c_str(), hn.c_str(), ptBins.size()-1, ptBins.data());
 
     //plots without MC truth requirement
     hn = Form("h2_SDL_dBeta_betaIn_NM1dBeta_all_%dto%d_pt", iMin, iMax);
@@ -1527,6 +1558,15 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
     ha_SDL_dBeta_zoom_01234_all[i] = new TH1F(hn.c_str(), hn.c_str(), 400, -0.15, 0.15);
     hn = Form("h_SDL_dBeta_zoom_01234_pass_%dto%d_pt", iMin, iMax);
     ha_SDL_dBeta_zoom_01234_pass[i] = new TH1F(hn.c_str(), hn.c_str(), 400, -0.15, 0.15);
+    //012345
+    hn = Form("h_SDL_dBeta_012345_all_%dto%d_pt", iMin, iMax);
+    ha_SDL_dBeta_012345_all[i] = new TH1F(hn.c_str(), hn.c_str(), 400, -0.5, 0.5);
+    hn = Form("h_SDL_dBeta_012345_pass_%dto%d_pt", iMin, iMax);
+    ha_SDL_dBeta_012345_pass[i] = new TH1F(hn.c_str(), hn.c_str(), 400, -0.5, 0.5);
+    hn = Form("h_SDL_dBeta_zoom_012345_all_%dto%d_pt", iMin, iMax);
+    ha_SDL_dBeta_zoom_012345_all[i] = new TH1F(hn.c_str(), hn.c_str(), 400, -0.15, 0.15);
+    hn = Form("h_SDL_dBeta_zoom_012345_pass_%dto%d_pt", iMin, iMax);
+    ha_SDL_dBeta_zoom_012345_pass[i] = new TH1F(hn.c_str(), hn.c_str(), 400, -0.15, 0.15);
 
 
     //plots with MC truth requirement
@@ -1785,6 +1825,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	  seedSD.mdRef.rt = r3PCA.Pt();	  
 	  seedSD.mdRef.z = r3PCA.Z();	  
 	  seedSD.mdRef.r = r3PCA.Mag();	  
+	  seedSD.mdRef.phi = r3PCA.Phi();	  
 	  seedSD.mdRef.alpha = r3PCA.DeltaPhi(p3PCA);
 	  seedSD.mdOut.pixL = see_pixelIdx()[iSeed][2];
 	  if (nPix >= 4) seedSD.mdOut.pixU = see_pixelIdx()[iSeed][3];
@@ -1792,6 +1833,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	  seedSD.mdOut.rt = r3LH.Pt();
 	  seedSD.mdOut.z = r3LH.Z();
 	  seedSD.mdOut.r = r3LH.Mag();
+	  seedSD.mdOut.phi = r3LH.Phi();
 	  seedSD.mdOut.alpha = r3LH.DeltaPhi(p3LH);	  
 	  seedSD.iRef = iSeed;
 	  seedSD.iOut = iSeed;
@@ -1843,6 +1885,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      md.rt = hL.second.Pt();
 	      md.z = hL.second.Z();
 	      md.r = hL.second.Mag();
+	      md.phi = hL.second.Phi();
 	      md.alpha = dPhi;
 	      mDs.emplace_back(md);
 	    }
@@ -1856,8 +1899,9 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	//now make super-doublets
 	auto& mockSDfwDNcm = mockLayerSDfwDNcm[iL];
 	
-	enum SDSelectFlags {deltaZ = 0, slope = 1, alphaRef = 2, alphaOut = 3, alphaRefOut = 4, max = 5};
-	std::array<string, SDSelectFlags::max> sdFlagString {"deltaZ", "slope", "alphaRef", "alphaOut", "alphaRefOut"};
+	enum SDSelectFlags {deltaZ = 0, deltaPhiPos, slope, alphaRef, alphaOut, alphaRefOut, max};
+	std::array<string, SDSelectFlags::max> sdFlagString {"deltaZ", "deltaPhiPos",
+	    "slope", "alphaRef", "alphaOut", "alphaRefOut"};
 	std::array<int, SDSelectFlags::max> sdMasksCumulative {};
 	for (int i = 0; i < SDSelectFlags::max; ++i){
 	  if (i > 0 ) sdMasksCumulative[i] = sdMasksCumulative[i-1];
@@ -1868,12 +1912,15 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	int nAll = 0;
 	
 	int iRef = -1;
+	const float zGeom = iL >= 5 && iL <= 6 ? 0.3f : 10.0f;//twice the macro-pixel or strip size
+	                                                //assume that the mock layer is the n+1 layer
 	for (auto const& mdRef : mockMDfwRef){
 	  iRef++;
 	  float rtRef = mdRef.r3.Pt();
 	  float zRef = mdRef.r3.z();
 	  //
 	  int iOut = -1;
+	  auto dr3 = mdRef.r3;
 	  for (auto const& mdOut : mockMDfwDNcm){
 	    nAll++;
 	    int sdFlag = 0;
@@ -1882,18 +1929,14 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    float zOut = mdOut.z;
 
 	    //apply some loose Z compatibility
-	    float zGeom = iL >= 5 && iL <= 6 ? 0.3f : 10.0f;//twice the macro-pixel or strip size
-	                                                //assume that the mock layer is the n+1 layer
 	    float zLo = rtOut/rtRef*(zRef - 15.f) - zGeom; //15 for the luminous ; 10 for module size
 	    float zHi = rtOut/rtRef*(zRef + 15.f) + zGeom;
 	    unsigned int iFlag = SDSelectFlags::deltaZ;
 	    if (!(zOut < zLo || zOut > zHi)) sdFlag |= 1 << iFlag;
+	    else if (cumulativeCuts ) continue;
+
 	    if (sdFlag == sdMasksCumulative[iFlag]) nPass[iFlag]++;
 	    
-	    SuperDoublet sd;
-	    sd.iRef = iRef;
-	    sd.iOut = iOut;
-
 	    float rt = 0.5f*(rtRef + rtOut); //take the middle: it matches better the point-to-point
 	    const float ptCut = 1.0f;
 	    const float sdSlope = rt/175.67f/ptCut;
@@ -1901,23 +1944,31 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    const float sdPVoff = 0.1f/rt;
 	    const float sdCut = sdSlope + sqrt(sdMuls*sdMuls + sdPVoff*sdPVoff);
 
-	    auto const dr3 = mdOut.r3 - mdRef.r3;
+	    iFlag = SDSelectFlags::deltaPhiPos;
+	    //FIXME: should be tighter than the local sdCut
+	    if (!(std::abs(deltaPhi(mdRef.phi, mdOut.phi)) > sdCut )) sdFlag |= 1 << iFlag;
+	    else if (cumulativeCuts ) continue;	    
+	    if (sdFlag == sdMasksCumulative[iFlag]) nPass[iFlag]++;
+
+	    dr3 = mdOut.r3; dr3 -= mdRef.r3;
 	    //plain SD bend cut
 	    float dPhi = mdRef.r3.DeltaPhi(dr3);
 
 	    iFlag = SDSelectFlags::slope;
 	    if (!(std::abs(dPhi) > sdCut )) sdFlag |= 1 << iFlag;
-	    else if (cumulativeCuts ) continue;
-	    
+	    else if (cumulativeCuts ) continue;	    
 	    if (sdFlag == sdMasksCumulative[iFlag]) nPass[iFlag]++;
 	    
-
 	    
+	    SuperDoublet sd;
+	    sd.iRef = iRef;
+	    sd.iOut = iOut;
+
 	    sd.r3 = mdRef.r3;
 	    sd.rt = mdRef.rt;
 	    sd.alpha = dPhi;
-	    sd.alphaOut = mdOut.r3.DeltaPhi(dr3);
 	    sd.dr = dr3.Pt();
+
 	    //loose angle compatibility
 	    float dAlpha_Bfield = sd.dr/175.67f/ptCut;
 	    float dAlpha_res = 0.04f/miniDeltaBarrel[iL];//4-strip difference
@@ -1945,6 +1996,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 
 	    sd.mdRef = mdRef;
 	    sd.mdOut = mdOut;
+	    sd.alphaOut = mdOut.r3.DeltaPhi(dr3);
 
 	    if ( sd.dr > 1.5f*(rtOut - rtRef)){
 	      //problem in matching
@@ -1964,7 +2016,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	std::cout<<std::endl;
       }//iL
 
-      enum SDLSelectFlags { deltaZ = 0, deltaZPointed=1, slope=2, dAlphaIn=3, dAlphaOut=4, dBeta=5, max=6};
+      enum SDLSelectFlags { deltaZ = 0, deltaZPointed=1, deltaPhiPos=2,
+			    slope=3, dAlphaIn=4, dAlphaOut=5, dBeta=6, max=7};
       std::array<int, SDLSelectFlags::max> sdlMasksCumulative {};
       for (int i = 0; i < SDLSelectFlags::max; ++i){
 	if (i > 0 ) sdlMasksCumulative[i] = sdlMasksCumulative[i-1];
@@ -1984,6 +2037,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	int nAll = 0;
 	int nDeltaZ = 0;
 	int nDeltaZPointed = 0;
+	int nDeltaPhiPos = 0;
 	int nSlope = 0;
 	int nInAlphaCompat = 0;
 	int nOutAlphaCompat = 0;
@@ -1993,12 +2047,12 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	for ( auto const& sdIn : sdInV ) {
 	  iIn++;
 	  //
-	  float rtIn = sdIn.rt;
-	  float ptIn = sdIn.p3.Pt();
-	  float zIn = sdIn.r3.z();
-	  float dSDIn = sdIn.mdOut.rt - sdIn.mdRef.rt;
-	  float dzSDIn = sdIn.mdOut.z - sdIn.mdRef.z;
-	  float dr3SDIn = sdIn.mdOut.r - sdIn.mdRef.r;
+	  const float rtIn = sdIn.rt;
+	  const float ptIn = sdIn.p3.Pt();
+	  const float zIn = sdIn.r3.z();
+	  const float dSDIn = sdIn.mdOut.rt - sdIn.mdRef.rt;
+	  const float dzSDIn = sdIn.mdOut.z - sdIn.mdRef.z;
+	  const float dr3SDIn = sdIn.mdOut.r - sdIn.mdRef.r;
 	  
 	  float ptSLo = 1.0f;
 	  if (lIn == 0){
@@ -2071,17 +2125,26 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    }
 	    if (sdlFlag == sdlMasksCumulative[SDLSelectFlags::deltaZPointed]) nDeltaZPointed++;
 	    
-	    auto const midR3 = 0.5f*(sdIn.r3 + sdOut.r3);
-	    const float dPhi = midR3.DeltaPhi(sdOut.r3 - sdIn.r3);
 	    const float rt = 0.5f*(rtIn + rtOut);
 
 	    const float sdlSlope = rt/175.67f/ptCut;
 	    const float sdlPVoff = 0.1f/rt;
 	    const float sdlCut = sdlSlope + sqrt(sdlMuls*sdlMuls + sdlPVoff*sdlPVoff);
-	    
+
+	    if (lIn == 0){
+	      sdlFlag |= 1 << SDLSelectFlags::deltaPhiPos;
+	    } else {
+	      //FIXME: can be tighter
+	      if (! (std::abs(deltaPhi(sdIn.mdOut.phi, sdOut.mdOut.phi)) > sdlCut) ) sdlFlag |= 1 << SDLSelectFlags::deltaPhiPos;
+	      else if (cumulativeCuts ) continue;
+	    }
+	    if (sdlFlag == sdlMasksCumulative[SDLSelectFlags::deltaPhiPos]) nDeltaPhiPos++;
+
+	    auto const midR3 = 0.5f*(sdIn.r3 + sdOut.r3);
+	    const float dPhi = midR3.DeltaPhi(sdOut.r3 - sdIn.r3);
+
 	    if (! (std::abs(dPhi) > sdlCut) ) sdlFlag |= 1 << SDLSelectFlags::slope;
 	    else if (cumulativeCuts ) continue;
-
 	    if (sdlFlag == sdlMasksCumulative[SDLSelectFlags::slope]) nSlope++;
 	    
 	    float betaIn;
@@ -2140,7 +2203,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    const float dBeta = betaIn - betaOut;
 
 	    if (!(dBeta*dBeta > dBetaCut2)) sdlFlag |= 1 << SDLSelectFlags::dBeta;
-	    else if (cumulativeCuts ) continue;
+	    //stay on for N-1 plots	    else if (cumulativeCuts ) continue;
 	    if (sdlFlag == sdlMasksCumulative[SDLSelectFlags::dBeta]) ndBeta++;
 
 	    auto const ptInEst = std::abs(pt_betaIn);
@@ -2165,31 +2228,40 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      ha_SDL_dBeta_zoom_01_pass[iSDL]->Fill(dBeta);
 	    }
 	    
-	    if ((sdlFlag & sdlMasksCumulative[SDLSelectFlags::slope-1]) == sdlMasksCumulative[SDLSelectFlags::slope-1]){
+	    if ((sdlFlag & sdlMasksCumulative[SDLSelectFlags::deltaPhiPos-1]) == sdlMasksCumulative[SDLSelectFlags::deltaPhiPos-1]){
 	      ha_SDL_dBeta_012_all[iSDL]->Fill(dBeta);
 	      ha_SDL_dBeta_zoom_012_all[iSDL]->Fill(dBeta);
 	    }
-	    if ((sdlFlag & sdlMasksCumulative[SDLSelectFlags::slope]) == sdlMasksCumulative[SDLSelectFlags::slope]){
+	    if ((sdlFlag & sdlMasksCumulative[SDLSelectFlags::deltaPhiPos]) == sdlMasksCumulative[SDLSelectFlags::deltaPhiPos]){
 	      ha_SDL_dBeta_012_pass[iSDL]->Fill(dBeta);
 	      ha_SDL_dBeta_zoom_012_pass[iSDL]->Fill(dBeta);
 	    }
-	    
-	    if ((sdlFlag & sdlMasksCumulative[SDLSelectFlags::dAlphaIn-1]) == sdlMasksCumulative[SDLSelectFlags::dAlphaIn-1]){
+
+	    if ((sdlFlag & sdlMasksCumulative[SDLSelectFlags::slope-1]) == sdlMasksCumulative[SDLSelectFlags::slope-1]){
 	      ha_SDL_dBeta_0123_all[iSDL]->Fill(dBeta);
 	      ha_SDL_dBeta_zoom_0123_all[iSDL]->Fill(dBeta);
 	    }
-	    if ((sdlFlag & sdlMasksCumulative[SDLSelectFlags::dAlphaIn]) == sdlMasksCumulative[SDLSelectFlags::dAlphaIn]){
+	    if ((sdlFlag & sdlMasksCumulative[SDLSelectFlags::slope]) == sdlMasksCumulative[SDLSelectFlags::slope]){
 	      ha_SDL_dBeta_0123_pass[iSDL]->Fill(dBeta);
 	      ha_SDL_dBeta_zoom_0123_pass[iSDL]->Fill(dBeta);
 	    }
 	    
-	    if ((sdlFlag & sdlMasksCumulative[SDLSelectFlags::dAlphaOut-1]) == sdlMasksCumulative[SDLSelectFlags::dAlphaOut-1]){
+	    if ((sdlFlag & sdlMasksCumulative[SDLSelectFlags::dAlphaIn-1]) == sdlMasksCumulative[SDLSelectFlags::dAlphaIn-1]){
 	      ha_SDL_dBeta_01234_all[iSDL]->Fill(dBeta);
 	      ha_SDL_dBeta_zoom_01234_all[iSDL]->Fill(dBeta);
 	    }
-	    if ((sdlFlag & sdlMasksCumulative[SDLSelectFlags::dAlphaOut]) == sdlMasksCumulative[SDLSelectFlags::dAlphaOut]){
+	    if ((sdlFlag & sdlMasksCumulative[SDLSelectFlags::dAlphaIn]) == sdlMasksCumulative[SDLSelectFlags::dAlphaIn]){
 	      ha_SDL_dBeta_01234_pass[iSDL]->Fill(dBeta);
 	      ha_SDL_dBeta_zoom_01234_pass[iSDL]->Fill(dBeta);
+	    }
+	    
+	    if ((sdlFlag & sdlMasksCumulative[SDLSelectFlags::dAlphaOut-1]) == sdlMasksCumulative[SDLSelectFlags::dAlphaOut-1]){
+	      ha_SDL_dBeta_012345_all[iSDL]->Fill(dBeta);
+	      ha_SDL_dBeta_zoom_012345_all[iSDL]->Fill(dBeta);
+	    }
+	    if ((sdlFlag & sdlMasksCumulative[SDLSelectFlags::dAlphaOut]) == sdlMasksCumulative[SDLSelectFlags::dAlphaOut]){
+	      ha_SDL_dBeta_012345_pass[iSDL]->Fill(dBeta);
+	      ha_SDL_dBeta_zoom_012345_pass[iSDL]->Fill(dBeta);
 	    }
 	    
 	    if ((sdlFlag & sdlMasksCumulative[SDLSelectFlags::dBeta-1]) == sdlMasksCumulative[SDLSelectFlags::dBeta-1]){
@@ -2245,7 +2317,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	}//sdInV
 	
 	std::cout<<"SD links stat "<<lIn<<"-"<<lOut
-	         <<" nAll "<<nAll<<" nDZ "<<nDeltaZ<<" nDZPnt "<<nDeltaZPointed<<" nAlp "<<nSlope
+	         <<" nAll "<<nAll<<" nDZ "<<nDeltaZ<<" nDZPnt "<<nDeltaZPointed
+	         <<" nPPos "<<nDeltaPhiPos<<" nAlp "<<nSlope
          	 <<" nInAlpC "<< nInAlphaCompat<<" nOutAlpC "<<nOutAlphaCompat
 	         <<" ndBeta "<<ndBeta
 	         <<" final "<<sdlV.size()
@@ -2531,12 +2604,12 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    std::vector<std::pair<SDLink, int> > vSDLwInfo_4of4;
 	    bool debugSimMatching = tpPt < 2 && hasSDIn_4of4 && hasSDOut_4of4 && has8MHs && has4MDs && debug;
 	    for (auto const& sdIn : vSDIn_4of4){
-	      float rtIn = sdIn.rt;
-	      float ptIn = sdIn.p3.Pt();
-	      float zIn = sdIn.r3.z();
-	      float dSDIn = sdIn.mdOut.rt - sdIn.mdRef.rt;
-	      float dzSDIn = sdIn.mdOut.z - sdIn.mdRef.z;
-	      float dr3SDIn = sdIn.mdOut.r - sdIn.mdRef.r;
+	      const float rtIn = sdIn.rt;
+	      const float ptIn = sdIn.p3.Pt();
+	      const float zIn = sdIn.r3.z();
+	      const float dSDIn = sdIn.mdOut.rt - sdIn.mdRef.rt;
+	      const float dzSDIn = sdIn.mdOut.z - sdIn.mdRef.z;
+	      const float dr3SDIn = sdIn.mdOut.r - sdIn.mdRef.r;
 	      
 	      float ptSLo = 1.0f;
 	      if (lIn == 0){
@@ -2609,14 +2682,22 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		  sdlFlag |= 1 << SDLSelectFlags::deltaZPointed;
 		}
 
-		auto const midR3 = 0.5f*(sdIn.r3 + sdOut.r3);
-		const float dPhi = midR3.DeltaPhi(sdOut.r3 - sdIn.r3);
 		const float rt = 0.5f*(rtIn + rtOut);
 		
 		const float sdlSlope = rt/175.67f/ptCut;
 		const float sdlPVoff = 0.1f/rt;
 		const float sdlCut = sdlSlope + sqrt(sdlMuls*sdlMuls + sdlPVoff*sdlPVoff);
+
+		if (lIn == 0){
+		  sdlFlag |= 1 << SDLSelectFlags::deltaPhiPos;
+		} else {
+		  //FIXME: can be tighter
+		  if (! (std::abs(deltaPhi(sdIn.mdOut.phi, sdOut.mdOut.phi)) > sdlCut) ) sdlFlag |= 1 << SDLSelectFlags::deltaPhiPos;
+		}
 		
+		auto const midR3 = 0.5f*(sdIn.r3 + sdOut.r3);
+		const float dPhi = midR3.DeltaPhi(sdOut.r3 - sdIn.r3);
+
 		if (std::abs(dPhi) < sdlCut ) sdlFlag |= 1 << SDLSelectFlags::slope;
 
 		float betaIn;
@@ -2695,9 +2776,10 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    const int m_0123 = m_012 | (1 << 3);
 	    const int m_01234 = m_0123 | (1 << 4);
 	    const int m_012345 = m_01234 | (1 << 5);
+	    const int m_0123456 = m_012345 | (1 << 6);
 
-	    bool h_0, h_01, h_012, h_0123, h_01234, h_012345;
-	    h_0 = h_01 = h_012 = h_0123 = h_01234 = h_012345 = false;
+	    bool h_0, h_01, h_012, h_0123, h_01234, h_012345, h_0123456;
+	    h_0 = h_01 = h_012 = h_0123 = h_01234 = h_012345 = h_0123456 = false;
 	    bool debugMatchingSim = false;
 	    for (auto const& sdlf : vSDLwInfo_4of4){
 	      if ((sdlf.second & m_0) == m_0 ) h_0 = true;
@@ -2705,10 +2787,10 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      if ((sdlf.second & m_012) == m_012 ) h_012 = true;
 	      if ((sdlf.second & m_0123) == m_0123 ) h_0123 = true;
 	      if ((sdlf.second & m_01234) == m_01234 ) h_01234 = true;
-	      
 	      if ((sdlf.second & m_012345) == m_012345 ) h_012345 = true;
+	      if ((sdlf.second & m_012345) == m_0123456 ) h_0123456 = true;
 
-	      if (has8MHs && has4MDs && hasSDIn_4of4 && hasSDOut_4of4 && h_01234){
+	      if (has8MHs && has4MDs && hasSDIn_4of4 && hasSDOut_4of4 && h_012345){
 		auto const& sdl = sdlf.first;
 		ha_SDL_dBeta_zoom_NM1dBeta_8MH[iSDLL]->Fill(sdl.betaIn - sdl.betaOut);
 		ha_SDL_dBeta_zoom2_NM1dBeta_8MH[iSDLL]->Fill(sdl.betaIn - sdl.betaOut);
@@ -2716,7 +2798,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		ha_SDL_dBeta_betaIn_zoom_NM1dBeta_8MH[iSDLL]->Fill(sdl.betaIn, sdl.betaIn - sdl.betaOut);
 		ha_SDL_dBeta_betaOut_zoom_NM1dBeta_8MH[iSDLL]->Fill(sdl.betaOut, sdl.betaIn - sdl.betaOut);
 
-		if (tpPt > 1.5f && iSDLL == SDL_L5to7 && debugMatchingSim){ //&& !h_012345 && std::abs(sdl.betaIn - sdl.betaOut)> 0.01){
+		if (tpPt > 1.5f && iSDLL == SDL_L5to7 && debugMatchingSim){ //&& !h_0123456 && std::abs(sdl.betaIn - sdl.betaOut)> 0.01){
 		  std::cout<<" tPt "<<tpPt
 			   <<" tEta " << tpEta<<" tPhi "<<tpPhi
 			   <<" dB "<<sdl.betaIn - sdl.betaOut
@@ -2783,7 +2865,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		  
 		}//if (tpPt > 1.5 && iSDLL == SDL_L5to7 ... debug
 	      }
-	      if (has8MHs && has4MDs && hasSDIn_4of4 && hasSDOut_4of4 && h_012345){
+	      if (has8MHs && has4MDs && hasSDIn_4of4 && hasSDOut_4of4 && h_0123456){
 		auto const& sdl = sdlf.first;
 		ha_SDL_dBeta_betaIn_pass_NM1dBeta_8MH[iSDLL]->Fill(sdl.betaIn, sdl.betaIn - sdl.betaOut);
 		ha_SDL_dBeta_betaIn_zoom_pass_NM1dBeta_8MH[iSDLL]->Fill(sdl.betaIn, sdl.betaIn - sdl.betaOut);
@@ -2798,6 +2880,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    if (h_0123) ha_num2SD_w0123_4of4_pt[iSDLL]->Fill(tpPt);
 	    if (h_01234) ha_num2SD_w01234_4of4_pt[iSDLL]->Fill(tpPt);
 	    if (h_012345) ha_num2SD_w012345_4of4_pt[iSDLL]->Fill(tpPt);
+	    if (h_0123456) ha_num2SD_w0123456_4of4_pt[iSDLL]->Fill(tpPt);
 	    
 	    if (runDetailedTimers) timerA[T_timeVal_SDLMatch].Start(kFALSE);
 	    if (mockLayerSDLsDNcm[iSDLL]){
@@ -3063,6 +3146,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
   std::array<TEfficiency*, SDL_LMAX> ha_eff2SD_w0123_den8MH_4of4_pt;
   std::array<TEfficiency*, SDL_LMAX> ha_eff2SD_w01234_den8MH_4of4_pt;
   std::array<TEfficiency*, SDL_LMAX> ha_eff2SD_w012345_den8MH_4of4_pt;
+  std::array<TEfficiency*, SDL_LMAX> ha_eff2SD_w0123456_den8MH_4of4_pt;
   std::array<TEfficiency*, SDL_LMAX> ha_effSDL_den8MH_4of4_pt;
   std::array<TEfficiency*, SDL_LMAX> ha_effSDL_den8MH_3of4_any_pt;
 
@@ -3103,6 +3187,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
     ha_eff2SD_w01234_den8MH_4of4_pt[i]->SetTitle(Form("h_eff2SD_w01234_den8MH_%dto%d_4of4_pt; p_{T} (GeV); Efficiency", iMin, iMax) );
     ha_eff2SD_w012345_den8MH_4of4_pt[i] = new TEfficiency(*ha_num2SD_w012345_4of4_pt[i], *ha_num8MH_pt[i]);
     ha_eff2SD_w012345_den8MH_4of4_pt[i]->SetTitle(Form("h_eff2SD_w012345_den8MH_%dto%d_4of4_pt; p_{T} (GeV); Efficiency", iMin, iMax) );
+    ha_eff2SD_w0123456_den8MH_4of4_pt[i] = new TEfficiency(*ha_num2SD_w0123456_4of4_pt[i], *ha_num8MH_pt[i]);
+    ha_eff2SD_w0123456_den8MH_4of4_pt[i]->SetTitle(Form("h_eff2SD_w0123456_den8MH_%dto%d_4of4_pt; p_{T} (GeV); Efficiency", iMin, iMax) );
     ha_effSDL_den8MH_4of4_pt[i] = new TEfficiency(*ha_numSDL_4of4_pt[i], *ha_num8MH_pt[i]);
     ha_effSDL_den8MH_4of4_pt[i]->SetTitle(Form("h_effSDL_den8MH_%dto%d_4of4_pt; p_{T} (GeV); Efficiency", iMin, iMax) );
     ha_effSDL_den8MH_3of4_any_pt[i] = new TEfficiency(*ha_numSDL_3of4_any_pt[i], *ha_num8MH_pt[i]);
@@ -3573,6 +3659,43 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       gPad->SaveAs(Form("h_SDL_dBeta_zoom_01234_all_vs_pass_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
     }
 
+    for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
+      if (iSDL == SDL_L5to9) continue;
+      auto h_all = ha_SDL_dBeta_012345_all[iSDL];
+      auto h_pass = ha_SDL_dBeta_012345_pass[iSDL];
+      auto cn = h_all->GetTitle();
+      TCanvas* cv = new TCanvas(cn, cn, 600, 600);
+      cv->cd();
+
+      h_all->SetLineWidth(2);
+      h_pass->SetLineWidth(2);
+      h_pass->SetLineColor(2);
+
+      h_all->SetStats(0);
+      h_all->Draw();
+      h_all->SetMinimum(0);
+      h_pass->Draw("same");
+      gPad->SaveAs(Form("h_SDL_dBeta_012345_all_vs_pass_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+    }
+    for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
+      if (iSDL == SDL_L5to9) continue;
+      auto h_all = ha_SDL_dBeta_zoom_012345_all[iSDL];
+      auto h_pass = ha_SDL_dBeta_zoom_012345_pass[iSDL];
+      auto cn = h_all->GetTitle();
+      TCanvas* cv = new TCanvas(cn, cn, 600, 600);
+      cv->cd();
+
+      h_all->SetLineWidth(2);
+      h_pass->SetLineWidth(2);
+      h_pass->SetLineColor(2);
+
+      h_all->SetStats(0);
+      h_all->Draw();
+      h_all->SetMinimum(0);
+      h_pass->Draw("same");
+      gPad->SaveAs(Form("h_SDL_dBeta_zoom_012345_all_vs_pass_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+    }
+
 
     // >> in pt slices
     for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
@@ -3863,6 +3986,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       auto heff0123   = ha_eff2SD_w0123_den8MH_4of4_pt[iSDL];
       auto heff01234  = ha_eff2SD_w01234_den8MH_4of4_pt[iSDL];
       auto heff012345 = ha_eff2SD_w012345_den8MH_4of4_pt[iSDL];
+      auto heff0123456 = ha_eff2SD_w0123456_den8MH_4of4_pt[iSDL];
       auto heff2 = ha_effSDL_den8MH_4of4_pt[iSDL];
 
       auto cn = heff->GetName();
@@ -3912,7 +4036,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       leg->AddEntry(heff, "4 MD match | 8 MHits");
       leg->AddEntry(heff1, "2 SD match | 8 MHits");
       leg->AddEntry(heff01, "2 SD w dZ | 8 MHits");
-      leg->AddEntry(heff01234, "SDLink no #Delta#beta | 8 MHits");
+      leg->AddEntry(heff012345, "SDLink no #Delta#beta | 8 MHits");
       leg->AddEntry(heff2, "SDLink match | 8 MHits");
       leg->Draw();
       gPad->SaveAs(Form("h_effs_SDL_den8MH_steps_4of4_%dto%d_pt_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
@@ -3930,6 +4054,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       auto heff0123   = ha_eff2SD_w0123_den8MH_4of4_pt[iSDL];
       auto heff01234  = ha_eff2SD_w01234_den8MH_4of4_pt[iSDL];
       auto heff012345 = ha_eff2SD_w012345_den8MH_4of4_pt[iSDL];
+      auto heff0123456 = ha_eff2SD_w0123456_den8MH_4of4_pt[iSDL];
       auto heff2 = ha_effSDL_den8MH_4of4_pt[iSDL];
 
       auto cn = heff->GetName();
@@ -3979,7 +4104,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       leg->AddEntry(heff, "4 MD match | 8 MHits");
       leg->AddEntry(heff1, "2 SD match | 8 MHits");
       leg->AddEntry(heff01, "2 SD w dZ | 8 MHits");
-      leg->AddEntry(heff01234, "SDLink no #Delta#beta | 8 MHits");
+      leg->AddEntry(heff012345, "SDLink no #Delta#beta | 8 MHits");
       leg->AddEntry(heff2, "SDLink match | 8 MHits");
       leg->Draw();
       gPad->SaveAs(Form("h_effs_SDL_den8MH_steps_4of4_min0.9_%dto%d_pt_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
