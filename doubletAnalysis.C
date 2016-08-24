@@ -320,8 +320,10 @@ struct MiniDoublet {
   int pixL;
   int pixU;
   TVector3 r3;
-  double alpha;
-  double rt;
+  float alpha;
+  float rt;
+  float z;
+  float r;
 };
 
 struct SuperDoublet {
@@ -330,11 +332,11 @@ struct SuperDoublet {
   int iRef;
   int iOut;
   TVector3 r3; //may be different from plain mdRef.r3
-  double rt;
+  float rt;
   TVector3 p3; //makes sense mostly for seed-based
-  double alpha;
-  double alphaOut;
-  double dr;
+  float alpha;
+  float alphaOut;
+  float dr;
 };
 
 struct SDLink {
@@ -344,12 +346,12 @@ struct SDLink {
   int iIn;
   int lOut;//layer
   int iOut;
-  double alpha; //point-to-point wrt radial
-  double betaIn;//SD angle wrt point-to-point
-  double betaOut;
-  double pt;
-  double ptIn;
-  double ptOut;
+  float alpha; //point-to-point wrt radial
+  float betaIn;//SD angle wrt point-to-point
+  float betaOut;
+  float pt;
+  float ptIn;
+  float ptOut;
 
   bool hasMatch_byHit4of4=false;
 };
@@ -357,9 +359,9 @@ struct SDLink {
 struct TrackLink {
   std::vector<const SDLink*> links;
   
-  double pt;
-  double eta;
-  double phi;
+  float pt;
+  float eta;
+  float phi;
 };
 
 struct MDStats {
@@ -1675,13 +1677,13 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	if (pts >1) nHitsLayer1GeV[lay]++;
 	if (pts >2) nHitsLayer2GeV[lay]++;
 	
-	const double mdOffset = miniDeltaBarrel[lay];
-	const double rNominal = miniRminMean[lay]+1;//this is going to be in between the sector radii
+	const float mdOffset = miniDeltaBarrel[lay];
+	const float rNominal = miniRminMean[lay]+1;//this is going to be in between the sector radii
 
-	const double rRefLower = rNominal;
-	const double rRefUpper = rNominal+mdOffset;
-	const double rSDfwLower = rRefLower + sdOffset;
-	const double rSDfwUpper = rRefUpper + sdOffset;
+	const float rRefLower = rNominal;
+	const float rRefUpper = rNominal+mdOffset;
+	const float rSDfwLower = rRefLower + sdOffset;
+	const float rSDfwUpper = rRefUpper + sdOffset;
 
 	int q = 0;
 	if (iParticle == -11 || iParticle == -13 || iParticle == 211 || iParticle == 321 || iParticle == 2212) q = 1;
@@ -1781,11 +1783,15 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	  seedSD.mdRef.pixU = see_pixelIdx()[iSeed][1];
 	  seedSD.mdRef.r3 = r3PCA;
 	  seedSD.mdRef.rt = r3PCA.Pt();	  
+	  seedSD.mdRef.z = r3PCA.Z();	  
+	  seedSD.mdRef.r = r3PCA.Mag();	  
 	  seedSD.mdRef.alpha = r3PCA.DeltaPhi(p3PCA);
 	  seedSD.mdOut.pixL = see_pixelIdx()[iSeed][2];
 	  if (nPix >= 4) seedSD.mdOut.pixU = see_pixelIdx()[iSeed][3];
 	  seedSD.mdOut.r3 = r3LH;
 	  seedSD.mdOut.rt = r3LH.Pt();
+	  seedSD.mdOut.z = r3LH.Z();
+	  seedSD.mdOut.r = r3LH.Mag();
 	  seedSD.mdOut.alpha = r3LH.DeltaPhi(p3LH);	  
 	  seedSD.iRef = iSeed;
 	  seedSD.iOut = iSeed;
@@ -1835,6 +1841,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      md.pixU = hU.first;
 	      md.r3 = hL.second;
 	      md.rt = hL.second.Pt();
+	      md.z = hL.second.Z();
+	      md.r = hL.second.Mag();
 	      md.alpha = dPhi;
 	      mDs.emplace_back(md);
 	    }
@@ -1870,14 +1878,14 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    nAll++;
 	    int sdFlag = 0;
 	    iOut++;
-	    float rtOut = mdOut.r3.Pt();
-	    float zOut = mdOut.r3.z();
+	    float rtOut = mdOut.rt;
+	    float zOut = mdOut.z;
 
 	    //apply some loose Z compatibility
-	    float zGeom = iL >= 5 && iL <= 6 ? 0.3 : 10;//twice the macro-pixel or strip size
+	    float zGeom = iL >= 5 && iL <= 6 ? 0.3f : 10.0f;//twice the macro-pixel or strip size
 	                                                //assume that the mock layer is the n+1 layer
-	    float zLo = rtOut/rtRef*(zRef - 15.) - zGeom; //15 for the luminous ; 10 for module size
-	    float zHi = rtOut/rtRef*(zRef + 15.) + zGeom;
+	    float zLo = rtOut/rtRef*(zRef - 15.f) - zGeom; //15 for the luminous ; 10 for module size
+	    float zHi = rtOut/rtRef*(zRef + 15.f) + zGeom;
 	    unsigned int iFlag = SDSelectFlags::deltaZ;
 	    if (!(zOut < zLo || zOut > zHi)) sdFlag |= 1 << iFlag;
 	    if (sdFlag == sdMasksCumulative[iFlag]) nPass[iFlag]++;
@@ -1886,11 +1894,11 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    sd.iRef = iRef;
 	    sd.iOut = iOut;
 
-	    float rt = 0.5*(rtRef + rtOut); //take the middle: it matches better the point-to-point
-	    const float ptCut = 1.0;
-	    const float sdSlope = rt/175.67/ptCut;
-	    const float sdMuls = miniMulsPtScale[iL]*3./ptCut*2.;//will need a better guess than x2?
-	    const float sdPVoff = 0.1/rt;
+	    float rt = 0.5f*(rtRef + rtOut); //take the middle: it matches better the point-to-point
+	    const float ptCut = 1.0f;
+	    const float sdSlope = rt/175.67f/ptCut;
+	    const float sdMuls = miniMulsPtScale[iL]*3.f/ptCut*2.f;//will need a better guess than x2?
+	    const float sdPVoff = 0.1f/rt;
 	    const float sdCut = sdSlope + sqrt(sdMuls*sdMuls + sdPVoff*sdPVoff);
 
 	    auto const dr3 = mdOut.r3 - mdRef.r3;
@@ -1911,8 +1919,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    sd.alphaOut = mdOut.r3.DeltaPhi(dr3);
 	    sd.dr = dr3.Pt();
 	    //loose angle compatibility
-	    float dAlpha_Bfield = sd.dr/175.67/ptCut;
-	    float dAlpha_res = 0.04/miniDeltaBarrel[iL];//4-strip difference
+	    float dAlpha_Bfield = sd.dr/175.67f/ptCut;
+	    float dAlpha_res = 0.04f/miniDeltaBarrel[iL];//4-strip difference
 	    float dAlpha_compat = dAlpha_Bfield + dAlpha_res;
 
 	    iFlag = SDSelectFlags::alphaRef;
@@ -1938,7 +1946,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    sd.mdRef = mdRef;
 	    sd.mdOut = mdOut;
 
-	    if ( sd.dr > 1.5*(rtOut - rtRef)){
+	    if ( sd.dr > 1.5f*(rtOut - rtRef)){
 	      //problem in matching
 	      std::cout<<__LINE__
 		       <<" "<<sd.mdRef.r3.Pt()<<" "<<sd.mdRef.r3.Phi()
@@ -1989,10 +1997,10 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	  float ptIn = sdIn.p3.Pt();
 	  float zIn = sdIn.r3.z();
 	  float dSDIn = sdIn.mdOut.rt - sdIn.mdRef.rt;
-	  float dzSDIn = sdIn.mdOut.r3.z() - sdIn.mdRef.r3.z();
-	  float dr3SDIn = sdIn.mdOut.r3.Mag() - sdIn.mdRef.r3.Mag();
+	  float dzSDIn = sdIn.mdOut.z - sdIn.mdRef.z;
+	  float dr3SDIn = sdIn.mdOut.r - sdIn.mdRef.r;
 	  
-	  float ptSLo = 1.0;
+	  float ptSLo = 1.0f;
 	  if (lIn == 0){
 	    //try to use seed pt: the lower bound is good
 	    ptSLo = ptIn;
@@ -2016,7 +2024,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    const float dSDOut = sdOut.mdOut.rt - sdOut.mdRef.rt;
 	    //apply some loose Z compatibility
 	    //FIXME: refine using inner layer directions (can prune later)
-	    const float zGeom = lIn >= 0 && lIn <= 7 && lOut >= 5 && lOut <= 7 ? 0.3 : 10;//twice the macro-pixel or strip size
+	    const float zGeom = lIn >= 0 && lIn <= 7 && lOut >= 5 && lOut <= 7 ? 0.3f : 10.0f;//twice the macro-pixel or strip size
 
 	    const float rtOut_o_rtIn = rtOut/rtIn;
 	    const float zLo = rtOut_o_rtIn*(zIn - 15.f) - zGeom; //15 for the luminous ; zGeom for z geom unit size
@@ -2031,7 +2039,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    if (lIn == 0){
 	      const float etaErr = see_pca_etaErr()[sdIn.iRef];
 	      const float eta = see_lh_eta()[sdIn.iRef];
-	      const float coshEta = cosh(eta);
+	      const float coshEta = std::cosh(eta);
 	      float dzErr = drOutIn*etaErr*coshEta;
 	      dzErr *= dzErr;
 	      dzErr += 0.03f*0.03f; // pixel size x2. ... random for now
@@ -2049,7 +2057,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    }
 	    else if (lIn>=5 && lIn <=6){//can point to the z pos in lOut
 	      const float coshEta = dr3SDIn/dSDIn;//direction estimate
-	      float dzErr = zGeom*zGeom*2.;//both sides contribute to direction uncertainty
+	      float dzErr = zGeom*zGeom*2.f;//both sides contribute to direction uncertainty
 	      dzErr += sdlMuls*sdlMuls*drOutIn*drOutIn/3.f*coshEta*coshEta;//sloppy
 	      dzErr = sqrt(dzErr);
 	      const float dzMean = dzSDIn/dSDIn*drOutIn;
@@ -2063,7 +2071,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    }
 	    if (sdlFlag == sdlMasksCumulative[SDLSelectFlags::deltaZPointed]) nDeltaZPointed++;
 	    
-	    auto const midR3 = 0.5*(sdIn.r3 + sdOut.r3);
+	    auto const midR3 = 0.5f*(sdIn.r3 + sdOut.r3);
 	    const float dPhi = midR3.DeltaPhi(sdOut.r3 - sdIn.r3);
 	    const float rt = 0.5f*(rtIn + rtOut);
 
@@ -2527,10 +2535,10 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      float ptIn = sdIn.p3.Pt();
 	      float zIn = sdIn.r3.z();
 	      float dSDIn = sdIn.mdOut.rt - sdIn.mdRef.rt;
-	      float dzSDIn = sdIn.mdOut.r3.z() - sdIn.mdRef.r3.z();
-	      float dr3SDIn = sdIn.mdOut.r3.Mag() - sdIn.mdRef.r3.Mag();
+	      float dzSDIn = sdIn.mdOut.z - sdIn.mdRef.z;
+	      float dr3SDIn = sdIn.mdOut.r - sdIn.mdRef.r;
 	      
-	      float ptSLo = 1.0;
+	      float ptSLo = 1.0f;
 	      if (lIn == 0){
 		//try to use seed pt: the lower bound is good
 		ptSLo = ptIn;
@@ -2550,7 +2558,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		const float dSDOut = sdOut.mdOut.rt - sdOut.mdRef.rt;
 		//apply some loose Z compatibility
 		//FIXME: refine using inner layer directions (can prune later)
-		const float zGeom = lIn >= 0 && lIn <= 7 && lOut >= 5 && lOut <= 7 ? 0.3 : 10;//twice the macro-pixel or strip size
+		const float zGeom = lIn >= 0 && lIn <= 7 && lOut >= 5 && lOut <= 7 ? 0.3f : 10.0f;//twice the macro-pixel or strip size
 		
 		const float rtOut_o_rtIn = rtOut/rtIn;
 		const float zLo = rtOut_o_rtIn*(zIn - 15.f) - zGeom; //15 for the luminous ; zGeom for z geom unit size
@@ -2566,7 +2574,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		if (lIn == 0){
 		  const float etaErr = see_pca_etaErr()[sdIn.iRef];
 		  const float eta = see_lh_eta()[sdIn.iRef];
-		  const float coshEta = cosh(eta);
+		  const float coshEta = std::cosh(eta);
 		  float dzErr = drOutIn*etaErr*coshEta;
 		  dzErr *= dzErr;
 		  dzErr += 0.03f*0.03f; // pixel size x2. ... random for now
@@ -2588,7 +2596,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		  }
 		} else if (lIn>=5 && lIn <=6){//can point to the z pos in lOut
 		  const float coshEta = dr3SDIn/dSDIn;//direction estimate
-		  float dzErr = zGeom*zGeom*2.;//both sides contribute to direction uncertainty
+		  float dzErr = zGeom*zGeom*2.f;//both sides contribute to direction uncertainty
 		  dzErr += sdlMuls*sdlMuls*drOutIn*drOutIn/3.f*coshEta*coshEta;//sloppy
 		  dzErr = sqrt(dzErr);
 		  const float dzMean = dzSDIn/dSDIn*drOutIn;
@@ -2601,7 +2609,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		  sdlFlag |= 1 << SDLSelectFlags::deltaZPointed;
 		}
 
-		auto const midR3 = 0.5*(sdIn.r3 + sdOut.r3);
+		auto const midR3 = 0.5f*(sdIn.r3 + sdOut.r3);
 		const float dPhi = midR3.DeltaPhi(sdOut.r3 - sdIn.r3);
 		const float rt = 0.5f*(rtIn + rtOut);
 		
@@ -2611,8 +2619,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		
 		if (std::abs(dPhi) < sdlCut ) sdlFlag |= 1 << SDLSelectFlags::slope;
 
-		double betaIn;
-		double betaOut;
+		float betaIn;
+		float betaOut;
 		if (mockMode == 0){
 		  betaIn = sdIn.alpha - sdIn.r3.DeltaPhi(sdOut.r3 - sdIn.r3);
 		  betaOut = - sdOut.alpha + sdOut.r3.DeltaPhi(sdOut.r3 - sdIn.r3); //to match sign for correct match	      
@@ -2708,7 +2716,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		ha_SDL_dBeta_betaIn_zoom_NM1dBeta_8MH[iSDLL]->Fill(sdl.betaIn, sdl.betaIn - sdl.betaOut);
 		ha_SDL_dBeta_betaOut_zoom_NM1dBeta_8MH[iSDLL]->Fill(sdl.betaOut, sdl.betaIn - sdl.betaOut);
 
-		if (tpPt > 1.5 && iSDLL == SDL_L5to7 && debugMatchingSim){ //&& !h_012345 && std::abs(sdl.betaIn - sdl.betaOut)> 0.01){
+		if (tpPt > 1.5f && iSDLL == SDL_L5to7 && debugMatchingSim){ //&& !h_012345 && std::abs(sdl.betaIn - sdl.betaOut)> 0.01){
 		  std::cout<<" tPt "<<tpPt
 			   <<" tEta " << tpEta<<" tPhi "<<tpPhi
 			   <<" dB "<<sdl.betaIn - sdl.betaOut
