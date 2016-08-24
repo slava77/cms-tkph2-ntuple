@@ -1740,14 +1740,18 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       timerA[T_timeReco].Start(kFALSE);
       constexpr int maxMDexpected = 100;
       std::array<std::vector<MiniDoublet>, nLayers+1> mockLayerMDfwRef;
+      for (auto& m : mockLayerMDfwRef ) m.reserve(10000);
       std::array<std::vector<MiniDoublet>, nLayers+1> mockLayerMDfwDNcm;
+      for (auto& m : mockLayerMDfwDNcm ) m.reserve(10000);      
 
       std::array<std::vector<SuperDoublet>, nLayers+1> mockLayerSDfwDNcm;
+      for (auto& m : mockLayerSDfwDNcm ) m.reserve(100000);      
 
-      std::vector<SDLink> mockLayer0to5SDLfwDNcm; mockLayer0to5SDLfwDNcm.reserve(100000);
-      std::vector<SDLink> mockLayer0to7SDLfwDNcm; mockLayer0to7SDLfwDNcm.reserve(100000);
-      std::vector<SDLink> mockLayer5to7SDLfwDNcm; mockLayer5to7SDLfwDNcm.reserve(100000);
-      std::vector<SDLink> mockLayer7to9SDLfwDNcm; mockLayer7to9SDLfwDNcm.reserve(100000);
+      
+      std::vector<SDLink> mockLayer0to5SDLfwDNcm; mockLayer0to5SDLfwDNcm.reserve(40000);
+      std::vector<SDLink> mockLayer0to7SDLfwDNcm; mockLayer0to7SDLfwDNcm.reserve(40000);
+      std::vector<SDLink> mockLayer5to7SDLfwDNcm; mockLayer5to7SDLfwDNcm.reserve(40000);
+      std::vector<SDLink> mockLayer7to9SDLfwDNcm; mockLayer7to9SDLfwDNcm.reserve(40000);
       
       if (useSeeds == 1){
 	std::cout<<"Convert seeds to SuperDoublets"<<std::endl;
@@ -1806,7 +1810,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	auto& mockMDfwRef = mockLayerMDfwRef[iL];
 
 	auto mdCombine = [&] (decltype(hitsRefLower) hitsL, decltype(hitsRefUpper) hitsU, decltype(mockMDfwRef) mDs){
-	  for (auto hL : hitsL) {
+	  for (auto const& hL : hitsL) {
 	    nHitsTried++; //if (nHitsTried>1) exit(0);
 	    float rt = hL.second.Pt();
 	    const float ptCut = 1.0;
@@ -1819,7 +1823,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    
 	    const float dzCut = 10.;//may want to adjust this: PS modules are shorter
 	    
-	    for (auto hU : hitsU) {
+	    for (auto const& hU : hitsU) {
 	      float dz = hL.second.z() - hU.second.z();
 	      if (std::abs(dz) > dzCut) continue;
 	      
@@ -1832,7 +1836,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      md.r3 = hL.second;
 	      md.rt = hL.second.Pt();
 	      md.alpha = dPhi;
-	      mDs.push_back(md);
+	      mDs.emplace_back(md);
 	    }
 	  }
 	};
@@ -1856,13 +1860,13 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	int nAll = 0;
 	
 	int iRef = -1;
-	for (auto mdRef : mockMDfwRef){
+	for (auto const& mdRef : mockMDfwRef){
 	  iRef++;
 	  float rtRef = mdRef.r3.Pt();
 	  float zRef = mdRef.r3.z();
 	  //
 	  int iOut = -1;
-	  for (auto mdOut : mockMDfwDNcm){
+	  for (auto const& mdOut : mockMDfwDNcm){
 	    nAll++;
 	    int sdFlag = 0;
 	    iOut++;
@@ -1941,7 +1945,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		       <<" "<<sd.mdOut.r3.Pt()<<" "<<sd.mdOut.r3.Phi()
 		       <<std::endl;
 	    }
-	    mockSDfwDNcm.push_back(sd);
+	    mockSDfwDNcm.emplace_back(sd);
 	  }//mdOut : mockMDfwDNcm
 	}//mdRef : mockMDfwRef
 	std::cout<<"SD stat "<<iL
