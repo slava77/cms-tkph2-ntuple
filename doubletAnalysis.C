@@ -367,6 +367,8 @@ struct SuperDoublet {
   int iOut;
   TVector3 r3; //may be different from plain mdRef.r3
   float rt;
+  float rtInv;
+  float z;
   TVector3 p3; //makes sense mostly for seed-based
   float alpha;
   float alphaOut;
@@ -1904,6 +1906,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	  seedSD.iOut = iSeed;
 	  seedSD.r3 = r3LH;
 	  seedSD.rt = r3LH.Pt();
+	  seedSD.rtInv = 1.f/seedSD.rt;
+	  seedSD.z = seedSD.r3.Z();
 	  seedSD.p3 = p3LH;
 	  seedSD.alpha = r3LH.DeltaPhi(p3LH);
 	  seedSD.dr = (r3LH - r3PCA).Pt();
@@ -2060,6 +2064,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 
 	    sd.r3 = mdRef.r3;
 	    sd.rt = mdRef.rt;
+	    sd.rtInv = 1.f/mdRef.rt;
+	    sd.z = sd.r3.Z();
 	    sd.alpha = dPhi;
 	    sd.dr = dr3.Pt();
 
@@ -2154,11 +2160,13 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	int nOutAlphaCompat = 0;
 	int ndBeta = 0;
 	
+	const float zGeom = lIn >= 0 && lIn <= 7 && lOut >= 5 && lOut <= 7 ? 0.3f : 10.0f;//twice the macro-pixel or strip size
 	int iIn = -1;
 	for ( auto const& sdIn : sdInV ) {
 	  iIn++;
 	  //
 	  const float rtIn = sdIn.rt;
+	  const float rtInvIn = sdIn.rtInv;
 	  const float ptIn = sdIn.p3.Pt();
 	  const float zIn = sdIn.r3.z();
 	  const float dSDIn = sdIn.mdOut.rt - sdIn.mdRef.rt;
@@ -2185,14 +2193,13 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    nAll++;
 	    
 	    const float rtOut = sdOut.rt;
-	    const float zOut = sdOut.r3.z();	    
-	    const float dSDOut = sdOut.mdOut.rt - sdOut.mdRef.rt;
+	    const float zOut = sdOut.z;	    
 	    //apply some loose Z compatibility
 	    //FIXME: refine using inner layer directions (can prune later)
-	    const float zGeom = lIn >= 0 && lIn <= 7 && lOut >= 5 && lOut <= 7 ? 0.3f : 10.0f;//twice the macro-pixel or strip size
 
-	    const float rtOut_o_rtIn = rtOut/rtIn;
+	    const float rtOut_o_rtIn = rtOut*rtInvIn;
 	    const float zLo = rtOut_o_rtIn*(zIn - 15.f) - zGeom; //15 for the luminous ; zGeom for z geom unit size
+	    if (zOut < zLo && cumulativeCuts) continue;
 	    const float zHi = rtOut_o_rtIn*(zIn + 15.f) + zGeom;
 	    if (!(zOut < zLo || zOut > zHi)) sdlFlag |= 1 << SDLSelectFlags::deltaZ;
 	    else if (cumulativeCuts ) continue;
@@ -2283,6 +2290,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      betaOut = 999;
 	    }
 	    
+	    const float dSDOut = sdOut.mdOut.rt - sdOut.mdRef.rt;	    
 	    const float dr = (sdOut.r3 - sdIn.r3).Perp();
 	    //loose angle compatibility
 	    const float dAlpha_Bfield = dr/175.67f/ptCut;
@@ -2985,51 +2993,14 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    if (mockLayerSDLsDNcm[iSDLL]){
 	      for (auto& sdl : *mockLayerSDLsDNcm[iSDLL]){
 		if (! (sdl.lIn == lIn && sdl.lOut == lOut )) continue;
-		auto const& shIn = simHits[sdl.lIn];
-		auto const& shOut = simHits[sdl.lOut];
 
-		bool hasIRL = shIn.find(sdl.sdIn.mdRef.pixL) != shIn.end();
-		if (debug && debugHitLevel && hasIRL){
-		  std::cout<<"SDL: found matching hit for "<<sdl.lIn<<" IRL at "<<sdl.sdIn.mdRef.pixL<<std::endl;
-		}
-		bool hasIRU = shIn.find(sdl.sdIn.mdRef.pixU) != shIn.end();
-		if (debug && debugHitLevel && hasIRU){
-		  std::cout<<"SDL: found matching hit for "<<sdl.lIn<<" IRU at "<<sdl.sdIn.mdRef.pixU<<std::endl;
-		}
-		bool hasIOL = shIn.find(sdl.sdIn.mdOut.pixL) != shIn.end();
-		if (debug && debugHitLevel && hasIOL){
-		  std::cout<<"SDL: found matching hit for "<<sdl.lIn<<" IOL at "<<sdl.sdIn.mdOut.pixL<<std::endl;
-		}
-		bool hasIOU = shIn.find(sdl.sdIn.mdOut.pixU) != shIn.end();
-		if (debug && debugHitLevel && hasIOU){
-		  std::cout<<"SDL: found matching hit for "<<sdl.lIn<<" IOU at "<<sdl.sdIn.mdOut.pixU<<std::endl;
-		}
-		int scoreIn = hasIRL + hasIRU + hasIOL + hasIOU;
-		int patternIn = hasIRL + (hasIRU<<1) + (hasIOL<<2) + (hasIOU<<3);
+		int scoreIn = sdl.sdIn.itp == iSim ? sdl.sdIn.ntp : 0;
 		if (debug && scoreIn > 1){
-		  std::cout<<"Inner match on L"<< sdl.lIn <<": Have "<<scoreIn<<" matches with pattern "<<patternIn<<std::endl;
+		  std::cout<<"Inner match on L"<< sdl.lIn<<": Have "<<scoreIn<<" matches "<<std::endl;
 		}
-
-		bool hasORL = shOut.find(sdl.sdOut.mdRef.pixL) != shOut.end();
-		if (debug && debugHitLevel && hasORL){
-		  std::cout<<"SDL: found matching hit for "<<sdl.lOut<<" IRL at "<<sdl.sdOut.mdRef.pixL<<std::endl;
-		}
-		bool hasORU = shOut.find(sdl.sdOut.mdRef.pixU) != shOut.end();
-		if (debug && debugHitLevel && hasORU){
-		  std::cout<<"SDL: found matching hit for "<<sdl.lOut<<" IRU at "<<sdl.sdOut.mdRef.pixU<<std::endl;
-		}
-		bool hasOOL = shOut.find(sdl.sdOut.mdOut.pixL) != shOut.end();
-		if (debug && debugHitLevel && hasOOL){
-		  std::cout<<"SDL: found matching hit for "<<sdl.lOut<<" IOL at "<<sdl.sdOut.mdOut.pixL<<std::endl;
-		}
-		bool hasOOU = shOut.find(sdl.sdOut.mdOut.pixU) != shOut.end();
-		if (debug && debugHitLevel && hasOOU){
-		  std::cout<<"SDL: found matching hit for "<<sdl.lOut<<" IOU at "<<sdl.sdOut.mdOut.pixU<<std::endl;
-		}
-		int scoreOut = hasORL + hasORU + hasOOL + hasOOU;
-		int patternOut = hasORL + (hasORU<<1) + (hasOOL<<2) + (hasOOU<<3);
+		int scoreOut = sdl.sdOut.itp == iSim ? sdl.sdOut.ntp : 0;
 		if (debug && scoreOut > 1){
-		  std::cout<<"Outer match on L"<< sdl.lOut<<": Have "<<scoreOut<<" matches with pattern "<<patternOut<<std::endl;
+		  std::cout<<"Outer match on L"<< sdl.lOut<<": Have "<<scoreOut<<" matches "<<std::endl;
 		}
 
 		if (scoreIn >=3 && scoreOut>= 3){
