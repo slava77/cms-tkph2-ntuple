@@ -1,0 +1,4 @@
+*.d
+*.so
+*.so.dSYM
+*.pcm
