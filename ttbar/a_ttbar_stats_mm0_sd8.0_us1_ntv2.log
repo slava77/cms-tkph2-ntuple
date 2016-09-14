@@ -1,0 +1,1014 @@
+Info in <TMacOSXSystem::ACLiC>: creating shared library /Users/slava77/cms/tkph2/./doubletAnalysis_C.so
+Running in mockMode 0
+Running with SD distance 8
+Running with useSeeds 1
+Event 1
+Load hits 
+Convert seeds to SuperDoublets
+Loaded nSeeds (pt>1 and |eta|<1.6) 285
+Combine MDs 
+SD stat 5 nAll 16977396 deltaZ 2396152 deltaPhiPos 156158 slope 43180 alphaRef 36189 alphaOut 29016 alphaRefOut 25723
+SD stat 6 nAll 3699612 deltaZ 493264 deltaPhiPos 43112 slope 9102 alphaRef 7830 alphaOut 6728 alphaRefOut 6033
+SD stat 7 nAll 1681848 deltaZ 337284 deltaPhiPos 38280 slope 6410 alphaRef 4704 alphaOut 3501 alphaRefOut 3104
+SD stat 8 nAll 730296 deltaZ 143616 deltaPhiPos 22351 slope 3478 alphaRef 2093 alphaOut 1445 alphaRefOut 1331
+SD stat 9 nAll 314601 deltaZ 62665 deltaPhiPos 12124 slope 1649 alphaRef 963 alphaOut 689 alphaRefOut 645
+SD stat 10 nAll 149672 deltaZ 30010 deltaPhiPos 6590 slope 836 alphaRef 535 alphaOut 419 alphaRefOut 404
+Link SuperDoublet pairs to SDLinks
+SD links stat 0-5 nAll 7331055 nDZ 2092591 nDZPnt 54876 nPPos 54876 nAlp 5958 nInAlpC 4982 nOutAlpC 2555 ndBeta 877 final 877
+SD links stat 0-7 nAll 884640 nDZ 337651 nDZPnt 27650 nPPos 27650 nAlp 6728 nInAlpC 5703 nOutAlpC 4216 ndBeta 385 final 385
+SD links stat 5-7 nAll 79844192 nDZ 16491536 nDZPnt 1878513 nPPos 262022 nAlp 241595 nInAlpC 150009 nOutAlpC 83071 ndBeta 5763 final 5763
+SD links stat 7-9 nAll 2002080 nDZ 389274 nDZPnt 389274 nPPos 71568 nAlp 50236 nInAlpC 26521 nOutAlpC 14538 ndBeta 927 final 927
+SimHit stats: L0 3.95122 L1 1.1933 L2 1.11576 L3 0.924645 L4 0.71751 L5 2.79339 L6 0 L7 2.59282 L8 0 L9 2.46742 L10 0
+Print stats
+Summary for layer 5 h1GeV 575 h2GeV 129 refLos 6826 refUps 6917 refMDs 3644 outLos 7085 outUps 7085 outMDs 4659 outSDs 25723 n1Any 11369 n1All 544 n2Any 3811 n2All 127
+Summary for layer 6 h1GeV 474 h2GeV 116 refLos 4723 refUps 4777 refMDs 1662 outLos 4872 outUps 4872 outMDs 2226 outSDs 6033 n1Any 3400 n1All 461 n2Any 1245 n2All 116
+Summary for layer 7 h1GeV 397 h2GeV 97 refLos 3311 refUps 3347 refMDs 1128 outLos 3397 outUps 3397 outMDs 1491 outSDs 3104 n1Any 1810 n1All 389 n2Any 690 n2All 97
+Summary for layer 8 h1GeV 317 h2GeV 81 refLos 2120 refUps 2151 refMDs 756 outLos 2172 outUps 2172 outMDs 966 outSDs 1331 n1Any 839 n1All 308 n2Any 334 n2All 81
+Summary for layer 9 h1GeV 256 h2GeV 64 refLos 1273 refUps 1290 refMDs 497 outLos 1306 outUps 1306 outMDs 633 outSDs 645 n1Any 385 n1All 232 n2Any 139 n2All 64
+Summary for layer 10 h1GeV 208 h2GeV 47 refLos 738 refUps 752 refMDs 353 outLos 768 outUps 768 outMDs 424 outSDs 404 n1Any 248 n1All 184 n2Any 67 n2All 47
+		sdl5-7 5763 sdl7-9 927
+Event 2
+Load hits 
+Convert seeds to SuperDoublets
+Loaded nSeeds (pt>1 and |eta|<1.6) 436
+Combine MDs 
+SD stat 5 nAll 39027560 deltaZ 5807379 deltaPhiPos 371634 slope 102700 alphaRef 85407 alphaOut 68754 alphaRefOut 61152
+SD stat 6 nAll 8595360 deltaZ 1184469 deltaPhiPos 101225 slope 20849 alphaRef 17889 alphaOut 15068 alphaRefOut 13475
+SD stat 7 nAll 4024710 deltaZ 842725 deltaPhiPos 94219 slope 15136 alphaRef 10722 alphaOut 7796 alphaRefOut 6662
+SD stat 8 nAll 1961856 deltaZ 393205 deltaPhiPos 56301 slope 7647 alphaRef 4541 alphaOut 2812 alphaRefOut 2487
+SD stat 9 nAll 776825 deltaZ 154147 deltaPhiPos 27562 slope 3401 alphaRef 1922 alphaOut 1244 alphaRefOut 1165
+SD stat 10 nAll 399168 deltaZ 79703 deltaPhiPos 17036 slope 1999 alphaRef 1112 alphaOut 749 alphaRefOut 710
+Link SuperDoublet pairs to SDLinks
+SD links stat 0-5 nAll 26662272 nDZ 8604387 nDZPnt 213199 nPPos 213199 nAlp 16100 nInAlpC 12184 nOutAlpC 7143 ndBeta 1637 final 1637
+SD links stat 0-7 nAll 2904632 nDZ 1159380 nDZPnt 96968 nPPos 96968 nAlp 21262 nInAlpC 18461 nOutAlpC 14002 ndBeta 823 final 823
+SD links stat 5-7 nAll 407394624 nDZ 96479661 nDZPnt 10025317 nPPos 1113270 nAlp 1018853 nInAlpC 589215 nOutAlpC 309228 ndBeta 20419 final 20419
+SD links stat 7-9 nAll 7761230 nDZ 1647902 nDZPnt 1647902 nPPos 278352 nAlp 187068 nInAlpC 88475 nOutAlpC 36282 ndBeta 2650 final 2650
+SimHit stats: L0 3.89339 L1 1.15215 L2 1.07028 L3 0.931561 L4 0.739405 L5 2.66432 L6 0 L7 2.50418 L8 0 L9 2.48172 L10 0
+Print stats
+Summary for layer 5 h1GeV 794 h2GeV 151 refLos 8990 refUps 9094 refMDs 5720 outLos 9309 outUps 9309 outMDs 6823 outSDs 61152 n1Any 28379 n1All 772 n2Any 7628 n2All 151
+Summary for layer 6 h1GeV 676 h2GeV 133 refLos 6298 refUps 6393 refMDs 2540 outLos 6523 outUps 6523 outMDs 3384 outSDs 13475 n1Any 7375 n1All 663 n2Any 1952 n2All 132
+Summary for layer 7 h1GeV 584 h2GeV 121 refLos 4523 refUps 4566 refMDs 1773 outLos 4637 outUps 4637 outMDs 2270 outSDs 6662 n1Any 3842 n1All 577 n2Any 1088 n2All 120
+Summary for layer 8 h1GeV 483 h2GeV 107 refLos 3067 refUps 3116 refMDs 1248 outLos 3172 outUps 3172 outMDs 1572 outSDs 2487 n1Any 1543 n1All 478 n2Any 451 n2All 106
+Summary for layer 9 h1GeV 394 h2GeV 94 refLos 1832 refUps 1855 refMDs 805 outLos 1874 outUps 1874 outMDs 965 outSDs 1165 n1Any 743 n1All 375 n2Any 219 n2All 94
+Summary for layer 10 h1GeV 326 h2GeV 81 refLos 1128 refUps 1138 refMDs 576 outLos 1153 outUps 1153 outMDs 693 outSDs 710 n1Any 441 n1All 298 n2Any 121 n2All 81
+		sdl5-7 20419 sdl7-9 2650
+Event 3
+Load hits 
+Convert seeds to SuperDoublets
+Loaded nSeeds (pt>1 and |eta|<1.6) 323
+Combine MDs 
+SD stat 5 nAll 21629800 deltaZ 3130637 deltaPhiPos 195943 slope 55337 alphaRef 46226 alphaOut 37330 alphaRefOut 33106
+SD stat 6 nAll 4785900 deltaZ 665106 deltaPhiPos 56164 slope 12190 alphaRef 10567 alphaOut 9071 alphaRefOut 8186
+SD stat 7 nAll 2333472 deltaZ 475595 deltaPhiPos 53264 slope 9075 alphaRef 6657 alphaOut 4933 alphaRefOut 4260
+SD stat 8 nAll 1111620 deltaZ 223899 deltaPhiPos 32070 slope 4483 alphaRef 2713 alphaOut 1765 alphaRefOut 1612
+SD stat 9 nAll 504896 deltaZ 102097 deltaPhiPos 19022 slope 2434 alphaRef 1403 alphaOut 940 alphaRefOut 883
+SD stat 10 nAll 267510 deltaZ 52771 deltaPhiPos 11589 slope 1366 alphaRef 800 alphaOut 604 alphaRefOut 577
+Link SuperDoublet pairs to SDLinks
+SD links stat 0-5 nAll 10693238 nDZ 3217881 nDZPnt 79969 nPPos 79969 nAlp 6555 nInAlpC 5629 nOutAlpC 2843 ndBeta 932 final 932
+SD links stat 0-7 nAll 1375980 nDZ 541656 nDZPnt 43890 nPPos 43890 nAlp 9734 nInAlpC 8363 nOutAlpC 6323 ndBeta 487 final 487
+SD links stat 5-7 nAll 141031560 nDZ 30417227 nDZPnt 3162991 nPPos 362719 nAlp 332174 nInAlpC 199039 nOutAlpC 107717 ndBeta 7209 final 7209
+SD links stat 7-9 nAll 3761580 nDZ 802095 nDZPnt 802095 nPPos 137851 nAlp 92133 nInAlpC 43292 nOutAlpC 19249 ndBeta 1489 final 1489
+SimHit stats: L0 3.87765 L1 1.13931 L2 1.06852 L3 0.936052 L4 0.733768 L5 2.74635 L6 0 L7 2.49371 L8 0 L9 2.53222 L10 0
+Print stats
+Summary for layer 5 h1GeV 639 h2GeV 135 refLos 7459 refUps 7551 refMDs 4150 outLos 7746 outUps 7746 outMDs 5212 outSDs 33106 n1Any 14936 n1All 620 n2Any 4383 n2All 135
+Summary for layer 6 h1GeV 539 h2GeV 117 refLos 5114 refUps 5183 refMDs 1855 outLos 5293 outUps 5293 outMDs 2580 outSDs 8186 n1Any 4822 n1All 531 n2Any 1685 n2All 117
+Summary for layer 7 h1GeV 460 h2GeV 102 refLos 3713 refUps 3753 refMDs 1338 outLos 3809 outUps 3809 outMDs 1744 outSDs 4260 n1Any 2424 n1All 450 n2Any 745 n2All 102
+Summary for layer 8 h1GeV 398 h2GeV 86 refLos 2460 refUps 2487 refMDs 970 outLos 2520 outUps 2520 outMDs 1146 outSDs 1612 n1Any 996 n1All 391 n2Any 318 n2All 86
+Summary for layer 9 h1GeV 324 h2GeV 77 refLos 1470 refUps 1492 refMDs 644 outLos 1510 outUps 1510 outMDs 784 outSDs 883 n1Any 568 n1All 307 n2Any 170 n2All 77
+Summary for layer 10 h1GeV 279 h2GeV 67 refLos 951 refUps 962 refMDs 482 outLos 972 outUps 972 outMDs 555 outSDs 577 n1Any 371 n1All 256 n2Any 101 n2All 67
+		sdl5-7 7209 sdl7-9 1489
+Event 4
+Load hits 
+Convert seeds to SuperDoublets
+Loaded nSeeds (pt>1 and |eta|<1.6) 431
+Combine MDs 
+SD stat 5 nAll 38701440 deltaZ 5674177 deltaPhiPos 354437 slope 97678 alphaRef 81158 alphaOut 65010 alphaRefOut 57484
+SD stat 6 nAll 7872432 deltaZ 1102198 deltaPhiPos 91612 slope 19018 alphaRef 16362 alphaOut 13873 alphaRefOut 12493
+SD stat 7 nAll 3565472 deltaZ 731773 deltaPhiPos 80285 slope 13012 alphaRef 9437 alphaOut 6890 alphaRefOut 5924
+SD stat 8 nAll 1620059 deltaZ 325285 deltaPhiPos 46344 slope 6462 alphaRef 3882 alphaOut 2441 alphaRefOut 2220
+SD stat 9 nAll 761083 deltaZ 151089 deltaPhiPos 26855 slope 3294 alphaRef 1779 alphaOut 1182 alphaRefOut 1106
+SD stat 10 nAll 418200 deltaZ 82511 deltaPhiPos 17712 slope 2014 alphaRef 1077 alphaOut 746 alphaRefOut 719
+Link SuperDoublet pairs to SDLinks
+SD links stat 0-5 nAll 24775604 nDZ 7669575 nDZPnt 190476 nPPos 190476 nAlp 12532 nInAlpC 10206 nOutAlpC 5572 ndBeta 1508 final 1508
+SD links stat 0-7 nAll 2553244 nDZ 988119 nDZPnt 78666 nPPos 78666 nAlp 15882 nInAlpC 13646 nOutAlpC 10012 ndBeta 761 final 761
+SD links stat 5-7 nAll 340535216 nDZ 76341727 nDZPnt 7630026 nPPos 788541 nAlp 718608 nInAlpC 407644 nOutAlpC 208509 ndBeta 14017 final 14017
+SD links stat 7-9 nAll 6551944 nDZ 1348920 nDZPnt 1348920 nPPos 208265 nAlp 139618 nInAlpC 66251 nOutAlpC 27727 ndBeta 2051 final 2051
+SimHit stats: L0 3.87679 L1 1.16366 L2 1.08951 L3 0.916959 L4 0.706659 L5 2.66169 L6 0 L7 2.43464 L8 0 L9 2.4395 L10 0
+Print stats
+Summary for layer 5 h1GeV 805 h2GeV 181 refLos 8885 refUps 8990 refMDs 5760 outLos 9195 outUps 9195 outMDs 6719 outSDs 57484 n1Any 25384 n1All 777 n2Any 7372 n2All 180
+Summary for layer 6 h1GeV 668 h2GeV 159 refLos 6207 refUps 6286 refMDs 2454 outLos 6421 outUps 6421 outMDs 3208 outSDs 12493 n1Any 6899 n1All 658 n2Any 2032 n2All 159
+Summary for layer 7 h1GeV 557 h2GeV 135 refLos 4433 refUps 4494 refMDs 1663 outLos 4567 outUps 4567 outMDs 2144 outSDs 5924 n1Any 3503 n1All 552 n2Any 1085 n2All 135
+Summary for layer 8 h1GeV 471 h2GeV 118 refLos 2886 refUps 2924 refMDs 1163 outLos 2961 outUps 2961 outMDs 1393 outSDs 2220 n1Any 1398 n1All 466 n2Any 455 n2All 118
+Summary for layer 9 h1GeV 386 h2GeV 104 refLos 1765 refUps 1783 refMDs 779 outLos 1810 outUps 1810 outMDs 977 outSDs 1106 n1Any 686 n1All 365 n2Any 220 n2All 104
+Summary for layer 10 h1GeV 321 h2GeV 83 refLos 1157 refUps 1174 refMDs 600 outLos 1186 outUps 1186 outMDs 697 outSDs 719 n1Any 433 n1All 295 n2Any 120 n2All 83
+		sdl5-7 14017 sdl7-9 2051
+Event 5
+Load hits 
+Convert seeds to SuperDoublets
+Loaded nSeeds (pt>1 and |eta|<1.6) 313
+Combine MDs 
+SD stat 5 nAll 22673212 deltaZ 3316005 deltaPhiPos 206783 slope 56476 alphaRef 47353 alphaOut 37952 alphaRefOut 33860
+SD stat 6 nAll 4725000 deltaZ 637731 deltaPhiPos 53883 slope 11674 alphaRef 10079 alphaOut 8598 alphaRefOut 7804
+SD stat 7 nAll 2120976 deltaZ 426682 deltaPhiPos 46391 slope 7860 alphaRef 5754 alphaOut 4303 alphaRefOut 3748
+SD stat 8 nAll 871920 deltaZ 176594 deltaPhiPos 25305 slope 3620 alphaRef 2275 alphaOut 1543 alphaRefOut 1407
+SD stat 9 nAll 365190 deltaZ 72939 deltaPhiPos 13582 slope 1857 alphaRef 1056 alphaOut 758 alphaRefOut 718
+SD stat 10 nAll 186000 deltaZ 37195 deltaPhiPos 7997 slope 1065 alphaRef 629 alphaOut 483 alphaRefOut 468
+Link SuperDoublet pairs to SDLinks
+SD links stat 0-5 nAll 10598180 nDZ 3088966 nDZPnt 83449 nPPos 83449 nAlp 6933 nInAlpC 5576 nOutAlpC 3123 ndBeta 895 final 895
+SD links stat 0-7 nAll 1173124 nDZ 448191 nDZPnt 39186 nPPos 39186 nAlp 8005 nInAlpC 7011 nOutAlpC 5183 ndBeta 451 final 451
+SD links stat 5-7 nAll 126907280 nDZ 26693464 nDZPnt 2892750 nPPos 295694 nAlp 267502 nInAlpC 158160 nOutAlpC 81535 ndBeta 5935 final 5935
+SD links stat 7-9 nAll 2691064 nDZ 553195 nDZPnt 553195 nPPos 90669 nAlp 60071 nInAlpC 29006 nOutAlpC 13260 ndBeta 1146 final 1146
+SimHit stats: L0 3.92978 L1 1.19278 L2 1.10027 L3 0.939568 L4 0.697164 L5 2.68324 L6 0 L7 2.47346 L8 0 L9 2.50865 L10 0
+Print stats
+Summary for layer 5 h1GeV 627 h2GeV 132 refLos 7527 refUps 7644 refMDs 4322 outLos 7822 outUps 7822 outMDs 5246 outSDs 33860 n1Any 13568 n1All 595 n2Any 4029 n2All 131
+Summary for layer 6 h1GeV 520 h2GeV 118 refLos 5220 refUps 5281 refMDs 1890 outLos 5367 outUps 5367 outMDs 2500 outSDs 7804 n1Any 4058 n1All 505 n2Any 1313 n2All 118
+Summary for layer 7 h1GeV 426 h2GeV 93 refLos 3629 refUps 3681 refMDs 1287 outLos 3740 outUps 3740 outMDs 1648 outSDs 3748 n1Any 2135 n1All 420 n2Any 612 n2All 93
+Summary for layer 8 h1GeV 333 h2GeV 76 refLos 2309 refUps 2334 refMDs 840 outLos 2366 outUps 2366 outMDs 1038 outSDs 1407 n1Any 831 n1All 327 n2Any 238 n2All 76
+Summary for layer 9 h1GeV 287 h2GeV 69 refLos 1337 refUps 1355 refMDs 555 outLos 1370 outUps 1370 outMDs 658 outSDs 718 n1Any 452 n1All 275 n2Any 122 n2All 69
+Summary for layer 10 h1GeV 230 h2GeV 61 refLos 809 refUps 821 refMDs 400 outLos 827 outUps 827 outMDs 465 outSDs 468 n1Any 286 n1All 212 n2Any 86 n2All 61
+		sdl5-7 5935 sdl7-9 1146
+Event 6
+Load hits 
+Convert seeds to SuperDoublets
+Loaded nSeeds (pt>1 and |eta|<1.6) 346
+Combine MDs 
+SD stat 5 nAll 24737444 deltaZ 3582807 deltaPhiPos 234992 slope 65344 alphaRef 54366 alphaOut 43962 alphaRefOut 38995
+SD stat 6 nAll 5364576 deltaZ 741076 deltaPhiPos 63601 slope 13569 alphaRef 11776 alphaOut 10127 alphaRefOut 9164
+SD stat 7 nAll 2323188 deltaZ 467763 deltaPhiPos 53077 slope 8562 alphaRef 6346 alphaOut 4721 alphaRefOut 4132
+SD stat 8 nAll 915995 deltaZ 183861 deltaPhiPos 28055 slope 4019 alphaRef 2491 alphaOut 1678 alphaRefOut 1522
+SD stat 9 nAll 372896 deltaZ 72727 deltaPhiPos 13828 slope 1762 alphaRef 1025 alphaOut 765 alphaRefOut 718
+SD stat 10 nAll 192230 deltaZ 38234 deltaPhiPos 9090 slope 1108 alphaRef 656 alphaOut 480 alphaRefOut 465
+Link SuperDoublet pairs to SDLinks
+SD links stat 0-5 nAll 13492270 nDZ 4111924 nDZPnt 111144 nPPos 111144 nAlp 10487 nInAlpC 7456 nOutAlpC 3699 ndBeta 1149 final 1149
+SD links stat 0-7 nAll 1429672 nDZ 536327 nDZPnt 47936 nPPos 47936 nAlp 10902 nInAlpC 9302 nOutAlpC 6834 ndBeta 527 final 527
+SD links stat 5-7 nAll 161127340 nDZ 34955887 nDZPnt 3900413 nPPos 497620 nAlp 459391 nInAlpC 281910 nOutAlpC 155080 ndBeta 10459 final 10459
+SD links stat 7-9 nAll 2966776 nDZ 562329 nDZPnt 562329 nPPos 96377 nAlp 64515 nInAlpC 30368 nOutAlpC 13662 ndBeta 1071 final 1071
+SimHit stats: L0 3.94356 L1 1.18194 L2 1.1006 L3 0.943227 L4 0.717795 L5 2.69484 L6 0 L7 2.54196 L8 0 L9 2.61914 L10 0
+Print stats
+Summary for layer 5 h1GeV 626 h2GeV 137 refLos 7780 refUps 7873 refMDs 4492 outLos 8078 outUps 8078 outMDs 5507 outSDs 38995 n1Any 17784 n1All 608 n2Any 5792 n2All 136
+Summary for layer 6 h1GeV 509 h2GeV 117 refLos 5412 refUps 5493 refMDs 2016 outLos 5610 outUps 5610 outMDs 2661 outSDs 9164 n1Any 4703 n1All 501 n2Any 1733 n2All 117
+Summary for layer 7 h1GeV 429 h2GeV 106 refLos 3785 refUps 3846 refMDs 1317 outLos 3926 outUps 3926 outMDs 1764 outSDs 4132 n1Any 2367 n1All 422 n2Any 860 n2All 106
+Summary for layer 8 h1GeV 356 h2GeV 96 refLos 2399 refUps 2431 refMDs 835 outLos 2457 outUps 2457 outMDs 1097 outSDs 1522 n1Any 960 n1All 349 n2Any 367 n2All 96
+Summary for layer 9 h1GeV 271 h2GeV 77 refLos 1394 refUps 1403 refMDs 542 outLos 1417 outUps 1417 outMDs 688 outSDs 718 n1Any 452 n1All 258 n2Any 141 n2All 77
+Summary for layer 10 h1GeV 224 h2GeV 64 refLos 853 refUps 863 refMDs 409 outLos 879 outUps 879 outMDs 470 outSDs 465 n1Any 291 n1All 207 n2Any 91 n2All 64
+		sdl5-7 10459 sdl7-9 1071
+Event 7
+Load hits 
+Convert seeds to SuperDoublets
+Loaded nSeeds (pt>1 and |eta|<1.6) 333
+Combine MDs 
+SD stat 5 nAll 23768766 deltaZ 3387271 deltaPhiPos 216873 slope 59165 alphaRef 49241 alphaOut 39378 alphaRefOut 34964
+SD stat 6 nAll 5208736 deltaZ 710288 deltaPhiPos 60452 slope 12712 alphaRef 10984 alphaOut 9413 alphaRefOut 8462
+SD stat 7 nAll 2368026 deltaZ 474417 deltaPhiPos 53120 slope 8783 alphaRef 6321 alphaOut 4665 alphaRefOut 4022
+SD stat 8 nAll 997407 deltaZ 198626 deltaPhiPos 28837 slope 3954 alphaRef 2377 alphaOut 1595 alphaRefOut 1451
+SD stat 9 nAll 416594 deltaZ 83200 deltaPhiPos 15114 slope 1905 alphaRef 1118 alphaOut 768 alphaRefOut 725
+SD stat 10 nAll 237440 deltaZ 47385 deltaPhiPos 10128 slope 1214 alphaRef 765 alphaOut 551 alphaRefOut 537
+Link SuperDoublet pairs to SDLinks
+SD links stat 0-5 nAll 11643012 nDZ 3383737 nDZPnt 86351 nPPos 86351 nAlp 7572 nInAlpC 6203 nOutAlpC 3404 ndBeta 1040 final 1040
+SD links stat 0-7 nAll 1339326 nDZ 499554 nDZPnt 42329 nPPos 42329 nAlp 8546 nInAlpC 7386 nOutAlpC 5539 ndBeta 435 final 435
+SD links stat 5-7 nAll 140625208 nDZ 28941430 nDZPnt 3082416 nPPos 322534 nAlp 292749 nInAlpC 164962 nOutAlpC 85836 ndBeta 5912 final 5912
+SD links stat 7-9 nAll 2915950 nDZ 545443 nDZPnt 545443 nPPos 89270 nAlp 59811 nInAlpC 27047 nOutAlpC 11104 ndBeta 961 final 961
+SimHit stats: L0 3.88756 L1 1.16494 L2 1.09462 L3 0.929034 L4 0.698963 L5 2.79497 L6 0 L7 2.56775 L8 0 L9 2.53698 L10 0
+Print stats
+Summary for layer 5 h1GeV 708 h2GeV 126 refLos 7688 refUps 7784 refMDs 4387 outLos 7978 outUps 7978 outMDs 5418 outSDs 34964 n1Any 16067 n1All 682 n2Any 3524 n2All 125
+Summary for layer 6 h1GeV 588 h2GeV 108 refLos 5302 refUps 5368 refMDs 1976 outLos 5474 outUps 5474 outMDs 2636 outSDs 8462 n1Any 4768 n1All 576 n2Any 1134 n2All 108
+Summary for layer 7 h1GeV 494 h2GeV 93 refLos 3765 refUps 3812 refMDs 1347 outLos 3873 outUps 3873 outMDs 1758 outSDs 4022 n1Any 2264 n1All 486 n2Any 563 n2All 93
+Summary for layer 8 h1GeV 391 h2GeV 74 refLos 2369 refUps 2407 refMDs 901 outLos 2444 outUps 2444 outMDs 1107 outSDs 1451 n1Any 897 n1All 388 n2Any 190 n2All 74
+Summary for layer 9 h1GeV 309 h2GeV 57 refLos 1427 refUps 1448 refMDs 577 outLos 1468 outUps 1468 outMDs 722 outSDs 725 n1Any 456 n1All 289 n2Any 95 n2All 57
+Summary for layer 10 h1GeV 257 h2GeV 52 refLos 889 refUps 899 refMDs 448 outLos 909 outUps 909 outMDs 530 outSDs 537 n1Any 330 n1All 228 n2Any 77 n2All 52
+		sdl5-7 5912 sdl7-9 961
+Event 8
+Load hits 
+Convert seeds to SuperDoublets
+Loaded nSeeds (pt>1 and |eta|<1.6) 276
+Combine MDs 
+SD stat 5 nAll 17452900 deltaZ 2466810 deltaPhiPos 155484 slope 43404 alphaRef 36309 alphaOut 29267 alphaRefOut 26045
+SD stat 6 nAll 3809933 deltaZ 520150 deltaPhiPos 44354 slope 9439 alphaRef 8163 alphaOut 6860 alphaRefOut 6170
+SD stat 7 nAll 1824174 deltaZ 369964 deltaPhiPos 41644 slope 7050 alphaRef 5244 alphaOut 3912 alphaRefOut 3406
+SD stat 8 nAll 754733 deltaZ 151834 deltaPhiPos 21687 slope 3168 alphaRef 1966 alphaOut 1340 alphaRefOut 1218
+SD stat 9 nAll 326112 deltaZ 65209 deltaPhiPos 11953 slope 1595 alphaRef 979 alphaOut 695 alphaRefOut 665
+SD stat 10 nAll 178687 deltaZ 35605 deltaPhiPos 7665 slope 919 alphaRef 544 alphaOut 430 alphaRefOut 419
+Link SuperDoublet pairs to SDLinks
+SD links stat 0-5 nAll 7188420 nDZ 2054537 nDZPnt 51317 nPPos 51317 nAlp 4887 nInAlpC 3783 nOutAlpC 2034 ndBeta 721 final 721
+SD links stat 0-7 nAll 940056 nDZ 367991 nDZPnt 31026 nPPos 31026 nAlp 6752 nInAlpC 5739 nOutAlpC 4413 ndBeta 371 final 371
+SD links stat 5-7 nAll 88709270 nDZ 18045971 nDZPnt 1857027 nPPos 202379 nAlp 184700 nInAlpC 106833 nOutAlpC 56563 ndBeta 4267 final 4267
+SD links stat 7-9 nAll 2264990 nDZ 472474 nDZPnt 472474 nPPos 75648 nAlp 50294 nInAlpC 23664 nOutAlpC 10653 ndBeta 962 final 962
+SimHit stats: L0 3.9461 L1 1.18469 L2 1.11067 L3 0.942149 L4 0.708588 L5 2.8104 L6 0 L7 2.58379 L8 0 L9 2.69164 L10 0
+Print stats
+Summary for layer 5 h1GeV 551 h2GeV 123 refLos 6997 refUps 7078 refMDs 3700 outLos 7242 outUps 7242 outMDs 4717 outSDs 26045 n1Any 11300 n1All 526 n2Any 3409 n2All 122
+Summary for layer 6 h1GeV 453 h2GeV 102 refLos 4874 refUps 4930 refMDs 1663 outLos 5047 outUps 5047 outMDs 2291 outSDs 6170 n1Any 3226 n1All 440 n2Any 917 n2All 102
+Summary for layer 7 h1GeV 377 h2GeV 90 refLos 3483 refUps 3527 refMDs 1221 outLos 3585 outUps 3585 outMDs 1494 outSDs 3406 n1Any 1790 n1All 367 n2Any 619 n2All 90
+Summary for layer 8 h1GeV 303 h2GeV 73 refLos 2214 refUps 2245 refMDs 787 outLos 2285 outUps 2285 outMDs 959 outSDs 1218 n1Any 684 n1All 298 n2Any 194 n2All 73
+Summary for layer 9 h1GeV 262 h2GeV 64 refLos 1303 refUps 1324 refMDs 516 outLos 1351 outUps 1351 outMDs 632 outSDs 665 n1Any 383 n1All 244 n2Any 124 n2All 64
+Summary for layer 10 h1GeV 219 h2GeV 56 refLos 798 refUps 815 refMDs 391 outLos 820 outUps 820 outMDs 457 outSDs 419 n1Any 256 n1All 199 n2Any 75 n2All 56
+		sdl5-7 4267 sdl7-9 962
+Event 9
+Load hits 
+Convert seeds to SuperDoublets
+Loaded nSeeds (pt>1 and |eta|<1.6) 519
+Combine MDs 
+SD stat 5 nAll 60111306 deltaZ 8935281 deltaPhiPos 565993 slope 152197 alphaRef 126699 alphaOut 101330 alphaRefOut 89884
+SD stat 6 nAll 11619720 deltaZ 1592961 deltaPhiPos 134416 slope 27444 alphaRef 23559 alphaOut 19711 alphaRefOut 17635
+SD stat 7 nAll 5202509 deltaZ 1049493 deltaPhiPos 113276 slope 17732 alphaRef 12722 alphaOut 9346 alphaRefOut 8090
+SD stat 8 nAll 2273788 deltaZ 446896 deltaPhiPos 62869 slope 8390 alphaRef 4972 alphaOut 3125 alphaRefOut 2772
+SD stat 9 nAll 937941 deltaZ 186146 deltaPhiPos 33456 slope 4017 alphaRef 2100 alphaOut 1382 alphaRefOut 1281
+SD stat 10 nAll 488444 deltaZ 100529 deltaPhiPos 21775 slope 2382 alphaRef 1266 alphaOut 853 alphaRefOut 804
+Link SuperDoublet pairs to SDLinks
+SD links stat 0-5 nAll 46649796 nDZ 14138606 nDZPnt 343994 nPPos 343994 nAlp 23534 nInAlpC 17136 nOutAlpC 9561 ndBeta 2165 final 2165
+SD links stat 0-7 nAll 4198710 nDZ 1621732 nDZPnt 132402 nPPos 132402 nAlp 27362 nInAlpC 23448 nOutAlpC 17439 ndBeta 943 final 943
+SD links stat 5-7 nAll 727161560 nDZ 158080188 nDZPnt 15997182 nPPos 1595711 nAlp 1441093 nInAlpC 821861 nOutAlpC 429016 ndBeta 25956 final 25956
+SD links stat 7-9 nAll 10363290 nDZ 2108488 nDZPnt 2108488 nPPos 330638 nAlp 218235 nInAlpC 100383 nOutAlpC 40536 ndBeta 3082 final 3082
+SimHit stats: L0 3.88779 L1 1.145 L2 1.09559 L3 0.921727 L4 0.725468 L5 2.66645 L6 0 L7 2.50429 L8 0 L9 2.51748 L10 0
+Print stats
+Summary for layer 5 h1GeV 949 h2GeV 191 refLos 10177 refUps 10304 refMDs 7151 outLos 10548 outUps 10548 outMDs 8406 outSDs 89884 n1Any 39457 n1All 914 n2Any 10322 n2All 188
+Summary for layer 6 h1GeV 796 h2GeV 165 refLos 7160 refUps 7250 refMDs 3045 outLos 7416 outUps 7416 outMDs 3816 outSDs 17635 n1Any 9734 n1All 776 n2Any 2747 n2All 165
+Summary for layer 7 h1GeV 686 h2GeV 151 refLos 5060 refUps 5113 refMDs 2041 outLos 5199 outUps 5199 outMDs 2549 outSDs 8090 n1Any 4802 n1All 673 n2Any 1479 n2All 151
+Summary for layer 8 h1GeV 565 h2GeV 119 refLos 3329 refUps 3375 refMDs 1364 outLos 3429 outUps 3429 outMDs 1667 outSDs 2772 n1Any 1746 n1All 549 n2Any 485 n2All 119
+Summary for layer 9 h1GeV 452 h2GeV 108 refLos 1944 refUps 1969 refMDs 901 outLos 1993 outUps 1993 outMDs 1041 outSDs 1281 n1Any 848 n1All 427 n2Any 225 n2All 108
+Summary for layer 10 h1GeV 376 h2GeV 89 refLos 1245 refUps 1256 refMDs 653 outLos 1269 outUps 1269 outMDs 748 outSDs 804 n1Any 534 n1All 342 n2Any 139 n2All 89
+		sdl5-7 25956 sdl7-9 3082
+Event 10
+Load hits 
+Convert seeds to SuperDoublets
+Loaded nSeeds (pt>1 and |eta|<1.6) 417
+Combine MDs 
+SD stat 5 nAll 33138000 deltaZ 5016335 deltaPhiPos 314610 slope 86140 alphaRef 71595 alphaOut 57381 alphaRefOut 50800
+SD stat 6 nAll 7176927 deltaZ 1006047 deltaPhiPos 83575 slope 17478 alphaRef 15077 alphaOut 12766 alphaRefOut 11469
+SD stat 7 nAll 3269964 deltaZ 667301 deltaPhiPos 73156 slope 11943 alphaRef 8697 alphaOut 6456 alphaRefOut 5580
+SD stat 8 nAll 1460349 deltaZ 295787 deltaPhiPos 41812 slope 5789 alphaRef 3443 alphaOut 2241 alphaRefOut 2017
+SD stat 9 nAll 697060 deltaZ 137911 deltaPhiPos 25112 slope 3152 alphaRef 1718 alphaOut 1127 alphaRefOut 1054
+SD stat 10 nAll 356497 deltaZ 70815 deltaPhiPos 15514 slope 1748 alphaRef 939 alphaOut 677 alphaRefOut 648
+Link SuperDoublet pairs to SDLinks
+SD links stat 0-5 nAll 21183600 nDZ 6701781 nDZPnt 172534 nPPos 172534 nAlp 12825 nInAlpC 9597 nOutAlpC 5346 ndBeta 1495 final 1495
+SD links stat 0-7 nAll 2326860 nDZ 910676 nDZPnt 76701 nPPos 76701 nAlp 16126 nInAlpC 13574 nOutAlpC 10080 ndBeta 680 final 680
+SD links stat 5-7 nAll 283464000 nDZ 65560294 nDZPnt 6799723 nPPos 703730 nAlp 644795 nInAlpC 376791 nOutAlpC 202846 ndBeta 13186 final 13186
+SD links stat 7-9 nAll 5881320 nDZ 1219885 nDZPnt 1219885 nPPos 193203 nAlp 129047 nInAlpC 62016 nOutAlpC 25739 ndBeta 2046 final 2046
+SimHit stats: L0 3.87284 L1 1.1517 L2 1.05856 L3 0.920524 L4 0.742052 L5 2.69593 L6 0 L7 2.47418 L8 0 L9 2.5463 L10 0
+Print stats
+Summary for layer 5 h1GeV 809 h2GeV 171 refLos 8397 refUps 8496 refMDs 5250 outLos 8722 outUps 8722 outMDs 6312 outSDs 50800 n1Any 24443 n1All 779 n2Any 6194 n2All 171
+Summary for layer 6 h1GeV 697 h2GeV 152 refLos 5854 refUps 5928 refMDs 2337 outLos 6049 outUps 6049 outMDs 3071 outSDs 11469 n1Any 6629 n1All 682 n2Any 1965 n2All 152
+Summary for layer 7 h1GeV 588 h2GeV 128 refLos 4149 refUps 4190 refMDs 1614 outLos 4258 outUps 4258 outMDs 2026 outSDs 5580 n1Any 3498 n1All 578 n2Any 1113 n2All 128
+Summary for layer 8 h1GeV 487 h2GeV 99 refLos 2702 refUps 2732 refMDs 1089 outLos 2769 outUps 2769 outMDs 1341 outSDs 2017 n1Any 1363 n1All 476 n2Any 341 n2All 99
+Summary for layer 9 h1GeV 406 h2GeV 82 refLos 1741 refUps 1768 refMDs 766 outLos 1785 outUps 1785 outMDs 910 outSDs 1054 n1Any 714 n1All 386 n2Any 180 n2All 82
+Summary for layer 10 h1GeV 337 h2GeV 62 refLos 1051 refUps 1061 refMDs 551 outLos 1070 outUps 1070 outMDs 647 outSDs 648 n1Any 418 n1All 305 n2Any 94 n2All 62
+		sdl5-7 13186 sdl7-9 2046
+Event 11
+Load hits 
+Convert seeds to SuperDoublets
+Loaded nSeeds (pt>1 and |eta|<1.6) 341
+Combine MDs 
+SD stat 5 nAll 19976004 deltaZ 2997121 deltaPhiPos 189414 slope 53242 alphaRef 44553 alphaOut 35762 alphaRefOut 31765
+SD stat 6 nAll 4973096 deltaZ 678033 deltaPhiPos 58452 slope 12389 alphaRef 10661 alphaOut 9076 alphaRefOut 8173
+SD stat 7 nAll 2226066 deltaZ 446057 deltaPhiPos 50086 slope 8198 alphaRef 5925 alphaOut 4391 alphaRefOut 3841
+SD stat 8 nAll 1020452 deltaZ 201704 deltaPhiPos 29516 slope 4118 alphaRef 2508 alphaOut 1681 alphaRefOut 1519
+SD stat 9 nAll 434240 deltaZ 87506 deltaPhiPos 16579 slope 2208 alphaRef 1269 alphaOut 865 alphaRefOut 790
+SD stat 10 nAll 224602 deltaZ 45975 deltaPhiPos 10502 slope 1346 alphaRef 749 alphaOut 526 alphaRefOut 511
+Link SuperDoublet pairs to SDLinks
+SD links stat 0-5 nAll 10831865 nDZ 3424836 nDZPnt 87338 nPPos 87338 nAlp 8109 nInAlpC 6783 nOutAlpC 3696 ndBeta 1164 final 1164
+SD links stat 0-7 nAll 1309781 nDZ 503289 nDZPnt 43902 nPPos 43902 nAlp 9618 nInAlpC 8330 nOutAlpC 6278 ndBeta 495 final 495
+SD links stat 5-7 nAll 122009365 nDZ 27520807 nDZPnt 2913230 nPPos 324323 nAlp 295658 nInAlpC 171651 nOutAlpC 93968 ndBeta 6842 final 6842
+SD links stat 7-9 nAll 3034390 nDZ 583006 nDZPnt 583006 nPPos 98760 nAlp 68812 nInAlpC 32767 nOutAlpC 15436 ndBeta 1118 final 1118
+SimHit stats: L0 3.93189 L1 1.16961 L2 1.09528 L3 0.946627 L4 0.720367 L5 2.72133 L6 0 L7 2.55711 L8 0 L9 2.54106 L10 0
+Print stats
+Summary for layer 5 h1GeV 684 h2GeV 135 refLos 7131 refUps 7224 refMDs 3996 outLos 7423 outUps 7423 outMDs 4999 outSDs 31765 n1Any 15927 n1All 649 n2Any 4294 n2All 134
+Summary for layer 6 h1GeV 583 h2GeV 119 refLos 5030 refUps 5098 refMDs 1961 outLos 5210 outUps 5210 outMDs 2536 outSDs 8173 n1Any 4769 n1All 571 n2Any 1404 n2All 119
+Summary for layer 7 h1GeV 485 h2GeV 105 refLos 3610 refUps 3653 refMDs 1286 outLos 3722 outUps 3722 outMDs 1731 outSDs 3841 n1Any 2292 n1All 482 n2Any 812 n2All 105
+Summary for layer 8 h1GeV 393 h2GeV 87 refLos 2345 refUps 2373 refMDs 926 outLos 2415 outUps 2415 outMDs 1102 outSDs 1519 n1Any 957 n1All 385 n2Any 280 n2All 87
+Summary for layer 9 h1GeV 318 h2GeV 76 refLos 1411 refUps 1431 refMDs 590 outLos 1448 outUps 1448 outMDs 736 outSDs 790 n1Any 496 n1All 300 n2Any 152 n2All 76
+Summary for layer 10 h1GeV 263 h2GeV 68 refLos 874 refUps 878 refMDs 427 outLos 889 outUps 889 outMDs 526 outSDs 511 n1Any 330 n1All 239 n2Any 102 n2All 68
+		sdl5-7 6842 sdl7-9 1118
+Event 12
+Load hits 
+Convert seeds to SuperDoublets
+Loaded nSeeds (pt>1 and |eta|<1.6) 464
+Combine MDs 
+SD stat 5 nAll 44782408 deltaZ 6640597 deltaPhiPos 422147 slope 115818 alphaRef 96427 alphaOut 77604 alphaRefOut 69123
+SD stat 6 nAll 9396270 deltaZ 1307012 deltaPhiPos 110580 slope 23456 alphaRef 20229 alphaOut 17192 alphaRefOut 15235
+SD stat 7 nAll 4147092 deltaZ 851176 deltaPhiPos 94305 slope 14991 alphaRef 10619 alphaOut 7635 alphaRefOut 6587
+SD stat 8 nAll 1977360 deltaZ 394259 deltaPhiPos 57269 slope 7825 alphaRef 4478 alphaOut 2879 alphaRefOut 2544
+SD stat 9 nAll 934230 deltaZ 187192 deltaPhiPos 34002 slope 4071 alphaRef 2258 alphaOut 1460 alphaRefOut 1359
+SD stat 10 nAll 468624 deltaZ 94002 deltaPhiPos 20895 slope 2298 alphaRef 1223 alphaOut 816 alphaRefOut 773
+Link SuperDoublet pairs to SDLinks
+SD links stat 0-5 nAll 32073072 nDZ 10393099 nDZPnt 259744 nPPos 259744 nAlp 19664 nInAlpC 14379 nOutAlpC 7828 ndBeta 2118 final 2118
+SD links stat 0-7 nAll 3056368 nDZ 1271064 nDZPnt 100950 nPPos 100950 nAlp 21307 nInAlpC 18720 nOutAlpC 13831 ndBeta 837 final 837
+SD links stat 5-7 nAll 455313201 nDZ 106148171 nDZPnt 10621553 nPPos 1245322 nAlp 1148548 nInAlpC 697628 nOutAlpC 381943 ndBeta 22515 final 22515
+SD links stat 7-9 nAll 8951733 nDZ 1974029 nDZPnt 1974029 nPPos 345233 nAlp 231116 nInAlpC 107121 nOutAlpC 48102 ndBeta 3324 final 3324
+SimHit stats: L0 3.84807 L1 1.14032 L2 1.07732 L3 0.906126 L4 0.724308 L5 2.71463 L6 0 L7 2.44448 L8 0 L9 2.4962 L10 0
+Print stats
+Summary for layer 5 h1GeV 910 h2GeV 186 refLos 9293 refUps 9396 refMDs 6182 outLos 9608 outUps 9608 outMDs 7244 outSDs 69123 n1Any 34697 n1All 877 n2Any 9974 n2All 186
+Summary for layer 6 h1GeV 740 h2GeV 153 refLos 6512 refUps 6578 refMDs 2677 outLos 6695 outUps 6695 outMDs 3510 outSDs 15235 n1Any 8852 n1All 725 n2Any 2427 n2All 152
+Summary for layer 7 h1GeV 635 h2GeV 129 refLos 4608 refUps 4660 refMDs 1786 outLos 4738 outUps 4738 outMDs 2322 outSDs 6587 n1Any 3833 n1All 626 n2Any 1237 n2All 128
+Summary for layer 8 h1GeV 548 h2GeV 117 refLos 3059 refUps 3097 refMDs 1284 outLos 3149 outUps 3149 outMDs 1540 outSDs 2544 n1Any 1688 n1All 541 n2Any 509 n2All 117
+Summary for layer 9 h1GeV 476 h2GeV 108 refLos 1902 refUps 1927 refMDs 894 outLos 1945 outUps 1945 outMDs 1045 outSDs 1359 n1Any 924 n1All 457 n2Any 245 n2All 108
+Summary for layer 10 h1GeV 387 h2GeV 86 refLos 1179 refUps 1187 refMDs 624 outLos 1198 outUps 1198 outMDs 751 outSDs 773 n1Any 527 n1All 359 n2Any 125 n2All 86
+		sdl5-7 22515 sdl7-9 3324
+Event 13
+Load hits 
+Convert seeds to SuperDoublets
+Loaded nSeeds (pt>1 and |eta|<1.6) 322
+Combine MDs 
+SD stat 5 nAll 21304140 deltaZ 3089707 deltaPhiPos 195989 slope 54180 alphaRef 45244 alphaOut 36576 alphaRefOut 32520
+SD stat 6 nAll 4990848 deltaZ 688434 deltaPhiPos 57495 slope 12554 alphaRef 10903 alphaOut 9397 alphaRefOut 8544
+SD stat 7 nAll 2247938 deltaZ 453101 deltaPhiPos 50001 slope 8359 alphaRef 6207 alphaOut 4613 alphaRefOut 3998
+SD stat 8 nAll 984500 deltaZ 197176 deltaPhiPos 28215 slope 3955 alphaRef 2436 alphaOut 1595 alphaRefOut 1482
+SD stat 9 nAll 460280 deltaZ 91195 deltaPhiPos 16848 slope 2297 alphaRef 1373 alphaOut 923 alphaRefOut 873
+SD stat 10 nAll 213360 deltaZ 42167 deltaPhiPos 9341 slope 1209 alphaRef 720 alphaOut 496 alphaRefOut 484
+Link SuperDoublet pairs to SDLinks
+SD links stat 0-5 nAll 10471440 nDZ 3109086 nDZPnt 77373 nPPos 77373 nAlp 6667 nInAlpC 5411 nOutAlpC 2905 ndBeta 956 final 956
+SD links stat 0-7 nAll 1287356 nDZ 509170 nDZPnt 42060 nPPos 42060 nAlp 8778 nInAlpC 7644 nOutAlpC 5611 ndBeta 482 final 482
+SD links stat 5-7 nAll 130014960 nDZ 27361113 nDZPnt 2777186 nPPos 292429 nAlp 266207 nInAlpC 156394 nOutAlpC 84717 ndBeta 5848 final 5848
+SD links stat 7-9 nAll 3490254 nDZ 721908 nDZPnt 721908 nPPos 118918 nAlp 79590 nInAlpC 38330 nOutAlpC 17594 ndBeta 1400 final 1400
+SimHit stats: L0 3.95745 L1 1.19197 L2 1.1113 L3 0.941797 L4 0.712389 L5 2.76012 L6 0 L7 2.48171 L8 0 L9 2.47036 L10 0
+Print stats
+Summary for layer 5 h1GeV 664 h2GeV 155 refLos 7421 refUps 7532 refMDs 4202 outLos 7712 outUps 7712 outMDs 5070 outSDs 32520 n1Any 14606 n1All 645 n2Any 4440 n2All 154
+Summary for layer 6 h1GeV 556 h2GeV 122 refLos 5171 refUps 5243 refMDs 1968 outLos 5342 outUps 5342 outMDs 2536 outSDs 8544 n1Any 4655 n1All 540 n2Any 1321 n2All 122
+Summary for layer 7 h1GeV 471 h2GeV 102 refLos 3640 refUps 3703 refMDs 1327 outLos 3761 outUps 3761 outMDs 1694 outSDs 3998 n1Any 2283 n1All 462 n2Any 690 n2All 102
+Summary for layer 8 h1GeV 368 h2GeV 86 refLos 2334 refUps 2358 refMDs 895 outLos 2386 outUps 2386 outMDs 1100 outSDs 1482 n1Any 913 n1All 361 n2Any 262 n2All 86
+Summary for layer 9 h1GeV 309 h2GeV 73 refLos 1385 refUps 1403 refMDs 622 outLos 1419 outUps 1419 outMDs 740 outSDs 873 n1Any 546 n1All 300 n2Any 161 n2All 73
+Summary for layer 10 h1GeV 253 h2GeV 64 refLos 851 refUps 859 refMDs 420 outLos 863 outUps 863 outMDs 508 outSDs 484 n1Any 328 n1All 238 n2Any 83 n2All 64
+		sdl5-7 5848 sdl7-9 1400
+Event 14
+Load hits 
+Convert seeds to SuperDoublets
+Loaded nSeeds (pt>1 and |eta|<1.6) 405
+Combine MDs 
+SD stat 5 nAll 37404751 deltaZ 5449059 deltaPhiPos 340365 slope 91993 alphaRef 76592 alphaOut 61736 alphaRefOut 54972
+SD stat 6 nAll 7452939 deltaZ 1020808 deltaPhiPos 85823 slope 17816 alphaRef 15329 alphaOut 12976 alphaRefOut 11619
+SD stat 7 nAll 3186579 deltaZ 641836 deltaPhiPos 70682 slope 11755 alphaRef 8795 alphaOut 6475 alphaRefOut 5566
+SD stat 8 nAll 1330737 deltaZ 265576 deltaPhiPos 37697 slope 5186 alphaRef 3137 alphaOut 1990 alphaRefOut 1801
+SD stat 9 nAll 613571 deltaZ 124150 deltaPhiPos 22776 slope 2850 alphaRef 1627 alphaOut 1077 alphaRefOut 1012
+SD stat 10 nAll 302495 deltaZ 61246 deltaPhiPos 13648 slope 1613 alphaRef 932 alphaOut 638 alphaRefOut 615
+Link SuperDoublet pairs to SDLinks
+SD links stat 0-5 nAll 22263660 nDZ 6667931 nDZPnt 168582 nPPos 168582 nAlp 12775 nInAlpC 10639 nOutAlpC 5750 ndBeta 1643 final 1643
+SD links stat 0-7 nAll 2254230 nDZ 882205 nDZPnt 72877 nPPos 72877 nAlp 14852 nInAlpC 12798 nOutAlpC 9506 ndBeta 658 final 658
+SD links stat 5-7 nAll 305974152 nDZ 64751615 nDZPnt 6818813 nPPos 716416 nAlp 654927 nInAlpC 372077 nOutAlpC 201368 ndBeta 12381 final 12381
+SD links stat 7-9 nAll 5632792 nDZ 1156704 nDZPnt 1156704 nPPos 193741 nAlp 129883 nInAlpC 60410 nOutAlpC 27737 ndBeta 1856 final 1856
+SimHit stats: L0 3.95301 L1 1.15312 L2 1.10918 L3 0.943062 L4 0.747651 L5 2.72483 L6 0 L7 2.57891 L8 0 L9 2.68435 L10 0
+Print stats
+Summary for layer 5 h1GeV 751 h2GeV 177 refLos 8894 refUps 9008 refMDs 5597 outLos 9198 outUps 9198 outMDs 6683 outSDs 54972 n1Any 23604 n1All 721 n2Any 6957 n2All 175
+Summary for layer 6 h1GeV 635 h2GeV 159 refLos 6204 refUps 6291 refMDs 2301 outLos 6422 outUps 6422 outMDs 3239 outSDs 11619 n1Any 6446 n1All 620 n2Any 2370 n2All 158
+Summary for layer 7 h1GeV 536 h2GeV 145 refLos 4323 refUps 4377 refMDs 1583 outLos 4469 outUps 4469 outMDs 2013 outSDs 5566 n1Any 3352 n1All 527 n2Any 1381 n2All 145
+Summary for layer 8 h1GeV 428 h2GeV 122 refLos 2810 refUps 2849 refMDs 1047 outLos 2884 outUps 2884 outMDs 1271 outSDs 1801 n1Any 1084 n1All 420 n2Any 421 n2All 122
+Summary for layer 9 h1GeV 356 h2GeV 108 refLos 1655 refUps 1669 refMDs 721 outLos 1685 outUps 1685 outMDs 851 outSDs 1012 n1Any 651 n1All 337 n2Any 255 n2All 108
+Summary for layer 10 h1GeV 309 h2GeV 96 refLos 1023 refUps 1039 refMDs 505 outLos 1044 outUps 1044 outMDs 599 outSDs 615 n1Any 409 n1All 285 n2Any 154 n2All 96
+		sdl5-7 12381 sdl7-9 1856
+Event 15
+Load hits 
+Convert seeds to SuperDoublets
+Loaded nSeeds (pt>1 and |eta|<1.6) 357
+Combine MDs 
+SD stat 5 nAll 23619608 deltaZ 3538957 deltaPhiPos 232566 slope 64613 alphaRef 53761 alphaOut 43288 alphaRefOut 38668
+SD stat 6 nAll 5396000 deltaZ 757745 deltaPhiPos 66091 slope 14126 alphaRef 12213 alphaOut 10418 alphaRefOut 9389
+SD stat 7 nAll 2542372 deltaZ 522960 deltaPhiPos 58061 slope 9518 alphaRef 6824 alphaOut 4979 alphaRefOut 4331
+SD stat 8 nAll 1141896 deltaZ 230096 deltaPhiPos 33288 slope 4723 alphaRef 2840 alphaOut 1840 alphaRefOut 1651
+SD stat 9 nAll 533250 deltaZ 104614 deltaPhiPos 19387 slope 2473 alphaRef 1394 alphaOut 936 alphaRefOut 896
+SD stat 10 nAll 276848 deltaZ 55761 deltaPhiPos 12640 slope 1534 alphaRef 889 alphaOut 608 alphaRefOut 593
+Link SuperDoublet pairs to SDLinks
+SD links stat 0-5 nAll 13804476 nDZ 4550824 nDZPnt 115272 nPPos 115272 nAlp 10419 nInAlpC 8615 nOutAlpC 4672 ndBeta 1255 final 1255
+SD links stat 0-7 nAll 1546167 nDZ 617766 nDZPnt 52955 nPPos 52955 nAlp 11557 nInAlpC 10143 nOutAlpC 7445 ndBeta 551 final 551
+SD links stat 5-7 nAll 167471108 nDZ 39856743 nDZPnt 4224077 nPPos 568134 nAlp 525089 nInAlpC 319402 nOutAlpC 170947 ndBeta 11018 final 11018
+SD links stat 7-9 nAll 3880576 nDZ 806554 nDZPnt 806554 nPPos 139500 nAlp 95798 nInAlpC 47103 nOutAlpC 22306 ndBeta 1529 final 1529
+SimHit stats: L0 3.86388 L1 1.14313 L2 1.05164 L3 0.934332 L4 0.734778 L5 2.74902 L6 0 L7 2.52924 L8 0 L9 2.53104 L10 0
+Print stats
+Summary for layer 5 h1GeV 687 h2GeV 138 refLos 7630 refUps 7732 refMDs 4387 outLos 7938 outUps 7938 outMDs 5384 outSDs 38668 n1Any 18738 n1All 648 n2Any 6169 n2All 137
+Summary for layer 6 h1GeV 576 h2GeV 115 refLos 5346 refUps 5415 refMDs 2000 outLos 5531 outUps 5531 outMDs 2698 outSDs 9389 n1Any 5336 n1All 553 n2Any 1624 n2All 115
+Summary for layer 7 h1GeV 512 h2GeV 107 refLos 3810 refUps 3856 refMDs 1414 outLos 3922 outUps 3922 outMDs 1798 outSDs 4331 n1Any 2641 n1All 494 n2Any 789 n2All 107
+Summary for layer 8 h1GeV 422 h2GeV 92 refLos 2536 refUps 2566 refMDs 971 outLos 2608 outUps 2608 outMDs 1176 outSDs 1651 n1Any 1024 n1All 410 n2Any 324 n2All 92
+Summary for layer 9 h1GeV 366 h2GeV 82 refLos 1501 refUps 1513 refMDs 675 outLos 1534 outUps 1534 outMDs 790 outSDs 896 n1Any 610 n1All 346 n2Any 187 n2All 82
+Summary for layer 10 h1GeV 295 h2GeV 78 refLos 939 refUps 946 refMDs 484 outLos 960 outUps 960 outMDs 572 outSDs 593 n1Any 395 n1All 270 n2Any 121 n2All 78
+		sdl5-7 11018 sdl7-9 1529
+Event 16
+Load hits 
+Convert seeds to SuperDoublets
+Loaded nSeeds (pt>1 and |eta|<1.6) 304
+Combine MDs 
+SD stat 5 nAll 19189170 deltaZ 2692588 deltaPhiPos 167383 slope 45460 alphaRef 38018 alphaOut 30621 alphaRefOut 27204
+SD stat 6 nAll 3850200 deltaZ 530110 deltaPhiPos 45126 slope 9834 alphaRef 8492 alphaOut 7113 alphaRefOut 6362
+SD stat 7 nAll 1791171 deltaZ 361530 deltaPhiPos 40363 slope 6593 alphaRef 4902 alphaOut 3708 alphaRefOut 3241
+SD stat 8 nAll 873540 deltaZ 174435 deltaPhiPos 25279 slope 3519 alphaRef 2154 alphaOut 1454 alphaRefOut 1331
+SD stat 9 nAll 371374 deltaZ 74016 deltaPhiPos 13799 slope 1840 alphaRef 1051 alphaOut 700 alphaRefOut 658
+SD stat 10 nAll 189196 deltaZ 38852 deltaPhiPos 8510 slope 1077 alphaRef 657 alphaOut 499 alphaRefOut 478
+Link SuperDoublet pairs to SDLinks
+SD links stat 0-5 nAll 8270016 nDZ 2321111 nDZPnt 60024 nPPos 60024 nAlp 5413 nInAlpC 4488 nOutAlpC 2388 ndBeta 880 final 880
+SD links stat 0-7 nAll 985264 nDZ 368769 nDZPnt 31260 nPPos 31260 nAlp 6869 nInAlpC 5867 nOutAlpC 4504 ndBeta 383 final 383
+SD links stat 5-7 nAll 88168164 nDZ 17625462 nDZPnt 1903337 nPPos 202493 nAlp 185411 nInAlpC 109173 nOutAlpC 59344 ndBeta 4378 final 4378
+SD links stat 7-9 nAll 2132578 nDZ 419318 nDZPnt 419318 nPPos 68844 nAlp 46108 nInAlpC 21706 nOutAlpC 9484 ndBeta 786 final 786
+SimHit stats: L0 3.94052 L1 1.17521 L2 1.10355 L3 0.935507 L4 0.726263 L5 2.78456 L6 0 L7 2.5464 L8 0 L9 2.56358 L10 0
+Print stats
+Summary for layer 5 h1GeV 589 h2GeV 118 refLos 7269 refUps 7351 refMDs 3861 outLos 7514 outUps 7514 outMDs 4970 outSDs 27204 n1Any 11909 n1All 562 n2Any 3108 n2All 118
+Summary for layer 6 h1GeV 483 h2GeV 99 refLos 5006 refUps 5052 refMDs 1674 outLos 5141 outUps 5141 outMDs 2300 outSDs 6362 n1Any 3241 n1All 471 n2Any 953 n2All 99
+Summary for layer 7 h1GeV 405 h2GeV 82 refLos 3454 refUps 3496 refMDs 1173 outLos 3567 outUps 3567 outMDs 1527 outSDs 3241 n1Any 1731 n1All 395 n2Any 480 n2All 82
+Summary for layer 8 h1GeV 324 h2GeV 74 refLos 2298 refUps 2327 refMDs 844 outLos 2362 outUps 2362 outMDs 1035 outSDs 1331 n1Any 728 n1All 318 n2Any 202 n2All 74
+Summary for layer 9 h1GeV 264 h2GeV 63 refLos 1336 refUps 1359 refMDs 551 outLos 1380 outUps 1380 outMDs 674 outSDs 658 n1Any 369 n1All 242 n2Any 96 n2All 63
+Summary for layer 10 h1GeV 219 h2GeV 49 refLos 810 refUps 818 refMDs 406 outLos 830 outUps 830 outMDs 466 outSDs 478 n1Any 270 n1All 194 n2Any 64 n2All 49
+		sdl5-7 4378 sdl7-9 786
+Event 17
+Load hits 
+Convert seeds to SuperDoublets
+Loaded nSeeds (pt>1 and |eta|<1.6) 257
+Combine MDs 
+SD stat 5 nAll 15842632 deltaZ 2347186 deltaPhiPos 152248 slope 42082 alphaRef 35145 alphaOut 28088 alphaRefOut 25012
+SD stat 6 nAll 3483088 deltaZ 469439 deltaPhiPos 39940 slope 8630 alphaRef 7459 alphaOut 6321 alphaRefOut 5663
+SD stat 7 nAll 1317004 deltaZ 273326 deltaPhiPos 30917 slope 5212 alphaRef 3924 alphaOut 2958 alphaRefOut 2583
+SD stat 8 nAll 672596 deltaZ 138426 deltaPhiPos 20778 slope 2998 alphaRef 1843 alphaOut 1236 alphaRefOut 1119
+SD stat 9 nAll 332105 deltaZ 67036 deltaPhiPos 12720 slope 1659 alphaRef 989 alphaOut 733 alphaRefOut 691
+SD stat 10 nAll 150378 deltaZ 31308 deltaPhiPos 7185 slope 895 alphaRef 533 alphaOut 415 alphaRefOut 413
+Link SuperDoublet pairs to SDLinks
+SD links stat 0-5 nAll 6428084 nDZ 2057775 nDZPnt 52744 nPPos 52744 nAlp 4766 nInAlpC 3884 nOutAlpC 2105 ndBeta 713 final 713
+SD links stat 0-7 nAll 663831 nDZ 275734 nDZPnt 22482 nPPos 22482 nAlp 4984 nInAlpC 4406 nOutAlpC 3335 ndBeta 315 final 315
+SD links stat 5-7 nAll 64605996 nDZ 14768326 nDZPnt 1473193 nPPos 157887 nAlp 143966 nInAlpC 84759 nOutAlpC 46158 ndBeta 3500 final 3500
+SD links stat 7-9 nAll 1784853 nDZ 397403 nDZPnt 397403 nPPos 70197 nAlp 46742 nInAlpC 22464 nOutAlpC 10658 ndBeta 767 final 767
+SimHit stats: L0 3.91667 L1 1.18356 L2 1.09197 L3 0.942568 L4 0.698574 L5 2.72316 L6 0 L7 2.4686 L8 0 L9 2.52268 L10 0
+Print stats
+Summary for layer 5 h1GeV 505 h2GeV 105 refLos 6701 refUps 6792 refMDs 3512 outLos 6966 outUps 6966 outMDs 4511 outSDs 25012 n1Any 10259 n1All 480 n2Any 3182 n2All 104
+Summary for layer 6 h1GeV 415 h2GeV 84 refLos 4662 refUps 4726 refMDs 1589 outLos 4839 outUps 4839 outMDs 2192 outSDs 5663 n1Any 3007 n1All 402 n2Any 935 n2All 83
+Summary for layer 7 h1GeV 351 h2GeV 73 refLos 3191 refUps 3237 refMDs 988 outLos 3286 outUps 3286 outMDs 1333 outSDs 2583 n1Any 1438 n1All 344 n2Any 431 n2All 73
+Summary for layer 8 h1GeV 299 h2GeV 67 refLos 2103 refUps 2125 refMDs 724 outLos 2138 outUps 2138 outMDs 929 outSDs 1119 n1Any 632 n1All 292 n2Any 174 n2All 67
+Summary for layer 9 h1GeV 254 h2GeV 59 refLos 1248 refUps 1260 refMDs 523 outLos 1281 outUps 1281 outMDs 635 outSDs 691 n1Any 403 n1All 241 n2Any 113 n2All 59
+Summary for layer 10 h1GeV 219 h2GeV 51 refLos 774 refUps 779 refMDs 353 outLos 784 outUps 784 outMDs 426 outSDs 413 n1Any 282 n1All 200 n2Any 68 n2All 51
+		sdl5-7 3500 sdl7-9 767
+Event 18
+Load hits 
+Convert seeds to SuperDoublets
+Loaded nSeeds (pt>1 and |eta|<1.6) 276
+Combine MDs 
+SD stat 5 nAll 13751232 deltaZ 1958803 deltaPhiPos 124300 slope 35223 alphaRef 29468 alphaOut 23796 alphaRefOut 21278
+SD stat 6 nAll 3197495 deltaZ 446549 deltaPhiPos 37684 slope 7963 alphaRef 6934 alphaOut 5932 alphaRefOut 5415
+SD stat 7 nAll 1617664 deltaZ 329142 deltaPhiPos 36767 slope 6109 alphaRef 4530 alphaOut 3439 alphaRefOut 3028
+SD stat 8 nAll 793969 deltaZ 164874 deltaPhiPos 24115 slope 3634 alphaRef 2308 alphaOut 1547 alphaRefOut 1404
+SD stat 9 nAll 374967 deltaZ 77216 deltaPhiPos 14354 slope 1875 alphaRef 1145 alphaOut 769 alphaRefOut 720
+SD stat 10 nAll 222768 deltaZ 45567 deltaPhiPos 10146 slope 1334 alphaRef 737 alphaOut 548 alphaRefOut 532
+Link SuperDoublet pairs to SDLinks
+SD links stat 0-5 nAll 5872728 nDZ 1848893 nDZPnt 46648 nPPos 46648 nAlp 4281 nInAlpC 3664 nOutAlpC 2027 ndBeta 701 final 701
+SD links stat 0-7 nAll 835728 nDZ 340897 nDZPnt 28429 nPPos 28429 nAlp 6264 nInAlpC 5493 nOutAlpC 4059 ndBeta 377 final 377
+SD links stat 5-7 nAll 64429784 nDZ 14399878 nDZPnt 1460956 nPPos 149868 nAlp 135309 nInAlpC 77746 nOutAlpC 42373 ndBeta 3290 final 3290
+SD links stat 7-9 nAll 2180160 nDZ 473257 nDZPnt 473257 nPPos 77904 nAlp 53011 nInAlpC 25613 nOutAlpC 11162 ndBeta 967 final 967
+SimHit stats: L0 3.91465 L1 1.15571 L2 1.07651 L3 0.936947 L4 0.745483 L5 2.80823 L6 0 L7 2.5608 L8 0 L9 2.57359 L10 0
+Print stats
+Summary for layer 5 h1GeV 544 h2GeV 139 refLos 6270 refUps 6352 refMDs 3264 outLos 6534 outUps 6534 outMDs 4213 outSDs 21278 n1Any 9775 n1All 531 n2Any 3278 n2All 139
+Summary for layer 6 h1GeV 452 h2GeV 118 refLos 4514 refUps 4571 refMDs 1519 outLos 4680 outUps 4680 outMDs 2105 outSDs 5415 n1Any 3047 n1All 444 n2Any 979 n2All 118
+Summary for layer 7 h1GeV 401 h2GeV 119 refLos 3199 refUps 3246 refMDs 1136 outLos 3305 outUps 3305 outMDs 1424 outSDs 3028 n1Any 1705 n1All 396 n2Any 670 n2All 119
+Summary for layer 8 h1GeV 341 h2GeV 102 refLos 2059 refUps 2085 refMDs 811 outLos 2116 outUps 2116 outMDs 979 outSDs 1404 n1Any 895 n1All 337 n2Any 387 n2All 102
+Summary for layer 9 h1GeV 285 h2GeV 90 refLos 1296 refUps 1315 refMDs 549 outLos 1336 outUps 1336 outMDs 683 outSDs 720 n1Any 476 n1All 276 n2Any 164 n2All 90
+Summary for layer 10 h1GeV 249 h2GeV 84 refLos 848 refUps 856 refMDs 442 outLos 865 outUps 865 outMDs 504 outSDs 532 n1Any 342 n1All 234 n2Any 133 n2All 84
+		sdl5-7 3290 sdl7-9 967
+Event 19
+Load hits 
+Convert seeds to SuperDoublets
+Loaded nSeeds (pt>1 and |eta|<1.6) 331
+Combine MDs 
+SD stat 5 nAll 17776206 deltaZ 2492876 deltaPhiPos 154911 slope 42817 alphaRef 35836 alphaOut 28909 alphaRefOut 25726
+SD stat 6 nAll 3733816 deltaZ 512208 deltaPhiPos 42766 slope 9077 alphaRef 7877 alphaOut 6653 alphaRefOut 6029
+SD stat 7 nAll 1663875 deltaZ 338682 deltaPhiPos 37840 slope 6375 alphaRef 4746 alphaOut 3526 alphaRefOut 3066
+SD stat 8 nAll 787572 deltaZ 159594 deltaPhiPos 23367 slope 3375 alphaRef 2095 alphaOut 1433 alphaRefOut 1308
+SD stat 9 nAll 409353 deltaZ 82549 deltaPhiPos 15128 slope 1992 alphaRef 1200 alphaOut 859 alphaRefOut 801
+SD stat 10 nAll 204909 deltaZ 40519 deltaPhiPos 9129 slope 1130 alphaRef 645 alphaOut 471 alphaRefOut 456
+Link SuperDoublet pairs to SDLinks
+SD links stat 0-5 nAll 8515306 nDZ 2511428 nDZPnt 65594 nPPos 65594 nAlp 5934 nInAlpC 4936 nOutAlpC 2720 ndBeta 958 final 958
+SD links stat 0-7 nAll 1014846 nDZ 394468 nDZPnt 32704 nPPos 32704 nAlp 7371 nInAlpC 6505 nOutAlpC 4848 ndBeta 445 final 445
+SD links stat 5-7 nAll 78875916 nDZ 16419334 nDZPnt 1747472 nPPos 185791 nAlp 169993 nInAlpC 100714 nOutAlpC 56234 ndBeta 4334 final 4334
+SD links stat 7-9 nAll 2455866 nDZ 496701 nDZPnt 496701 nPPos 81004 nAlp 54931 nInAlpC 26443 nOutAlpC 11643 ndBeta 1069 final 1069
+SimHit stats: L0 3.91182 L1 1.15744 L2 1.08033 L3 0.937522 L4 0.736523 L5 2.74748 L6 0 L7 2.49408 L8 0 L9 2.46654 L10 0
+Print stats
+Summary for layer 5 h1GeV 576 h2GeV 130 refLos 6981 refUps 7070 refMDs 3813 outLos 7226 outUps 7226 outMDs 4662 outSDs 25726 n1Any 11704 n1All 557 n2Any 3379 n2All 130
+Summary for layer 6 h1GeV 488 h2GeV 121 refLos 4790 refUps 4857 refMDs 1658 outLos 4951 outUps 4951 outMDs 2252 outSDs 6029 n1Any 3299 n1All 478 n2Any 1183 n2All 121
+Summary for layer 7 h1GeV 424 h2GeV 107 refLos 3385 refUps 3430 refMDs 1125 outLos 3495 outUps 3495 outMDs 1479 outSDs 3066 n1Any 1844 n1All 418 n2Any 647 n2All 107
+Summary for layer 8 h1GeV 342 h2GeV 92 refLos 2198 refUps 2225 refMDs 786 outLos 2250 outUps 2250 outMDs 1002 outSDs 1308 n1Any 776 n1All 337 n2Any 251 n2All 92
+Summary for layer 9 h1GeV 288 h2GeV 85 refLos 1354 refUps 1376 refMDs 579 outLos 1387 outUps 1387 outMDs 707 outSDs 801 n1Any 503 n1All 272 n2Any 171 n2All 85
+Summary for layer 10 h1GeV 243 h2GeV 71 refLos 872 refUps 877 refMDs 409 outLos 881 outUps 881 outMDs 501 outSDs 456 n1Any 285 n1All 221 n2Any 93 n2All 71
+		sdl5-7 4334 sdl7-9 1069
+Event 20
+Load hits 
+Convert seeds to SuperDoublets
+Loaded nSeeds (pt>1 and |eta|<1.6) 321
+Combine MDs 
+SD stat 5 nAll 20600352 deltaZ 3012628 deltaPhiPos 188656 slope 52169 alphaRef 43512 alphaOut 35241 alphaRefOut 31220
+SD stat 6 nAll 4792192 deltaZ 657296 deltaPhiPos 55497 slope 11885 alphaRef 10304 alphaOut 8783 alphaRefOut 7915
+SD stat 7 nAll 2111516 deltaZ 426467 deltaPhiPos 47160 slope 7747 alphaRef 5643 alphaOut 4132 alphaRefOut 3566
+SD stat 8 nAll 922383 deltaZ 181896 deltaPhiPos 25776 slope 3616 alphaRef 2200 alphaOut 1510 alphaRefOut 1371
+SD stat 9 nAll 419728 deltaZ 84257 deltaPhiPos 15185 slope 2034 alphaRef 1221 alphaOut 820 alphaRefOut 780
+SD stat 10 nAll 272304 deltaZ 53857 deltaPhiPos 11672 slope 1451 alphaRef 833 alphaOut 613 alphaRefOut 589
+Link SuperDoublet pairs to SDLinks
+SD links stat 0-5 nAll 10021620 nDZ 3033844 nDZPnt 77826 nPPos 77826 nAlp 6400 nInAlpC 5419 nOutAlpC 3020 ndBeta 962 final 962
+SD links stat 0-7 nAll 1144686 nDZ 444282 nDZPnt 37857 nPPos 37857 nAlp 7597 nInAlpC 6590 nOutAlpC 5075 ndBeta 416 final 416
+SD links stat 5-7 nAll 111330520 nDZ 23916289 nDZPnt 2494332 nPPos 250103 nAlp 228957 nInAlpC 131199 nOutAlpC 70089 ndBeta 4879 final 4879
+SD links stat 7-9 nAll 2781480 nDZ 575851 nDZPnt 575851 nPPos 87794 nAlp 57902 nInAlpC 27600 nOutAlpC 10990 ndBeta 1026 final 1026
+SimHit stats: L0 4.00166 L1 1.1761 L2 1.1377 L3 0.942072 L4 0.74578 L5 2.75414 L6 0 L7 2.57806 L8 0 L9 2.54648 L10 0
+Print stats
+Summary for layer 5 h1GeV 656 h2GeV 139 refLos 7320 refUps 7401 refMDs 4068 outLos 7584 outUps 7584 outMDs 5064 outSDs 31220 n1Any 14139 n1All 637 n2Any 3963 n2All 139
+Summary for layer 6 h1GeV 540 h2GeV 116 refLos 5215 refUps 5279 refMDs 1856 outLos 5394 outUps 5394 outMDs 2582 outSDs 7915 n1Any 4149 n1All 530 n2Any 1253 n2All 115
+Summary for layer 7 h1GeV 431 h2GeV 84 refLos 3649 refUps 3702 refMDs 1297 outLos 3753 outUps 3753 outMDs 1628 outSDs 3566 n1Any 1943 n1All 426 n2Any 523 n2All 84
+Summary for layer 8 h1GeV 353 h2GeV 71 refLos 2352 refUps 2387 refMDs 847 outLos 2435 outUps 2435 outMDs 1089 outSDs 1371 n1Any 802 n1All 350 n2Any 190 n2All 71
+Summary for layer 9 h1GeV 307 h2GeV 62 refLos 1427 refUps 1450 refMDs 592 outLos 1468 outUps 1468 outMDs 709 outSDs 780 n1Any 498 n1All 294 n2Any 101 n2All 62
+Summary for layer 10 h1GeV 264 h2GeV 52 refLos 939 refUps 949 refMDs 488 outLos 958 outUps 958 outMDs 558 outSDs 589 n1Any 348 n1All 246 n2Any 67 n2All 52
+		sdl5-7 4879 sdl7-9 1026
+Event 21
+Load hits 
+Convert seeds to SuperDoublets
+Loaded nSeeds (pt>1 and |eta|<1.6) 276
+Combine MDs 
+SD stat 5 nAll 19505024 deltaZ 2809317 deltaPhiPos 177338 slope 49002 alphaRef 41174 alphaOut 33229 alphaRefOut 29362
+SD stat 6 nAll 4472520 deltaZ 607106 deltaPhiPos 50771 slope 10568 alphaRef 9158 alphaOut 7798 alphaRefOut 6999
+SD stat 7 nAll 1805258 deltaZ 370085 deltaPhiPos 40547 slope 6739 alphaRef 4993 alphaOut 3680 alphaRefOut 3207
+SD stat 8 nAll 827106 deltaZ 168456 deltaPhiPos 24211 slope 3448 alphaRef 2107 alphaOut 1410 alphaRefOut 1288
+SD stat 9 nAll 362880 deltaZ 74266 deltaPhiPos 14079 slope 1855 alphaRef 1071 alphaOut 737 alphaRefOut 706
+SD stat 10 nAll 218517 deltaZ 44892 deltaPhiPos 10240 slope 1344 alphaRef 756 alphaOut 555 alphaRefOut 526
+Link SuperDoublet pairs to SDLinks
+SD links stat 0-5 nAll 8103912 nDZ 2432137 nDZPnt 61824 nPPos 61824 nAlp 6780 nInAlpC 5358 nOutAlpC 3074 ndBeta 912 final 912
+SD links stat 0-7 nAll 885132 nDZ 362423 nDZPnt 30030 nPPos 30030 nAlp 6475 nInAlpC 5642 nOutAlpC 4147 ndBeta 384 final 384
+SD links stat 5-7 nAll 94163934 nDZ 19947530 nDZPnt 1996657 nPPos 210765 nAlp 191765 nInAlpC 114397 nOutAlpC 62143 ndBeta 4748 final 4748
+SD links stat 7-9 nAll 2264142 nDZ 493619 nDZPnt 493619 nPPos 80018 nAlp 54217 nInAlpC 25442 nOutAlpC 10540 ndBeta 972 final 972
+SimHit stats: L0 3.9397 L1 1.17595 L2 1.10755 L3 0.921368 L4 0.734838 L5 2.72511 L6 0 L7 2.54776 L8 0 L9 2.54012 L10 0
+Print stats
+Summary for layer 5 h1GeV 555 h2GeV 126 refLos 7252 refUps 7342 refMDs 3958 outLos 7529 outUps 7529 outMDs 4928 outSDs 29362 n1Any 12424 n1All 537 n2Any 3933 n2All 126
+Summary for layer 6 h1GeV 473 h2GeV 111 refLos 5052 refUps 5107 refMDs 1833 outLos 5204 outUps 5204 outMDs 2440 outSDs 6999 n1Any 3664 n1All 459 n2Any 1199 n2All 111
+Summary for layer 7 h1GeV 392 h2GeV 95 refLos 3469 refUps 3531 refMDs 1183 outLos 3588 outUps 3588 outMDs 1526 outSDs 3207 n1Any 1761 n1All 385 n2Any 622 n2All 95
+Summary for layer 8 h1GeV 327 h2GeV 81 refLos 2216 refUps 2246 refMDs 838 outLos 2276 outUps 2276 outMDs 987 outSDs 1288 n1Any 750 n1All 319 n2Any 218 n2All 81
+Summary for layer 9 h1GeV 276 h2GeV 73 refLos 1318 refUps 1338 refMDs 540 outLos 1358 outUps 1358 outMDs 672 outSDs 706 n1Any 444 n1All 262 n2Any 140 n2All 73
+Summary for layer 10 h1GeV 236 h2GeV 65 refLos 847 refUps 858 refMDs 431 outLos 874 outUps 874 outMDs 507 outSDs 526 n1Any 318 n1All 214 n2Any 109 n2All 65
+		sdl5-7 4748 sdl7-9 972
+Event 22
+Load hits 
+Convert seeds to SuperDoublets
+Loaded nSeeds (pt>1 and |eta|<1.6) 435
+Combine MDs 
+SD stat 5 nAll 36313200 deltaZ 5315681 deltaPhiPos 334887 slope 92479 alphaRef 77353 alphaOut 62327 alphaRefOut 55753
+SD stat 6 nAll 8603574 deltaZ 1191796 deltaPhiPos 101986 slope 21102 alphaRef 18217 alphaOut 15416 alphaRefOut 13925
+SD stat 7 nAll 3511485 deltaZ 716313 deltaPhiPos 79682 slope 12911 alphaRef 9443 alphaOut 7012 alphaRefOut 6052
+SD stat 8 nAll 1495920 deltaZ 298168 deltaPhiPos 42492 slope 5849 alphaRef 3422 alphaOut 2217 alphaRefOut 2015
+SD stat 9 nAll 706538 deltaZ 139402 deltaPhiPos 25717 slope 3234 alphaRef 1868 alphaOut 1252 alphaRefOut 1176
+SD stat 10 nAll 371628 deltaZ 75142 deltaPhiPos 16704 slope 1949 alphaRef 1093 alphaOut 742 alphaRefOut 704
+Link SuperDoublet pairs to SDLinks
+SD links stat 0-5 nAll 24252555 nDZ 7228103 nDZPnt 183303 nPPos 183303 nAlp 13569 nInAlpC 10282 nOutAlpC 5341 ndBeta 1571 final 1571
+SD links stat 0-7 nAll 2632620 nDZ 1006999 nDZPnt 82611 nPPos 82611 nAlp 16783 nInAlpC 14456 nOutAlpC 10840 ndBeta 664 final 664
+SD links stat 5-7 nAll 337417156 nDZ 74415317 nDZPnt 8174600 nPPos 904949 nAlp 831458 nInAlpC 491504 nOutAlpC 270745 ndBeta 17168 final 17168
+SD links stat 7-9 nAll 7117152 nDZ 1476209 nDZPnt 1476209 nPPos 245740 nAlp 164795 nInAlpC 75927 nOutAlpC 36861 ndBeta 2374 final 2374
+SimHit stats: L0 3.93449 L1 1.19326 L2 1.08725 L3 0.93259 L4 0.721392 L5 2.55088 L6 0 L7 2.43604 L8 0 L9 2.42327 L10 0
+Print stats
+Summary for layer 5 h1GeV 873 h2GeV 201 refLos 8730 refUps 8819 refMDs 5544 outLos 9030 outUps 9030 outMDs 6550 outSDs 55753 n1Any 28003 n1All 831 n2Any 9575 n2All 199
+Summary for layer 6 h1GeV 737 h2GeV 183 refLos 6287 refUps 6371 refMDs 2593 outLos 6491 outUps 6491 outMDs 3318 outSDs 13925 n1Any 8053 n1All 717 n2Any 3076 n2All 183
+Summary for layer 7 h1GeV 617 h2GeV 169 refLos 4316 refUps 4378 refMDs 1665 outLos 4457 outUps 4457 outMDs 2109 outSDs 6052 n1Any 3825 n1All 603 n2Any 1446 n2All 169
+Summary for layer 8 h1GeV 501 h2GeV 138 refLos 2838 refUps 2885 refMDs 1104 outLos 2939 outUps 2939 outMDs 1355 outSDs 2015 n1Any 1354 n1All 490 n2Any 483 n2All 138
+Summary for layer 9 h1GeV 402 h2GeV 111 refLos 1677 refUps 1700 refMDs 763 outLos 1730 outUps 1730 outMDs 926 outSDs 1176 n1Any 783 n1All 387 n2Any 291 n2All 111
+Summary for layer 10 h1GeV 326 h2GeV 83 refLos 1070 refUps 1085 refMDs 558 outLos 1095 outUps 1095 outMDs 666 outSDs 704 n1Any 480 n1All 307 n2Any 128 n2All 83
+		sdl5-7 17168 sdl7-9 2374
+Event 23
+Load hits 
+Convert seeds to SuperDoublets
+Loaded nSeeds (pt>1 and |eta|<1.6) 322
+Combine MDs 
+SD stat 5 nAll 18519528 deltaZ 2700661 deltaPhiPos 174103 slope 47307 alphaRef 39611 alphaOut 32119 alphaRefOut 28589
+SD stat 6 nAll 4203705 deltaZ 567294 deltaPhiPos 48379 slope 10284 alphaRef 8897 alphaOut 7584 alphaRefOut 6792
+SD stat 7 nAll 2006202 deltaZ 404191 deltaPhiPos 45720 slope 7602 alphaRef 5642 alphaOut 4159 alphaRefOut 3625
+SD stat 8 nAll 930741 deltaZ 187039 deltaPhiPos 27172 slope 3748 alphaRef 2353 alphaOut 1543 alphaRefOut 1386
+SD stat 9 nAll 414180 deltaZ 82524 deltaPhiPos 15512 slope 2140 alphaRef 1197 alphaOut 802 alphaRefOut 754
+SD stat 10 nAll 228551 deltaZ 46029 deltaPhiPos 10404 slope 1340 alphaRef 759 alphaOut 538 alphaRefOut 518
+Link SuperDoublet pairs to SDLinks
+SD links stat 0-5 nAll 9205658 nDZ 2759495 nDZPnt 73529 nPPos 73529 nAlp 6954 nInAlpC 5524 nOutAlpC 3013 ndBeta 937 final 937
+SD links stat 0-7 nAll 1167250 nDZ 451928 nDZPnt 39129 nPPos 39129 nAlp 8071 nInAlpC 7152 nOutAlpC 5288 ndBeta 428 final 428
+SD links stat 5-7 nAll 103635125 nDZ 22072532 nDZPnt 2364933 nPPos 254176 nAlp 230652 nInAlpC 132607 nOutAlpC 70530 ndBeta 5180 final 5180
+SD links stat 7-9 nAll 2733250 nDZ 548459 nDZPnt 548459 nPPos 90972 nAlp 59994 nInAlpC 29500 nOutAlpC 12141 ndBeta 1107 final 1107
+SimHit stats: L0 3.95833 L1 1.20041 L2 1.09091 L3 0.950413 L4 0.716598 L5 2.80697 L6 0 L7 2.59026 L8 0 L9 2.64473 L10 0
+Print stats
+Summary for layer 5 h1GeV 633 h2GeV 130 refLos 6937 refUps 7011 refMDs 3876 outLos 7175 outUps 7175 outMDs 4778 outSDs 28589 n1Any 13690 n1All 607 n2Any 3830 n2All 130
+Summary for layer 6 h1GeV 536 h2GeV 112 refLos 4919 refUps 4983 refMDs 1745 outLos 5071 outUps 5071 outMDs 2409 outSDs 6792 n1Any 4058 n1All 520 n2Any 1173 n2All 112
+Summary for layer 7 h1GeV 435 h2GeV 94 refLos 3526 refUps 3559 refMDs 1243 outLos 3637 outUps 3637 outMDs 1614 outSDs 3625 n1Any 2100 n1All 426 n2Any 599 n2All 94
+Summary for layer 8 h1GeV 353 h2GeV 75 refLos 2319 refUps 2345 refMDs 861 outLos 2371 outUps 2371 outMDs 1081 outSDs 1386 n1Any 810 n1All 343 n2Any 209 n2All 75
+Summary for layer 9 h1GeV 300 h2GeV 67 refLos 1390 refUps 1405 refMDs 585 outLos 1418 outUps 1418 outMDs 708 outSDs 754 n1Any 476 n1All 280 n2Any 118 n2All 67
+Summary for layer 10 h1GeV 242 h2GeV 56 refLos 846 refUps 856 refMDs 437 outLos 865 outUps 865 outMDs 523 outSDs 518 n1Any 322 n1All 220 n2Any 87 n2All 56
+		sdl5-7 5180 sdl7-9 1107
+Event 24
+Load hits 
+Convert seeds to SuperDoublets
+Loaded nSeeds (pt>1 and |eta|<1.6) 346
+Combine MDs 
+SD stat 5 nAll 22108836 deltaZ 3274168 deltaPhiPos 209929 slope 57442 alphaRef 47756 alphaOut 38460 alphaRefOut 34105
+SD stat 6 nAll 4992470 deltaZ 675991 deltaPhiPos 57175 slope 12266 alphaRef 10514 alphaOut 8810 alphaRefOut 7872
+SD stat 7 nAll 2311597 deltaZ 468326 deltaPhiPos 50798 slope 8236 alphaRef 5973 alphaOut 4504 alphaRefOut 3924
+SD stat 8 nAll 1080414 deltaZ 211525 deltaPhiPos 30469 slope 4300 alphaRef 2580 alphaOut 1716 alphaRefOut 1554
+SD stat 9 nAll 451935 deltaZ 89024 deltaPhiPos 15918 slope 2118 alphaRef 1194 alphaOut 856 alphaRefOut 794
+SD stat 10 nAll 216568 deltaZ 44051 deltaPhiPos 9714 slope 1183 alphaRef 689 alphaOut 508 alphaRefOut 488
+Link SuperDoublet pairs to SDLinks
+SD links stat 0-5 nAll 11800330 nDZ 3598411 nDZPnt 91596 nPPos 91596 nAlp 7746 nInAlpC 6229 nOutAlpC 3475 ndBeta 1057 final 1057
+SD links stat 0-7 nAll 1357704 nDZ 530173 nDZPnt 44640 nPPos 44640 nAlp 9583 nInAlpC 8237 nOutAlpC 6247 ndBeta 496 final 496
+SD links stat 5-7 nAll 133828020 nDZ 29195440 nDZPnt 3069225 nPPos 307590 nAlp 278535 nInAlpC 159461 nOutAlpC 83818 ndBeta 6352 final 6352
+SD links stat 7-9 nAll 3115656 nDZ 619734 nDZPnt 619734 nPPos 97908 nAlp 65424 nInAlpC 31262 nOutAlpC 12575 ndBeta 1142 final 1142
+SimHit stats: L0 3.92414 L1 1.1685 L2 1.10878 L3 0.920917 L4 0.725952 L5 2.71441 L6 0 L7 2.55778 L8 0 L9 2.54895 L10 0
+Print stats
+Summary for layer 5 h1GeV 648 h2GeV 103 refLos 7421 refUps 7523 refMDs 4204 outLos 7709 outUps 7709 outMDs 5259 outSDs 34105 n1Any 14671 n1All 624 n2Any 2883 n2All 101
+Summary for layer 6 h1GeV 538 h2GeV 84 refLos 5257 refUps 5320 refMDs 1954 outLos 5433 outUps 5433 outMDs 2555 outSDs 7872 n1Any 4298 n1All 524 n2Any 969 n2All 84
+Summary for layer 7 h1GeV 461 h2GeV 74 refLos 3709 refUps 3743 refMDs 1367 outLos 3808 outUps 3808 outMDs 1691 outSDs 3924 n1Any 2192 n1All 454 n2Any 521 n2All 74
+Summary for layer 8 h1GeV 385 h2GeV 62 refLos 2490 refUps 2524 refMDs 933 outLos 2565 outUps 2565 outMDs 1158 outSDs 1554 n1Any 917 n1All 373 n2Any 182 n2All 62
+Summary for layer 9 h1GeV 304 h2GeV 54 refLos 1440 refUps 1459 refMDs 605 outLos 1477 outUps 1477 outMDs 747 outSDs 794 n1Any 489 n1All 287 n2Any 95 n2All 54
+Summary for layer 10 h1GeV 247 h2GeV 42 refLos 895 refUps 902 refMDs 428 outLos 912 outUps 912 outMDs 506 outSDs 488 n1Any 307 n1All 226 n2Any 54 n2All 42
+		sdl5-7 6352 sdl7-9 1142
+Event 25
+Load hits 
+Convert seeds to SuperDoublets
+Loaded nSeeds (pt>1 and |eta|<1.6) 233
+Combine MDs 
+SD stat 5 nAll 12064696 deltaZ 1652430 deltaPhiPos 103749 slope 29214 alphaRef 24475 alphaOut 19931 alphaRefOut 17811
+SD stat 6 nAll 2736048 deltaZ 369833 deltaPhiPos 31301 slope 6729 alphaRef 5819 alphaOut 5114 alphaRefOut 4613
+SD stat 7 nAll 1297701 deltaZ 263348 deltaPhiPos 29416 slope 5072 alphaRef 3831 alphaOut 2864 alphaRefOut 2523
+SD stat 8 nAll 608771 deltaZ 121417 deltaPhiPos 17709 slope 2591 alphaRef 1596 alphaOut 1117 alphaRefOut 1026
+SD stat 9 nAll 258621 deltaZ 51638 deltaPhiPos 9656 slope 1368 alphaRef 793 alphaOut 575 alphaRefOut 543
+SD stat 10 nAll 130287 deltaZ 26538 deltaPhiPos 5948 slope 796 alphaRef 460 alphaOut 373 alphaRefOut 364
+Link SuperDoublet pairs to SDLinks
+SD links stat 0-5 nAll 4149963 nDZ 1131185 nDZPnt 28803 nPPos 28803 nAlp 3451 nInAlpC 2745 nOutAlpC 1475 ndBeta 555 final 555
+SD links stat 0-7 nAll 587859 nDZ 233214 nDZPnt 20202 nPPos 20202 nAlp 4714 nInAlpC 4020 nOutAlpC 3090 ndBeta 342 final 342
+SD links stat 5-7 nAll 44937153 nDZ 8475017 nDZPnt 929354 nPPos 99101 nAlp 90779 nInAlpC 52166 nOutAlpC 27928 ndBeta 2374 final 2374
+SD links stat 7-9 nAll 1369989 nDZ 270452 nDZPnt 270452 nPPos 44307 nAlp 30159 nInAlpC 14129 nOutAlpC 6229 ndBeta 686 final 686
+SimHit stats: L0 3.96307 L1 1.18633 L2 1.12182 L3 0.949915 L4 0.705009 L5 2.86421 L6 0 L7 2.59086 L8 0 L9 2.64663 L10 0
+Print stats
+Summary for layer 5 h1GeV 529 h2GeV 114 refLos 6205 refUps 6266 refMDs 3059 outLos 6417 outUps 6417 outMDs 3944 outSDs 17811 n1Any 8176 n1All 506 n2Any 2426 n2All 114
+Summary for layer 6 h1GeV 420 h2GeV 91 refLos 4257 refUps 4310 refMDs 1437 outLos 4401 outUps 4401 outMDs 1904 outSDs 4613 n1Any 2509 n1All 407 n2Any 770 n2All 91
+Summary for layer 7 h1GeV 345 h2GeV 68 refLos 3037 refUps 3075 refMDs 999 outLos 3134 outUps 3134 outMDs 1299 outSDs 2523 n1Any 1392 n1All 337 n2Any 412 n2All 68
+Summary for layer 8 h1GeV 284 h2GeV 59 refLos 1926 refUps 1958 refMDs 691 outLos 1983 outUps 1983 outMDs 881 outSDs 1026 n1Any 575 n1All 279 n2Any 157 n2All 59
+Summary for layer 9 h1GeV 220 h2GeV 47 refLos 1084 refUps 1103 refMDs 461 outLos 1114 outUps 1114 outMDs 561 outSDs 543 n1Any 309 n1All 205 n2Any 82 n2All 47
+Summary for layer 10 h1GeV 183 h2GeV 42 refLos 706 refUps 714 refMDs 317 outLos 727 outUps 727 outMDs 411 outSDs 364 n1Any 203 n1All 162 n2Any 60 n2All 42
+		sdl5-7 2374 sdl7-9 686
+Event 26
+Load hits 
+Convert seeds to SuperDoublets
+Loaded nSeeds (pt>1 and |eta|<1.6) 345
+Combine MDs 
+SD stat 5 nAll 29799336 deltaZ 4290061 deltaPhiPos 270748 slope 74168 alphaRef 61899 alphaOut 50174 alphaRefOut 44540
+SD stat 6 nAll 6040008 deltaZ 823020 deltaPhiPos 69127 slope 14569 alphaRef 12583 alphaOut 10670 alphaRefOut 9527
+SD stat 7 nAll 2622390 deltaZ 524098 deltaPhiPos 58114 slope 9507 alphaRef 6846 alphaOut 5047 alphaRefOut 4376
+SD stat 8 nAll 1073886 deltaZ 212399 deltaPhiPos 30509 slope 4211 alphaRef 2567 alphaOut 1704 alphaRefOut 1568
+SD stat 9 nAll 451136 deltaZ 88938 deltaPhiPos 16035 slope 2021 alphaRef 1167 alphaOut 796 alphaRefOut 751
+SD stat 10 nAll 208690 deltaZ 41694 deltaPhiPos 9132 slope 1128 alphaRef 640 alphaOut 475 alphaRefOut 463
+Link SuperDoublet pairs to SDLinks
+SD links stat 0-5 nAll 15366300 nDZ 4502117 nDZPnt 113570 nPPos 113570 nAlp 9004 nInAlpC 7159 nOutAlpC 4078 ndBeta 1056 final 1056
+SD links stat 0-7 nAll 1509720 nDZ 568363 nDZPnt 50877 nPPos 50877 nAlp 11457 nInAlpC 9905 nOutAlpC 7651 ndBeta 564 final 564
+SD links stat 5-7 nAll 194907040 nDZ 40307484 nDZPnt 4226848 nPPos 446582 nAlp 401340 nInAlpC 228824 nOutAlpC 120112 ndBeta 7945 final 7945
+SD links stat 7-9 nAll 3286376 nDZ 605708 nDZPnt 605708 nPPos 93025 nAlp 60637 nInAlpC 28529 nOutAlpC 12513 ndBeta 1071 final 1071
+SimHit stats: L0 3.9395 L1 1.17151 L2 1.08772 L3 0.945856 L4 0.734422 L5 2.70588 L6 0 L7 2.50553 L8 0 L9 2.55135 L10 0
+Print stats
+Summary for layer 5 h1GeV 666 h2GeV 150 refLos 8216 refUps 8303 refMDs 4984 outLos 8479 outUps 8479 outMDs 5979 outSDs 44540 n1Any 18330 n1All 638 n2Any 6148 n2All 150
+Summary for layer 6 h1GeV 542 h2GeV 121 refLos 5665 refUps 5745 refMDs 2106 outLos 5860 outUps 5860 outMDs 2868 outSDs 9527 n1Any 5304 n1All 529 n2Any 1522 n2All 121
+Summary for layer 7 h1GeV 448 h2GeV 101 refLos 3986 refUps 4035 refMDs 1433 outLos 4101 outUps 4101 outMDs 1830 outSDs 4376 n1Any 2366 n1All 440 n2Any 672 n2All 101
+Summary for layer 8 h1GeV 360 h2GeV 85 refLos 2563 refUps 2597 refMDs 921 outLos 2634 outUps 2634 outMDs 1166 outSDs 1568 n1Any 947 n1All 354 n2Any 280 n2All 85
+Summary for layer 9 h1GeV 284 h2GeV 71 refLos 1444 refUps 1458 refMDs 608 outLos 1481 outUps 1481 outMDs 742 outSDs 751 n1Any 423 n1All 270 n2Any 131 n2All 71
+Summary for layer 10 h1GeV 234 h2GeV 59 refLos 857 refUps 863 refMDs 410 outLos 876 outUps 876 outMDs 509 outSDs 463 n1Any 275 n1All 215 n2Any 81 n2All 59
+		sdl5-7 7945 sdl7-9 1071
+Event 27
+Load hits 
+Convert seeds to SuperDoublets
+Loaded nSeeds (pt>1 and |eta|<1.6) 387
+Combine MDs 
+SD stat 5 nAll 25339960 deltaZ 3817701 deltaPhiPos 238350 slope 65363 alphaRef 54686 alphaOut 43854 alphaRefOut 38956
+SD stat 6 nAll 5295888 deltaZ 733772 deltaPhiPos 62406 slope 13183 alphaRef 11413 alphaOut 9647 alphaRefOut 8699
+SD stat 7 nAll 2566830 deltaZ 526220 deltaPhiPos 59159 slope 9892 alphaRef 7176 alphaOut 5300 alphaRefOut 4606
+SD stat 8 nAll 1147600 deltaZ 224768 deltaPhiPos 33172 slope 4611 alphaRef 2745 alphaOut 1767 alphaRefOut 1619
+SD stat 9 nAll 468874 deltaZ 93376 deltaPhiPos 17039 slope 2243 alphaRef 1327 alphaOut 924 alphaRefOut 868
+SD stat 10 nAll 234827 deltaZ 45954 deltaPhiPos 9956 slope 1321 alphaRef 762 alphaOut 569 alphaRefOut 547
+Link SuperDoublet pairs to SDLinks
+SD links stat 0-5 nAll 15075972 nDZ 4816549 nDZPnt 124237 nPPos 124237 nAlp 10607 nInAlpC 7880 nOutAlpC 4161 ndBeta 1205 final 1205
+SD links stat 0-7 nAll 1782522 nDZ 688156 nDZPnt 59321 nPPos 59321 nAlp 13435 nInAlpC 11239 nOutAlpC 8688 ndBeta 597 final 597
+SD links stat 5-7 nAll 179431336 nDZ 41269359 nDZPnt 4483727 nPPos 546313 nAlp 502656 nInAlpC 291197 nOutAlpC 155650 ndBeta 9773 final 9773
+SD links stat 7-9 nAll 3998008 nDZ 770968 nDZPnt 770968 nPPos 123927 nAlp 85020 nInAlpC 41964 nOutAlpC 18604 ndBeta 1534 final 1534
+SimHit stats: L0 3.88076 L1 1.13512 L2 1.08998 L3 0.946139 L4 0.709527 L5 2.60817 L6 0 L7 2.51612 L8 0 L9 2.46841 L10 0
+Print stats
+Summary for layer 5 h1GeV 692 h2GeV 144 refLos 7733 refUps 7825 refMDs 4574 outLos 8023 outUps 8023 outMDs 5540 outSDs 38956 n1Any 18385 n1All 654 n2Any 5256 n2All 142
+Summary for layer 6 h1GeV 584 h2GeV 122 refLos 5390 refUps 5459 refMDs 1968 outLos 5560 outUps 5560 outMDs 2691 outSDs 8699 n1Any 4818 n1All 566 n2Any 1492 n2All 122
+Summary for layer 7 h1GeV 501 h2GeV 110 refLos 3825 refUps 3873 refMDs 1438 outLos 3951 outUps 3951 outMDs 1785 outSDs 4606 n1Any 2777 n1All 491 n2Any 919 n2All 110
+Summary for layer 8 h1GeV 409 h2GeV 93 refLos 2502 refUps 2526 refMDs 950 outLos 2561 outUps 2561 outMDs 1208 outSDs 1619 n1Any 1003 n1All 397 n2Any 267 n2All 93
+Summary for layer 9 h1GeV 322 h2GeV 68 refLos 1467 refUps 1488 refMDs 626 outLos 1509 outUps 1509 outMDs 749 outSDs 868 n1Any 540 n1All 306 n2Any 144 n2All 68
+Summary for layer 10 h1GeV 250 h2GeV 57 refLos 885 refUps 888 refMDs 449 outLos 898 outUps 898 outMDs 523 outSDs 547 n1Any 336 n1All 229 n2Any 83 n2All 57
+		sdl5-7 9773 sdl7-9 1534
+Event 28
+Load hits 
+Convert seeds to SuperDoublets
+Loaded nSeeds (pt>1 and |eta|<1.6) 393
+Combine MDs 
+SD stat 5 nAll 34698752 deltaZ 4957421 deltaPhiPos 309934 slope 84843 alphaRef 70371 alphaOut 56255 alphaRefOut 49905
+SD stat 6 nAll 6765660 deltaZ 933732 deltaPhiPos 78746 slope 16110 alphaRef 13919 alphaOut 11708 alphaRefOut 10482
+SD stat 7 nAll 2941272 deltaZ 604464 deltaPhiPos 67268 slope 10848 alphaRef 7860 alphaOut 5793 alphaRefOut 4948
+SD stat 8 nAll 1354976 deltaZ 267397 deltaPhiPos 38809 slope 5439 alphaRef 3286 alphaOut 2152 alphaRefOut 1942
+SD stat 9 nAll 554466 deltaZ 109730 deltaPhiPos 20510 slope 2625 alphaRef 1434 alphaOut 971 alphaRefOut 922
+SD stat 10 nAll 258579 deltaZ 51687 deltaPhiPos 11170 slope 1425 alphaRef 788 alphaOut 563 alphaRefOut 537
+Link SuperDoublet pairs to SDLinks
+SD links stat 0-5 nAll 19612665 nDZ 5731620 nDZPnt 147326 nPPos 147326 nAlp 10530 nInAlpC 8525 nOutAlpC 4574 ndBeta 1311 final 1311
+SD links stat 0-7 nAll 1944564 nDZ 757406 nDZPnt 64575 nPPos 64575 nAlp 13793 nInAlpC 12056 nOutAlpC 8889 ndBeta 618 final 618
+SD links stat 5-7 nAll 246929940 nDZ 51671439 nDZPnt 5640656 nPPos 606185 nAlp 551129 nInAlpC 311955 nOutAlpC 163353 ndBeta 10438 final 10438
+SD links stat 7-9 nAll 4562056 nDZ 858920 nDZPnt 858920 nPPos 138299 nAlp 90217 nInAlpC 43846 nOutAlpC 18620 ndBeta 1427 final 1427
+SimHit stats: L0 3.89192 L1 1.16657 L2 1.08687 L3 0.932053 L4 0.706422 L5 2.589 L6 0 L7 2.41502 L8 0 L9 2.50851 L10 0
+Print stats
+Summary for layer 5 h1GeV 768 h2GeV 175 refLos 8648 refUps 8739 refMDs 5368 outLos 8960 outUps 8960 outMDs 6464 outSDs 49905 n1Any 21957 n1All 744 n2Any 6837 n2All 174
+Summary for layer 6 h1GeV 641 h2GeV 153 refLos 5891 refUps 5962 refMDs 2295 outLos 6072 outUps 6072 outMDs 2948 outSDs 10482 n1Any 5898 n1All 632 n2Any 2110 n2All 153
+Summary for layer 7 h1GeV 529 h2GeV 134 refLos 4076 refUps 4135 refMDs 1513 outLos 4207 outUps 4207 outMDs 1944 outSDs 4948 n1Any 3023 n1All 523 n2Any 1181 n2All 134
+Summary for layer 8 h1GeV 443 h2GeV 118 refLos 2653 refUps 2695 refMDs 1052 outLos 2726 outUps 2726 outMDs 1288 outSDs 1942 n1Any 1224 n1All 437 n2Any 376 n2All 118
+Summary for layer 9 h1GeV 333 h2GeV 73 refLos 1520 refUps 1540 refMDs 682 outLos 1552 outUps 1552 outMDs 813 outSDs 922 n1Any 587 n1All 317 n2Any 126 n2All 73
+Summary for layer 10 h1GeV 263 h2GeV 64 refLos 968 refUps 981 refMDs 471 outLos 996 outUps 996 outMDs 549 outSDs 537 n1Any 320 n1All 243 n2Any 78 n2All 64
+		sdl5-7 10438 sdl7-9 1427
+Event 29
+Load hits 
+Convert seeds to SuperDoublets
+Loaded nSeeds (pt>1 and |eta|<1.6) 376
+Combine MDs 
+SD stat 5 nAll 27103261 deltaZ 3891248 deltaPhiPos 243309 slope 67506 alphaRef 56047 alphaOut 45267 alphaRefOut 40191
+SD stat 6 nAll 6069215 deltaZ 828340 deltaPhiPos 68103 slope 14124 alphaRef 12133 alphaOut 10315 alphaRefOut 9238
+SD stat 7 nAll 2769168 deltaZ 557602 deltaPhiPos 62003 slope 10172 alphaRef 7306 alphaOut 5268 alphaRefOut 4515
+SD stat 8 nAll 1334344 deltaZ 268230 deltaPhiPos 37576 slope 5330 alphaRef 3134 alphaOut 2033 alphaRefOut 1857
+SD stat 9 nAll 545600 deltaZ 108625 deltaPhiPos 19572 slope 2504 alphaRef 1439 alphaOut 1009 alphaRefOut 952
+SD stat 10 nAll 241285 deltaZ 49155 deltaPhiPos 10455 slope 1354 alphaRef 743 alphaOut 547 alphaRefOut 527
+Link SuperDoublet pairs to SDLinks
+SD links stat 0-5 nAll 15111816 nDZ 4313795 nDZPnt 115110 nPPos 115110 nAlp 9919 nInAlpC 7879 nOutAlpC 4653 ndBeta 1432 final 1432
+SD links stat 0-7 nAll 1697640 nDZ 625159 nDZPnt 56909 nPPos 56909 nAlp 12303 nInAlpC 10743 nOutAlpC 8113 ndBeta 576 final 576
+SD links stat 5-7 nAll 181462365 nDZ 36942129 nDZPnt 3854830 nPPos 408027 nAlp 366549 nInAlpC 205502 nOutAlpC 107565 ndBeta 7677 final 7677
+SD links stat 7-9 nAll 4298280 nDZ 849497 nDZPnt 849497 nPPos 132311 nAlp 89471 nInAlpC 42764 nOutAlpC 18027 ndBeta 1488 final 1488
+SimHit stats: L0 3.96113 L1 1.19101 L2 1.10568 L3 0.947161 L4 0.717279 L5 2.75439 L6 0 L7 2.5532 L8 0 L9 2.54556 L10 0
+Print stats
+Summary for layer 5 h1GeV 695 h2GeV 136 refLos 8025 refUps 8107 refMDs 4721 outLos 8305 outUps 8305 outMDs 5741 outSDs 40191 n1Any 17546 n1All 673 n2Any 4584 n2All 136
+Summary for layer 6 h1GeV 581 h2GeV 110 refLos 5657 refUps 5732 refMDs 2095 outLos 5859 outUps 5859 outMDs 2897 outSDs 9238 n1Any 4931 n1All 564 n2Any 1124 n2All 110
+Summary for layer 7 h1GeV 479 h2GeV 87 refLos 3990 refUps 4044 refMDs 1488 outLos 4109 outUps 4109 outMDs 1861 outSDs 4515 n1Any 2388 n1All 469 n2Any 599 n2All 87
+Summary for layer 8 h1GeV 394 h2GeV 74 refLos 2589 refUps 2618 refMDs 1028 outLos 2646 outUps 2646 outMDs 1298 outSDs 1857 n1Any 1089 n1All 387 n2Any 249 n2All 74
+Summary for layer 9 h1GeV 317 h2GeV 61 refLos 1537 refUps 1554 refMDs 682 outLos 1571 outUps 1571 outMDs 800 outSDs 952 n1Any 597 n1All 299 n2Any 155 n2All 61
+Summary for layer 10 h1GeV 249 h2GeV 45 refLos 919 refUps 930 refMDs 451 outLos 942 outUps 942 outMDs 535 outSDs 527 n1Any 317 n1All 223 n2Any 60 n2All 45
+		sdl5-7 7677 sdl7-9 1488
+Event 30
+Load hits 
+Convert seeds to SuperDoublets
+Loaded nSeeds (pt>1 and |eta|<1.6) 307
+Combine MDs 
+SD stat 5 nAll 14952298 deltaZ 2173347 deltaPhiPos 137339 slope 37864 alphaRef 31690 alphaOut 25497 alphaRefOut 22613
+SD stat 6 nAll 3556622 deltaZ 490246 deltaPhiPos 42841 slope 9082 alphaRef 7844 alphaOut 6780 alphaRefOut 6077
+SD stat 7 nAll 1691328 deltaZ 335784 deltaPhiPos 38624 slope 6517 alphaRef 4794 alphaOut 3597 alphaRefOut 3139
+SD stat 8 nAll 730764 deltaZ 143664 deltaPhiPos 21221 slope 3134 alphaRef 1920 alphaOut 1306 alphaRefOut 1206
+SD stat 9 nAll 311000 deltaZ 62117 deltaPhiPos 11596 slope 1574 alphaRef 932 alphaOut 658 alphaRefOut 624
+SD stat 10 nAll 170555 deltaZ 33702 deltaPhiPos 7359 slope 927 alphaRef 584 alphaOut 444 alphaRefOut 429
+Link SuperDoublet pairs to SDLinks
+SD links stat 0-5 nAll 6942191 nDZ 2108684 nDZPnt 53020 nPPos 53020 nAlp 5434 nInAlpC 4393 nOutAlpC 2335 ndBeta 886 final 886
+SD links stat 0-7 nAll 963673 nDZ 367408 nDZPnt 31881 nPPos 31881 nAlp 6957 nInAlpC 6105 nOutAlpC 4534 ndBeta 387 final 387
+SD links stat 5-7 nAll 70982207 nDZ 15102690 nDZPnt 1661896 nPPos 190198 nAlp 174817 nInAlpC 101708 nOutAlpC 55039 ndBeta 4102 final 4102
+SD links stat 7-9 nAll 1958736 nDZ 362850 nDZPnt 362850 nPPos 62606 nAlp 42573 nInAlpC 19866 nOutAlpC 9660 ndBeta 796 final 796
+SimHit stats: L0 3.87967 L1 1.1492 L2 1.09404 L3 0.932988 L4 0.703443 L5 2.76228 L6 0 L7 2.55324 L8 0 L9 2.54481 L10 0
+Print stats
+Summary for layer 5 h1GeV 604 h2GeV 131 refLos 6647 refUps 6727 refMDs 3431 outLos 6887 outUps 6887 outMDs 4358 outSDs 22613 n1Any 10937 n1All 583 n2Any 3334 n2All 130
+Summary for layer 6 h1GeV 500 h2GeV 117 refLos 4619 refUps 4674 refMDs 1627 outLos 4774 outUps 4774 outMDs 2186 outSDs 6077 n1Any 3429 n1All 491 n2Any 1158 n2All 117
+Summary for layer 7 h1GeV 433 h2GeV 107 refLos 3319 refUps 3363 refMDs 1149 outLos 3418 outUps 3418 outMDs 1472 outSDs 3139 n1Any 1869 n1All 427 n2Any 688 n2All 107
+Summary for layer 8 h1GeV 346 h2GeV 80 refLos 2071 refUps 2097 refMDs 766 outLos 2134 outUps 2134 outMDs 954 outSDs 1206 n1Any 780 n1All 343 n2Any 241 n2All 80
+Summary for layer 9 h1GeV 263 h2GeV 57 refLos 1250 refUps 1265 refMDs 500 outLos 1283 outUps 1283 outMDs 622 outSDs 624 n1Any 392 n1All 245 n2Any 101 n2All 57
+Summary for layer 10 h1GeV 229 h2GeV 56 refLos 755 refUps 763 refMDs 385 outLos 772 outUps 772 outMDs 443 outSDs 429 n1Any 263 n1All 203 n2Any 69 n2All 56
+		sdl5-7 4102 sdl7-9 796
+Timer results for timeLayout
+Real time 0:00:01.875, CP time 1.850, 31 slices
+----------------------------------
+Timer results for timeReco
+Real time 0:01:10.806, CP time 70.740, 31 slices
+----------------------------------
+Timer results for timeValidation
+Real time 0:00:40.310, CP time 40.220, 31 slices
+----------------------------------
+3319 make efficiencies 
+Info in <TROOT::TEfficiency::CheckEntries>: Histograms are not consistent: passed bin content > total bin content
+Error in <TROOT::TEfficiency::CheckConsistency>: passed TEfficiency objects do not have consistent bin contents
+Error in <TEfficiency::TEfficiency(const TH1&,const TH1&)>: histograms are not consistent -> results are useless
+Warning in <TEfficiency::TEfficiency(const TH1&,const TH1&)>: using two empty TH1D('h1','h1',10,0,10)
+Info in <TROOT::TEfficiency::CheckEntries>: Histograms are not consistent: passed bin content > total bin content
+Error in <TROOT::TEfficiency::CheckConsistency>: passed TEfficiency objects do not have consistent bin contents
+Error in <TEfficiency::TEfficiency(const TH1&,const TH1&)>: histograms are not consistent -> results are useless
+Warning in <TEfficiency::TEfficiency(const TH1&,const TH1&)>: using two empty TH1D('h1','h1',10,0,10)
+Info in <TROOT::TEfficiency::CheckEntries>: Histograms are not consistent: passed bin content > total bin content
+Error in <TROOT::TEfficiency::CheckConsistency>: passed TEfficiency objects do not have consistent bin contents
+Error in <TEfficiency::TEfficiency(const TH1&,const TH1&)>: histograms are not consistent -> results are useless
+Warning in <TEfficiency::TEfficiency(const TH1&,const TH1&)>: using two empty TH1D('h1','h1',10,0,10)
+Info in <TROOT::TEfficiency::CheckEntries>: Histograms are not consistent: passed bin content > total bin content
+Error in <TROOT::TEfficiency::CheckConsistency>: passed TEfficiency objects do not have consistent bin contents
+Error in <TEfficiency::TEfficiency(const TH1&,const TH1&)>: histograms are not consistent -> results are useless
+Warning in <TEfficiency::TEfficiency(const TH1&,const TH1&)>: using two empty TH1D('h1','h1',10,0,10)
+Info in <TCanvas::Print>: png file h2_hitsXY_ITrec_OTmockLL_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h2_hitsRZ_ITrec_OTmockLL_mm0_D8.0cm_us1.png has been created
+3422 draw and print 
+Info in <TCanvas::Print>: png file h_SDL_dBeta_NM1dBeta_all_vs_pass_0to5_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_NM1dBeta_all_vs_pass_0to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_NM1dBeta_all_vs_pass_5to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_NM1dBeta_all_vs_pass_7to9_mm0_D8.0cm_us1.png has been created
+Warning in <TCanvas::Constructor>: Deleting canvas with same name: h_SDL_dBeta_NM1dBeta_all_0to5_pt
+Info in <TCanvas::Print>: png file h_SDL_dBeta_NM1dBeta_0to5_mm0_D8.0cm_us1.png has been created
+Warning in <TCanvas::Constructor>: Deleting canvas with same name: h_SDL_dBeta_NM1dBeta_all_0to7_pt
+Info in <TCanvas::Print>: png file h_SDL_dBeta_NM1dBeta_0to7_mm0_D8.0cm_us1.png has been created
+Warning in <TCanvas::Constructor>: Deleting canvas with same name: h_SDL_dBeta_NM1dBeta_all_5to7_pt
+Info in <TCanvas::Print>: png file h_SDL_dBeta_NM1dBeta_5to7_mm0_D8.0cm_us1.png has been created
+Warning in <TCanvas::Constructor>: Deleting canvas with same name: h_SDL_dBeta_NM1dBeta_all_7to9_pt
+Info in <TCanvas::Print>: png file h_SDL_dBeta_NM1dBeta_7to9_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_0to5_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_0to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_5to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_7to9_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_NM1dBeta_all_vs_pass_0to5_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_NM1dBeta_all_vs_pass_0to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_NM1dBeta_all_vs_pass_5to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_NM1dBeta_all_vs_pass_7to9_mm0_D8.0cm_us1.png has been created
+Warning in <TCanvas::Constructor>: Deleting canvas with same name: h_SDL_dBeta_zoom_NM1dBeta_all_0to5_pt
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_NM1dBeta_0to5_mm0_D8.0cm_us1.png has been created
+Warning in <TCanvas::Constructor>: Deleting canvas with same name: h_SDL_dBeta_zoom_NM1dBeta_all_0to7_pt
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_NM1dBeta_0to7_mm0_D8.0cm_us1.png has been created
+Warning in <TCanvas::Constructor>: Deleting canvas with same name: h_SDL_dBeta_zoom_NM1dBeta_all_5to7_pt
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_NM1dBeta_5to7_mm0_D8.0cm_us1.png has been created
+Warning in <TCanvas::Constructor>: Deleting canvas with same name: h_SDL_dBeta_zoom_NM1dBeta_all_7to9_pt
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_NM1dBeta_7to9_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_0to5_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_0to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_5to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_7to9_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_NM1dBeta_ptIn0to2_all_vs_pass_0to5_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_NM1dBeta_ptIn0to2_all_vs_pass_0to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_NM1dBeta_ptIn0to2_all_vs_pass_5to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_NM1dBeta_ptIn0to2_all_vs_pass_7to9_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_NM1dBeta_ptIn3to5_all_vs_pass_0to5_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_NM1dBeta_ptIn3to5_all_vs_pass_0to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_NM1dBeta_ptIn3to5_all_vs_pass_5to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_NM1dBeta_ptIn3to5_all_vs_pass_7to9_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_NM1dBeta_ptIn7toInf_all_vs_pass_0to5_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_NM1dBeta_ptIn7toInf_all_vs_pass_0to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_NM1dBeta_ptIn7toInf_all_vs_pass_5to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_NM1dBeta_ptIn7toInf_all_vs_pass_7to9_mm0_D8.0cm_us1.png has been created
+Warning in <TCanvas::Constructor>: Deleting canvas with same name: h_SDL_dBeta_zoom_NM1dBeta_ptIn0to2_all_0to5_pt
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_NM1dBeta_ptIn0to2_0to5_mm0_D8.0cm_us1.png has been created
+Warning in <TCanvas::Constructor>: Deleting canvas with same name: h_SDL_dBeta_zoom_NM1dBeta_ptIn0to2_all_0to7_pt
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_NM1dBeta_ptIn0to2_0to7_mm0_D8.0cm_us1.png has been created
+Warning in <TCanvas::Constructor>: Deleting canvas with same name: h_SDL_dBeta_zoom_NM1dBeta_ptIn0to2_all_5to7_pt
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_NM1dBeta_ptIn0to2_5to7_mm0_D8.0cm_us1.png has been created
+Warning in <TCanvas::Constructor>: Deleting canvas with same name: h_SDL_dBeta_zoom_NM1dBeta_ptIn0to2_all_7to9_pt
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_NM1dBeta_ptIn0to2_7to9_mm0_D8.0cm_us1.png has been created
+Warning in <TCanvas::Constructor>: Deleting canvas with same name: h_SDL_dBeta_zoom_NM1dBeta_ptIn3to5_all_0to5_pt
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_NM1dBeta_ptIn3to5_0to5_mm0_D8.0cm_us1.png has been created
+Warning in <TCanvas::Constructor>: Deleting canvas with same name: h_SDL_dBeta_zoom_NM1dBeta_ptIn3to5_all_0to7_pt
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_NM1dBeta_ptIn3to5_0to7_mm0_D8.0cm_us1.png has been created
+Warning in <TCanvas::Constructor>: Deleting canvas with same name: h_SDL_dBeta_zoom_NM1dBeta_ptIn3to5_all_5to7_pt
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_NM1dBeta_ptIn3to5_5to7_mm0_D8.0cm_us1.png has been created
+Warning in <TCanvas::Constructor>: Deleting canvas with same name: h_SDL_dBeta_zoom_NM1dBeta_ptIn3to5_all_7to9_pt
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_NM1dBeta_ptIn3to5_7to9_mm0_D8.0cm_us1.png has been created
+Warning in <TCanvas::Constructor>: Deleting canvas with same name: h_SDL_dBeta_zoom_NM1dBeta_ptIn7toInf_all_0to5_pt
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_NM1dBeta_ptIn7toInf_0to5_mm0_D8.0cm_us1.png has been created
+Warning in <TCanvas::Constructor>: Deleting canvas with same name: h_SDL_dBeta_zoom_NM1dBeta_ptIn7toInf_all_0to7_pt
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_NM1dBeta_ptIn7toInf_0to7_mm0_D8.0cm_us1.png has been created
+Warning in <TCanvas::Constructor>: Deleting canvas with same name: h_SDL_dBeta_zoom_NM1dBeta_ptIn7toInf_all_5to7_pt
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_NM1dBeta_ptIn7toInf_5to7_mm0_D8.0cm_us1.png has been created
+Warning in <TCanvas::Constructor>: Deleting canvas with same name: h_SDL_dBeta_zoom_NM1dBeta_ptIn7toInf_all_7to9_pt
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_NM1dBeta_ptIn7toInf_7to9_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_ptIn0to2_0to5_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_ptIn0to2_0to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_ptIn0to2_5to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_ptIn0to2_7to9_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_ptIn3to5_0to5_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_ptIn3to5_0to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_ptIn3to5_5to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_ptIn3to5_7to9_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_ptIn7toInf_0to5_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_ptIn7toInf_0to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_ptIn7toInf_5to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_ptIn7toInf_7to9_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_0_all_vs_pass_0to5_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_0_all_vs_pass_0to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_0_all_vs_pass_5to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_0_all_vs_pass_7to9_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_0_all_vs_pass_0to5_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_0_all_vs_pass_0to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_0_all_vs_pass_5to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_0_all_vs_pass_7to9_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_01_all_vs_pass_0to5_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_01_all_vs_pass_0to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_01_all_vs_pass_5to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_01_all_vs_pass_7to9_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_01_all_vs_pass_0to5_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_01_all_vs_pass_0to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_01_all_vs_pass_5to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_01_all_vs_pass_7to9_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_012_all_vs_pass_0to5_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_012_all_vs_pass_0to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_012_all_vs_pass_5to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_012_all_vs_pass_7to9_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_012_all_vs_pass_0to5_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_012_all_vs_pass_0to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_012_all_vs_pass_5to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_012_all_vs_pass_7to9_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_0123_all_vs_pass_0to5_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_0123_all_vs_pass_0to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_0123_all_vs_pass_5to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_0123_all_vs_pass_7to9_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_0123_all_vs_pass_0to5_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_0123_all_vs_pass_0to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_0123_all_vs_pass_5to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_0123_all_vs_pass_7to9_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_01234_all_vs_pass_0to5_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_01234_all_vs_pass_0to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_01234_all_vs_pass_5to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_01234_all_vs_pass_7to9_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_01234_all_vs_pass_0to5_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_01234_all_vs_pass_0to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_01234_all_vs_pass_5to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_01234_all_vs_pass_7to9_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_012345_all_vs_pass_0to5_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_012345_all_vs_pass_0to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_012345_all_vs_pass_5to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_012345_all_vs_pass_7to9_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_012345_all_vs_pass_0to5_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_012345_all_vs_pass_0to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_012345_all_vs_pass_5to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_012345_all_vs_pass_7to9_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h2_SDL_dBeta_betaIn_NM1dBeta_0to5_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h2_SDL_dBeta_betaIn_NM1dBeta_0to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h2_SDL_dBeta_betaIn_NM1dBeta_5to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h2_SDL_dBeta_betaIn_NM1dBeta_7to9_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_NM1dBeta_8MH_0to5_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_NM1dBeta_8MH_0to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_NM1dBeta_8MH_5to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_NM1dBeta_8MH_7to9_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom2_NM1dBeta_8MH_0to5_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom2_NM1dBeta_8MH_0to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom2_NM1dBeta_8MH_5to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom2_NM1dBeta_8MH_7to9_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_8MH_pt0p7to1p0_0to5_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_8MH_pt0p7to1p0_0to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_8MH_pt0p7to1p0_5to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_8MH_pt0p7to1p0_7to9_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_8MH_pt1p0to1p2_0to5_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_8MH_pt1p0to1p2_0to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_8MH_pt1p0to1p2_5to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_8MH_pt1p0to1p2_7to9_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_8MH_pt1p2to1p5_0to5_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_8MH_pt1p2to1p5_0to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_8MH_pt1p2to1p5_5to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_8MH_pt1p2to1p5_7to9_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_8MH_pt1p5to2p0_0to5_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_8MH_pt1p5to2p0_0to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_8MH_pt1p5to2p0_5to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_8MH_pt1p5to2p0_7to9_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_8MH_pt2p0to4p0_0to5_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_8MH_pt2p0to4p0_0to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_8MH_pt2p0to4p0_5to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_8MH_pt2p0to4p0_7to9_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_8MH_pt4p0to7p0_0to5_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_8MH_pt4p0to7p0_0to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_8MH_pt4p0to7p0_5to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_8MH_pt4p0to7p0_7to9_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_8MH_pt7p0toInf_0to5_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_8MH_pt7p0toInf_0to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_8MH_pt7p0toInf_5to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_SDL_dBeta_zoom_8MH_pt7p0toInf_7to9_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h2_SDL_dBeta_betaIn_NM1dBeta_8MH_0to5_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h2_SDL_dBeta_betaIn_NM1dBeta_8MH_0to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h2_SDL_dBeta_betaIn_NM1dBeta_8MH_5to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h2_SDL_dBeta_betaIn_NM1dBeta_8MH_7to9_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h2_SDL_dBeta_betaIn_zoom_NM1dBeta_8MH_0to5_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h2_SDL_dBeta_betaIn_zoom_NM1dBeta_8MH_0to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h2_SDL_dBeta_betaIn_zoom_NM1dBeta_8MH_5to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h2_SDL_dBeta_betaIn_zoom_NM1dBeta_8MH_7to9_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h2_SDL_dBeta_betaOut_zoom_NM1dBeta_8MH_0to5_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h2_SDL_dBeta_betaOut_zoom_NM1dBeta_8MH_0to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h2_SDL_dBeta_betaOut_zoom_NM1dBeta_8MH_5to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h2_SDL_dBeta_betaOut_zoom_NM1dBeta_8MH_7to9_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h2_SDL_dBeta_betaIn_pass_0to5_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h2_SDL_dBeta_betaIn_pass_0to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h2_SDL_dBeta_betaIn_pass_5to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h2_SDL_dBeta_betaIn_pass_7to9_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h2_SDL_dBeta_betaIn_zoom_pass_0to5_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h2_SDL_dBeta_betaIn_zoom_pass_0to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h2_SDL_dBeta_betaIn_zoom_pass_5to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h2_SDL_dBeta_betaIn_zoom_pass_7to9_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h2_SDL_dBeta_betaOut_zoom_pass_0to5_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h2_SDL_dBeta_betaOut_zoom_pass_0to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h2_SDL_dBeta_betaOut_zoom_pass_5to7_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h2_SDL_dBeta_betaOut_zoom_pass_7to9_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_denVSnums_SDL_0to5_pt_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_denVSnums_SDL_0to7_pt_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_denVSnums_SDL_5to7_pt_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_denVSnums_SDL_7to9_pt_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_effs_SDL_0to5_pt_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_effs_SDL_0to7_pt_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_effs_SDL_5to7_pt_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_effs_SDL_7to9_pt_mm0_D8.0cm_us1.png has been created
+Warning in <TCanvas::Constructor>: Deleting canvas with same name: h_denSDL_0to5_pt_clone
+Info in <TCanvas::Print>: png file h_effs_SDL_steps_4of4_0to5_pt_mm0_D8.0cm_us1.png has been created
+Warning in <TCanvas::Constructor>: Deleting canvas with same name: h_denSDL_0to7_pt_clone
+Info in <TCanvas::Print>: png file h_effs_SDL_steps_4of4_0to7_pt_mm0_D8.0cm_us1.png has been created
+Warning in <TCanvas::Constructor>: Deleting canvas with same name: h_denSDL_5to7_pt_clone
+Info in <TCanvas::Print>: png file h_effs_SDL_steps_4of4_5to7_pt_mm0_D8.0cm_us1.png has been created
+Warning in <TCanvas::Constructor>: Deleting canvas with same name: h_denSDL_7to9_pt_clone
+Info in <TCanvas::Print>: png file h_effs_SDL_steps_4of4_7to9_pt_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_effs_SDL_den8MH_steps_4of4_0to5_pt_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_effs_SDL_den8MH_steps_4of4_0to7_pt_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_effs_SDL_den8MH_steps_4of4_5to7_pt_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_effs_SDL_den8MH_steps_4of4_7to9_pt_mm0_D8.0cm_us1.png has been created
+Warning in <TCanvas::Constructor>: Deleting canvas with same name: h_num8MH_0to5_pt_clone
+Info in <TCanvas::Print>: png file h_effs_SDL_den8MH_steps_4of4_min0.9_0to5_pt_mm0_D8.0cm_us1.png has been created
+Warning in <TCanvas::Constructor>: Deleting canvas with same name: h_num8MH_0to7_pt_clone
+Info in <TCanvas::Print>: png file h_effs_SDL_den8MH_steps_4of4_min0.9_0to7_pt_mm0_D8.0cm_us1.png has been created
+Warning in <TCanvas::Constructor>: Deleting canvas with same name: h_num8MH_5to7_pt_clone
+Info in <TCanvas::Print>: png file h_effs_SDL_den8MH_steps_4of4_min0.9_5to7_pt_mm0_D8.0cm_us1.png has been created
+Warning in <TCanvas::Constructor>: Deleting canvas with same name: h_num8MH_7to9_pt_clone
+Info in <TCanvas::Print>: png file h_effs_SDL_den8MH_steps_4of4_min0.9_7to9_pt_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_fake_SDL_0-5_0-7_4of4_pt_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_fake_SDL_0-5_0-7_4of4_eta2_mm0_D8.0cm_us1.png has been created
+Warning in <TCanvas::Constructor>: Deleting canvas with same name: h_SDLreco_all_0to5_eta_clone
+Info in <TCanvas::Print>: png file h_fake_SDL_0-5_0-7_4of4_eta_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_fake_SDL_5-7_7-9_4of4_pt_mm0_D8.0cm_us1.png has been created
+Info in <TCanvas::Print>: png file h_fake_SDL_5-7_7-9_4of4_eta2_mm0_D8.0cm_us1.png has been created
+Warning in <TCanvas::Constructor>: Deleting canvas with same name: h_SDLreco_all_5to7_eta_clone
+Info in <TCanvas::Print>: png file h_fake_SDL_5-7_7-9_4of4_eta_mm0_D8.0cm_us1.png has been created
+4649 write to file 
+4664 Done 
+Info in <TRint::ProcessLine>: Bye... (try '.qqqqqqq' if still running)
