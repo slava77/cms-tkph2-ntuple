@@ -43,6 +43,8 @@
 
 namespace tkph2consts{
   constexpr int nLayers = 10;
+  constexpr float kRinv1GeVf = (2.99792458e-3*3.8);
+  constexpr float k2Rinv1GeVf = kRinv1GeVf/2.;
 }
 using namespace tas;
 using namespace tkph2consts;
@@ -892,7 +894,7 @@ int ScanChainMiniDoublets( TChain* chain, int nEvents = -1, bool drawPlots = fal
 	
 	//these two are the same for all layers
 	const float ptCut = 1.0;
-	const float miniSlope = rs/175.67/ptCut;
+	const float miniSlope = rs*k2Rinv1GeVf/ptCut;
 	
 	const float miniMuls = miniMulsPtScale[lay]*3./ptCut;
 	const float rLayNominal = lay >= 5? miniRminMean[lay] : 1e12;
@@ -2040,7 +2042,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    nHitsTried++; //if (nHitsTried>1) exit(0);
 	    float rt = hL.second.rt;
 	    const float ptCut = 1.0f;
-	    const float miniSlope = rt/175.67f/ptCut;
+	    const float miniSlope = rt*k2Rinv1GeVf/ptCut;
 	    
 	    const float miniMuls = miniMulsPtScale[iL]*3.f/ptCut;
 	    const float rLayNominal = iL >= minLayer ? miniRminMean[iL] : 1e12f;
@@ -2135,7 +2137,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    
 	    float rt = 0.5f*(rtRef + rtOut); //take the middle: it matches better the point-to-point
 	    const float ptCut = 1.0f;
-	    const float sdSlope = rt/175.67f/ptCut;
+	    const float sdSlope = rt*k2Rinv1GeVf/ptCut;
 	    const float sdMuls = miniMulsPtScale[iL]*3.f/ptCut*2.f;//will need a better guess than x2?
 	    const float sdPVoff = 0.1f/rt;
 	    const float sdCut = sdSlope + sqrt(sdMuls*sdMuls + sdPVoff*sdPVoff);
@@ -2168,7 +2170,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    sd.dr = dr3.Pt();
 
 	    //loose angle compatibility
-	    float dAlpha_Bfield = sd.dr/175.67f/ptCut;
+	    float dAlpha_Bfield = sd.dr*k2Rinv1GeVf/ptCut;
 	    float dAlpha_res = 0.04f/miniDeltaBarrel[iL];//4-strip difference
 	    float dAlpha_compat = dAlpha_Bfield + dAlpha_res;
 
@@ -2319,7 +2321,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      dzErr = sqrt(dzErr);
 	      const float dzDrIn = sdIn.p3.Z()/ptIn;
 	      const float zWindow = dzErr/dSDIn*drOutIn + zGeom;
-	      const float dzMean = dzDrIn*drOutIn*(1.f + drOutIn*drOutIn/87.8f/87.8f/ptIn/ptIn/24.f);//with curved path correction
+	      const float dzMean = dzDrIn*drOutIn*(1.f + drOutIn*drOutIn*kRinv1GeVf*kRinv1GeVf/ptIn/ptIn/24.f);//with curved path correction
 	      const float zLo = zIn + dzMean - zWindow;
 	      const float zHi = zIn + dzMean + zWindow;
 	      if (!(zOut < zLo || zOut > zHi)) sdlFlag |= 1 << SDLSelectFlags::deltaZPointed;
@@ -2343,7 +2345,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    
 	    const float rt = 0.5f*(rtIn + rtOut);
 
-	    const float sdlSlope = rt/175.67f/ptCut;
+	    const float sdlSlope = rt*k2Rinv1GeVf/ptCut;
 	    const float sdlPVoff = 0.1f/rt;
 	    const float sdlCut = sdlSlope + sqrt(sdlMuls*sdlMuls + sdlPVoff*sdlPVoff);
 
@@ -2375,7 +2377,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		auto const dsdOutInR3 = sdOutR3 - sdIn.r3;
 		betaIn  = sdIn.p3.DeltaPhi(dsdOutInR3);
 		betaOut = dsdOutInR3.DeltaPhi(sdOut.mdOut.r3 - sdOut.mdRef.r3);
-		betaOut += copysign(sdOut.dr/175.67f/ptIn, betaOut);
+		betaOut += copysign(sdOut.dr*k2Rinv1GeVf/ptIn, betaOut);
 	      } else {
 		//need a symmetric choice of end-points to achieve partial cancelation
 		auto const r3A = sdOut.mdOut.r3 - sdIn.r3;
@@ -2391,7 +2393,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    const float dSDOut = sdOut.mdOut.rt - sdOut.mdRef.rt;	    
 	    const float dr = (sdOut.r3 - sdIn.r3).Perp();
 	    //loose angle compatibility
-	    const float dAlpha_Bfield = dr/175.67f/ptCut;
+	    const float dAlpha_Bfield = dr*k2Rinv1GeVf/ptCut;
 	    const float dAlpha_res = 0.02f/std::min(dSDIn, dSDOut);//2-strip difference; use the smallest SD separation
 	    float dAlpha_compat = dAlpha_Bfield + dAlpha_res;
 	    if (!(std::abs(sdIn.alpha- dPhi) > dAlpha_compat )) sdlFlag |= 1 << SDLSelectFlags::dAlphaIn;
@@ -2399,7 +2401,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    if (sdlFlag == sdlMasksCumulative[SDLSelectFlags::dAlphaIn]) nInAlphaCompat++;
 
 	    if (lIn == 0 ){//FIXME: THIS COMPATIBILITY SHOULD BE MADE MORE CORRECT FOR UNEVEN SD point definition
-	      dAlpha_compat = (dSDOut +dr)/175.67f/ptCut + dAlpha_res; //L0 is a tangent while LX is a chord
+	      dAlpha_compat = (dSDOut +dr)*k2Rinv1GeVf/ptCut + dAlpha_res; //L0 is a tangent while LX is a chord
 	    }
 	    if (!(std::abs(sdOut.alpha- dPhi) > dAlpha_compat )) sdlFlag |= 1 << SDLSelectFlags::dAlphaOut;
 	    else if (cumulativeCuts ) continue;
@@ -2407,13 +2409,13 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    
 	    //now the actual segment linking magic
 	    const float betaAv = 0.5f*(betaIn + betaOut);
-	    //pt*175.67/2. = R
-	    //R*sin(betaAv) = pt*175.67/2*sin(betaAv) = dr/2 => pt = dr/175.67/sin(betaAv);
-	    float pt_beta = dr/175.67f/sin(betaAv);
+	    //pt/k2Rinv1GeVf/2. = R
+	    //R*sin(betaAv) = pt/k2Rinv1GeVf/2*sin(betaAv) = dr/2 => pt = dr*k2Rinv1GeVf/sin(betaAv);
+	    float pt_beta = dr*k2Rinv1GeVf/sin(betaAv);
 	    if (lIn == 0) pt_beta = ptIn;
-	    float pt_betaIn = dr/175.67f/sin(betaIn);
+	    float pt_betaIn = dr*k2Rinv1GeVf/sin(betaIn);
 	    if (lIn == 0) pt_betaIn = pt_beta;
-	    const float pt_betaOut = dr/175.67f/sin(betaOut);
+	    const float pt_betaOut = dr*k2Rinv1GeVf/sin(betaOut);
 	    const float dBetaRes = dAlpha_res;
 	    const float dBetaMuls = sdlThetaMulsF*3.f/std::min(pt_beta, 7.0f);//need to confirm the range-out value of 7 GeV
 	    const float dBetaCut2 = dBetaRes*dBetaRes*2.0f + dBetaMuls*dBetaMuls;
@@ -2933,7 +2935,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		  dzErr = sqrt(dzErr);
 		  const float dzDrIn = sdIn.p3.Z()/ptIn;
 		  const float zWindow = dzErr/dSDIn*drOutIn + zGeom;
-		  const float dzMean = dzDrIn*drOutIn*(1.f + drOutIn*drOutIn/87.8f/87.8f/ptIn/ptIn/24.f);//with curved path correction
+		  const float dzMean = dzDrIn*drOutIn*(1.f + drOutIn*drOutIn*kRinv1GeVf*kRinv1GeVf/ptIn/ptIn/24.f);//with curved path correction
 		  const float zLo = zIn + dzMean - zWindow;
 		  const float zHi = zIn + dzMean + zWindow;
 		  if (!(zOut < zLo || zOut > zHi)) sdlFlag |= 1 << SDLSelectFlags::deltaZPointed; //continue;
@@ -2960,7 +2962,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 
 		const float rt = 0.5f*(rtIn + rtOut);
 		
-		const float sdlSlope = rt/175.67f/ptCut;
+		const float sdlSlope = rt*k2Rinv1GeVf/ptCut;
 		const float sdlPVoff = 0.1f/rt;
 		const float sdlCut = sdlSlope + sqrt(sdlMuls*sdlMuls + sdlPVoff*sdlPVoff);
 
@@ -2988,7 +2990,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		    auto const dsdOutInR3 = sdOutR3 - sdIn.r3;
 		    betaIn  = sdIn.p3.DeltaPhi(dsdOutInR3);
 		    betaOut = dsdOutInR3.DeltaPhi(sdOut.mdOut.r3 - sdOut.mdRef.r3);
-		    betaOut += copysign(sdOut.dr/175.67f/ptIn, betaOut);
+		    betaOut += copysign(sdOut.dr*k2Rinv1GeVf/ptIn, betaOut);
 		  } else {
 		    //need a symmetric choice of end-points to achieve partial cancelation
 		    auto const r3A = sdOut.mdOut.r3 - sdIn.r3;
@@ -3003,24 +3005,24 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		
 		const float dr = (sdOut.r3 - sdIn.r3).Perp();
 		//loose angle compatibility
-		const float dAlpha_Bfield = dr/175.67f/ptCut;
+		const float dAlpha_Bfield = dr*k2Rinv1GeVf/ptCut;
 		const float dAlpha_res = 0.02f/std::min(dSDIn, dSDOut);//2-strip difference; use the smallest SD separation
 		float dAlpha_compat = dAlpha_Bfield + dAlpha_res;
 		if (std::abs(sdIn.alpha- dPhi) < dAlpha_compat) sdlFlag |=  1 << SDLSelectFlags::dAlphaIn;
 		if (lIn == 0 ){//FIXME: THIS COMPATIBILITY SHOULD BE MADE MORE CORRECT FOR UNEVEN SD point definition
-		  dAlpha_compat = (dSDOut +dr)/175.67f/ptCut + dAlpha_res; //L0 is a tangent while LX is a chord
+		  dAlpha_compat = (dSDOut +dr)*k2Rinv1GeVf/ptCut + dAlpha_res; //L0 is a tangent while LX is a chord
 		}
 		if (std::abs(sdOut.alpha- dPhi) < dAlpha_compat) sdlFlag |= 1 << SDLSelectFlags::dAlphaOut;
 
 		//now the actual segment linking magic
 		const float betaAv = 0.5f*(betaIn + betaOut);
-		//pt*175.67/2. = R
-		//R*sin(betaAv) = pt*175.67/2*sin(betaAv) = dr/2 => pt = dr/175.67/sin(betaAv);
-		float pt_beta = dr/175.67f/sin(betaAv);
+		//pt/k2Rinv1GeVf/2. = R
+		//R*sin(betaAv) = pt/k2Rinv1GeVf/2*sin(betaAv) = dr/2 => pt = dr*k2Rinv1GeVf/sin(betaAv);
+		float pt_beta = dr*k2Rinv1GeVf/sin(betaAv);
 		if (lIn == 0) pt_beta = ptIn;
-		float pt_betaIn = dr/175.67f/sin(betaIn);
+		float pt_betaIn = dr*k2Rinv1GeVf/sin(betaIn);
 		if (lIn == 0) pt_betaIn = pt_beta;
-		const float pt_betaOut = dr/175.67f/sin(betaOut);
+		const float pt_betaOut = dr*k2Rinv1GeVf/sin(betaOut);
 		const float dBetaRes = dAlpha_res;
 		const float dBetaMuls = sdlThetaMulsF*3.f/std::min(pt_beta, 7.0f);//need to confirm the range-out value of 7 GeV
 		const float dBetaCut2 = dBetaRes*dBetaRes*2.0f + dBetaMuls*dBetaMuls;
