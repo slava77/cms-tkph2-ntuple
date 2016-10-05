@@ -396,6 +396,8 @@ struct SDLink {
   int itp;//tp with most hits
   int ntp;//n hits with itp
   bool hasMatch_byHit4of4=false;
+  bool sdInGhost=false;
+  bool sdOutGhost=false;
 };
 
 struct TrackLink {
@@ -596,6 +598,10 @@ std::pair<TVector3,TVector3> helixPropagateApprox(const TVector3& r3, const TVec
   status = (std::abs(lastR3.Perp() - rDest) > epsilon);
   return {lastR3, lastT3*p};
   
+}
+
+bool sameLowerLayerID(const SuperDoublet& a, const SuperDoublet& b){
+  return (a.mdRef.pixL == b.mdRef.pixL && a.mdOut.pixL == b.mdOut.pixL );
 }
 
 int ScanChainMiniDoublets( TChain* chain, int nEvents = -1, bool drawPlots = false, double ptMinGlobal = 1.0) {
@@ -1399,6 +1405,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
   std::array<TH1F*, SDL_LMAX> ha_SDL_dBeta_NM1dBeta_all;
   std::array<TH1F*, SDL_LMAX> ha_SDL_dBeta_NM1dBeta_pass;
 
+  std::array<TH1F*, SDL_LMAX> ha_SDL_dBeta_zoom_NM1dBeta_all_NGLL;
   std::array<TH1F*, SDL_LMAX> ha_SDL_dBeta_zoom_NM1dBeta_all;
   std::array<TH1F*, SDL_LMAX> ha_SDL_dBeta_zoom_NM1dBeta_pass;
   std::array<TH1F*, SDL_LMAX> ha_SDL_dBeta_zoom_NM1dBeta_ptIn0to2_all;
@@ -1538,6 +1545,10 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
     hn = Form("h_SDL_dBeta_NM1dBeta_pass_%dto%d_pt", iMin, iMax);
     ha_SDL_dBeta_NM1dBeta_pass[i] = new TH1F(hn.c_str(), hn.c_str(), 400, -0.5, 0.5);
     outputHV.push_back(ha_SDL_dBeta_NM1dBeta_pass[i]);    
+
+    hn = Form("h_SDL_dBeta_zoom_NM1dBeta_all_NGLL_%dto%d_pt", iMin, iMax); //not-ghotst, based on lower-layer ID
+    ha_SDL_dBeta_zoom_NM1dBeta_all_NGLL[i] = new TH1F(hn.c_str(), hn.c_str(), 400, -0.15, 0.15);
+    outputHV.push_back(ha_SDL_dBeta_zoom_NM1dBeta_all_NGLL[i]);    
 
     hn = Form("h_SDL_dBeta_zoom_NM1dBeta_all_%dto%d_pt", iMin, iMax);
     ha_SDL_dBeta_zoom_NM1dBeta_all[i] = new TH1F(hn.c_str(), hn.c_str(), 400, -0.15, 0.15);
@@ -1930,6 +1941,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       std::array<std::vector<SuperDoublet>, nLayers+1> mockLayerSDfwDNcm;
       for (auto& m : mockLayerSDfwDNcm ) m.reserve(100000);      
 
+      std::array<std::vector<bool>, nLayers+1> mockLayerSDfwDNcm_isSecondaryGhost;
+      for (auto& m : mockLayerSDfwDNcm_isSecondaryGhost ) m.reserve(100000);  
       
       std::vector<SDLink> mockLayer0to5SDLfwDNcm; mockLayer0to5SDLfwDNcm.reserve(40000);
       std::vector<SDLink> mockLayer0to7SDLfwDNcm; mockLayer0to7SDLfwDNcm.reserve(40000);
@@ -2025,8 +2038,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	  mockLayerSDfwDNcm[0].emplace_back(seedSD);
 	}
 	std::cout<<"Loaded nSeeds (pt>1 and |eta|<1.6) "<<mockLayerSDfwDNcm[0].size()<<std::endl;
-      }
-
+      }      
+      
       std::cout<<"Combine MDs "<<std::endl;
       int nHitsTried = 0;
       for (int iL = minLayer; iL <= nLayers; ++iL){
@@ -2225,6 +2238,25 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    mockSDfwDNcm.emplace_back(sd);
 	  }//mdOut : mockMDfwDNcm
 	}//mdRef : mockMDfwRef
+
+	int nSDs = mockSDfwDNcm.size();
+	mockLayerSDfwDNcm_isSecondaryGhost[iL].resize(nSDs);
+	for (int i = 0; i< nSDs; ++i) mockLayerSDfwDNcm_isSecondaryGhost[iL][i] = false;
+
+	//fill isSecondaryGhost flags such that the first encounter is "false"
+	for (int i = 0; i< nSDs; ++i){
+	  bool isSecondaryGhost = mockLayerSDfwDNcm_isSecondaryGhost[iL][i];
+	  if (! isSecondaryGhost){
+	    auto const& iSD = mockSDfwDNcm[i];
+	    for (int j = i+1; j < nSDs; ++j){
+	      auto const& jSD = mockSDfwDNcm[j];
+	      if (sameLowerLayerID(iSD, jSD)){
+		mockLayerSDfwDNcm_isSecondaryGhost[iL][j] = true;
+		break;
+	      }
+	    }
+	  }
+	}
 	std::cout<<"SD stat "<<iL
 		 <<" nAll "<<nAll;
 	for (unsigned int i = 0; i< SDSelectFlags::max; ++i){
@@ -2232,6 +2264,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	}
 	std::cout<<std::endl;
       }//iL
+
+      std::cout<<"Link SuperDoublet pairs to SDLinks"<<std::endl;
 
       enum SDLSelectFlags { deltaZ = 0, deltaZPointed=1, deltaPhiPos=2,
 			    slope=3, dAlphaIn=4, dAlphaOut=5, dBeta=6, max=7};
@@ -2241,13 +2275,12 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	sdlMasksCumulative[i] |= 1 << i;
       }
 
-      std::cout<<"Link SuperDoublet pairs to SDLinks"<<std::endl;
       
       //try to link segments: do 5-7 and 7-9; or 0-X for seeds (special cases for L=0 where needed)
       auto sdLink = [&] (int lIn, int lOut, decltype(mockLayer5to7SDLfwDNcm)& sdlV){
 	auto const& sdInV  = mockLayerSDfwDNcm[lIn];
-	auto const& sdOutV = mockLayerSDfwDNcm[lOut];
-
+	auto const& sdOutV = mockLayerSDfwDNcm[lOut];	
+	
 	int iSDL = sdlFromLayers[lIn][lOut];
 	assert(iSDL != SDL_LMAX);// "Layer pair is not mapped");
 
@@ -2488,6 +2521,12 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      ha_SDL_dBeta_betaIn_NM1dBeta_all[iSDL]->Fill(betaIn, dBeta);
 	      
 	      ha_SDL_dBeta_zoom_NM1dBeta_all[iSDL]->Fill(dBeta);
+	      if (! ( (lIn != 0 && mockLayerSDfwDNcm_isSecondaryGhost[lIn][iIn])
+		      || mockLayerSDfwDNcm_isSecondaryGhost[lOut][iOut])
+		  ){
+		ha_SDL_dBeta_zoom_NM1dBeta_all_NGLL[iSDL]->Fill(dBeta);
+	      }
+	      
 	      if (ptInEst < 2){
 		ha_SDL_dBeta_zoom_NM1dBeta_ptIn0to2_all[iSDL]->Fill(dBeta);
 	      }
@@ -2550,19 +2589,21 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		sdl.ntp = m.second;
 	      }
 	    }
-
+	    sdl.sdInGhost  = lIn != 0 && mockLayerSDfwDNcm_isSecondaryGhost[lIn][iIn];
+	    sdl.sdOutGhost = mockLayerSDfwDNcm_isSecondaryGhost[lOut][iOut];
 	    
 	    sdlV.emplace_back(sdl);
 	    //	    std::cout<<"Appended a new SDLink "<<std::endl;
 	  }//sdOutV
 	}//sdInV
-	
+
 	std::cout<<"SD links stat "<<lIn<<"-"<<lOut
 	         <<" nAll "<<nAll<<" nDZ "<<nDeltaZ<<" nDZPnt "<<nDeltaZPointed
 	         <<" nPPos "<<nDeltaPhiPos<<" nAlp "<<nSlope
          	 <<" nInAlpC "<< nInAlphaCompat<<" nOutAlpC "<<nOutAlphaCompat
 	         <<" ndBeta "<<ndBeta
 	         <<" final "<<sdlV.size()
+	         <<" noGhost "<<std::count_if(sdlV.begin(), sdlV.end(), [](SDLink const& sdl )->bool{return ! (sdl.sdInGhost || sdl.sdOutGhost);})
 	         <<std::endl;
       };//auto sdLink
 
@@ -2578,73 +2619,124 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       mockLayerSDLsDNcm[SDL_L7to9] = &mockLayer7to9SDLfwDNcm;
 
 
-
+      
       //link the links to TrackLinks
       std::vector<TrackLink> tracks;
       int countMatchMidPoint = 0;
+      int nSDLL_all = 0;
+      int nSDLL_dC = 0;
+      int nSDLL_pass = 0;
+      int isdlIn = -1;
       for (auto const& sdlIn : mockLayer5to7SDLfwDNcm ){
 	bool hasOuter = false;
+	isdlIn++;
 
+	int isdlOut = -1;
 	for (auto const& sdlOut : mockLayer7to9SDLfwDNcm){
+	  isdlOut++;
 	  if (sdlIn.lOut == sdlOut.lIn && sdlIn.iOut == sdlOut.iIn){
 	    //shared mid-point
-	    /*
-	    double dPt = sdlIn.pt - sdlOut.pt;
-	    int iirL = sdlIn.sdIn.mdRef.pixL;
-	    int iirU = sdlIn.sdIn.mdRef.pixU;
-	    int iioL = sdlIn.sdIn.mdOut.pixL;
-	    int iioU = sdlIn.sdIn.mdOut.pixU;
-
-	    int iorL = sdlIn.sdOut.mdRef.pixL;
-	    int iorU = sdlIn.sdOut.mdRef.pixU;
-	    int iooL = sdlIn.sdOut.mdOut.pixL;
-	    int iooU = sdlIn.sdOut.mdOut.pixU;
-	    
-	    int oorL = sdlOut.sdOut.mdRef.pixL;
-	    int oorU = sdlOut.sdOut.mdRef.pixU;
-	    int oooL = sdlOut.sdOut.mdOut.pixL;
-	    int oooU = sdlOut.sdOut.mdOut.pixU;
-	    
-	    TVector3 iirLp3(pix_pxsim()[iirL], pix_pysim()[iirL], pix_pzsim()[iirL]);
-	    TVector3 iirUp3(pix_pxsim()[iirU], pix_pysim()[iirU], pix_pzsim()[iirU]);
-	    TVector3 iioLp3(pix_pxsim()[iioL], pix_pysim()[iioL], pix_pzsim()[iioL]);
-	    TVector3 iioUp3(pix_pxsim()[iioU], pix_pysim()[iioU], pix_pzsim()[iioU]);
-
-	    TVector3 iorLp3(pix_pxsim()[iorL], pix_pysim()[iorL], pix_pzsim()[iorL]);
-	    TVector3 iorUp3(pix_pxsim()[iorU], pix_pysim()[iorU], pix_pzsim()[iorU]);
-	    TVector3 iooLp3(pix_pxsim()[iooL], pix_pysim()[iooL], pix_pzsim()[iooL]);
-	    TVector3 iooUp3(pix_pxsim()[iooU], pix_pysim()[iooU], pix_pzsim()[iooU]);
-
-	    TVector3 oorLp3(pix_pxsim()[oorL], pix_pysim()[oorL], pix_pzsim()[oorL]);
-	    TVector3 oorUp3(pix_pxsim()[oorU], pix_pysim()[oorU], pix_pzsim()[oorU]);
-	    TVector3 oooLp3(pix_pxsim()[oooL], pix_pysim()[oooL], pix_pzsim()[oooL]);
-	    TVector3 oooUp3(pix_pxsim()[oooU], pix_pysim()[oooU], pix_pzsim()[oooU]);
-
-
-	    std::cout<<countMatchMidPoint<<"\t"<<sdlIn.pt<<" "<<sdlOut.pt
-		     <<" vs MC "
-		     <<" "<<iirL<<" "<<iirLp3.Pt()<<";"
-		     <<" "<<iirU<<" "<<iirUp3.Pt()<<";"
-		     <<" "<<iioL<<" "<<iioLp3.Pt()<<";"
-		     <<" "<<iioU<<" "<<iioUp3.Pt()<<";;"
-
-		     <<" "<<iorL<<" "<<iorLp3.Pt()<<";"
-		     <<" "<<iorU<<" "<<iorUp3.Pt()<<";"
-		     <<" "<<iooL<<" "<<iooLp3.Pt()<<";"
-		     <<" "<<iooU<<" "<<iooUp3.Pt()<<";;"
-	      
-		     <<" "<<oorL<<" "<<oorLp3.Pt()<<";"
-		     <<" "<<oorU<<" "<<oorUp3.Pt()<<";"
-		     <<" "<<oooL<<" "<<oooLp3.Pt()<<";"
-		     <<" "<<oooU<<" "<<oooUp3.Pt()<<""
-		     <<std::endl;
-	    */
 	    countMatchMidPoint++;
+	    nSDLL_all++;
+	    
+	    auto const dPt = sdlIn.pt - sdlOut.pt;
+	    auto const dC = 1.f/sdlIn.pt - 1.f/sdlOut.pt;
+
+	    if (std::abs(dC) > 0.05 ) continue;
+	    nSDLL_dC++;
+	    if (sdlIn.sdInGhost || sdlIn.sdOutGhost || sdlOut.sdOutGhost) continue;
+	    nSDLL_pass++;
+	    	    
+	    if (debugReco){
+	      if (sdlIn.itp >=0 && sdlOut.itp >= 0){
+		TVector3 p3In(sim_px()[sdlIn.itp], sim_py()[sdlIn.itp], sim_pz()[sdlIn.itp]);
+		TVector3 p3Out(sim_px()[sdlOut.itp], sim_py()[sdlOut.itp], sim_pz()[sdlOut.itp]);
+		std::cout<<"TT: i "<<isdlIn<<" - "<<isdlOut<<" c "<<countMatchMidPoint
+			 <<" itp "<<sdlIn.itp<<" - "<<sdlOut.itp
+			 <<" ntp "<<sdlIn.ntp<<" - "<<sdlOut.ntp
+			 <<" tppt "<<p3In.Pt()<<" - "<<p3Out.Pt()
+			 <<" sdlpt "<<sdlIn.pt<<" - "<<sdlOut.pt
+			 <<" # "<<sdlIn.sdIn.mdRef.pixL
+			 <<" "<<sdlIn.sdIn.mdRef.pixU
+			 <<" "<<sdlIn.sdIn.mdOut.pixL
+			 <<" "<<sdlIn.sdIn.mdOut.pixU
+			 <<" # "<<sdlIn.sdOut.mdRef.pixL
+			 <<" "<<sdlIn.sdOut.mdRef.pixU
+			 <<" "<<sdlIn.sdOut.mdOut.pixL
+			 <<" "<<sdlIn.sdOut.mdOut.pixU
+			 <<" # "<<sdlOut.sdOut.mdRef.pixL
+			 <<" "<<sdlOut.sdOut.mdRef.pixU
+			 <<" "<<sdlOut.sdOut.mdOut.pixL
+			 <<" "<<sdlOut.sdOut.mdOut.pixU
+			 <<std::endl;
+	      } else if (sdlIn.itp >=0){
+		TVector3 p3In(sim_px()[sdlIn.itp], sim_py()[sdlIn.itp], sim_pz()[sdlIn.itp]);
+		std::cout<<"TF: i "<<isdlIn<<" - "<<isdlOut<<" c "<<countMatchMidPoint
+			 <<" itp "<<sdlIn.itp<<" - "<<sdlOut.itp
+			 <<" ntp "<<sdlIn.ntp<<" - "<<sdlOut.ntp
+			 <<" tppt "<<p3In.Pt()<<" - "<<0.f
+			 <<" sdlpt "<<sdlIn.pt<<" - "<<sdlOut.pt
+			 <<" # "<<sdlIn.sdIn.mdRef.pixL
+			 <<" "<<sdlIn.sdIn.mdRef.pixU
+			 <<" "<<sdlIn.sdIn.mdOut.pixL
+			 <<" "<<sdlIn.sdIn.mdOut.pixU
+			 <<" # "<<sdlIn.sdOut.mdRef.pixL
+			 <<" "<<sdlIn.sdOut.mdRef.pixU
+			 <<" "<<sdlIn.sdOut.mdOut.pixL
+			 <<" "<<sdlIn.sdOut.mdOut.pixU
+			 <<" # "<<sdlOut.sdOut.mdRef.pixL
+			 <<" "<<sdlOut.sdOut.mdRef.pixU
+			 <<" "<<sdlOut.sdOut.mdOut.pixL
+			 <<" "<<sdlOut.sdOut.mdOut.pixU
+			 <<std::endl;
+	      } else if (sdlOut.itp >= 0){
+		TVector3 p3Out(sim_px()[sdlOut.itp], sim_py()[sdlOut.itp], sim_pz()[sdlOut.itp]);
+		std::cout<<"FT: i "<<isdlIn<<" - "<<isdlOut<<" c "<<countMatchMidPoint
+			 <<" itp "<<sdlIn.itp<<" - "<<sdlOut.itp
+			 <<" ntp "<<sdlIn.ntp<<" - "<<sdlOut.ntp
+			 <<" tppt "<<0.f<<" - "<<p3Out.Pt()
+			 <<" sdlpt "<<sdlIn.pt<<" - "<<sdlOut.pt
+			 <<" # "<<sdlIn.sdIn.mdRef.pixL
+			 <<" "<<sdlIn.sdIn.mdRef.pixU
+			 <<" "<<sdlIn.sdIn.mdOut.pixL
+			 <<" "<<sdlIn.sdIn.mdOut.pixU
+			 <<" # "<<sdlIn.sdOut.mdRef.pixL
+			 <<" "<<sdlIn.sdOut.mdRef.pixU
+			 <<" "<<sdlIn.sdOut.mdOut.pixL
+			 <<" "<<sdlIn.sdOut.mdOut.pixU
+			 <<" # "<<sdlOut.sdOut.mdRef.pixL
+			 <<" "<<sdlOut.sdOut.mdRef.pixU
+			 <<" "<<sdlOut.sdOut.mdOut.pixL
+			 <<" "<<sdlOut.sdOut.mdOut.pixU
+			 <<std::endl;	      
+	      } else {
+		std::cout<<"FF: i "<<isdlIn<<" - "<<isdlOut<<" c "<<countMatchMidPoint
+			 <<" sdlpt "<<sdlIn.pt<<" - "<<sdlOut.pt
+			 <<" # "<<sdlIn.sdIn.mdRef.pixL
+			 <<" "<<sdlIn.sdIn.mdRef.pixU
+			 <<" "<<sdlIn.sdIn.mdOut.pixL
+			 <<" "<<sdlIn.sdIn.mdOut.pixU
+			 <<" # "<<sdlIn.sdOut.mdRef.pixL
+			 <<" "<<sdlIn.sdOut.mdRef.pixU
+			 <<" "<<sdlIn.sdOut.mdOut.pixL
+			 <<" "<<sdlIn.sdOut.mdOut.pixU
+			 <<" # "<<sdlOut.sdOut.mdRef.pixL
+			 <<" "<<sdlOut.sdOut.mdRef.pixU
+			 <<" "<<sdlOut.sdOut.mdOut.pixL
+			 <<" "<<sdlOut.sdOut.mdOut.pixU
+			 <<std::endl;	      
+	      }
+	    }//if debugReco
+
 	  }//match in-out at mid-point
 	  
 	}//sdlOut
       }//sdlIn
-      
+
+      std::cout<<"nSDLL 5-7-9 "
+	       <<" all "<<nSDLL_all
+	       <<" dC "<<nSDLL_dC
+	       <<" final "<<nSDLL_pass<<std::endl;
       
 
 
@@ -3274,6 +3366,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    if ( p3RL.Pt() > 2 ) nSDs2GeVMatch4++;
 	  }
 	}
+	int nSDNGs = 0;
+	for (int i = 0; i< mockLayerSDfwDNcm_isSecondaryGhost[iL].size(); ++i) if (not mockLayerSDfwDNcm_isSecondaryGhost[iL][i]) nSDNGs++;
 	std::cout<<"Summary for layer "<<iL
 		 <<" h1GeV "<<nHitsLayer1GeV[iL]
 		 <<" h2GeV "<<nHitsLayer2GeV[iL]
@@ -3283,7 +3377,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		 <<" outLos " <<mockLayerMDfwDNcmLower[iL].size()
 		 <<" outUps " <<mockLayerMDfwDNcmUpper[iL].size()
 		 <<" outMDs " <<mockLayerMDfwDNcm[iL].size()
-		 <<" outSDs "<< mockLayerSDfwDNcm[iL].size()
+		 <<" SDs "<< mockLayerSDfwDNcm[iL].size()
+		 <<" SDNGs "<< nSDNGs
 		 <<" n1Any "<<nSDs1GeV<<" n1All "<<nSDs1GeVMatch4
 		 <<" n2Any "<<nSDs2GeV<<" n2All "<<nSDs2GeVMatch4
 		 <<std::endl;
@@ -3491,6 +3586,20 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       h_all->SetMinimum(0);
       h_pass->Draw("same");
       gPad->SaveAs(Form("h_SDL_dBeta_zoom_NM1dBeta_all_vs_pass_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+    }
+    for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
+      if (iSDL == SDL_L5to9) continue;
+      auto h_all = ha_SDL_dBeta_zoom_NM1dBeta_all_NGLL[iSDL];
+      auto cn = h_all->GetTitle();
+      TCanvas* cv = new TCanvas(cn, cn, 600, 600);
+      cv->cd();
+
+      h_all->SetLineWidth(2);
+
+      h_all->SetStats(0);
+      h_all->Draw();
+      h_all->SetMinimum(0);
+      gPad->SaveAs(Form("h_SDL_dBeta_zoom_NM1dBeta_NGLL_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
     }
     for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
       if (iSDL == SDL_L5to9) continue;
@@ -4344,6 +4453,92 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       leg->AddEntry(heff2, "SDLink match | 8 MHits");
       leg->Draw();
       gPad->SaveAs(Form("h_effs_SDL_den8MH_steps_4of4_%dto%d_pt_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+    }
+
+    //efficiencies: eff plots 4/4 in steps
+    for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
+      if (iSDL == SDL_L5to9) continue;
+      
+      auto heff =  ha_eff4MD_den8MH_pt[iSDL];
+      auto heff1 = ha_eff2SD_den8MH_4of4_pt[iSDL];
+      auto heff0      = ha_eff2SD_w0_den8MH_4of4_pt[iSDL];
+      auto heff01     = ha_eff2SD_w01_den8MH_4of4_pt[iSDL];
+      auto heff012    = ha_eff2SD_w012_den8MH_4of4_pt[iSDL];
+      auto heff0123   = ha_eff2SD_w0123_den8MH_4of4_pt[iSDL];
+      auto heff01234  = ha_eff2SD_w01234_den8MH_4of4_pt[iSDL];
+      auto heff012345 = ha_eff2SD_w012345_den8MH_4of4_pt[iSDL];
+      auto heff0123456 = ha_eff2SD_w0123456_den8MH_4of4_pt[iSDL];
+      auto heff2 = ha_effSDL_den8MH_4of4_pt[iSDL];
+
+      auto cn = heff->GetName();
+      TCanvas* cv = new TCanvas(cn, cn, 600, 600);
+      cv->cd();
+
+      heff->Draw();
+      heff1->Draw("same");
+      heff01->Draw("same");
+      heff012->Draw("same");
+      heff0123->Draw("same");
+      heff01234->Draw("same");
+      heff012345->Draw("same");
+      heff2->Draw("same");
+
+      heff->SetLineWidth(2);
+      heff1->SetLineWidth(2);
+      heff01->SetLineWidth(2);
+      heff012->SetLineWidth(2);
+      heff0123->SetLineWidth(2);
+      heff01234->SetLineWidth(2);
+      heff012345->SetLineWidth(2);
+      heff2->SetLineWidth(2);
+      heff->SetLineColor(kBlack);
+      heff1->SetLineColor(kRed);
+      heff01->SetLineColor(kOrange);
+      heff012->SetLineColor(kMagenta);
+      heff0123->SetLineColor(kGray);
+      heff01234->SetLineColor(kGreen);
+      heff012345->SetLineColor(kCyan);
+      heff2->SetLineColor(kBlue);
+      heff->SetMarkerSize(0.8);
+      heff1->SetMarkerSize(0.8);
+      heff01->SetMarkerSize(0.8);
+      heff012->SetMarkerSize(0.8);
+      heff0123->SetMarkerSize(0.8);
+      heff01234->SetMarkerSize(0.8);
+      heff012345->SetMarkerSize(0.8);
+      heff2->SetMarkerSize(0.8);
+      heff->SetMarkerStyle(21);
+      heff1->SetMarkerStyle(22);
+      heff01->SetMarkerStyle(24);
+      heff012->SetMarkerStyle(26);
+      heff0123->SetMarkerStyle(27);
+      heff01234->SetMarkerStyle(28);
+      heff012345->SetMarkerStyle(25);
+      heff2->SetMarkerStyle(23);
+
+      gPad->SetGridx();
+      gPad->SetGridy();
+      gPad->SetLogx();
+      gPad->PaintModified();
+      auto pg = heff->GetPaintedGraph();
+      pg->SetMinimum(0.0);
+      pg->SetMaximum(1.02);
+      auto ax = pg->GetXaxis();
+      ax->SetLimits(0.51, ax->GetXmax());
+
+      auto leg = new TLegend(0.5, 0.15, 0.87, 0.6);
+      leg->SetBorderSize(0);
+      leg->SetFillColor(0);
+      leg->AddEntry(heff, "4 MD match | 8 MHits");
+      leg->AddEntry(heff1, "2 SD match | 8 MHits");
+      leg->AddEntry(heff01, "2 SD w dZ | 8 MHits");
+      leg->AddEntry(heff012, "... and #Delta#phi_{pos} | 8 MHits");
+      leg->AddEntry(heff0123, "... and slope | 8 MHits");
+      leg->AddEntry(heff01234, "... and #Delta#alpha_{in} | 8 MHits");      
+      leg->AddEntry(heff012345, "SDLink no #Delta#beta | 8 MHits");
+      leg->AddEntry(heff2, "SDLink match | 8 MHits");
+      leg->Draw();
+      gPad->SaveAs(Form("h_effs_SDL_den8MH_steps_detailed_4of4_%dto%d_pt_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
     }
 
     //efficiencies: eff plots 4/4 in steps
