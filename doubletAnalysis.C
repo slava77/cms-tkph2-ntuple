@@ -375,6 +375,7 @@ struct SuperDoublet {
   float alpha;
   float alphaOut;
   float dr;
+  float d;
   int itp;//tp with most hits
   int ntp;//n hits with itp
 };
@@ -2024,6 +2025,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	  seedSD.p3 = p3LH;
 	  seedSD.alpha = r3LH.DeltaPhi(p3LH);
 	  seedSD.dr = (r3LH - r3PCA).Pt();
+	  seedSD.d = seedSD.rt - r3PCA.Pt();
 	  //
 	  std::map<int, int> tps;
 	  seedSD.itp = -1;
@@ -2181,6 +2183,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    sd.z = sd.r3.Z();
 	    sd.alpha = dPhi;
 	    sd.dr = dr3.Pt();
+	    sd.d = mdOut.rt - sd.rt;
 
 	    //loose angle compatibility
 	    float dAlpha_Bfield = sd.dr*k2Rinv1GeVf/ptCut;
@@ -2302,7 +2305,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	  const float rtInvIn = sdIn.rtInv;
 	  const float ptIn = sdIn.p3.Pt();
 	  const float zIn = sdIn.r3.z();
-	  const float dSDIn = sdIn.mdOut.rt - sdIn.mdRef.rt;
+	  const float dSDIn = sdIn.d;
 	  const float dzSDIn = sdIn.mdOut.z - sdIn.mdRef.z;
 	  const float dr3SDIn = sdIn.mdOut.r - sdIn.mdRef.r;
 	  
@@ -2400,22 +2403,20 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    
 	    float betaIn;
 	    float betaOut;
+	    auto const dr3 = mockMode == 0 ? sdOut.r3 - sdIn.r3 : sdOut.mdOut.r3 - sdIn.r3;
 	    if (mockMode == 0){
-	      betaIn = sdIn.alpha - sdIn.r3.DeltaPhi(sdOut.r3 - sdIn.r3);
-	      betaOut = - sdOut.alpha + sdOut.r3.DeltaPhi(sdOut.r3 - sdIn.r3); //to match sign for correct match	      
+	      betaIn = sdIn.alpha - sdIn.r3.DeltaPhi(dr3);
+	      betaOut = - sdOut.alpha + sdOut.r3.DeltaPhi(dr3); //to match sign for correct match	      
 	    }
 	    else if (mockMode == 1 || mockMode == 3){
 	      if (lIn == 0){
-		auto const sdOutR3 = sdOut.mdOut.r3;
-		auto const dsdOutInR3 = sdOutR3 - sdIn.r3;
-		betaIn  = sdIn.p3.DeltaPhi(dsdOutInR3);
-		betaOut = dsdOutInR3.DeltaPhi(sdOut.mdOut.r3 - sdOut.mdRef.r3);
+		betaIn  = sdIn.p3.DeltaPhi(dr3);
+		betaOut = dr3.DeltaPhi(sdOut.mdOut.r3 - sdOut.mdRef.r3);
 		betaOut += copysign(sdOut.dr*k2Rinv1GeVf/ptIn, betaOut);
 	      } else {
 		//need a symmetric choice of end-points to achieve partial cancelation
-		auto const r3A = sdOut.mdOut.r3 - sdIn.r3;
-		betaIn  = sdIn.alpha - sdIn.r3.DeltaPhi(r3A);
-		betaOut = -sdOut.alphaOut + sdOut.mdOut.r3.DeltaPhi(r3A);
+		betaIn  = sdIn.alpha - sdIn.r3.DeltaPhi(dr3);
+		betaOut = -sdOut.alphaOut + sdOut.mdOut.r3.DeltaPhi(dr3);
 	      }
 	    }
 	    else{
@@ -2423,23 +2424,23 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      betaOut = 999;
 	    }
 	    
-	    const float dSDOut = sdOut.mdOut.rt - sdOut.mdRef.rt;	    
-	    const float dr = (sdOut.r3 - sdIn.r3).Perp();
-	    //loose angle compatibility
-	    const float dAlpha_Bfield = dr*k2Rinv1GeVf/ptCut;
-	    const float dAlpha_res = 0.02f/std::min(dSDIn, dSDOut);//2-strip difference; use the smallest SD separation
-	    float dAlpha_compat = dAlpha_Bfield + dAlpha_res;
-	    if (!(std::abs(sdIn.alpha- dPhi) > dAlpha_compat )) sdlFlag |= 1 << SDLSelectFlags::dAlphaIn;
+	    const float dr = dr3.Perp();
+	    //beta upper cuts: 2-strip difference for direction resolution
+	    const float corrF = mockMode == 0 ? 0.f : 1.f;
+	    bool pass_betaIn_cut = lIn == 0;//pixel seeds were already selected
+	    if (lIn != 0){
+	      const float betaIn_cut = (-sdIn.dr*corrF + dr)*k2Rinv1GeVf/ptCut + 0.02f/sdIn.d;
+	      pass_betaIn_cut = std::abs(betaIn) < betaIn_cut;
+	    }
+	    if (pass_betaIn_cut) sdlFlag |=  1 << SDLSelectFlags::dAlphaIn;
 	    else if (cumulativeCuts ) continue;
 	    if (sdlFlag == sdlMasksCumulative[SDLSelectFlags::dAlphaIn]) nInAlphaCompat++;
-
-	    if (lIn == 0 ){//FIXME: THIS COMPATIBILITY SHOULD BE MADE MORE CORRECT FOR UNEVEN SD point definition
-	      dAlpha_compat = (dSDOut +dr)*k2Rinv1GeVf/ptCut + dAlpha_res; //L0 is a tangent while LX is a chord
-	    }
-	    if (!(std::abs(sdOut.alpha- dPhi) > dAlpha_compat )) sdlFlag |= 1 << SDLSelectFlags::dAlphaOut;
+	    
+	    const float betaOut_cut = (-sdOut.dr*corrF + dr)*k2Rinv1GeVf/ptCut + 0.02f/sdOut.d;
+	    if (std::abs(betaOut) < betaOut_cut) sdlFlag |=  1 << SDLSelectFlags::dAlphaOut;
 	    else if (cumulativeCuts ) continue;
 	    if (sdlFlag == sdlMasksCumulative[SDLSelectFlags::dAlphaOut]) nOutAlphaCompat++;
-	    
+
 	    //now the actual segment linking magic
 	    const float betaAv = 0.5f*(betaIn + betaOut);
 	    //pt/k2Rinv1GeVf/2. = R
@@ -2449,7 +2450,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    float pt_betaIn = dr*k2Rinv1GeVf/sin(betaIn);
 	    if (lIn == 0) pt_betaIn = pt_beta;
 	    const float pt_betaOut = dr*k2Rinv1GeVf/sin(betaOut);
-	    const float dBetaRes = dAlpha_res;
+	    const float dBetaRes = 0.02f/std::min(sdOut.d,sdIn.d);
 	    const float dBetaMuls = sdlThetaMulsF*3.f/std::min(pt_beta, 7.0f);//need to confirm the range-out value of 7 GeV
 	    const float dBetaCut2 = dBetaRes*dBetaRes*2.0f + dBetaMuls*dBetaMuls;
 	    const float dBeta = betaIn - betaOut;
@@ -2977,7 +2978,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      const float rtIn = sdIn.rt;
 	      const float ptIn = sdIn.p3.Pt();
 	      const float zIn = sdIn.r3.z();
-	      const float dSDIn = sdIn.mdOut.rt - sdIn.mdRef.rt;
+	      const float dSDIn = sdIn.d;
 	      const float dzSDIn = sdIn.mdOut.z - sdIn.mdRef.z;
 	      const float dr3SDIn = sdIn.mdOut.r - sdIn.mdRef.r;
 	      
@@ -2998,7 +2999,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		
 		const float rtOut = sdOut.rt;
 		const float zOut = sdOut.r3.z();	    
-		const float dSDOut = sdOut.mdOut.rt - sdOut.mdRef.rt;
+		const float dSDOut = sdOut.d;
 		//apply some loose Z compatibility
 		//FIXME: refine using inner layer directions (can prune later)
 		const float zGeom = lIn >= 0 && lIn <= 7 && lOut >= 5 && lOut <= 7 ? 0.3f : 10.0f;//twice the macro-pixel or strip size
@@ -3072,22 +3073,20 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 
 		float betaIn;
 		float betaOut;
+		auto const dr3 = mockMode == 0 ? sdOut.r3 - sdIn.r3 : sdOut.mdOut.r3 - sdIn.r3;
 		if (mockMode == 0){
-		  betaIn = sdIn.alpha - sdIn.r3.DeltaPhi(sdOut.r3 - sdIn.r3);
-		  betaOut = - sdOut.alpha + sdOut.r3.DeltaPhi(sdOut.r3 - sdIn.r3); //to match sign for correct match	      
+		  betaIn = sdIn.alpha - sdIn.r3.DeltaPhi(dr3);
+		  betaOut = - sdOut.alpha + sdOut.r3.DeltaPhi(dr3); //to match sign for correct match	      
 		}
 		else if (mockMode == 1 || mockMode == 3){
 		  if (lIn == 0){
-		    auto const sdOutR3 = sdOut.mdOut.r3;
-		    auto const dsdOutInR3 = sdOutR3 - sdIn.r3;
-		    betaIn  = sdIn.p3.DeltaPhi(dsdOutInR3);
-		    betaOut = dsdOutInR3.DeltaPhi(sdOut.mdOut.r3 - sdOut.mdRef.r3);
+		    betaIn  = sdIn.p3.DeltaPhi(dr3);
+		    betaOut = dr3.DeltaPhi(sdOut.mdOut.r3 - sdOut.mdRef.r3);
 		    betaOut += copysign(sdOut.dr*k2Rinv1GeVf/ptIn, betaOut);
 		  } else {
 		    //need a symmetric choice of end-points to achieve partial cancelation
-		    auto const r3A = sdOut.mdOut.r3 - sdIn.r3;
-		    betaIn  = sdIn.alpha - sdIn.r3.DeltaPhi(r3A);
-		    betaOut = -sdOut.alphaOut + sdOut.mdOut.r3.DeltaPhi(r3A);
+		    betaIn  = sdIn.alpha - sdIn.r3.DeltaPhi(dr3);
+		    betaOut = -sdOut.alphaOut + sdOut.mdOut.r3.DeltaPhi(dr3);
 		  }
 		}
 		else{
@@ -3095,16 +3094,18 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		  betaOut = 999;
 		}
 		
-		const float dr = (sdOut.r3 - sdIn.r3).Perp();
-		//loose angle compatibility
-		const float dAlpha_Bfield = dr*k2Rinv1GeVf/ptCut;
-		const float dAlpha_res = 0.02f/std::min(dSDIn, dSDOut);//2-strip difference; use the smallest SD separation
-		float dAlpha_compat = dAlpha_Bfield + dAlpha_res;
-		if (std::abs(sdIn.alpha- dPhi) < dAlpha_compat) sdlFlag |=  1 << SDLSelectFlags::dAlphaIn;
-		if (lIn == 0 ){//FIXME: THIS COMPATIBILITY SHOULD BE MADE MORE CORRECT FOR UNEVEN SD point definition
-		  dAlpha_compat = (dSDOut +dr)*k2Rinv1GeVf/ptCut + dAlpha_res; //L0 is a tangent while LX is a chord
+		const float dr = dr3.Perp();
+		//beta upper cuts: 2-strip difference for direction resolution
+		const float corrF = mockMode == 0 ? 0.f : 1.f;
+		bool pass_betaIn_cut = lIn == 0;//pixel seeds were already selected
+		if (lIn != 0){
+		  const float betaIn_cut = (-sdIn.dr*corrF + dr)*k2Rinv1GeVf/ptCut + 0.02f/sdIn.d;
+		  pass_betaIn_cut = std::abs(betaIn) < betaIn_cut;
 		}
-		if (std::abs(sdOut.alpha- dPhi) < dAlpha_compat) sdlFlag |= 1 << SDLSelectFlags::dAlphaOut;
+		if (pass_betaIn_cut) sdlFlag |=  1 << SDLSelectFlags::dAlphaIn;
+		
+		const float betaOut_cut = (-sdOut.dr*corrF + dr)*k2Rinv1GeVf/ptCut + 0.02f/sdOut.d;
+		if (std::abs(betaOut) < betaOut_cut) sdlFlag |=  1 << SDLSelectFlags::dAlphaOut;
 
 		//now the actual segment linking magic
 		const float betaAv = 0.5f*(betaIn + betaOut);
@@ -3115,7 +3116,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		float pt_betaIn = dr*k2Rinv1GeVf/sin(betaIn);
 		if (lIn == 0) pt_betaIn = pt_beta;
 		const float pt_betaOut = dr*k2Rinv1GeVf/sin(betaOut);
-		const float dBetaRes = dAlpha_res;
+		const float dBetaRes = 0.02f/std::min(sdIn.d, sdOut.d);
 		const float dBetaMuls = sdlThetaMulsF*3.f/std::min(pt_beta, 7.0f);//need to confirm the range-out value of 7 GeV
 		const float dBetaCut2 = dBetaRes*dBetaRes*2.0f + dBetaMuls*dBetaMuls;
 		const float dBeta = betaIn - betaOut;
