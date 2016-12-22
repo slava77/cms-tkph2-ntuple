@@ -2311,8 +2311,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    
 	    if (iL < 11){//barrel
 	      //apply some loose Z compatibility
-	      float zLo = rtOut/rtRef*(zRef - 15.f) - zGeom; //15 for the luminous ; 10 for module size
-	      float zHi = rtOut/rtRef*(zRef + 15.f) + zGeom;
+	      float zLo = rtOut/rtRef*(zRef - 15.f*(1.f - rtRef/rtOut)) - zGeom; //15 for the luminous ; 10 for module size
+	      float zHi = rtOut/rtRef*(zRef + 15.f*(1.f - rtRef/rtOut)) + zGeom;
 	      iFlag = SDSelectFlags::deltaZ;
 	      if (!(zOut < zLo || zOut > zHi)) sdFlag |= 1 << iFlag;
 	      else if (cumulativeCuts ) continue;
@@ -2349,8 +2349,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      
 	      //apply some loose Z compatibility
 	      const float dLum = std::copysign(15.f, zRef);
-	      float rtLo = std::max(rtRef*zOut/(zRef + dLum) - rtGeom, rtRef - 0.5f*rtGeom); //rt should increase
-	      float rtHi = rtRef*zOut/(zRef - dLum) + rtGeom; //15 for the luminous ; rGeom for measurement size
+	      float rtLo = std::max(rtRef*(zOut + dLum)/(zRef + dLum) - rtGeom, rtRef - 0.5f*rtGeom); //rt should increase
+	      float rtHi = rtRef*(zOut - dLum)/(zRef - dLum) + rtGeom; //15 for the luminous ; rGeom for measurement size
 	      iFlag = SDSelectFlags::deltaZ; //some unfortunate naming
 	      if (!(rtOut < rtLo || rtOut > rtHi)) sdFlag |= 1 << iFlag;
 	      else if (cumulativeCuts ) continue;
@@ -2555,9 +2555,9 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    //FIXME: refine using inner layer directions (can prune later)
 
 	    const float rtOut_o_rtIn = rtOut*rtInvIn;
-	    const float zLo = rtOut_o_rtIn*(zIn - 15.f) - zGeom; //15 for the luminous ; zGeom for z geom unit size
+	    const float zLo = rtOut_o_rtIn*(zIn - 15.f*(1.f-1.f/rtOut_o_rtIn)) - zGeom; //15 for the luminous ; zGeom for z geom unit size
 	    if (zOut < zLo && cumulativeCuts) continue;
-	    const float zHi = rtOut_o_rtIn*(zIn + 15.f) + zGeom;
+	    const float zHi = rtOut_o_rtIn*(zIn + 15.f*(1.f-1.f/rtOut_o_rtIn)) + zGeom;
 	    if (!(zOut < zLo || zOut > zHi)) sdlFlag |= 1 << SDLSelectFlags::deltaZ;
 	    else if (cumulativeCuts ) continue;
 	    if (sdlFlag == sdlMasksCumulative[SDLSelectFlags::deltaZ]) nDeltaZ++;
@@ -3241,8 +3241,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		const float zGeom = lIn >= 0 && lIn <= 7 && lOut >= 5 && lOut <= 7 ? 0.3f : 10.0f;//twice the macro-pixel or strip size
 		
 		const float rtOut_o_rtIn = rtOut/rtIn;
-		const float zLo = rtOut_o_rtIn*(zIn - 15.f) - zGeom; //15 for the luminous ; zGeom for z geom unit size
-		const float zHi = rtOut_o_rtIn*(zIn + 15.f) + zGeom;
+		const float zLo = rtOut_o_rtIn*(zIn - 15.f*(1.f - 1.f/rtOut_o_rtIn)) - zGeom; //15 for the luminous ; zGeom for z geom unit size
+		const float zHi = rtOut_o_rtIn*(zIn + 15.f*(1.f - 1.f/rtOut_o_rtIn)) + zGeom;
 		
 		if (zOut > zLo && zOut < zHi) sdlFlag |= 1 << SDLSelectFlags::deltaZ;
 		if (debugSimMatching && !(sdlFlag & 1 << SDLSelectFlags::deltaZ) ){
