@@ -2527,7 +2527,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	  const float rtInvIn = sdIn.rtInv;
 	  const float ptIn = sdIn.p3.Pt();
 	  const float zIn = sdIn.r3.z();
-	  const float dSDIn = sdIn.d;
+	  const float drtSDIn = sdIn.d;
 	  const float dzSDIn = sdIn.mdOut.z - sdIn.mdRef.z;
 	  const float dr3SDIn = sdIn.mdOut.r - sdIn.mdRef.r;
 	  
@@ -2551,8 +2551,10 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    
 	    const float rtOut = sdOut.rt;
 	    const float zOut = sdOut.z;
-	    
-	    if (lOut >= 11 && zIn*zOut < 0) continue; //don't even track stats for the opposite ends in z
+
+	    //don't even track stats for the opposite ends in z
+	    if (lOut >= 11
+		&& ( (lIn > 0 && zIn*zOut < 0) || (lIn == 0 && sdIn.p3.Z()*zOut < 0))) continue;
 	    nAll++;
 
 	    if (lOut < 11){//barrel: match to Z proper
@@ -2596,33 +2598,96 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      const float etaErr = see_pca_etaErr()[sdIn.iRef];
 	      const float eta = see_lh_eta()[sdIn.iRef];
 	      const float coshEta = std::cosh(eta);
-	      float dzErr = drOutIn*etaErr*coshEta;
-	      dzErr *= dzErr;
-	      dzErr += 0.03f*0.03f; // pixel size x2. ... random for now
-	      dzErr *= 9.f; //3 sigma
-	      dzErr += sdlMuls*sdlMuls*drOutIn*drOutIn/3.f*coshEta*coshEta;//sloppy
-	      dzErr += zGeom*zGeom;
-	      dzErr = sqrt(dzErr);
-	      const float dzDrIn = sdIn.p3.Z()/ptIn;
-	      const float zWindow = dzErr/dSDIn*drOutIn + zGeom;
-	      const float dzMean = dzDrIn*drOutIn*(1.f + drOutIn*drOutIn*kRinv1GeVf*kRinv1GeVf/ptIn/ptIn/24.f);//with curved path correction
-	      const float zLo = zIn + dzMean - zWindow;
-	      const float zHi = zIn + dzMean + zWindow;
-	      if (!(zOut < zLo || zOut > zHi)) sdlFlag |= 1 << SDLSelectFlags::deltaZPointed;
-	      else if (cumulativeCuts ) continue;
+
+	      if (lOut < 11){//barrel
+		float dzErr = drOutIn*etaErr*coshEta; //FIXME: check with the calc in the endcap
+		dzErr *= dzErr;
+		dzErr += 0.03f*0.03f; // pixel size x2. ... random for now
+		dzErr *= 9.f; //3 sigma
+		dzErr += sdlMuls*sdlMuls*drOutIn*drOutIn/3.f*coshEta*coshEta;//sloppy
+		dzErr += zGeom*zGeom;
+		dzErr = sqrt(dzErr);
+		const float dzDrIn = sdIn.p3.Z()/ptIn;
+		const float zWindow = dzErr/drtSDIn*drOutIn + zGeom;
+		const float dzMean = dzDrIn*drOutIn*(1.f + drOutIn*drOutIn*kRinv1GeVf*kRinv1GeVf/ptIn/ptIn/24.f);//with curved path correction
+		const float zLo = zIn + dzMean - zWindow;
+		const float zHi = zIn + dzMean + zWindow;
+		if (!(zOut < zLo || zOut > zHi)) sdlFlag |= 1 << SDLSelectFlags::deltaZPointed;
+		else if (cumulativeCuts ) continue;
+	      } else {//endcap; !!! THIS IS BLIND, WAS NOT TESTED !!!
+		const float dzOutInAbs = std::abs(zOut - zIn);
+		const float multDzDr = dzOutInAbs*coshEta/(coshEta*coshEta - 1.f);
+		const float rtGeom1 = rtOut < 60.0f ? 0.15f : 5.0f;//FIXME: make this chosen by configuration for lay11,12 full PS
+		
+		float drtErr = etaErr*multDzDr;
+		drtErr *= drtErr;
+		drtErr += 0.03f*0.03f; // pixel size x2. ... random for now
+		drtErr *= 9.f; //3 sigma
+		drtErr += sdlMuls*sdlMuls*multDzDr*multDzDr/3.f*coshEta*coshEta;//sloppy: relative muls is 1/3 of total muls
+		drtErr = sqrt(drtErr);
+		const float drtDzIn = ptIn/sdIn.p3.Z();
+
+		const float rtWindow = drtErr + rtGeom1;
+		const float drtMean = drtDzIn*dzOutInAbs*(1.f - drOutIn*drOutIn*kRinv1GeVf*kRinv1GeVf/ptIn/ptIn/24.f);//with curved path correction
+		const float rtLo = rtIn + drtMean - rtWindow;
+		const float rtHi = rtIn + drtMean + rtWindow;
+		if (!(rtOut < rtLo || rtOut > rtHi)) sdlFlag |= 1 << SDLSelectFlags::deltaZPointed;
+		else if (cumulativeCuts ) continue;
+	      }//if (lOut < 11){//barrel
 	    }
 	    else if (lIn>=5 && lIn <=6){//can point to the z pos in lOut
-	      const float coshEta = dr3SDIn/dSDIn;//direction estimate
-	      float dzErr = zGeom*zGeom*2.f;//both sides contribute to direction uncertainty
-	      dzErr += sdlMuls*sdlMuls*drOutIn*drOutIn/3.f*coshEta*coshEta;//sloppy
-	      dzErr = sqrt(dzErr);
-	      const float dzMean = dzSDIn/dSDIn*drOutIn;
-	      const float zWindow = dzErr/dSDIn*drOutIn + zGeom; //FIXME for ptCut lower than ~0.8 need to add curv path correction
-	      const float zLo = zIn + dzMean - zWindow;
-	      const float zHi = zIn + dzMean + zWindow;
-	      if (!(zOut < zLo || zOut > zHi)) sdlFlag |= 1 << SDLSelectFlags::deltaZPointed;
+	      if (lOut<11){//barrel
+		const float coshEta = dr3SDIn/drtSDIn;//direction estimate
+		float dzErr = zGeom*zGeom*2.f;//both sides contribute to direction uncertainty
+		dzErr += sdlMuls*sdlMuls*drOutIn*drOutIn/3.f*coshEta*coshEta;//sloppy
+		dzErr = sqrt(dzErr);
+		const float dzMean = dzSDIn/drtSDIn*drOutIn;
+		const float zWindow = dzErr/drtSDIn*drOutIn + zGeom; //FIXME for ptCut lower than ~0.8 need to add curv path correction
+		const float zLo = zIn + dzMean - zWindow;
+		const float zHi = zIn + dzMean + zWindow;
+		if (!(zOut < zLo || zOut > zHi)) sdlFlag |= 1 << SDLSelectFlags::deltaZPointed;
+		else if (cumulativeCuts ) continue;
+	      } else {//endcap
+		const float coshEta = dr3SDIn/drtSDIn;//direction estimate
+		const float dzOutInAbs = std::abs(zOut - zIn);
+		const float multDzDr = dzOutInAbs*coshEta/(coshEta*coshEta - 1.f);
+		const float rtGeom1 = rtOut < 60.0f ? 0.15f : 5.f;//FIXME: make this chosen by configuration for lay11,12 full PS
+		const float zGeom1 = 0.15f;
+
+		const float kZ = (zOut - zIn)/dzSDIn;
+		float drtErr = zGeom1*zGeom1*drtSDIn*drtSDIn/dzSDIn/dzSDIn * (1.f - 2.f*kZ + 2.f*kZ*kZ);//Notes:122316
+		drtErr += sdlMuls*sdlMuls*multDzDr*multDzDr/3.f*coshEta*coshEta;//sloppy: relative muls is 1/3 of total muls
+		drtErr = sqrt(drtErr);
+		const float drtMean = drtSDIn*dzOutInAbs/std::abs(dzSDIn); //FIXME for ptCut lower than ~0.8 need to add curv path correction
+		const float rtWindow = drtErr + rtGeom1;
+		const float rtLo = rtIn + drtMean - rtWindow;
+		const float rtHi = rtIn + drtMean + rtWindow;
+		if (!(kZ < 0 || rtOut < rtLo || rtOut > rtHi)) sdlFlag |= 1 << SDLSelectFlags::deltaZPointed;
+		else if (cumulativeCuts ) continue;
+	      }
+	    }
+	    else if (lIn>=11 &&
+		     (sdIn.mdRef.rt < 60.f && sdIn.mdOut.rt < 60.f)//FIXME: make configurable for full inner disks PS
+		     ){//can point to the r pos in lOut;
+	      assert(lOut >= 13);//only endcaps to match to
+	      const float coshEta = dr3SDIn/drtSDIn;//direction estimate
+	      const float dzOutInAbs = std::abs(zOut - zIn);
+	      const float multDzDr = dzOutInAbs*coshEta/(coshEta*coshEta - 1.f);
+	      const float rtGeom = rtIn < 60.0f && rtOut < 60.0f ? 0.3f
+							   : (rtIn < 60.0f || rtOut < 60.0f ) ? 5.3f
+								     : 10.0f; //FIXME: make this chosen by configuration for lay11,12 full PS
+
+	      float drtErr = 0.15f*0.15f*2.f/dzSDIn/dzSDIn*dzOutInAbs*dzOutInAbs;//both sides contribute to direction uncertainty
+	      drtErr += sdlMuls*sdlMuls*multDzDr*multDzDr/3.f*coshEta*coshEta;//sloppy: relative muls is 1/3 of total muls
+	      drtErr = sqrt(drtErr);
+	      const float drtMean = drtSDIn*dzOutInAbs/std::abs(dzSDIn);
+	      const float rtWindow = drtErr + rtGeom; //FIXME for ptCut lower than ~0.8 need to add curv path correction
+	      const float rtLo = rtIn + drtMean - rtWindow;
+	      const float rtHi = rtIn + drtMean + rtWindow;
+	      if (!(rtOut < rtLo || rtOut > rtHi)) sdlFlag |= 1 << SDLSelectFlags::deltaZPointed;
 	      else if (cumulativeCuts ) continue;
-	    } else {
+	    }
+	    else {
 	      sdlFlag |= 1 << SDLSelectFlags::deltaZPointed;
 	    }
 	    if (sdlFlag == sdlMasksCumulative[SDLSelectFlags::deltaZPointed]) nDeltaZPointed++;
@@ -3245,7 +3310,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      const float rtInvIn = sdIn.rtInv;
 	      const float ptIn = sdIn.p3.Pt();
 	      const float zIn = sdIn.r3.z();
-	      const float dSDIn = sdIn.d;
+	      const float drtSDIn = sdIn.d;
 	      const float dzSDIn = sdIn.mdOut.z - sdIn.mdRef.z;
 	      const float dr3SDIn = sdIn.mdOut.r - sdIn.mdRef.r;
 	      
@@ -3267,7 +3332,9 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		const float rtOut = sdOut.rt;
 		const float zOut = sdOut.r3.z();	    
 
-		if (lOut >= 11 && zIn*zOut < 0) continue; //don't even track stats for the opposite ends in z
+		//don't even track stats for the opposite ends in z
+		if (lOut >= 11
+		    && ( (lIn > 0 && zIn*zOut < 0) || (lIn == 0 && sdIn.p3.Z()*zOut < 0))) continue;
 
 		if (lOut < 11){//barrel: match to Z proper
 		  //apply some loose Z compatibility
@@ -3290,7 +3357,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		    const float rtHi = rtIn*(zOut - dLum)/(zIn - zGeom1 - dLum) + rtGeom1;
 
 		    if (rtOut > rtLo && rtOut < rtHi) sdlFlag |= 1 << SDLSelectFlags::deltaZ;
-		    if (tpPt > 2 && !(sdlFlag & 1 << SDLSelectFlags::deltaZ) ){
+		    if (debugSimMatching && !(sdlFlag & 1 << SDLSelectFlags::deltaZ) ){
 		      std::cout<<"Lum region failed: tpPt "<<tpPt<<" lIn "<<lIn <<" rtLo "<<rtLo<<" rtHi "<<rtHi<<" vs rtOut "<<rtOut<<std::endl;
 		    }
 		  } else {//E-E
@@ -3313,36 +3380,116 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		  const float etaErr = see_pca_etaErr()[sdIn.iRef];
 		  const float eta = see_lh_eta()[sdIn.iRef];
 		  const float coshEta = std::cosh(eta);
-		  float dzErr = drOutIn*etaErr*coshEta;
-		  dzErr *= dzErr;
-		  dzErr += 0.03f*0.03f; // pixel size x2. ... random for now
-		  dzErr *= 9.f; //3 sigma
-		  dzErr += sdlMuls*sdlMuls*drOutIn*drOutIn/3.f*coshEta*coshEta;//sloppy
-		  dzErr += zGeom*zGeom;
-		  dzErr = sqrt(dzErr);
-		  const float dzDrIn = sdIn.p3.Z()/ptIn;
-		  const float zWindow = dzErr/dSDIn*drOutIn + zGeom;
-		  const float dzMean = dzDrIn*drOutIn*(1.f + drOutIn*drOutIn*kRinv1GeVf*kRinv1GeVf/ptIn/ptIn/24.f);//with curved path correction
-		  const float zLo = zIn + dzMean - zWindow;
-		  const float zHi = zIn + dzMean + zWindow;
-		  if (!(zOut < zLo || zOut > zHi)) sdlFlag |= 1 << SDLSelectFlags::deltaZPointed; //continue;
+
+		  if (lOut < 11){//barrel
+		    float dzErr = drOutIn*etaErr*coshEta;
+		    dzErr *= dzErr;
+		    dzErr += 0.03f*0.03f; // pixel size x2. ... random for now
+		    dzErr *= 9.f; //3 sigma
+		    dzErr += sdlMuls*sdlMuls*drOutIn*drOutIn/3.f*coshEta*coshEta;//sloppy
+		    dzErr += zGeom*zGeom;
+		    dzErr = sqrt(dzErr);
+		    const float dzDrIn = sdIn.p3.Z()/ptIn;
+		    const float zWindow = dzErr/drtSDIn*drOutIn + zGeom;
+		    const float dzMean = dzDrIn*drOutIn*(1.f + drOutIn*drOutIn*kRinv1GeVf*kRinv1GeVf/ptIn/ptIn/24.f);//with curved path correction
+		    const float zLo = zIn + dzMean - zWindow;
+		    const float zHi = zIn + dzMean + zWindow;
+		    if (!(zOut < zLo || zOut > zHi)) sdlFlag |= 1 << SDLSelectFlags::deltaZPointed; //continue;
+		    if (debugSimMatching && !(sdlFlag & 1 << SDLSelectFlags::deltaZPointed)){
+		      std::cout<<"ZPointing failed: tpPt "<<tpPt<<" lIn "<<lIn <<" zLo "<<zLo<<" zHi "<<zHi<<" vs zOut "<<zOut
+			       <<" : dzDrIn "<<dzDrIn<<" drtSDIn "<<drtSDIn<<" dzErr "<<dzErr<<" (rtOut - rtIn) "<<(rtOut - rtIn)<<std::endl;
+		      std::cout<<"\t\t RefL "<<sdIn.mdRef.pixL<<" RefU "<<sdIn.mdRef.pixU
+			       <<" OutL "<<sdIn.mdOut.pixL<<" OutU "<<sdIn.mdOut.pixU<<std::endl;
+		    }
+		  } else {//endcap; !!! THIS IS BLIND, WAS NOT TESTED !!!
+		    const float dzOutInAbs = std::abs(zOut - zIn);
+		    const float multDzDr = dzOutInAbs*coshEta/(coshEta*coshEta - 1.f);
+		    const float rtGeom1 = rtOut < 60.0f ? 0.15f : 5.0f;//FIXME: make this chosen by configuration for lay11,12 full PS
+		    
+		    float drtErr = etaErr*multDzDr;
+		    drtErr *= drtErr;
+		    drtErr += 0.03f*0.03f; // pixel size x2. ... random for now
+		    drtErr *= 9.f; //3 sigma
+		    drtErr += sdlMuls*sdlMuls*multDzDr*multDzDr/3.f*coshEta*coshEta;//sloppy; mulsThetaPos ~ 1/sqrt(3.)*mulsTheta
+		    drtErr = sqrt(drtErr);
+		    const float drtDzIn = ptIn/sdIn.p3.Z();
+		    
+		    const float rtWindow = drtErr + rtGeom1;
+		    const float drtMean = drtDzIn*dzOutInAbs*(1.f - drOutIn*drOutIn*kRinv1GeVf*kRinv1GeVf/ptIn/ptIn/24.f);//with curved path correction
+		    const float rtLo = rtIn + drtMean - rtWindow;
+		    const float rtHi = rtIn + drtMean + rtWindow;
+		    if (!(rtOut < rtLo || rtOut > rtHi)) sdlFlag |= 1 << SDLSelectFlags::deltaZPointed;
+		    if (debugSimMatching && !(sdlFlag & 1 << SDLSelectFlags::deltaZPointed)){
+		      std::cout<<"rtPointing failed: tpPt "<<tpPt<<" lIn "<<lIn <<" rtLo "<<rtLo<<" rtHi "<<rtHi<<" vs rtOut "<<rtOut
+			       <<" : drtDzIn "<<drtDzIn<<" drtErr "<<drtErr<<" (rtOut - rtIn) "<<(rtOut - rtIn)<<std::endl;
+		      std::cout<<"\t\t RefL "<<sdIn.mdRef.pixL<<" RefU "<<sdIn.mdRef.pixU
+			       <<" OutL "<<sdIn.mdOut.pixL<<" OutU "<<sdIn.mdOut.pixU<<std::endl;
+		    }
+		  }//if (lOut < 11){//barrel
+		}
+		else if (lIn>=5 && lIn <=6){//can point to the z pos in lOut
+		  if (lOut<11){//barrel
+		    const float coshEta = dr3SDIn/drtSDIn;//direction estimate
+		    float dzErr = zGeom*zGeom*2.f;//both sides contribute to direction uncertainty
+		    dzErr += sdlMuls*sdlMuls*drOutIn*drOutIn/3.f*coshEta*coshEta;//sloppy
+		    dzErr = sqrt(dzErr);
+		    const float dzMean = dzSDIn/drtSDIn*drOutIn;
+		    const float zWindow = dzErr/drtSDIn*drOutIn + zGeom; //FIXME for ptCut lower than ~0.8 need to add curv path correction
+		    const float zLo = zIn + dzMean - zWindow;
+		    const float zHi = zIn + dzMean + zWindow;
+		    if (zOut > zLo && zOut < zHi) sdlFlag |= 1 << SDLSelectFlags::deltaZPointed;
+		  } else {//endcap
+		    const float coshEta = dr3SDIn/drtSDIn;//direction estimate
+		    const float dzOutInAbs = std::abs(zOut - zIn);
+		    const float multDzDr = dzOutInAbs*coshEta/(coshEta*coshEta - 1.f);
+		    const float rtGeom1 = rtOut < 60.0f ? 0.15f : 5.f;//FIXME: make this chosen by configuration for lay11,12 full PS
+		    const float zGeom1 = 0.15f;
+		    
+		    const float kZ = (zOut - zIn)/dzSDIn;
+		    float drtErr = zGeom1*zGeom1*drtSDIn*drtSDIn/dzSDIn/dzSDIn * (1.f - 2.f*kZ + 2.f*kZ*kZ);//Notes:122316
+		    drtErr += sdlMuls*sdlMuls*multDzDr*multDzDr/3.f*coshEta*coshEta;//sloppy: relative muls is 1/3 of total muls
+		    drtErr = sqrt(drtErr);
+		    const float drtMean = drtSDIn*dzOutInAbs/std::abs(dzSDIn); //FIXME for ptCut lower than ~0.8 need to add curv path correction
+		    const float rtWindow = drtErr + rtGeom1;
+		    const float rtLo = rtIn + drtMean - rtWindow;
+		    const float rtHi = rtIn + drtMean + rtWindow;
+		    if (kZ > 0 && rtOut > rtLo && rtOut < rtHi) sdlFlag |= 1 << SDLSelectFlags::deltaZPointed;
+		    if (debugSimMatching && !(sdlFlag & 1 << SDLSelectFlags::deltaZPointed)){
+		      std::cout<<"rtPointing failed: tpPt "<<tpPt<<" lIn "<<lIn <<" rtLo "<<rtLo<<" rtHi "<<rtHi<<" vs rtOut "<<rtOut
+			       <<" : drtErr "<<drtErr<<" (rtOut - rtIn) "<<(rtOut - rtIn)<<std::endl;
+		      std::cout<<"\t\t RefL "<<sdIn.mdRef.pixL<<" RefU "<<sdIn.mdRef.pixU
+			       <<" OutL "<<sdIn.mdOut.pixL<<" OutU "<<sdIn.mdOut.pixU<<std::endl;
+		    }
+		  }//else {//endcap
+		}
+		else if (lIn>=11 &&
+			 (sdIn.mdRef.rt < 60.f && sdIn.mdOut.rt < 60.f)//FIXME: make configurable for full inner disks PS
+			 ){//can point to the r pos in lOut;
+		  assert(lOut >= 13);//only endcaps to match to
+		  const float coshEta = dr3SDIn/drtSDIn;//direction estimate
+		  const float dzOutInAbs = std::abs(zOut - zIn);
+		  const float multDzDr = dzOutInAbs*coshEta/(coshEta*coshEta - 1.f);
+		  const float rtGeom = rtIn < 60.0f && rtOut < 60.0f ? 0.3f
+							       : (rtIn < 60.0f || rtOut < 60.0f ) ? 5.3f
+									 : 10.0f; //FIXME: make this chosen by configuration for lay11,12 full PS
+		  
+		  float drtErr = 0.15f*0.15f*2.f/dzSDIn/dzSDIn*dzOutInAbs*dzOutInAbs;//both sides contribute to direction uncertainty
+		  drtErr += sdlMuls*sdlMuls*multDzDr*multDzDr/3.f*coshEta*coshEta;//sloppy: relative muls is 1/3 of total muls
+		  drtErr = sqrt(drtErr);
+		  const float drtMean = drtSDIn*dzOutInAbs/std::abs(dzSDIn);
+		  const float rtWindow = drtErr + rtGeom; //FIXME for ptCut lower than ~0.8 need to add curv path correction
+		  const float rtLo = rtIn + drtMean - rtWindow;
+		  const float rtHi = rtIn + drtMean + rtWindow;
+		  if (rtOut > rtLo && rtOut < rtHi) sdlFlag |= 1 << SDLSelectFlags::deltaZPointed;
+		  
 		  if (debugSimMatching && !(sdlFlag & 1 << SDLSelectFlags::deltaZPointed)){
-		    std::cout<<"ZPointing failed: tpPt "<<tpPt<<" lIn "<<lIn <<" zLo "<<zLo<<" zHi "<<zHi<<" vs zOut "<<zOut
-			     <<" : dzDrIn "<<dzDrIn<<" dSDIn "<<dSDIn<<" dzErr "<<dzErr<<" (rtOut - rtIn) "<<(rtOut - rtIn)<<std::endl;
+		    std::cout<<"rtPointing failed: tpPt "<<tpPt<<" lIn "<<lIn <<" rtLo "<<rtLo<<" rtHi "<<rtHi<<" vs rtOut "<<rtOut
+			     <<" : drtErr "<<drtErr<<" (rtOut - rtIn) "<<(rtOut - rtIn)<<std::endl;
 		    std::cout<<"\t\t RefL "<<sdIn.mdRef.pixL<<" RefU "<<sdIn.mdRef.pixU
 			     <<" OutL "<<sdIn.mdOut.pixL<<" OutU "<<sdIn.mdOut.pixU<<std::endl;
 		  }
-		} else if (lIn>=5 && lIn <=6){//can point to the z pos in lOut
-		  const float coshEta = dr3SDIn/dSDIn;//direction estimate
-		  float dzErr = zGeom*zGeom*2.f;//both sides contribute to direction uncertainty
-		  dzErr += sdlMuls*sdlMuls*drOutIn*drOutIn/3.f*coshEta*coshEta;//sloppy
-		  dzErr = sqrt(dzErr);
-		  const float dzMean = dzSDIn/dSDIn*drOutIn;
-		  const float zWindow = dzErr/dSDIn*drOutIn + zGeom; //FIXME for ptCut lower than ~0.8 need to add curv path correction
-		  const float zLo = zIn + dzMean - zWindow;
-		  const float zHi = zIn + dzMean + zWindow;
-		  if (zOut > zLo && zOut < zHi) sdlFlag |= 1 << SDLSelectFlags::deltaZPointed;
-		} else {
+		}
+		else {
 		  //the flag is set to pass here
 		  sdlFlag |= 1 << SDLSelectFlags::deltaZPointed;
 		}
