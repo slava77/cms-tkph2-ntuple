@@ -2518,6 +2518,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	int ndBeta = 0;
 	
 	const float zGeom = lIn >= 0 && lIn <= 7 && lOut >= 5 && lOut <= 7 ? 0.3f : 10.0f;//twice the macro-pixel or strip size
+	
 	int iIn = -1;
 	for ( auto const& sdIn : sdInV ) {
 	  iIn++;
@@ -2547,24 +2548,50 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    int sdlFlag = 0;
 	    iOut++;
 	    //
-	    nAll++;
 	    
 	    const float rtOut = sdOut.rt;
-	    const float zOut = sdOut.z;	    
-	    //apply some loose Z compatibility
-	    //FIXME: refine using inner layer directions (can prune later)
+	    const float zOut = sdOut.z;
+	    
+	    if (lOut >= 11 && zIn*zOut < 0) continue; //don't even track stats for the opposite ends in z
+	    nAll++;
 
-	    const float rtOut_o_rtIn = rtOut*rtInvIn;
-	    const float zLo = rtOut_o_rtIn*(zIn - 15.f*(1.f-1.f/rtOut_o_rtIn)) - zGeom; //15 for the luminous ; zGeom for z geom unit size
-	    if (zOut < zLo && cumulativeCuts) continue;
-	    const float zHi = rtOut_o_rtIn*(zIn + 15.f*(1.f-1.f/rtOut_o_rtIn)) + zGeom;
-	    if (!(zOut < zLo || zOut > zHi)) sdlFlag |= 1 << SDLSelectFlags::deltaZ;
-	    else if (cumulativeCuts ) continue;
+	    if (lOut < 11){//barrel: match to Z proper
+	      //apply some loose Z compatibility
+	      //FIXME: refine using inner layer directions (can prune later)
+	      const float rtOut_o_rtIn = rtOut*rtInvIn;
+	      const float zLo = rtOut_o_rtIn*(zIn - 15.f*(1.f-1.f/rtOut_o_rtIn)) - zGeom; //15 for the luminous ; zGeom for z geom unit size
+	      if (zOut < zLo && cumulativeCuts) continue;
+
+	      const float zHi = rtOut_o_rtIn*(zIn + 15.f*(1.f-1.f/rtOut_o_rtIn)) + zGeom;
+	      if (!(zOut < zLo || zOut > zHi)) sdlFlag |= 1 << SDLSelectFlags::deltaZ;
+	      else if (cumulativeCuts ) continue;
+	    } else {//endcap uses matching to r
+	      const float dLum = std::copysign(15.f, zIn);
+	      if (lIn < 11){//B-E
+		const float rtGeom1 = rtOut < 60.0f ? 0.15f : 5.0f;//FIXME: make this chosen by configuration for lay11,12 full PS
+		const float zGeom1 = 0.5f*std::copysign(zGeom,zIn); //used in B-E region
+
+		const float rtLo = rtIn*(zOut + dLum)/(zIn + zGeom1 + dLum) - rtGeom1;
+		if (rtOut < rtLo && cumulativeCuts) continue;
+		const float rtHi = rtIn*(zOut - dLum)/(zIn - zGeom1 - dLum) + rtGeom1;
+		if (!(rtOut < rtLo || rtOut > rtHi)) sdlFlag |= 1 << SDLSelectFlags::deltaZ;
+		else if (cumulativeCuts ) continue;
+	      } else {//E-E
+		const float rtGeom = rtIn < 60.0f && rtOut < 60.0f ? 0.3f
+							     : (rtIn < 60.0f || rtOut < 60.0f ) ? 5.3f
+								       : 10.0f; //FIXME: make this chosen by configuration for lay11,12 full PS
+
+		const float rtLo = rtIn*(zOut + dLum)/(zIn  + dLum) - rtGeom;
+		if (rtOut < rtLo && cumulativeCuts) continue;
+		const float rtHi = rtIn*(zOut - dLum)/(zIn - dLum) + rtGeom;
+		if (!(rtOut < rtLo || rtOut > rtHi)) sdlFlag |= 1 << SDLSelectFlags::deltaZ;
+		else if (cumulativeCuts ) continue;		
+	      }//if (lIn < 11){
+	    }//if (lOut < 11){//barrel: match to Z proper
 	    if (sdlFlag == sdlMasksCumulative[SDLSelectFlags::deltaZ]) nDeltaZ++;
 
 	    const float drOutIn = (rtOut - rtIn);
 	    
-
 	    if (lIn == 0){
 	      const float etaErr = see_pca_etaErr()[sdIn.iRef];
 	      const float eta = see_lh_eta()[sdIn.iRef];
@@ -3209,9 +3236,13 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    if (runDetailedTimers) timerA[T_timeVal_SDL].Start(kFALSE);
 	    //enum SDLSelectFlags { deltaZ = 0, deltaZPointed, slope, dAlphaIn, dAlphaOut, dBeta};
 	    std::vector<std::pair<SDLink, int> > vSDLwInfo_4of4;
+
+	    const float zGeom = lIn >= 0 && lIn <= 7 && lOut >= 5 && lOut <= 7 ? 0.3f : 10.0f;//twice the macro-pixel or strip size
+
 	    bool debugSimMatching = tpPt < 2 && hasSDIn_4of4 && hasSDOut_4of4 && has8MHs && has4MDs && debug;
 	    for (auto const& sdIn : vSDIn_4of4){
 	      const float rtIn = sdIn.rt;
+	      const float rtInvIn = sdIn.rtInv;
 	      const float ptIn = sdIn.p3.Pt();
 	      const float zIn = sdIn.r3.z();
 	      const float dSDIn = sdIn.d;
@@ -3235,20 +3266,47 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		
 		const float rtOut = sdOut.rt;
 		const float zOut = sdOut.r3.z();	    
-		const float dSDOut = sdOut.d;		
-		//apply some loose Z compatibility
-		//FIXME: refine using inner layer directions (can prune later)
-		const float zGeom = lIn >= 0 && lIn <= 7 && lOut >= 5 && lOut <= 7 ? 0.3f : 10.0f;//twice the macro-pixel or strip size
-		
-		const float rtOut_o_rtIn = rtOut/rtIn;
-		const float zLo = rtOut_o_rtIn*(zIn - 15.f*(1.f - 1.f/rtOut_o_rtIn)) - zGeom; //15 for the luminous ; zGeom for z geom unit size
-		const float zHi = rtOut_o_rtIn*(zIn + 15.f*(1.f - 1.f/rtOut_o_rtIn)) + zGeom;
-		
-		if (zOut > zLo && zOut < zHi) sdlFlag |= 1 << SDLSelectFlags::deltaZ;
-		if (debugSimMatching && !(sdlFlag & 1 << SDLSelectFlags::deltaZ) ){
-		  std::cout<<"Lum region failed: tpPt "<<tpPt<<" lIn "<<lIn <<" zLo "<<zLo<<" zHi "<<zHi<<" vs zOut "<<zOut<<std::endl;
-		}
 
+		if (lOut >= 11 && zIn*zOut < 0) continue; //don't even track stats for the opposite ends in z
+
+		if (lOut < 11){//barrel: match to Z proper
+		  //apply some loose Z compatibility
+		  //FIXME: refine using inner layer directions (can prune later)		
+		  const float rtOut_o_rtIn = rtOut*rtInvIn;
+		  const float zLo = rtOut_o_rtIn*(zIn - 15.f*(1.f - 1.f/rtOut_o_rtIn)) - zGeom; //15 for the luminous ; zGeom for z geom unit size
+		  const float zHi = rtOut_o_rtIn*(zIn + 15.f*(1.f - 1.f/rtOut_o_rtIn)) + zGeom;
+		
+		  if (zOut > zLo && zOut < zHi) sdlFlag |= 1 << SDLSelectFlags::deltaZ;
+		  if (debugSimMatching && !(sdlFlag & 1 << SDLSelectFlags::deltaZ) ){
+		    std::cout<<"Lum region failed: tpPt "<<tpPt<<" lIn "<<lIn <<" zLo "<<zLo<<" zHi "<<zHi<<" vs zOut "<<zOut<<std::endl;
+		  }
+		} else {//endcap uses matching to r
+		  const float dLum = std::copysign(15.f, zIn);
+		  if (lIn < 11){//B-E
+		    const float rtGeom1 = rtOut < 60.0f ? 0.15f : 5.0f;//FIXME: make this chosen by configuration for lay11,12 full PS
+		    const float zGeom1 = 0.5f*std::copysign(zGeom,zIn);
+
+		    const float rtLo = rtIn*(zOut + dLum)/(zIn + zGeom1 + dLum) - rtGeom1;
+		    const float rtHi = rtIn*(zOut - dLum)/(zIn - zGeom1 - dLum) + rtGeom1;
+
+		    if (rtOut > rtLo && rtOut < rtHi) sdlFlag |= 1 << SDLSelectFlags::deltaZ;
+		    if (tpPt > 2 && !(sdlFlag & 1 << SDLSelectFlags::deltaZ) ){
+		      std::cout<<"Lum region failed: tpPt "<<tpPt<<" lIn "<<lIn <<" rtLo "<<rtLo<<" rtHi "<<rtHi<<" vs rtOut "<<rtOut<<std::endl;
+		    }
+		  } else {//E-E
+		    const float rtGeom = rtIn < 60.0f && rtOut < 60.0f ? 0.3f
+								 : (rtIn < 60.0f || rtOut < 60.0f ) ? 5.3f
+									   : 10.0f; //FIXME: make this chosen by configuration for lay11,12 full PS
+		    
+		    const float rtLo = rtIn*(zOut + dLum)/(zIn  + dLum) - rtGeom;
+		    const float rtHi = rtIn*(zOut - dLum)/(zIn - dLum) + rtGeom;
+		    if (rtOut > rtLo && rtOut < rtHi) sdlFlag |= 1 << SDLSelectFlags::deltaZ;
+		    if (debugSimMatching && !(sdlFlag & 1 << SDLSelectFlags::deltaZ) ){
+		      std::cout<<"Lum region failed: tpPt "<<tpPt<<" lIn "<<lIn <<" rtLo "<<rtLo<<" rtHi "<<rtHi<<" vs rtOut "<<rtOut<<std::endl;
+		    }
+		  }//if (lIn < 11){
+		}//if (lOut < 11){//barrel: match to Z proper
+		
 		const float drOutIn = (rtOut - rtIn);
 
 		if (lIn == 0){
