@@ -2025,22 +2025,27 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
         if (pstat == 0) mockLayerMDfwRefLower[lay].push_back(std::make_pair(ipix,V3WithCache(r3RefLowerMock)));
 	//decide to go full scale helix based on config:
 	auto r3RefUpper = propagateMH(rRefUpper);
-	if (pstat == 0) mockLayerMDfwRefUpper[lay].push_back(std::make_pair(ipix, V3WithCache(r3RefUpper)));
+	//FIXME: put more appropriate limits
+	const bool r3RefUpperIsGood = (isBarrel && std::abs(r3RefUpper.z()) < 120.f) || (!isBarrel && r3RefUpper.Pt() > 23.f && r3RefUpper.Pt() < 110.f);
+	if (pstat == 0 && r3RefUpperIsGood) mockLayerMDfwRefUpper[lay].push_back(std::make_pair(ipix, V3WithCache(r3RefUpper)));
 	auto r3SDfwLower = propagateMH(rSDfwLower);
-	if (pstat == 0) mockLayerMDfwDNcmLower[lay].push_back(std::make_pair(ipix, V3WithCache(r3SDfwLower)));
+	const bool r3SDfwLowerIsGood = (isBarrel && std::abs(r3SDfwLower.z()) < 120.f) || (!isBarrel && r3SDfwLower.Pt() > 23.f && r3SDfwLower.Pt() < 110.f);
+	if (pstat == 0 && r3SDfwLowerIsGood) mockLayerMDfwDNcmLower[lay].push_back(std::make_pair(ipix, V3WithCache(r3SDfwLower)));
 	auto r3SDfwUpper = propagateMH(rSDfwUpper);
-	if (pstat == 0) mockLayerMDfwDNcmUpper[lay].push_back(std::make_pair(ipix, V3WithCache(r3SDfwUpper)));
+	const bool r3SDfwUpperIsGood = (isBarrel && std::abs(r3SDfwUpper.z()) < 120.f) || (!isBarrel && r3SDfwUpper.Pt() > 23.f && r3SDfwUpper.Pt() < 110.f);
+	if (pstat == 0 && r3SDfwUpperIsGood)
+	  mockLayerMDfwDNcmUpper[lay].push_back(std::make_pair(ipix, V3WithCache(r3SDfwUpper)));
 
 	if (pstat == 0 && q != 0 && pts>0.8){
 	  if (lay == 5 || lay == 7 || lay == 9){
 	    h2_hitsXY_ITrec_OTmockLL->Fill(r3RefLowerMock.X(), r3RefLowerMock.Y());
-	    h2_hitsXY_ITrec_OTmockLL->Fill(r3SDfwLower.X(), r3SDfwLower.Y());
+	    if (r3SDfwLowerIsGood) h2_hitsXY_ITrec_OTmockLL->Fill(r3SDfwLower.X(), r3SDfwLower.Y());
 	    h2_hitsRZ_ITrec_OTmockLL->Fill(std::abs(r3RefLowerMock.Z()), r3RefLowerMock.Pt());
-	    h2_hitsRZ_ITrec_OTmockLL->Fill(std::abs(r3SDfwLower.Z()), r3SDfwLower.Pt());
+	    if (r3SDfwLowerIsGood) h2_hitsRZ_ITrec_OTmockLL->Fill(std::abs(r3SDfwLower.Z()), r3SDfwLower.Pt());
 	  }
 	  if (lay == 5 || lay == 7 || lay == 9 || lay == 11 || lay == 13 || lay == 15){
 	    h2_hitsRZ_ITrec_OTmockLL_BE->Fill(std::abs(r3RefLowerMock.Z()), r3RefLowerMock.Pt());
-	    if (lay != 15) h2_hitsRZ_ITrec_OTmockLL_BE->Fill(std::abs(r3SDfwLower.Z()), r3SDfwLower.Pt());
+	    if (lay != 15 && r3SDfwLowerIsGood) h2_hitsRZ_ITrec_OTmockLL_BE->Fill(std::abs(r3SDfwLower.Z()), r3SDfwLower.Pt());
 	  }
 	}
       }//nPix: filling mock MDs
