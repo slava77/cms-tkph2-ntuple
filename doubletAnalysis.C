@@ -23,6 +23,7 @@
 #include <array>
 #include <utility>
 #include <algorithm>
+#include <unistd.h>
 
 #include "TChain.h"
 #include "TFile.h"
@@ -36,7 +37,7 @@
 #include "TEfficiency.h"
 #include "TGraphAsymmErrors.h"
 #include "TLegend.h"
-#include "TStopWatch.h"
+#include "TStopwatch.h"
 
 #include "TVector3.h"
 
@@ -2208,17 +2209,18 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		dPhi = hL.second.r3.DeltaPhi(hU.second.r3-hL.second.r3);
 		if (std::abs(dPhi) > miniCut) continue;
 	      } else { //endcap
-		auto const dz = std::abs(hU.second.r3.z() - hL.second.r3.z());//could enforce dz from geometry
-		if (dz > 1.0f) continue; //max mini-layer separation is 4 mm
+		auto const dz = hU.second.r3.z() - hL.second.r3.z();//could enforce dz from geometry
+		if (std::abs(dz) > 1.0f) continue; //max mini-layer separation is 4 mm
 		
 		auto const dr = hL.second.rt - hU.second.rt;
 		if (std::abs(dr) > dzCut) continue;
 		
-		const float dPhiPos = std::abs(deltaPhi(hU.second.phi, hL.second.phi));
+		const float dPhiPos = deltaPhi(hL.second.phi, hU.second.phi);
 		//FIXME: can be tighter
-		if (dPhiPos > miniCut) continue;
+		if (std::abs(dPhiPos) > miniCut) continue;
 
-		dPhi = hL.second.r3.z()*dPhiPos/dz;
+		const float dzFrac = dz/hL.second.r3.z();
+		dPhi = dPhiPos/dzFrac*(1.f + dzFrac);
 		if (std::abs(dPhi) > miniCut) continue;
 
 	      }
@@ -2357,22 +2359,23 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      
 	      if (sdFlag == sdMasksCumulative[iFlag]) nPass[iFlag]++;
 
-	      const float dz = std::abs(zRef - zOut);
+	      const float dz = zOut - zRef;
 	      const float rt = 0.5f*(rtRef + rtOut); //take the middle: it matches better the point-to-point
 	      const float sdSlope = rt*k2Rinv1GeVf/ptCut;
 	      const float sdMuls = miniMulsPtScale[iL]*3.f/ptCut*2.f;//will need a better guess than x2?
 	      const float sdPVoff = 0.1f/rt;
 	      const float sdCut = sdSlope + sqrt(sdMuls*sdMuls + sdPVoff*sdPVoff);
 
-	      const float dPhiPos = std::abs(deltaPhi(mdRef.phi, mdOut.phi));
+	      const float dPhiPos = deltaPhi(mdRef.phi, mdOut.phi);
 	      iFlag = SDSelectFlags::deltaPhiPos;
 	      //FIXME: should be tighter than the local sdCut
-	      if (!(dPhiPos > sdCut )) sdFlag |= 1 << iFlag;
+	      if (!(std::abs(dPhiPos) > sdCut )) sdFlag |= 1 << iFlag;
 	      else if (cumulativeCuts ) continue;	    
 	      if (sdFlag == sdMasksCumulative[iFlag]) nPass[iFlag]++;
 	      
 	      //equivalent SD bend cut
-	      dPhi = mdRef.r3.z()*dPhiPos/dz;
+	      const float dzFrac = dz/mdRef.r3.z();
+	      dPhi = dPhiPos/dzFrac*(1.f + dzFrac);
 	      
 	      iFlag = SDSelectFlags::slope;
 	      if (!(std::abs(dPhi) > sdCut )) sdFlag |= 1 << iFlag;
@@ -3181,7 +3184,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      }
 	    }
 	    //match the 8 layers of hits
-	    auto matchMH = [&](decltype(mockLayerMDfwRefLower[lIn])const& mhs){
+	    auto matchMH = [&](decltype(mockLayerMDfwRefLower)::const_reference mhs){
 	      for (auto const& mh : mhs) if (iSim == simsPerHit[mh.first] - 1) return true;
 	      return false;
 	    };
@@ -3236,7 +3239,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    }
 	    
 	    //match the 4 layer mini-doublets
-	    auto matchMD = [&](decltype(mockLayerMDfwRef[lIn]) const& mds){	      
+	    auto matchMD = [&](decltype(mockLayerMDfwRef)::const_reference mds){	      
 	      for (auto const& md : mds) if (md.itp == iSim && md.ntp ==2 ) return true;
 	      return false;
 	    };
