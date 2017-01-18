@@ -1874,6 +1874,84 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       "timeVal_SHLoad", "timeVal_MHMDSDMatch", "timeVal_SDL", "timeVal_SDLMatch"};
   bool runDetailedTimers = false;
 
+
+  std::map<int, std::array<float, 4> > moduleBoundaries;
+  std::map<int, int > modulePopulation;
+  std::array<float, 4> dbound {999,-999,999,-999}; //zmin, zmax, phimin, phimax
+  std::array<float, 4>* cbound;
+  std::array<float, 4> const* cboundC;
+  std::array<float, 4> const* cboundL;
+  std::array<float, 4> const* cboundH;
+  
+  //geomRange loop
+  {
+    TObjArray *listOfFiles = chain->GetListOfFiles();
+    unsigned int nEventsChain=0;
+    if(nEvents==-1) 
+      nEvents = chain->GetEntries();
+    nEventsChain = nEvents;
+    unsigned int nEventsTotal = 0;
+    TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
+    
+    // file loop
+    TIter fileIter(listOfFiles);
+    TFile *currentFile = 0;
+
+    int dpop = 0;
+    int* cpop = nullptr;
+    
+    while (( currentFile = (TFile*)fileIter.Next() )) {
+      TFile f(currentFile->GetTitle());
+      TTree *tree = (TTree*)f.Get("trkTree/tree");
+      cms2.Init(tree);
+      
+      //Event Loop
+      unsigned int nEvents = tree->GetEntries();
+      for( unsigned int event = 0; event < nEvents && nEventsTotal < nEventsChain; ++event) {
+	cms2.GetEntry(event);
+	++nEventsTotal;
+
+	int iidOld = -1;
+
+	std::array<int, nLayersB+1> hitsBarrelLayer {};
+	auto nPix = pix_isBarrel().size();
+	for (auto ipix = 0U; ipix < nPix; ++ipix){
+	  bool isBarrel = pix_isBarrel()[ipix];
+	  int lay = pix_lay()[ipix];
+
+	  hitsBarrelLayer[lay]++;
+	  int iid = pix_detId()[ipix];
+	  if (iidOld != iid){
+	    iidOld = iid;
+	    if (modulePopulation.find(iid) == modulePopulation.end()){
+	      modulePopulation[iid] = dpop;
+	      moduleBoundaries[iid] = dbound;
+	    }
+	    cpop = &modulePopulation[iid];
+	    cbound = &moduleBoundaries[iid];
+	  }
+
+	  const float x = pix_xsim()[ipix];
+	  const float y = pix_ysim()[ipix];
+	  const float z = isBarrel ? pix_zsim()[ipix] : sqrt(x*x + y*y);
+	  if (z==0) continue;
+	  float phi = atan2(y, x);
+	  if ((*cbound)[0] > z) (*cbound)[0] = z;
+	  if ((*cbound)[1] < z) (*cbound)[1] = z;
+	  if (*cpop ==0){
+	    (*cbound)[2] = phi;
+	    (*cbound)[3] = phi;
+	  } else {
+	    if (sin((*cbound)[2]-phi) > 0) (*cbound)[2] = phi;
+	    if (sin((*cbound)[3]-phi) < 0) (*cbound)[3] = phi;
+	  }
+	  (*cpop)++;
+	}
+
+      }
+    }
+  }//geom range map loop
+  
   //  cout<<__LINE__<<endl;
   TObjArray *listOfFiles = chain->GetListOfFiles();
 
@@ -1948,6 +2026,9 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       std::array<std::set<int>, nLayersA+1> simIdxDeltaInLayer;
       std::array<std::set<int>, nLayersA+1> simIdxPositronLowPInLayer;
       std::array<std::set<int>, nLayersA+1> simIdxInLayer;
+      int iidStart = -1;
+      int iidEnd = -1;
+      int iidOld = -1;
       for (auto ipix = 0U; ipix < nPix; ++ipix){
 	bool isBarrel = pix_isBarrel()[ipix];
 	if (!addEndcaps &&  !isBarrel) continue;
@@ -1955,8 +2036,18 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	if (addEndcaps && !isBarrel && (lay < 11 || lay > nLayersA) ) continue;
 
 	int iid = pix_detId()[ipix];
-	//Too restrictive for reverse TP matching??//	if ((iid & 0x4)!= 4) continue; 
+	if (iidOld != iid){
+	  iidStart = ipix;
+	  iidOld = iid;
+	  cboundC = &moduleBoundaries[iid];
+	  if ((iid & 0x4)== 4){
+	    cboundL = cboundC;
+	    cboundH = &moduleBoundaries[iid+4];
+	  }
+	}
 
+	//Too restrictive for reverse TP matching??//	if ((iid & 0x4)!= 4) continue; 
+		
 	TVector3 r3Rec(pix_x()[ipix], pix_y()[ipix], pix_z()[ipix]);
 
 	TVector3 r3Sim(pix_xsim()[ipix], pix_ysim()[ipix], pix_zsim()[ipix]);
@@ -2037,14 +2128,24 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	if (mockMode == 3){
 	  r3RefLowerMock += (r3Rec - r3Sim);
 	  if ((iid & 0x4)!= 4){	      //there was no simhit on the pixel layer; make up z or r by roundoff of sim
+	    //this mitigates the issue coming from recovery of inefficiency in simHit-rec matching done by using outer mini-layers as well
+	    //if the outer mini-layer is used in place of the inner one, the rec-sim shift is too large in the coarse direction
+	    //2S layers are not affected because both mini-layers have the same segmentation
 	    if (lay >=5 && lay <=7){	    
 	      r3RefLowerMock.SetZ(r3RefLowerMock.z() - r3Rec.z() + r3Sim.z());// undo the rec-sim shift in the coarse (bad) direction
 	      float binnedZshift = std::round(r3Sim.z()/pixelZpitch)*pixelZpitch - r3Sim.z();
 	      r3RefLowerMock.SetZ(r3RefLowerMock.z() + binnedZshift);
 	    } else if (lay >= 11 && r3Rec.Pt() < 60.f){
-	      r3RefLowerMock.SetPerp(r3RefLowerMock.Pt() - r3Rec.Pt() + r3Sim.Pt());// undo the rec-sim shift in the coarse (bad) direction
-	      float binnedRtshift = std::round(r3Sim.Pt()/pixelZpitch)*pixelZpitch - r3Sim.Pt();
-	      r3RefLowerMock.SetPerp(r3RefLowerMock.Pt() + binnedRtshift);
+	      const float phiAv = 0.5f*((*cboundC)[2] + (*cboundC)[3]);
+	      const float sinPhiAv = sin(phiAv);
+	      const float cosPhiAv = cos(phiAv);
+	      const float xLocRecMock = r3RefLowerMock.y()*cosPhiAv - r3RefLowerMock.x()*sinPhiAv;//keep this fixed
+
+	      const float yLocRecMock = std::round((r3RefLower.y()*sinPhiAv + r3RefLower.x()*cosPhiAv)/pixelZpitch)*pixelZpitch;//round-off the sim
+	      
+	      r3RefLowerMock.SetX(yLocRecMock*cosPhiAv -  xLocRecMock*sinPhiAv);
+	      r3RefLowerMock.SetY(yLocRecMock*sinPhiAv +  xLocRecMock*cosPhiAv);
+
 	    }
 	  }
 	}
