@@ -2530,8 +2530,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    sd.rtInv = 1.f/mdRef.rt;
 	    sd.z = sd.r3.Z();
 	    sd.alpha = dPhi;
-	    sd.dr = dr3.Pt();
-	    sd.d = mdOut.rt - sd.rt;
+	    sd.dr = dr3.Pt();//FIXME: get a better estimator for endcap
+	    sd.d = mdOut.rt - sd.rt; //FIXME: get a better estimator for endcap
 	    sd.zeta = sd.d/(mdOut.r3.Z() - sd.z);
 
 	    //loose angle compatibility
@@ -2861,10 +2861,10 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      betaOut = - sdOut.alpha + sdOut.r3.DeltaPhi(dr3); //to match sign for correct match	      
 	    }
 	    else if (mockMode == 1 || mockMode == 3){
+	      //plain segment-level definitions; uneven rotation corrections are applied later using a better estimate of pt
 	      if (lIn == 0){
 		betaIn  = sdIn.p3.DeltaPhi(dr3);
 		betaOut = dr3.DeltaPhi(sdOut.mdOut.r3 - sdOut.mdRef.r3);
-		betaOut += copysign(sdOut.dr*k2Rinv1GeVf/ptIn, betaOut);
 	      } else {
 		//need a symmetric choice of end-points to achieve partial cancelation
 		betaIn  = sdIn.alpha - sdIn.r3.DeltaPhi(dr3);
@@ -2894,16 +2894,41 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    if (sdlFlag == sdlMasksCumulative[SDLSelectFlags::dAlphaOut]) nOutAlphaCompat++;
 
 	    //now the actual segment linking magic
-	    const float betaAv = 0.5f*(betaIn + betaOut);
+	    float betaAv = 0.5f*(betaIn + betaOut);
 	    //pt/k2Rinv1GeVf/2. = R
 	    //R*sin(betaAv) = pt/k2Rinv1GeVf/2*sin(betaAv) = dr/2 => pt = dr*k2Rinv1GeVf/sin(betaAv);
 	    float pt_beta = dr*k2Rinv1GeVf/sin(betaAv);
 	    if (lIn == 0) pt_beta = ptIn;
+
+	    const float pt_betaMax = 7.0f;
+	    
+	    //apply segment (SD) bend correction
+	    if (mockMode == 1 || mockMode == 3){
+	      if (lIn == 0){
+		betaOut += copysign(sdOut.dr*k2Rinv1GeVf/pt_beta, betaOut);
+	      } else {
+		const float diffDr = std::abs(sdIn.dr - sdOut.dr)/std::abs(sdIn.dr + sdOut.dr);
+		if (diffDr > 0.05 //only if segment length is different significantly
+		    && betaIn*betaOut > 0.f && std::abs(pt_beta) < pt_betaMax ){ //and the pt_beta is well-defined
+		  const float betaInUpd  = betaIn + copysign(sdIn.dr*k2Rinv1GeVf/std::abs(pt_beta), betaIn);
+		  const float betaOutUpd = betaOut + copysign(sdOut.dr*k2Rinv1GeVf/std::abs(pt_beta), betaOut);
+		  betaAv = 0.5f*(betaInUpd + betaOutUpd);
+		  pt_beta = dr*k2Rinv1GeVf/sin(betaAv);//get a better pt estimate
+		  betaIn  += copysign(sdIn.dr*k2Rinv1GeVf/std::abs(pt_beta), betaIn);
+		  betaOut += copysign(sdOut.dr*k2Rinv1GeVf/std::abs(pt_beta), betaOut);
+		  //update the av and pt
+		  betaAv = 0.5f*(betaIn + betaOut);
+		  pt_beta = dr*k2Rinv1GeVf/sin(betaAv);//get a better pt estimate		  
+		}
+	      }
+	    }
+
 	    float pt_betaIn = dr*k2Rinv1GeVf/sin(betaIn);
 	    if (lIn == 0) pt_betaIn = pt_beta;
 	    const float pt_betaOut = dr*k2Rinv1GeVf/sin(betaOut);
+
 	    const float dBetaRes = 0.02f/std::min(sdOut.d,sdIn.d);
-	    const float dBetaMuls = sdlThetaMulsF*3.f/std::min(pt_beta, 7.0f);//need to confirm the range-out value of 7 GeV
+	    const float dBetaMuls = sdlThetaMulsF*3.f/std::min(std::abs(pt_beta), pt_betaMax);//need to confirm the range-out value of 7 GeV
 	    const float dBetaCut2 = dBetaRes*dBetaRes*2.0f + dBetaMuls*dBetaMuls;
 	    const float dBeta = betaIn - betaOut;
 
@@ -3669,10 +3694,10 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		  betaOut = - sdOut.alpha + sdOut.r3.DeltaPhi(dr3); //to match sign for correct match	      
 		}
 		else if (mockMode == 1 || mockMode == 3){
+		  //plain segment-level definitions; uneven rotation corrections are applied later using a better estimate of pt
 		  if (lIn == 0){
 		    betaIn  = sdIn.p3.DeltaPhi(dr3);
 		    betaOut = dr3.DeltaPhi(sdOut.mdOut.r3 - sdOut.mdRef.r3);
-		    betaOut += copysign(sdOut.dr*k2Rinv1GeVf/ptIn, betaOut);
 		  } else {
 		    //need a symmetric choice of end-points to achieve partial cancelation
 		    betaIn  = sdIn.alpha - sdIn.r3.DeltaPhi(dr3);
@@ -3698,16 +3723,41 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		if (std::abs(betaOut) < betaOut_cut) sdlFlag |=  1 << SDLSelectFlags::dAlphaOut;
 
 		//now the actual segment linking magic
-		const float betaAv = 0.5f*(betaIn + betaOut);
+		float betaAv = 0.5f*(betaIn + betaOut);
 		//pt/k2Rinv1GeVf/2. = R
 		//R*sin(betaAv) = pt/k2Rinv1GeVf/2*sin(betaAv) = dr/2 => pt = dr*k2Rinv1GeVf/sin(betaAv);
 		float pt_beta = dr*k2Rinv1GeVf/sin(betaAv);
 		if (lIn == 0) pt_beta = ptIn;
+
+		const float pt_betaMax = 7.0f;
+
+		//apply segment (SD) bend correction
+		if (mockMode == 1 || mockMode == 3){
+		  if (lIn == 0){
+		    betaOut += copysign(sdOut.dr*k2Rinv1GeVf/pt_beta, betaOut);
+		  } else {
+		    const float diffDr = std::abs(sdIn.dr - sdOut.dr)/std::abs(sdIn.dr + sdOut.dr);
+		    if (diffDr > 0.05 //only if segment length is different significantly
+			&& betaIn*betaOut > 0.f && std::abs(pt_beta) < pt_betaMax ){ //and the pt_beta is well-defined
+		      const float betaInUpd  = betaIn + copysign(sdIn.dr*k2Rinv1GeVf/std::abs(pt_beta), betaIn);
+		      const float betaOutUpd = betaOut + copysign(sdOut.dr*k2Rinv1GeVf/std::abs(pt_beta), betaOut);
+		      betaAv = 0.5f*(betaInUpd + betaOutUpd);
+		      pt_beta = dr*k2Rinv1GeVf/sin(betaAv);//get a better pt estimate
+		      betaIn  += copysign(sdIn.dr*k2Rinv1GeVf/std::abs(pt_beta), betaIn);
+		      betaOut += copysign(sdOut.dr*k2Rinv1GeVf/std::abs(pt_beta), betaOut);
+		      //update the av and pt
+		      betaAv = 0.5f*(betaIn + betaOut);
+		      pt_beta = dr*k2Rinv1GeVf/sin(betaAv);//get a better pt estimate		  
+		    }
+		  }
+		}
+		
 		float pt_betaIn = dr*k2Rinv1GeVf/sin(betaIn);
 		if (lIn == 0) pt_betaIn = pt_beta;
 		const float pt_betaOut = dr*k2Rinv1GeVf/sin(betaOut);
+		
 		const float dBetaRes = 0.02f/std::min(sdIn.d, sdOut.d);
-		const float dBetaMuls = sdlThetaMulsF*3.f/std::min(pt_beta, 7.0f);//need to confirm the range-out value of 7 GeV
+		const float dBetaMuls = sdlThetaMulsF*3.f/std::min(std::abs(pt_beta), pt_betaMax);//need to confirm the range-out value of 7 GeV
 		const float dBetaCut2 = dBetaRes*dBetaRes*2.0f + dBetaMuls*dBetaMuls;
 		const float dBeta = betaIn - betaOut;
 		
