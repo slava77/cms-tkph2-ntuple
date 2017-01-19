@@ -2462,6 +2462,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    float dPhi;
 	    unsigned int iFlag;
 	    const float ptCut = 1.0f;
+	    float dPhiOut;
 	    
 	    if (iL < 11){//barrel
 	      //apply some loose Z compatibility
@@ -2488,11 +2489,13 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      dr3 = mdOut.r3; dr3 -= mdRef.r3;
 	      //plain SD bend cut
 	      dPhi = mdRef.r3.DeltaPhi(dr3);
-	      
+	    
 	      iFlag = SDSelectFlags::slope;
 	      if (!(std::abs(dPhi) > sdCut )) sdFlag |= 1 << iFlag;
 	      else if (cumulativeCuts ) continue;	    
 	      if (sdFlag == sdMasksCumulative[iFlag]) nPass[iFlag]++;
+
+	      dPhiOut = mdOut.r3.DeltaPhi(dr3);
 	    } else {//endcap
 
 	      const float rtGeom = rtRef < disks2SMaxRadius && rtOut < disks2SMaxRadius ? 2.f*pixelPSZpitch
@@ -2528,7 +2531,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      //equivalent SD bend cut
 	      const float dzFrac = dz/mdRef.r3.z();
 	      dPhi = dPhiPos/dzFrac*(1.f + dzFrac);
-
+	      
 	      iFlag = SDSelectFlags::slope;
 	      if (!(std::abs(dPhi) > sdCut )) sdFlag |= 1 << iFlag;
 	      else if (cumulativeCuts ) continue;	    
@@ -2537,6 +2540,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      dr3 = mdOut.r3; dr3 -= mdRef.r3;//not needed for cuts but needed below
 	      //	      const float dPhiAsBarrel = mdRef.r3.DeltaPhi(dr3);
 	      //	      dPhi = dPhiAsBarrel;
+
+	      dPhiOut = deltaPhi(dPhi, dPhiPos);
 	    }
 	      
 	    
@@ -2580,7 +2585,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 
 	    sd.mdRef = mdRef;
 	    sd.mdOut = mdOut;
-	    sd.alphaOut = mdOut.r3.DeltaPhi(dr3);
+	    sd.alphaOut = dPhiOut;
 
 	    const int itpRL = simsPerHit[sd.mdRef.pixL];
 	    const int itpRU = simsPerHit[sd.mdRef.pixU];
@@ -3074,17 +3079,20 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      if (! ( (lIn != 0 && mockLayerSDfwDNcm_isSecondaryGhost[lIn][iIn])
 		      || mockLayerSDfwDNcm_isSecondaryGhost[lOut][iOut])
 		  ){
-		ha_SDL_dBeta_zoom_NM1dBeta_all_NGLL[iSDL]->Fill(dBeta);
-		//NB: no pt cut applied here on the TP
-		if (sdl.ntpLL == 4 ) ha_SDL_dBeta_zoom_NM1dBeta_all_NGLL_LL4[iSDL]->Fill(dBeta);
-		else if (sdl.ntpLL == 3) ha_SDL_dBeta_zoom_NM1dBeta_all_NGLL_LL3[iSDL]->Fill(dBeta);
-		else ha_SDL_dBeta_zoom_NM1dBeta_all_NGLL_LL0to2[iSDL]->Fill(dBeta);
-
-		ha_SDL_dZeta_zoom_NM1dBeta_all_NGLL[iSDL]->Fill(dZeta);
-		//NB: no pt cut applied here on the TP
-		if (sdl.ntpLL == 4 ) ha_SDL_dZeta_zoom_NM1dBeta_all_NGLL_LL4[iSDL]->Fill(dZeta);
-		else if (sdl.ntpLL == 3) ha_SDL_dZeta_zoom_NM1dBeta_all_NGLL_LL3[iSDL]->Fill(dZeta);
-		else ha_SDL_dZeta_zoom_NM1dBeta_all_NGLL_LL0to2[iSDL]->Fill(dZeta);
+		//		if (!(lOut >= 11 && sdl.sdOut.mdRef.rt < disks2SMaxRadius))
+		  {
+		    ha_SDL_dBeta_zoom_NM1dBeta_all_NGLL[iSDL]->Fill(dBeta);
+		    //NB: no pt cut applied here on the TP
+		    if (sdl.ntpLL == 4 ) ha_SDL_dBeta_zoom_NM1dBeta_all_NGLL_LL4[iSDL]->Fill(dBeta);
+		    else if (sdl.ntpLL == 3) ha_SDL_dBeta_zoom_NM1dBeta_all_NGLL_LL3[iSDL]->Fill(dBeta);
+		    else ha_SDL_dBeta_zoom_NM1dBeta_all_NGLL_LL0to2[iSDL]->Fill(dBeta);
+		    
+		    ha_SDL_dZeta_zoom_NM1dBeta_all_NGLL[iSDL]->Fill(dZeta);
+		    //NB: no pt cut applied here on the TP
+		    if (sdl.ntpLL == 4 ) ha_SDL_dZeta_zoom_NM1dBeta_all_NGLL_LL4[iSDL]->Fill(dZeta);
+		    else if (sdl.ntpLL == 3) ha_SDL_dZeta_zoom_NM1dBeta_all_NGLL_LL3[iSDL]->Fill(dZeta);
+		    else ha_SDL_dZeta_zoom_NM1dBeta_all_NGLL_LL0to2[iSDL]->Fill(dZeta);
+		  }
 		
 	      }
 	      
@@ -3833,7 +3841,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		if (tpPt > 4.0 && tpPt < 7.0) ha_SDL_dBeta_zoom_8MH_pt4p0to7p0[iSDLL]->Fill(dBeta);
 		if (tpPt > 7.0              ) ha_SDL_dBeta_zoom_8MH_pt7p0toInf[iSDLL]->Fill(dBeta);
 
-		if (tpPt > 1.0 && tpPt < 1.2 && debugMatchingSim){
+		if (tpPt > 1.0 && tpPt < 1.2 && (lIn >= 11 || lOut >= 11) && debugMatchingSim){
 		  std::cout<<lIn<<" "<<lOut<<" pt "<<tpPt<<" db "<<dBeta<<" bi "<<sdl.betaIn<<" bo "<<sdl.betaOut
 			   <<" ai "<<sdl.sdIn.alpha<<" ao "<<sdl.sdOut.alpha
 			   <<" aip "<<sdl.sdIn.mdRef.r3.DeltaPhi(sdl.sdIn.mdOut.r3 - sdl.sdIn.mdRef.r3)
@@ -3842,6 +3850,10 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 			   <<" dpo "<<deltaPhi(sdl.sdOut.mdRef.phi, sdl.sdOut.mdOut.phi)
 			   <<" rii "<<sdl.sdIn.mdRef.rt<<" rio "<<sdl.sdIn.mdOut.rt
 			   <<" roi "<<sdl.sdOut.mdRef.rt<<" roo "<<sdl.sdOut.mdOut.rt
+			   <<" pii "<<sdl.sdIn.mdRef.phi<<" pio "<<sdl.sdIn.mdOut.phi
+			   <<" poi "<<sdl.sdOut.mdRef.phi<<" poo "<<sdl.sdOut.mdOut.phi
+			   <<" zii "<<sdl.sdIn.mdRef.r3.z()<<" zio "<<sdl.sdIn.mdOut.r3.z()
+			   <<" zoi "<<sdl.sdOut.mdRef.r3.z()<<" zoo "<<sdl.sdOut.mdOut.r3.z()
 			   <<std::endl;
 		}
 	      }
