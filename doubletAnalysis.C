@@ -1421,7 +1421,8 @@ int ScanChainMiniDoublets( TChain* chain, int nEvents = -1, bool drawPlots = fal
   return 0;
 }
 
-int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool drawPlots = false, const int mockMode = 0, const double sdOffset = 2.0,
+int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool drawPlots = false, const int mockMode = 0,
+				const double sdOffsetB = 2.0, const double sdOffsetE = 2.0,
 				const int useSeeds = 0, bool layoutOnly = false, bool cumulativeCuts = true, bool addEndcaps = false) {
   //mockMode:
   //0 for helix to ref and then straight line;
@@ -1437,7 +1438,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
   //true (D): computations or analysis of building step stop after combination fails a cut on a computed value
   
   std::cout<<"Running in mockMode "<<mockMode<<std::endl;
-  std::cout<<"Running with SD distance "<<sdOffset<<std::endl;
+  std::cout<<"Running with SD distance "<<sdOffsetB<<" "<<sdOffsetE<<std::endl;
   std::cout<<"Running with useSeeds "<<useSeeds<<std::endl;
   if (addEndcaps) std::cout<<"Endcap is enabled "<<std::endl;
   
@@ -1478,7 +1479,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       131.4, 156.2, 185.6, 220.3, 261.5};// use z for endcaps
 
 
-  enum SDLayers {SDL_L0to5=0, SDL_L0to7, SDL_L5to7, SDL_L7to9, SDL_L5to9,
+  enum SDLayers {SDL_L0to5=0, SDL_L0to7, SDL_L0to11, SDL_L5to7, SDL_L7to9, SDL_L5to9,
 		 SDL_L5to11,  SDL_L5to13, SDL_L7to11, SDL_L7to13, SDL_L11to13, SDL_LMAX};
   std::array<TH1F*, SDL_LMAX> ha_denSDL_pt;
   std::array<TH1F*, SDL_LMAX> ha_num8MH_pt;
@@ -1579,7 +1580,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 
   
   std::array<std::array<int, 2>, SDL_LMAX> layersSDL{{
-      {0, 5}, {0, 7}, {5, 7}, {7, 9}, {5, 9},
+      {0, 5}, {0, 7}, {0, 11}, {5, 7}, {7, 9}, {5, 9},
       {5, 11}, {5, 13}, {7, 11}, {7, 13}, {11, 13} }};
   std::array<std::array<SDLayers, nLayersA+1>, nLayersA+1> sdlFromLayers;
   for (int i = 0U; i<= nLayersA; ++i){
@@ -1910,7 +1911,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       
       //Event Loop
       unsigned int nEvents = tree->GetEntries();
-      for( unsigned int event = 0; event < nEvents && nEventsTotal < nEventsChain; ++event) {
+      for( unsigned int event = 0; event < nEvents*10 && nEventsTotal < nEventsChain*10; ++event) {
 	cms2.GetEntry(event);
 	++nEventsTotal;
 
@@ -2098,8 +2099,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 
 	const float rRefLower = rNominal;
 	const float rRefUpper = rNominal+mdOffset;
-	const float rSDfwLower = rRefLower + sdOffset;
-	const float rSDfwUpper = rRefUpper + sdOffset;
+	const float rSDfwLower = rRefLower + (isBarrel ? sdOffsetB : sdOffsetE);
+	const float rSDfwUpper = rRefUpper + (isBarrel ? sdOffsetB : sdOffsetE);
 
 	int q = 0;
 	if (iParticle == -11 || iParticle == -13 || iParticle == 211 || iParticle == 321 || iParticle == 2212) q = 1;
@@ -2373,7 +2374,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 
 		const float dzFrac = dz/hL.second.r3.z();
 		dPhi = dPhiPos/dzFrac*(1.f + dzFrac);
-		if (std::abs(dPhi) > miniCut) continue;
+		if (std::abs(dPhi) > miniCut*1.25f) continue;
 
 	      }
 	      
@@ -2491,7 +2492,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      dPhi = mdRef.r3.DeltaPhi(dr3);
 	    
 	      iFlag = SDSelectFlags::slope;
-	      if (!(std::abs(dPhi) > sdCut )) sdFlag |= 1 << iFlag;
+	      if (!(std::abs(dPhi) > sdCut)) sdFlag |= 1 << iFlag;
 	      else if (cumulativeCuts ) continue;	    
 	      if (sdFlag == sdMasksCumulative[iFlag]) nPass[iFlag]++;
 
@@ -2533,7 +2534,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      dPhi = dPhiPos/dzFrac*(1.f + dzFrac);
 	      
 	      iFlag = SDSelectFlags::slope;
-	      if (!(std::abs(dPhi) > sdCut )) sdFlag |= 1 << iFlag;
+	      if (!(std::abs(dPhi) > sdCut*1.25 )) sdFlag |= 1 << iFlag;
 	      else if (cumulativeCuts ) continue;	    
 	      if (sdFlag == sdMasksCumulative[iFlag]) nPass[iFlag]++;
 
@@ -2953,7 +2954,12 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 
 	    const float dBetaRes = 0.02f/std::min(sdOut.d,sdIn.d);
 	    const float dBetaMuls = sdlThetaMulsF*3.f/std::min(std::abs(pt_beta), pt_betaMax);//need to confirm the range-out value of 7 GeV
-	    const float dBetaCut2 = dBetaRes*dBetaRes*2.0f + dBetaMuls*dBetaMuls;
+
+	    const float alphaAbs = std::max(std::max(std::abs(sdIn.alpha), std::abs(sdOut.alpha)), 0.01f);
+	    const float dBetaCut2 = (dBetaRes*dBetaRes*2.0f + dBetaMuls*dBetaMuls)
+	      + (lIn < 11 && lOut < 11 ? 0.0f
+		 : lIn >= 11 && lOut >= 11 ? std::max(0.06f*alphaAbs*alphaAbs, 0.0009f)
+		 : std::max(0.06f*alphaAbs*alphaAbs, 0.0002f) );//FIXME: derive a better estimator for this fudge factor
 	    const float dBeta = betaIn - betaOut;
 
 	    const float dZeta = sdIn.zeta - sdOut.zeta;
@@ -3140,6 +3146,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       };//auto sdLink
 
       auto isdll = SDL_L0to5; sdLink(layersSDL[isdll][0], layersSDL[isdll][1], mockLayerSDLsDNcm[isdll]);
+      isdll = SDL_L0to7; sdLink(layersSDL[isdll][0], layersSDL[isdll][1], mockLayerSDLsDNcm[isdll]);
+      isdll = SDL_L0to11; sdLink(layersSDL[isdll][0], layersSDL[isdll][1], mockLayerSDLsDNcm[isdll]);
       isdll = SDL_L5to7; sdLink(layersSDL[isdll][0], layersSDL[isdll][1], mockLayerSDLsDNcm[isdll]);
       isdll = SDL_L7to9; sdLink(layersSDL[isdll][0], layersSDL[isdll][1], mockLayerSDLsDNcm[isdll]);
 
@@ -3784,8 +3792,13 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		const float pt_betaOut = dr*k2Rinv1GeVf/sin(betaOut);
 		
 		const float dBetaRes = 0.02f/std::min(sdIn.d, sdOut.d);
-		const float dBetaMuls = sdlThetaMulsF*3.f/std::min(std::abs(pt_beta), pt_betaMax);//need to confirm the range-out value of 7 GeV
-		const float dBetaCut2 = dBetaRes*dBetaRes*2.0f + dBetaMuls*dBetaMuls;
+		const float dBetaMuls = sdlThetaMulsF*3.f/std::min(std::abs(pt_beta), pt_betaMax); //need to confirm the range-out value of 7 GeV
+
+		const float alphaAbs = std::max(std::max(std::abs(sdIn.alpha), std::abs(sdOut.alpha)), 0.01f);
+		const float dBetaCut2 = (dBetaRes*dBetaRes*2.0f + dBetaMuls*dBetaMuls)
+		  + (lIn < 11 && lOut < 11 ? 0.0f
+		     : lIn >= 11 && lOut >= 11 ? std::max(0.06f*alphaAbs*alphaAbs, 0.0009f)
+		     : std::max(0.06f*alphaAbs*alphaAbs, 0.0002f) );//FIXME: derive a better estimator for this fudge factor
 		const float dBeta = betaIn - betaOut;
 		
 		if (dBeta*dBeta < dBetaCut2) sdlFlag |= 1 << SDLSelectFlags::dBeta;
@@ -4185,7 +4198,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       auto ax = h2->GetYaxis();
       ax->SetTitleOffset(ax->GetTitleOffset()+0.25);
       gPad->SetLogx(0);
-      gPad->SaveAs(Form("h2_hitsXY_ITrec_OTmockLL_mm%d_D%1.1fcm_us%d.png", mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h2_hitsXY_ITrec_OTmockLL_mm%d_D%1.1fcm%1.1fcm_us%d.png", mockMode, sdOffsetB, sdOffsetE, useSeeds));
     }
     {
       auto h2 = h2_hitsRZ_ITrec_OTmockLL;
@@ -4198,7 +4211,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       auto ax = h2->GetYaxis();
       ax->SetTitleOffset(ax->GetTitleOffset()+0.25);
       gPad->SetLogx(0);
-      gPad->SaveAs(Form("h2_hitsRZ_ITrec_OTmockLL_mm%d_D%1.1fcm_us%d.png", mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h2_hitsRZ_ITrec_OTmockLL_mm%d_D%1.1fcm%1.1fcm_us%d.png", mockMode, sdOffsetB, sdOffsetE, useSeeds));
     }
     {
       auto h2 = h2_hitsRZ_ITrec_OTmockLL_BE;
@@ -4211,7 +4224,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       auto ax = h2->GetYaxis();
       ax->SetTitleOffset(ax->GetTitleOffset()+0.25);
       gPad->SetLogx(0);
-      gPad->SaveAs(Form("h2_hitsRZ_ITrec_OTmockLL_BE_mm%d_D%1.1fcm_us%d.png", mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h2_hitsRZ_ITrec_OTmockLL_BE_mm%d_D%1.1fcm%1.1fcm_us%d.png", mockMode, sdOffsetB, sdOffsetE, useSeeds));
     }
   }
   
@@ -4239,7 +4252,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       h_all->Draw();
       h_all->SetMinimum(0);
       h_pass->Draw("same");
-      gPad->SaveAs(Form("h_SDL_dBeta_NM1dBeta_all_vs_pass_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_NM1dBeta_all_vs_pass_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
     }
     for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
       if (iSDL == SDL_L5to9) continue;
@@ -4253,7 +4266,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       h_all->SetStats(0);
       h_all->Draw();
       h_all->SetMinimum(0);
-      gPad->SaveAs(Form("h_SDL_dBeta_NM1dBeta_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_NM1dBeta_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
     }
     for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
       if (iSDL == SDL_L5to9) continue;
@@ -4267,7 +4280,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       h_all->SetStats(0);
       h_all->Draw();
       h_all->SetMinimum(0);
-      gPad->SaveAs(Form("h_SDL_dBeta_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
     }
     for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
       if (iSDL == SDL_L5to9) continue;
@@ -4285,7 +4298,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       h_all->Draw();
       h_all->SetMinimum(0);
       h_pass->Draw("same");
-      gPad->SaveAs(Form("h_SDL_dBeta_zoom_NM1dBeta_all_vs_pass_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_zoom_NM1dBeta_all_vs_pass_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
     }
     for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
       if (iSDL == SDL_L5to9) continue;
@@ -4299,7 +4312,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       h_all->SetStats(0);
       h_all->Draw();
       h_all->SetMinimum(0);
-      gPad->SaveAs(Form("h_SDL_dBeta_zoom_NM1dBeta_NGLL_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_zoom_NM1dBeta_NGLL_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
     }
     for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
       if (iSDL == SDL_L5to9) continue;
@@ -4329,10 +4342,10 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       h_all->SetMinimum(0);
       h_st->Draw("same");
       h_all->Draw("AXIS same");
-      gPad->SaveAs(Form("h_SDL_dBeta_zoom_NM1dBeta_NGLL_prov_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_zoom_NM1dBeta_NGLL_prov_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
       gPad->SetLogy();
       h_all->SetMinimum(0.5);
-      gPad->SaveAs(Form("h_SDL_dBeta_zoom_NM1dBeta_NGLL_prov_log_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_zoom_NM1dBeta_NGLL_prov_log_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
       gPad->SetLogy(0);
     }
     for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
@@ -4363,10 +4376,10 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       h_all->SetMinimum(0);
       h_st->Draw("same");
       h_all->Draw("AXIS same");
-      gPad->SaveAs(Form("h_SDL_dBeta_zoom_NM1dBeta_NGLL_prov2_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_zoom_NM1dBeta_NGLL_prov2_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
       gPad->SetLogy();
       h_all->SetMinimum(0.5);
-      gPad->SaveAs(Form("h_SDL_dBeta_zoom_NM1dBeta_NGLL_prov2_log_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_zoom_NM1dBeta_NGLL_prov2_log_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
       gPad->SetLogy(0);
     }
     for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
@@ -4398,10 +4411,10 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       h_st->Draw("same");
       h_all->Draw("same");
       h_all->Draw("AXIS same");
-      gPad->SaveAs(Form("h_SDL_dBeta_zoom_NM1dBeta_NGLL_prov3_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_zoom_NM1dBeta_NGLL_prov3_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
       gPad->SetLogy();
       h_all->SetMinimum(0.5);
-      gPad->SaveAs(Form("h_SDL_dBeta_zoom_NM1dBeta_NGLL_prov3_log_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_zoom_NM1dBeta_NGLL_prov3_log_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
       gPad->SetLogy(0);
     }
     for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
@@ -4432,10 +4445,10 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       h_all->SetMinimum(0);
       h_st->Draw("same");
       h_all->Draw("AXIS same");
-      gPad->SaveAs(Form("h_SDL_dZeta_zoom_NM1dBeta_NGLL_prov_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dZeta_zoom_NM1dBeta_NGLL_prov_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
       gPad->SetLogy();
       h_all->SetMinimum(0.5);
-      gPad->SaveAs(Form("h_SDL_dZeta_zoom_NM1dBeta_NGLL_prov_log_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dZeta_zoom_NM1dBeta_NGLL_prov_log_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
       gPad->SetLogy(0);
     }
     for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
@@ -4466,10 +4479,10 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       h_all->SetMinimum(0);
       h_st->Draw("same");
       h_all->Draw("AXIS same");
-      gPad->SaveAs(Form("h_SDL_dZeta_zoom_NM1dBeta_NGLL_prov2_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dZeta_zoom_NM1dBeta_NGLL_prov2_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
       gPad->SetLogy();
       h_all->SetMinimum(0.5);
-      gPad->SaveAs(Form("h_SDL_dZeta_zoom_NM1dBeta_NGLL_prov2_log_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dZeta_zoom_NM1dBeta_NGLL_prov2_log_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
       gPad->SetLogy(0);
     }
     for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
@@ -4501,10 +4514,10 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       h_st->Draw("same");
       h_all->Draw("same");
       h_all->Draw("AXIS same");
-      gPad->SaveAs(Form("h_SDL_dZeta_zoom_NM1dBeta_NGLL_prov3_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dZeta_zoom_NM1dBeta_NGLL_prov3_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
       gPad->SetLogy();
       h_all->SetMinimum(0.5);
-      gPad->SaveAs(Form("h_SDL_dZeta_zoom_NM1dBeta_NGLL_prov3_log_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dZeta_zoom_NM1dBeta_NGLL_prov3_log_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
       gPad->SetLogy(0);
     }
     for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
@@ -4519,7 +4532,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       h_all->SetStats(0);
       h_all->Draw();
       h_all->SetMinimum(0);
-      gPad->SaveAs(Form("h_SDL_dBeta_zoom_NM1dBeta_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_zoom_NM1dBeta_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
     }
     for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
       if (iSDL == SDL_L5to9) continue;
@@ -4533,7 +4546,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       h_all->SetStats(0);
       h_all->Draw();
       h_all->SetMinimum(0);
-      gPad->SaveAs(Form("h_SDL_dBeta_zoom_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_zoom_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
     }
 
     // << slices in betaIn or ptIn
@@ -4553,7 +4566,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       h_all->Draw();
       h_all->SetMinimum(0);
       h_pass->Draw("same");
-      gPad->SaveAs(Form("h_SDL_dBeta_zoom_NM1dBeta_ptIn0to2_all_vs_pass_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_zoom_NM1dBeta_ptIn0to2_all_vs_pass_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
     }
     for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
       if (iSDL == SDL_L5to9) continue;
@@ -4571,7 +4584,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       h_all->Draw();
       h_all->SetMinimum(0);
       h_pass->Draw("same");
-      gPad->SaveAs(Form("h_SDL_dBeta_zoom_NM1dBeta_ptIn3to5_all_vs_pass_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_zoom_NM1dBeta_ptIn3to5_all_vs_pass_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
     }
     for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
       if (iSDL == SDL_L5to9) continue;
@@ -4589,7 +4602,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       h_all->Draw();
       h_all->SetMinimum(0);
       h_pass->Draw("same");
-      gPad->SaveAs(Form("h_SDL_dBeta_zoom_NM1dBeta_ptIn7toInf_all_vs_pass_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_zoom_NM1dBeta_ptIn7toInf_all_vs_pass_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
     }
 
     //all
@@ -4605,7 +4618,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       h_all->SetStats(0);
       h_all->Draw();
       h_all->SetMinimum(0);
-      gPad->SaveAs(Form("h_SDL_dBeta_zoom_NM1dBeta_ptIn0to2_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_zoom_NM1dBeta_ptIn0to2_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
     }
     for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
       if (iSDL == SDL_L5to9) continue;
@@ -4619,7 +4632,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       h_all->SetStats(0);
       h_all->Draw();
       h_all->SetMinimum(0);
-      gPad->SaveAs(Form("h_SDL_dBeta_zoom_NM1dBeta_ptIn3to5_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_zoom_NM1dBeta_ptIn3to5_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
     }
     for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
       if (iSDL == SDL_L5to9) continue;
@@ -4633,7 +4646,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       h_all->SetStats(0);
       h_all->Draw();
       h_all->SetMinimum(0);
-      gPad->SaveAs(Form("h_SDL_dBeta_zoom_NM1dBeta_ptIn7toInf_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_zoom_NM1dBeta_ptIn7toInf_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
     }
 
     //no overlay, pass case with pt slices
@@ -4649,7 +4662,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       h_all->SetStats(0);
       h_all->Draw();
       h_all->SetMinimum(0);
-      gPad->SaveAs(Form("h_SDL_dBeta_zoom_ptIn0to2_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_zoom_ptIn0to2_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
     }
     for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
       if (iSDL == SDL_L5to9) continue;
@@ -4663,7 +4676,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       h_all->SetStats(0);
       h_all->Draw();
       h_all->SetMinimum(0);
-      gPad->SaveAs(Form("h_SDL_dBeta_zoom_ptIn3to5_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_zoom_ptIn3to5_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
     }
     for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
       if (iSDL == SDL_L5to9) continue;
@@ -4677,7 +4690,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       h_all->SetStats(0);
       h_all->Draw();
       h_all->SetMinimum(0);
-      gPad->SaveAs(Form("h_SDL_dBeta_zoom_ptIn7toInf_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_zoom_ptIn7toInf_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
     }
 
     //other steps in selections
@@ -4697,7 +4710,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       h_all->Draw();
       h_all->SetMinimum(0);
       h_pass->Draw("same");
-      gPad->SaveAs(Form("h_SDL_dBeta_0_all_vs_pass_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_0_all_vs_pass_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
     }
     for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
       if (iSDL == SDL_L5to9) continue;
@@ -4715,7 +4728,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       h_all->Draw();
       h_all->SetMinimum(0);
       h_pass->Draw("same");
-      gPad->SaveAs(Form("h_SDL_dBeta_zoom_0_all_vs_pass_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_zoom_0_all_vs_pass_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
     }
     for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
       if (iSDL == SDL_L5to9) continue;
@@ -4733,7 +4746,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       h_all->Draw();
       h_all->SetMinimum(0);
       h_pass->Draw("same");
-      gPad->SaveAs(Form("h_SDL_dBeta_01_all_vs_pass_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_01_all_vs_pass_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
     }
     for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
       if (iSDL == SDL_L5to9) continue;
@@ -4751,7 +4764,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       h_all->Draw();
       h_all->SetMinimum(0);
       h_pass->Draw("same");
-      gPad->SaveAs(Form("h_SDL_dBeta_zoom_01_all_vs_pass_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_zoom_01_all_vs_pass_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
     }
     for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
       if (iSDL == SDL_L5to9) continue;
@@ -4769,7 +4782,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       h_all->Draw();
       h_all->SetMinimum(0);
       h_pass->Draw("same");
-      gPad->SaveAs(Form("h_SDL_dBeta_012_all_vs_pass_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_012_all_vs_pass_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
     }
     for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
       if (iSDL == SDL_L5to9) continue;
@@ -4787,7 +4800,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       h_all->Draw();
       h_all->SetMinimum(0);
       h_pass->Draw("same");
-      gPad->SaveAs(Form("h_SDL_dBeta_zoom_012_all_vs_pass_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_zoom_012_all_vs_pass_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
     }
     
     for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
@@ -4806,7 +4819,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       h_all->Draw();
       h_all->SetMinimum(0);
       h_pass->Draw("same");
-      gPad->SaveAs(Form("h_SDL_dBeta_0123_all_vs_pass_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_0123_all_vs_pass_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
     }
     for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
       if (iSDL == SDL_L5to9) continue;
@@ -4824,7 +4837,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       h_all->Draw();
       h_all->SetMinimum(0);
       h_pass->Draw("same");
-      gPad->SaveAs(Form("h_SDL_dBeta_zoom_0123_all_vs_pass_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_zoom_0123_all_vs_pass_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
     }
     for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
       if (iSDL == SDL_L5to9) continue;
@@ -4842,7 +4855,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       h_all->Draw();
       h_all->SetMinimum(0);
       h_pass->Draw("same");
-      gPad->SaveAs(Form("h_SDL_dBeta_01234_all_vs_pass_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_01234_all_vs_pass_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
     }
     for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
       if (iSDL == SDL_L5to9) continue;
@@ -4860,7 +4873,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       h_all->Draw();
       h_all->SetMinimum(0);
       h_pass->Draw("same");
-      gPad->SaveAs(Form("h_SDL_dBeta_zoom_01234_all_vs_pass_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_zoom_01234_all_vs_pass_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
     }
 
     for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
@@ -4879,7 +4892,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       h_all->Draw();
       h_all->SetMinimum(0);
       h_pass->Draw("same");
-      gPad->SaveAs(Form("h_SDL_dBeta_012345_all_vs_pass_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_012345_all_vs_pass_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
     }
     for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
       if (iSDL == SDL_L5to9) continue;
@@ -4897,7 +4910,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       h_all->Draw();
       h_all->SetMinimum(0);
       h_pass->Draw("same");
-      gPad->SaveAs(Form("h_SDL_dBeta_zoom_012345_all_vs_pass_%dto%d_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_zoom_012345_all_vs_pass_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
     }
 
 
@@ -4914,7 +4927,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       gPad->SetGridx();
       gPad->SetLogx(0);
       gPad->SetLogz();
-      gPad->SaveAs(Form("h2_SDL_dBeta_betaIn_NM1dBeta_%dto%d_mm%d_D%1.1fcm_us%d.png",  layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h2_SDL_dBeta_betaIn_NM1dBeta_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png",  layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
     }
 
     for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
@@ -4930,7 +4943,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       h->SetMinimum(0.5);
       gPad->SetGridx();
       gPad->SetLogy();
-      gPad->SaveAs(Form("h_SDL_dBeta_zoom_NM1dBeta_8MH_%dto%d_mm%d_D%1.1fcm_us%d.png",  layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_zoom_NM1dBeta_8MH_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png",  layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
       
     }
     for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
@@ -4946,7 +4959,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       h->SetMinimum(0.5);
       gPad->SetGridx();
       gPad->SetLogy();
-      gPad->SaveAs(Form("h_SDL_dBeta_zoom2_NM1dBeta_8MH_%dto%d_mm%d_D%1.1fcm_us%d.png",  layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_zoom2_NM1dBeta_8MH_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png",  layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
       
     }
     //pt slices
@@ -4963,7 +4976,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       h->SetMinimum(0.5);
       gPad->SetGridx();
       gPad->SetLogy();
-      gPad->SaveAs(Form("h_SDL_dBeta_zoom_8MH_pt0p7to1p0_%dto%d_mm%d_D%1.1fcm_us%d.png",  layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_zoom_8MH_pt0p7to1p0_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png",  layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
       
     }
     for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
@@ -4979,7 +4992,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       h->SetMinimum(0.5);
       gPad->SetGridx();
       gPad->SetLogy();
-      gPad->SaveAs(Form("h_SDL_dBeta_zoom_8MH_pt1p0to1p2_%dto%d_mm%d_D%1.1fcm_us%d.png",  layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_zoom_8MH_pt1p0to1p2_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png",  layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
       
     }
     for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
@@ -4995,7 +5008,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       h->SetMinimum(0.5);
       gPad->SetGridx();
       gPad->SetLogy();
-      gPad->SaveAs(Form("h_SDL_dBeta_zoom_8MH_pt1p2to1p5_%dto%d_mm%d_D%1.1fcm_us%d.png",  layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_zoom_8MH_pt1p2to1p5_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png",  layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
       
     }
     for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
@@ -5011,7 +5024,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       h->SetMinimum(0.5);
       gPad->SetGridx();
       gPad->SetLogy();
-      gPad->SaveAs(Form("h_SDL_dBeta_zoom_8MH_pt1p5to2p0_%dto%d_mm%d_D%1.1fcm_us%d.png",  layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_zoom_8MH_pt1p5to2p0_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png",  layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
       
     }
     for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
@@ -5027,7 +5040,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       h->SetMinimum(0.5);
       gPad->SetGridx();
       gPad->SetLogy();
-      gPad->SaveAs(Form("h_SDL_dBeta_zoom_8MH_pt2p0to4p0_%dto%d_mm%d_D%1.1fcm_us%d.png",  layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_zoom_8MH_pt2p0to4p0_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png",  layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
       
     }
     for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
@@ -5043,7 +5056,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       h->SetMinimum(0.5);
       gPad->SetGridx();
       gPad->SetLogy();
-      gPad->SaveAs(Form("h_SDL_dBeta_zoom_8MH_pt4p0to7p0_%dto%d_mm%d_D%1.1fcm_us%d.png",  layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_zoom_8MH_pt4p0to7p0_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png",  layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
       
     }
     for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
@@ -5059,7 +5072,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       h->SetMinimum(0.5);
       gPad->SetGridx();
       gPad->SetLogy();
-      gPad->SaveAs(Form("h_SDL_dBeta_zoom_8MH_pt7p0toInf_%dto%d_mm%d_D%1.1fcm_us%d.png",  layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_SDL_dBeta_zoom_8MH_pt7p0toInf_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png",  layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
       
     }
     
@@ -5076,7 +5089,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       gPad->SetGridx();
       gPad->SetLogx(0);
       gPad->SetLogz();
-      gPad->SaveAs(Form("h2_SDL_dBeta_betaIn_NM1dBeta_8MH_%dto%d_mm%d_D%1.1fcm_us%d.png",  layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h2_SDL_dBeta_betaIn_NM1dBeta_8MH_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png",  layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
       
     }
     for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
@@ -5091,7 +5104,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       gPad->SetGridx();
       gPad->SetLogx(0);
       gPad->SetLogz();
-      gPad->SaveAs(Form("h2_SDL_dBeta_betaIn_zoom_NM1dBeta_8MH_%dto%d_mm%d_D%1.1fcm_us%d.png",  layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h2_SDL_dBeta_betaIn_zoom_NM1dBeta_8MH_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png",  layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
       
     }
     for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
@@ -5106,7 +5119,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       gPad->SetGridx();
       gPad->SetLogx(0);
       gPad->SetLogz();
-      gPad->SaveAs(Form("h2_SDL_dBeta_betaOut_zoom_NM1dBeta_8MH_%dto%d_mm%d_D%1.1fcm_us%d.png",  layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h2_SDL_dBeta_betaOut_zoom_NM1dBeta_8MH_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png",  layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
       
     }
 
@@ -5122,7 +5135,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       gPad->SetGridx();
       gPad->SetLogx(0);
       gPad->SetLogz();
-      gPad->SaveAs(Form("h2_SDL_dBeta_betaIn_pass_%dto%d_mm%d_D%1.1fcm_us%d.png",  layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h2_SDL_dBeta_betaIn_pass_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png",  layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
       
     }
     for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
@@ -5137,7 +5150,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       gPad->SetGridx();
       gPad->SetLogx(0);
       gPad->SetLogz();
-      gPad->SaveAs(Form("h2_SDL_dBeta_betaIn_zoom_pass_%dto%d_mm%d_D%1.1fcm_us%d.png",  layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h2_SDL_dBeta_betaIn_zoom_pass_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png",  layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
       
     }
     for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
@@ -5152,7 +5165,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       gPad->SetGridx();
       gPad->SetLogx(0);
       gPad->SetLogz();
-      gPad->SaveAs(Form("h2_SDL_dBeta_betaOut_zoom_pass_%dto%d_mm%d_D%1.1fcm_us%d.png",  layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h2_SDL_dBeta_betaOut_zoom_pass_%dto%d_mm%d_D%1.1fcm%1.1fcm_us%d.png",  layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
       
     }
 
@@ -5192,7 +5205,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       leg->AddEntry(hnum1, "Num: 3 of 4");
       leg->AddEntry(hnum2, "Num: 4 of 4");
       leg->Draw();
-      gPad->SaveAs(Form("h_denVSnums_SDL_%dto%d_pt_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_denVSnums_SDL_%dto%d_pt_mm%d_D%1.1fcm%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
     }
 
     //efficiencies: eff plots 3/4 vs 4/4
@@ -5234,7 +5247,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       leg->AddEntry(heff1, "3 of 4");
       leg->AddEntry(heff2, "4 of 4");
       leg->Draw();
-      gPad->SaveAs(Form("h_effs_SDL_%dto%d_pt_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_effs_SDL_%dto%d_pt_mm%d_D%1.1fcm%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
     }
     
     //efficiencies: eff plots 4/4 in steps
@@ -5290,7 +5303,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       leg->AddEntry(heff1, "2 SD match");
       leg->AddEntry(heff2, "SDLink match");
       leg->Draw();
-      gPad->SaveAs(Form("h_effs_SDL_steps_4of4_%dto%d_pt_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_effs_SDL_steps_4of4_%dto%d_pt_mm%d_D%1.1fcm%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
     }
 
     //efficiencies: eff plots 4/4 in steps
@@ -5358,7 +5371,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       leg->AddEntry(heff012345, "SDLink no #Delta#beta | 8 MHits");
       leg->AddEntry(heff2, "SDLink match | 8 MHits");
       leg->Draw();
-      gPad->SaveAs(Form("h_effs_SDL_den8MH_steps_4of4_%dto%d_pt_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_effs_SDL_den8MH_steps_4of4_%dto%d_pt_mm%d_D%1.1fcm%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
     }
 
     //efficiencies: eff plots 4/4 in steps
@@ -5444,7 +5457,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       leg->AddEntry(heff012345, "SDLink no #Delta#beta | 8 MHits");
       leg->AddEntry(heff2, "SDLink match | 8 MHits");
       leg->Draw();
-      gPad->SaveAs(Form("h_effs_SDL_den8MH_steps_detailed_4of4_%dto%d_pt_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_effs_SDL_den8MH_steps_detailed_4of4_%dto%d_pt_mm%d_D%1.1fcm%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
     }
 
     //efficiencies: eff plots 4/4 in steps
@@ -5512,7 +5525,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       leg->AddEntry(heff012345, "SDLink no #Delta#beta | 8 MHits");
       leg->AddEntry(heff2, "SDLink match | 8 MHits");
       leg->Draw();
-      gPad->SaveAs(Form("h_effs_SDL_den8MH_steps_4of4_min0.9_%dto%d_pt_mm%d_D%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_effs_SDL_den8MH_steps_4of4_min0.9_%dto%d_pt_mm%d_D%1.1fcm%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
     }
 
     //fakes vs pt
@@ -5553,7 +5566,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       leg->AddEntry(h05, "L0-L5", "LP");
       leg->AddEntry(h07, "L0-L7", "LP");
       leg->Draw();
-      gPad->SaveAs(Form("h_fake_SDL_0-5_0-7_4of4_pt_mm%d_D%1.1fcm_us%d.png", mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_fake_SDL_0-5_0-7_4of4_pt_mm%d_D%1.1fcm%1.1fcm_us%d.png", mockMode, sdOffsetB, sdOffsetE, useSeeds));
     }
     //fakes vs eta
     {      
@@ -5590,7 +5603,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       leg->AddEntry(h05, "L0-L5", "LP");
       leg->AddEntry(h07, "L0-L7", "LP");
       leg->Draw();
-      gPad->SaveAs(Form("h_fake_SDL_0-5_0-7_4of4_eta2_mm%d_D%1.1fcm_us%d.png", mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_fake_SDL_0-5_0-7_4of4_eta2_mm%d_D%1.1fcm%1.1fcm_us%d.png", mockMode, sdOffsetB, sdOffsetE, useSeeds));
     }
     {      
       auto h05 =  ha_fakeSDL_4of4_eta[SDL_L0to5];
@@ -5628,7 +5641,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       leg->AddEntry(h05, "L0-L5", "LP");
       leg->AddEntry(h07, "L0-L7", "LP");
       leg->Draw();
-      gPad->SaveAs(Form("h_fake_SDL_0-5_0-7_4of4_eta_mm%d_D%1.1fcm_us%d.png", mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_fake_SDL_0-5_0-7_4of4_eta_mm%d_D%1.1fcm%1.1fcm_us%d.png", mockMode, sdOffsetB, sdOffsetE, useSeeds));
     }
 
     //fakes vs pt 5-7 and 7-9
@@ -5669,7 +5682,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       leg->AddEntry(h57, "L5-L7", "LP");
       leg->AddEntry(h79, "L7-L9", "LP");
       leg->Draw();
-      gPad->SaveAs(Form("h_fake_SDL_5-7_7-9_4of4_pt_mm%d_D%1.1fcm_us%d.png", mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_fake_SDL_5-7_7-9_4of4_pt_mm%d_D%1.1fcm%1.1fcm_us%d.png", mockMode, sdOffsetB, sdOffsetE, useSeeds));
     }
     //fakes vs eta
     {      
@@ -5706,7 +5719,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       leg->AddEntry(h57, "L5-L7", "LP");
       leg->AddEntry(h79, "L7-L9", "LP");
       leg->Draw();
-      gPad->SaveAs(Form("h_fake_SDL_5-7_7-9_4of4_eta2_mm%d_D%1.1fcm_us%d.png", mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_fake_SDL_5-7_7-9_4of4_eta2_mm%d_D%1.1fcm%1.1fcm_us%d.png", mockMode, sdOffsetB, sdOffsetE, useSeeds));
     }
     {      
       auto h57 =  ha_fakeSDL_4of4_eta[SDL_L5to7];
@@ -5744,13 +5757,13 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       leg->AddEntry(h57, "L5-L7", "LP");
       leg->AddEntry(h79, "L7-L9", "LP");
       leg->Draw();
-      gPad->SaveAs(Form("h_fake_SDL_5-7_7-9_4of4_eta_mm%d_D%1.1fcm_us%d.png", mockMode, sdOffset, useSeeds));
+      gPad->SaveAs(Form("h_fake_SDL_5-7_7-9_4of4_eta_mm%d_D%1.1fcm%1.1fcm_us%d.png", mockMode, sdOffsetB, sdOffsetE, useSeeds));
     }
 
   }//if drawPlots
   
   std::cout<<__LINE__<<" write to file "<<std::endl;
-  TFile* outHistograms = new TFile(Form("outHistogramsSuperD_mm%d_D%1.1fcm_us%d.root", mockMode, sdOffset, useSeeds), "RECREATE");
+  TFile* outHistograms = new TFile(Form("outHistogramsSuperD_mm%d_D%1.1fcm%1.1fcm_us%d.root", mockMode, sdOffsetB, sdOffsetE, useSeeds), "RECREATE");
   for (int iL = 1; iL <= nLayersA; ++iL){
     layerMD_pt_all[iL].write(outHistograms);
     layerMD_pt_prim_all[iL].write(outHistograms);
