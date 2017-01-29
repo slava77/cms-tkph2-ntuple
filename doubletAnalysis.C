@@ -2700,7 +2700,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    //try to use seed pt: the lower bound is good
 	    ptSLo = ptIn;
 	    float ptErr = see_pca_ptErr()[sdIn.iRef];
-	    ptSLo = std::max(1.0f, ptSLo - 10.0f*ptErr);
+	    ptSLo = std::max(1.0f, ptSLo - 10.0f*std::max(ptErr, 0.005f*ptSLo));//FIXME: check high-pt behavior
 	    ptSLo = std::min(10.0f, ptSLo); //don't let this run away either
 	  }
 	  const float ptCut = ptSLo;
@@ -3528,7 +3528,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		//try to use seed pt: the lower bound is good
 		ptSLo = ptIn;
 		float ptErr = see_pca_ptErr()[sdIn.iRef];
-		ptSLo = std::max(1.0f, ptSLo - 10.0f*ptErr);
+		ptSLo = std::max(1.0f, ptSLo - 10.0f*std::max(ptErr, 0.005f*ptSLo));//FIXME: check high-pt behavior
 		ptSLo = std::min(10.0f, ptSLo); //don't let this run away either
 	      }
 	      const float ptCut = ptSLo;
@@ -3803,6 +3803,13 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		
 		if (dBeta*dBeta < dBetaCut2) sdlFlag |= 1 << SDLSelectFlags::dBeta;
 
+		// if (lIn == 0 && lOut == 7 && tpPt > 1.5f && tpPt < 2.0f){
+		//   std::cout<<__LINE__<<" 5-7: tPt "<<tpPt <<"bO "<<betaOut<<" bOc "<<betaOut_cut<<" = "<<std::asin(dr*k2Rinv1GeVf/ptCut)<<" + "<<0.02f/sdOut.d
+		// 	   <<" dr "<<dr<<" ptCut "<<ptCut<<" ptIn "<<ptIn
+		// 	   <<" bI "<<betaIn<<" dB "<<dBeta<<" dBc "<<sqrt(dBetaCut2)
+		// 	   <<std::endl;
+		// }
+		
 		//		std::cout<<"TP with pt "<<tpPt<<" has matching SDL flags "<<sdlFlag<<std::endl;
 		SDLink sdl;
 		sdl.sdIn = sdIn;
