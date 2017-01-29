@@ -2225,7 +2225,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	  float ptLH = p3LH.Pt();
 	  float etaLH = p3LH.Eta();
 	  if (ptLH < 1.0) continue; //1 GeV cut
-	  if (std::abs(etaLH) > 1.6) continue;
+	  if (std::abs(etaLH) > (addEndcaps ? 3.0f : 1.6f)) continue;
 	  TVector3 r3LH(see_lh_x()[iSeed], see_lh_y()[iSeed], see_lh_z()[iSeed]);
 
 	  TVector3 p3PCA(see_pca_px()[iSeed], see_pca_py()[iSeed], see_pca_pz()[iSeed]);
@@ -2913,11 +2913,6 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    else if (cumulativeCuts ) continue;
 	    if (sdlFlag == sdlMasksCumulative[SDLSelectFlags::dAlphaIn]) nInAlphaCompat++;
 	    
-	    const float betaOut_cut = (-sdOut.dr*corrF + dr)*k2Rinv1GeVf/ptCut + 0.02f/sdOut.d;
-	    if (std::abs(betaOut) < betaOut_cut) sdlFlag |=  1 << SDLSelectFlags::dAlphaOut;
-	    else if (cumulativeCuts ) continue;
-	    if (sdlFlag == sdlMasksCumulative[SDLSelectFlags::dAlphaOut]) nOutAlphaCompat++;
-
 	    //now the actual segment linking magic
 	    float betaAv = 0.5f*(betaIn + betaOut);
 	    //pt/k2Rinv1GeVf/2. = R
@@ -2930,23 +2925,28 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    //apply segment (SD) bend correction
 	    if (mockMode == 1 || mockMode == 3){
 	      if (lIn == 0){
-		betaOut += copysign(sdOut.dr*k2Rinv1GeVf/pt_beta, betaOut);
+		betaOut += copysign(std::asin(sdOut.dr*k2Rinv1GeVf/std::abs(pt_beta)), betaOut);//FIXME: need a faster version
 	      } else {
 		const float diffDr = std::abs(sdIn.dr - sdOut.dr)/std::abs(sdIn.dr + sdOut.dr);
 		if (diffDr > 0.05 //only if segment length is different significantly
 		    && betaIn*betaOut > 0.f && std::abs(pt_beta) < pt_betaMax ){ //and the pt_beta is well-defined
-		  const float betaInUpd  = betaIn + copysign(sdIn.dr*k2Rinv1GeVf/std::abs(pt_beta), betaIn);
-		  const float betaOutUpd = betaOut + copysign(sdOut.dr*k2Rinv1GeVf/std::abs(pt_beta), betaOut);
+		  const float betaInUpd  = betaIn + copysign(std::asin(sdIn.dr*k2Rinv1GeVf/std::abs(pt_beta)), betaIn);//FIXME: need a faster version
+		  const float betaOutUpd = betaOut + copysign(std::asin(sdOut.dr*k2Rinv1GeVf/std::abs(pt_beta)), betaOut);//FIXME: need a faster version
 		  betaAv = 0.5f*(betaInUpd + betaOutUpd);
 		  pt_beta = dr*k2Rinv1GeVf/sin(betaAv);//get a better pt estimate
-		  betaIn  += copysign(sdIn.dr*k2Rinv1GeVf/std::abs(pt_beta), betaIn);
-		  betaOut += copysign(sdOut.dr*k2Rinv1GeVf/std::abs(pt_beta), betaOut);
+		  betaIn  += copysign(std::asin(sdIn.dr*k2Rinv1GeVf/std::abs(pt_beta)), betaIn);//FIXME: need a faster version
+		  betaOut += copysign(std::asin(sdOut.dr*k2Rinv1GeVf/std::abs(pt_beta)), betaOut);//FIXME: need a faster version
 		  //update the av and pt
 		  betaAv = 0.5f*(betaIn + betaOut);
 		  pt_beta = dr*k2Rinv1GeVf/sin(betaAv);//get a better pt estimate		  
 		}
 	      }
 	    }
+
+	    const float betaOut_cut = std::asin(dr*k2Rinv1GeVf/ptCut) + 0.02f/sdOut.d;//FIXME: need faster version
+	    if (std::abs(betaOut) < betaOut_cut) sdlFlag |=  1 << SDLSelectFlags::dAlphaOut;
+	    else if (cumulativeCuts ) continue;
+	    if (sdlFlag == sdlMasksCumulative[SDLSelectFlags::dAlphaOut]) nOutAlphaCompat++;
 
 	    float pt_betaIn = dr*k2Rinv1GeVf/sin(betaIn);
 	    if (lIn == 0) pt_betaIn = pt_beta;
@@ -3754,9 +3754,6 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		}
 		if (pass_betaIn_cut) sdlFlag |=  1 << SDLSelectFlags::dAlphaIn;
 		
-		const float betaOut_cut = (-sdOut.dr*corrF + dr)*k2Rinv1GeVf/ptCut + 0.02f/sdOut.d;
-		if (std::abs(betaOut) < betaOut_cut) sdlFlag |=  1 << SDLSelectFlags::dAlphaOut;
-
 		//now the actual segment linking magic
 		float betaAv = 0.5f*(betaIn + betaOut);
 		//pt/k2Rinv1GeVf/2. = R
@@ -3769,17 +3766,17 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		//apply segment (SD) bend correction
 		if (mockMode == 1 || mockMode == 3){
 		  if (lIn == 0){
-		    betaOut += copysign(sdOut.dr*k2Rinv1GeVf/pt_beta, betaOut);
+		    betaOut += copysign(std::asin(sdOut.dr*k2Rinv1GeVf/std::abs(pt_beta)), betaOut);//FIXME: need a faster version
 		  } else {
 		    const float diffDr = std::abs(sdIn.dr - sdOut.dr)/std::abs(sdIn.dr + sdOut.dr);
 		    if (diffDr > 0.05 //only if segment length is different significantly
 			&& betaIn*betaOut > 0.f && std::abs(pt_beta) < pt_betaMax ){ //and the pt_beta is well-defined
-		      const float betaInUpd  = betaIn + copysign(sdIn.dr*k2Rinv1GeVf/std::abs(pt_beta), betaIn);
-		      const float betaOutUpd = betaOut + copysign(sdOut.dr*k2Rinv1GeVf/std::abs(pt_beta), betaOut);
+		      const float betaInUpd  = betaIn + copysign(std::asin(sdIn.dr*k2Rinv1GeVf/std::abs(pt_beta)), betaIn);//FIXME: need a faster version
+		      const float betaOutUpd = betaOut + copysign(std::asin(sdOut.dr*k2Rinv1GeVf/std::abs(pt_beta)), betaOut);//FIXME: need a faster version
 		      betaAv = 0.5f*(betaInUpd + betaOutUpd);
 		      pt_beta = dr*k2Rinv1GeVf/sin(betaAv);//get a better pt estimate
-		      betaIn  += copysign(sdIn.dr*k2Rinv1GeVf/std::abs(pt_beta), betaIn);
-		      betaOut += copysign(sdOut.dr*k2Rinv1GeVf/std::abs(pt_beta), betaOut);
+		      betaIn  += copysign(std::asin(sdIn.dr*k2Rinv1GeVf/std::abs(pt_beta)), betaIn);//FIXME: need a faster version
+		      betaOut += copysign(std::asin(sdOut.dr*k2Rinv1GeVf/std::abs(pt_beta)), betaOut);//FIXME: need a faster version
 		      //update the av and pt
 		      betaAv = 0.5f*(betaIn + betaOut);
 		      pt_beta = dr*k2Rinv1GeVf/sin(betaAv);//get a better pt estimate		  
@@ -3787,6 +3784,9 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		  }
 		}
 		
+		const float betaOut_cut = std::asin(dr*k2Rinv1GeVf/ptCut) + 0.02f/sdOut.d;//FIXME: need faster version
+		if (std::abs(betaOut) < betaOut_cut) sdlFlag |=  1 << SDLSelectFlags::dAlphaOut;
+
 		float pt_betaIn = dr*k2Rinv1GeVf/sin(betaIn);
 		if (lIn == 0) pt_betaIn = pt_beta;
 		const float pt_betaOut = dr*k2Rinv1GeVf/sin(betaOut);
