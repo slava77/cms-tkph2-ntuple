@@ -1436,11 +1436,16 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
   //cumulativeCuts:
   //false   : computations or analysis of building step is done inclusively (all combinations tried; cuts applied last)
   //true (D): computations or analysis of building step stop after combination fails a cut on a computed value
+  bool useFullR3Endcap = true;
   
   std::cout<<"Running in mockMode "<<mockMode<<std::endl;
   std::cout<<"Running with SD distance "<<sdOffsetB<<" "<<sdOffsetE<<std::endl;
   std::cout<<"Running with useSeeds "<<useSeeds<<std::endl;
-  if (addEndcaps) std::cout<<"Endcap is enabled "<<std::endl;
+  if (addEndcaps){
+    std::cout<<"Endcap is enabled "<<std::endl;
+    if (useFullR3Endcap) std::cout<<"Use full R3 in endcap"<<std::endl;
+    else std::cout<<"Use dPhiPos in endcap"<<std::endl;
+  }
   
   bool debugReco = false;
 
@@ -1463,6 +1468,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       0.26, 0.16, 0.16, 0.18, 0.18, 0.18,
       0.4, 0.4, 0.4, 0.4, 0.4}; //endcap, reuse the same spacing
 
+  constexpr float deltaZLum = 15.0;
   constexpr float pixelPSZpitch = 0.15;
   constexpr float stripPSZpitch = 2.5;
   constexpr float strip2SZpitch = 5.0;
@@ -1471,7 +1477,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
   //(1 sigma based on 95.45% = 2sigma at 2 GeV)
   std::array<float, nLayersA+1> miniMulsPtScale {0, 0, 0, 0, 0,
       0.0052, 0.0038, 0.0034, 0.0034, 0.0032, 0.0034,
-      0, 0, 0, 0, 0}; //FIXME: endcaps need to have something filled
+      0.006, 0.006, 0.006, 0.006, 0.006}; //inter/extra-polated from L11 and L13 both roughly 0.006 [larger R have smaller value by ~50%]
 
   //mean of the horizontal layer position in y; treat this as R below
   std::array<float, nLayersA+1> miniRminMean {0, 0, 0, 0, 0, //may want to fill these
@@ -2340,10 +2346,10 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    nHitsTried++; //if (nHitsTried>1) exit(0);
 	    float rt = hL.second.rt;
 	    const float ptCut = 1.0f;
-	    const float miniSlope = rt*k2Rinv1GeVf/ptCut;
+	    const float miniSlope = std::asin(rt*k2Rinv1GeVf/ptCut);
 	    
 	    const float miniMuls = miniMulsPtScale[iL]*3.f/ptCut;
-	    const float rLayNominal = iL >= minLayer ? miniRminMean[iL] : 1e12f;
+	    const float rLayNominal = iL >= minLayer ? (iL < 11 ? miniRminMean[iL] : rt ) : 1e12f;
 	    const float miniPVoff = 0.1f/rLayNominal;
 	    const float miniCut = miniSlope + sqrt(miniMuls*miniMuls + miniPVoff*miniPVoff);
 	    
@@ -2367,6 +2373,9 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		
 		auto const dr = hL.second.rt - hU.second.rt;
 		if (std::abs(dr) > dzCut) continue;
+
+		const float miniLum = useFullR3Endcap ? 0.f : deltaZLum/std::abs(hL.second.r3.z());
+		const float miniCutE = miniSlope + sqrt(miniMuls*miniMuls + miniPVoff*miniPVoff + miniLum*miniLum);
 		
 		const float dPhiPos = deltaPhi(hL.second.phi, hU.second.phi);
 		//FIXME: can be tighter
@@ -2374,7 +2383,10 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 
 		const float dzFrac = dz/hL.second.r3.z();
 		dPhi = dPhiPos/dzFrac*(1.f + dzFrac);
-		if (std::abs(dPhi) > miniCut*1.25f) continue;
+		if (useFullR3Endcap){
+		  dPhi = hL.second.r3.DeltaPhi(hU.second.r3-hL.second.r3);
+		}
+		if (std::abs(dPhi) > miniCut) continue;
 
 	      }
 	      
@@ -2443,7 +2455,9 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	int nAll = 0;
 	
 	int iRef = -1;
-	const float zGeom = iL >= 5 && iL <= 6 ? 2.f*pixelPSZpitch : 2.f*strip2SZpitch;//twice the macro-pixel or strip size
+	const float zGeom = mockMode == 3 ?
+	  (iL >= 5 && iL <= 6 ? 2.f*pixelPSZpitch : 2.f*strip2SZpitch)//twice the macro-pixel or strip size
+	  : 0.f;//precise hits are used otherwise
 	                                                //assume that the mock layer is the n+1 layer
 
 	for (auto const& mdRef : mockMDfwRef){
@@ -2466,17 +2480,19 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    float dPhiOut;
 	    
 	    if (iL < 11){//barrel
+	      float rt = rtOut; //FIXME: should be different for mockMode = 0
+	      const float sdSlope = std::asin(rt*k2Rinv1GeVf/ptCut);
+	      const float dzDrtScale = tan(sdSlope)/sdSlope;//FIXME: need approximate value
+
 	      //apply some loose Z compatibility
-	      float zLo = rtOut/rtRef*(zRef - 15.f*(1.f - rtRef/rtOut)) - zGeom; //15 for the luminous ; 10 for module size
-	      float zHi = rtOut/rtRef*(zRef + 15.f*(1.f - rtRef/rtOut)) + zGeom;
+	      float zLo = zRef + (zRef - deltaZLum)*(rtOut/rtRef - 1.f)*(zRef > 0.f ? 1.f : dzDrtScale) - zGeom; //slope-correction only on outer end
+	      float zHi = zRef + (zRef + deltaZLum)*(rtOut/rtRef - 1.f)*(zRef < 0.f ? 1.f : dzDrtScale) + zGeom;
 	      iFlag = SDSelectFlags::deltaZ;
 	      if (!(zOut < zLo || zOut > zHi)) sdFlag |= 1 << iFlag;
 	      else if (cumulativeCuts ) continue;
 	      
 	      if (sdFlag == sdMasksCumulative[iFlag]) nPass[iFlag]++;
 	      
-	      float rt = 0.5f*(rtRef + rtOut); //take the middle: it matches better the point-to-point
-	      const float sdSlope = rt*k2Rinv1GeVf/ptCut;
 	      const float sdMuls = miniMulsPtScale[iL]*3.f/ptCut*2.f;//will need a better guess than x2?
 	      const float sdPVoff = 0.1f/rt;
 	      const float sdCut = sdSlope + sqrt(sdMuls*sdMuls + sdPVoff*sdPVoff);
@@ -2498,29 +2514,33 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 
 	      dPhiOut = mdOut.r3.DeltaPhi(dr3);
 	    } else {//endcap
-
-	      const float rtGeom = rtRef < disks2SMaxRadius && rtOut < disks2SMaxRadius ? 2.f*pixelPSZpitch
-							    : (rtRef < disks2SMaxRadius || rtOut < disks2SMaxRadius ) ? (pixelPSZpitch+strip2SZpitch)
-								       : 2.f*strip2SZpitch; //FIXME: make this chosen by configuration for lay11,12 full PS
+	      const float rtGeom = mockMode == 3 ?
+		(rtRef < disks2SMaxRadius && rtOut < disks2SMaxRadius ? 2.f*pixelPSZpitch
+		 : (rtRef < disks2SMaxRadius || rtOut < disks2SMaxRadius ) ? (pixelPSZpitch+strip2SZpitch)
+		 : 2.f*strip2SZpitch) //FIXME: make this chosen by configuration for lay11,12 full PS
+		: 0.f;//precise hits are used
 	      
 	      if (zRef*zOut < 0) continue; //do not even accumulate stats for wrong side combinations
 	      
+	      const float dz = zOut - zRef;
+	      const float rt = rtOut; //FIXME: should be different for mockMode = 0
+	      const float sdSlope = std::asin(rt*k2Rinv1GeVf/ptCut);
+
 	      //apply some loose Z compatibility
-	      const float dLum = std::copysign(15.f, zRef);
-	      float rtLo = std::max(rtRef*(zOut + dLum)/(zRef + dLum) - rtGeom, rtRef - 0.5f*rtGeom); //rt should increase
-	      float rtHi = rtRef*(zOut - dLum)/(zRef - dLum) + rtGeom; //15 for the luminous ; rGeom for measurement size
+	      const float dLum = std::copysign(deltaZLum, zRef);
+	      const float drtDzScale = sdSlope/tan(sdSlope);//FIXME: need approximate value
+	      float rtLo = std::max(rtRef*(1.f + dz/(zRef + dLum)*drtDzScale) - rtGeom, rtRef - 0.5f*rtGeom); //rt should increase
+	      float rtHi = rtRef*(zOut - dLum)/(zRef - dLum) + rtGeom; //dLum for luminous; rGeom for measurement size; no tanTheta_loc(pt) correction
 	      iFlag = SDSelectFlags::deltaZ; //some unfortunate naming
 	      if (!(rtOut < rtLo || rtOut > rtHi)) sdFlag |= 1 << iFlag;
 	      else if (cumulativeCuts ) continue;
 	      
 	      if (sdFlag == sdMasksCumulative[iFlag]) nPass[iFlag]++;
 
-	      const float dz = zOut - zRef;
-	      const float rt = 0.5f*(rtRef + rtOut); //take the middle: it matches better the point-to-point
-	      const float sdSlope = rt*k2Rinv1GeVf/ptCut;
 	      const float sdMuls = miniMulsPtScale[iL]*3.f/ptCut*2.f;//will need a better guess than x2?
 	      const float sdPVoff = 0.1f/rt;
-	      const float sdCut = sdSlope + sqrt(sdMuls*sdMuls + sdPVoff*sdPVoff);
+	      const float sdLum = useFullR3Endcap ? 0.f : deltaZLum/std::abs(zRef);
+	      const float sdCut = sdSlope + sqrt(sdMuls*sdMuls + sdPVoff*sdPVoff + sdLum*sdLum);
 
 	      const float dPhiPos = deltaPhi(mdRef.phi, mdOut.phi);
 	      iFlag = SDSelectFlags::deltaPhiPos;
@@ -2532,17 +2552,20 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      //equivalent SD bend cut
 	      const float dzFrac = dz/mdRef.r3.z();
 	      dPhi = dPhiPos/dzFrac*(1.f + dzFrac);
-	      
+
+	      dr3 = mdOut.r3; dr3 -= mdRef.r3;//not needed for cuts but needed below
+	      if (useFullR3Endcap) dPhi = mdRef.r3.DeltaPhi(dr3);
+
 	      iFlag = SDSelectFlags::slope;
-	      if (!(std::abs(dPhi) > sdCut*1.25 )) sdFlag |= 1 << iFlag;
+	      if (!(std::abs(dPhi) > sdCut )) sdFlag |= 1 << iFlag;
 	      else if (cumulativeCuts ) continue;	    
 	      if (sdFlag == sdMasksCumulative[iFlag]) nPass[iFlag]++;
 
-	      dr3 = mdOut.r3; dr3 -= mdRef.r3;//not needed for cuts but needed below
 	      //	      const float dPhiAsBarrel = mdRef.r3.DeltaPhi(dr3);
 	      //	      dPhi = dPhiAsBarrel;
 
 	      dPhiOut = deltaPhi(dPhi, dPhiPos);
+	      if (useFullR3Endcap) dPhiOut = mdOut.r3.DeltaPhi(dr3);
 	    }
 	      
 	    
@@ -2560,8 +2583,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    sd.zeta = sd.d/(mdOut.r3.Z() - sd.z);
 
 	    //loose angle compatibility
-	    float dAlpha_Bfield = sd.dr*k2Rinv1GeVf/ptCut;
-	    float dAlpha_res = 0.04f/miniDelta[iL];//4-strip difference
+	    float dAlpha_Bfield = std::asin(sd.dr*k2Rinv1GeVf/ptCut);
+	    float dAlpha_res = 0.04f/miniDelta[iL] * (iL < 11 ? 1.0f : std::abs(sd.z/sd.rt) )*(mockMode == 3 ? 1.0f : 0.0f);//4-strip difference
 	    float dAlpha_compat = dAlpha_Bfield + dAlpha_res;
 
 	    iFlag = SDSelectFlags::alphaRef;
@@ -2571,7 +2594,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    if (sdFlag == sdMasksCumulative[iFlag]) nPass[iFlag]++;
 	      
 	    iFlag = SDSelectFlags::alphaOut;
-	    if (!(std::abs(mdOut.alpha- sd.alpha) > dAlpha_compat)) sdFlag |= 1 << iFlag;
+	    if (!(std::abs(mdOut.alpha- sd.alpha) > dAlpha_compat)) sdFlag |= 1 << iFlag;//FIXME: this could be more restrictive: dBfiled cancels out
 	    else if (cumulativeCuts ) continue;
 
 	    if (sdFlag == sdMasksCumulative[iFlag]) nPass[iFlag]++;
@@ -2681,7 +2704,9 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	int nOutAlphaCompat = 0;
 	int ndBeta = 0;
 	
-	const float zGeom = lIn >= 0 && lIn <= 7 && lOut >= 5 && lOut <= 7 ? 2.f*pixelPSZpitch : 2.f*strip2SZpitch;//twice the macro-pixel or strip size
+	const float zGeom = mockMode == 3 ?
+	  (lIn >= 0 && lIn <= 7 && lOut >= 5 && lOut <= 7 ? 2.f*pixelPSZpitch : 2.f*strip2SZpitch)//twice the macro-pixel or strip size
+	  : 0.f;//precise hits otherwise
 	
 	int iIn = -1;
 	for ( auto const& sdIn : sdInV ) {
@@ -2725,16 +2750,18 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      //apply some loose Z compatibility
 	      //FIXME: refine using inner layer directions (can prune later)
 	      const float rtOut_o_rtIn = rtOut*rtInvIn;
-	      const float zLo = rtOut_o_rtIn*(zIn - 15.f*(1.f-1.f/rtOut_o_rtIn)) - zGeom; //15 for the luminous ; zGeom for z geom unit size
+	      const float zLo = rtOut_o_rtIn*(zIn - deltaZLum*(1.f-1.f/rtOut_o_rtIn)) - zGeom; //15 for the luminous ; zGeom for z geom unit size
 	      if (zOut < zLo && cumulativeCuts) continue;
 
-	      const float zHi = rtOut_o_rtIn*(zIn + 15.f*(1.f-1.f/rtOut_o_rtIn)) + zGeom;
+	      const float zHi = rtOut_o_rtIn*(zIn + deltaZLum*(1.f-1.f/rtOut_o_rtIn)) + zGeom;
 	      if (!(zOut < zLo || zOut > zHi)) sdlFlag |= 1 << SDLSelectFlags::deltaZ;
 	      else if (cumulativeCuts ) continue;
 	    } else {//endcap uses matching to r
-	      const float dLum = std::copysign(15.f, zIn);
+	      const float dLum = std::copysign(deltaZLum, zIn);
 	      if (lIn < 11){//B-E
-		const float rtGeom1 = rtOut < disks2SMaxRadius ? pixelPSZpitch : strip2SZpitch;//FIXME: make this chosen by configuration for lay11,12 full PS
+		const float rtGeom1 = mockMode == 3 ?
+		  (rtOut < disks2SMaxRadius ? pixelPSZpitch : strip2SZpitch)//FIXME: make this chosen by configuration for lay11,12 full PS
+		  : 0.f;//precise hits otherwise
 		const float zGeom1 = 0.5f*std::copysign(zGeom,zIn); //used in B-E region
 
 		const float rtLo = rtIn*(zOut + dLum)/(zIn + zGeom1 + dLum) - rtGeom1;
@@ -2743,9 +2770,11 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		if (!(rtOut < rtLo || rtOut > rtHi)) sdlFlag |= 1 << SDLSelectFlags::deltaZ;
 		else if (cumulativeCuts ) continue;
 	      } else {//E-E
-		const float rtGeom = rtIn < disks2SMaxRadius && rtOut < disks2SMaxRadius ? 2.f*pixelPSZpitch
-							     : (rtIn < disks2SMaxRadius || rtOut < disks2SMaxRadius ) ? (pixelPSZpitch + strip2SZpitch)
-								       : 2.f*strip2SZpitch; //FIXME: make this chosen by configuration for lay11,12 full PS
+		const float rtGeom = mockMode == 3 ?
+		  (rtIn < disks2SMaxRadius && rtOut < disks2SMaxRadius ? 2.f*pixelPSZpitch
+		   : (rtIn < disks2SMaxRadius || rtOut < disks2SMaxRadius ) ? (pixelPSZpitch + strip2SZpitch)
+		   : 2.f*strip2SZpitch) //FIXME: make this chosen by configuration for lay11,12 full PS
+		  : 0.f;//precise hits otherwise
 
 		const float rtLo = rtIn*(zOut + dLum)/(zIn  + dLum) - rtGeom;
 		if (rtOut < rtLo && cumulativeCuts) continue;
@@ -2781,7 +2810,9 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      } else {//endcap; !!! THIS IS BLIND, WAS NOT TESTED !!!
 		const float dzOutInAbs = std::abs(zOut - zIn);
 		const float multDzDr = dzOutInAbs*coshEta/(coshEta*coshEta - 1.f);
-		const float rtGeom1 = rtOut < disks2SMaxRadius ? pixelPSZpitch : strip2SZpitch;//FIXME: make this chosen by configuration for lay11,12 full PS
+		const float rtGeom1 = mockMode == 3 ?
+		  (rtOut < disks2SMaxRadius ? pixelPSZpitch : strip2SZpitch)//FIXME: make this chosen by configuration for lay11,12 full PS
+		  : 0.f;//precise hits otherwise
 		
 		float drtErr = etaErr*multDzDr;
 		drtErr *= drtErr;
@@ -2815,8 +2846,10 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		const float coshEta = dr3SDIn/drtSDIn;//direction estimate
 		const float dzOutInAbs = std::abs(zOut - zIn);
 		const float multDzDr = dzOutInAbs*coshEta/(coshEta*coshEta - 1.f);
-		const float rtGeom1 = rtOut < disks2SMaxRadius ? pixelPSZpitch : strip2SZpitch;//FIXME: make this chosen by configuration for lay11,12 full PS
-		const float zGeom1 = pixelPSZpitch;
+		const float rtGeom1 = mockMode == 3 ?
+		  (rtOut < disks2SMaxRadius ? pixelPSZpitch : strip2SZpitch)//FIXME: make this chosen by configuration for lay11,12 full PS
+		  : 0.f;//precise hits otherwise
+		const float zGeom1 = mockMode == 3 ? pixelPSZpitch : 0.f;
 
 		const float kZ = (zOut - zIn)/dzSDIn;
 		float drtErr = zGeom1*zGeom1*drtSDIn*drtSDIn/dzSDIn/dzSDIn * (1.f - 2.f*kZ + 2.f*kZ*kZ);//Notes:122316
@@ -2837,9 +2870,11 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      const float coshEta = dr3SDIn/drtSDIn;//direction estimate
 	      const float dzOutInAbs = std::abs(zOut - zIn);
 	      const float multDzDr = dzOutInAbs*coshEta/(coshEta*coshEta - 1.f);
-	      const float rtGeom = rtIn < disks2SMaxRadius && rtOut < disks2SMaxRadius ? 2.f*pixelPSZpitch
-							   : (rtIn < disks2SMaxRadius || rtOut < disks2SMaxRadius ) ? (pixelPSZpitch+strip2SZpitch)
-								     : 2.f*strip2SZpitch; //FIXME: make this chosen by configuration for lay11,12 full PS
+	      const float rtGeom = mockMode == 3 ?
+		(rtIn < disks2SMaxRadius && rtOut < disks2SMaxRadius ? 2.f*pixelPSZpitch
+		 : (rtIn < disks2SMaxRadius || rtOut < disks2SMaxRadius ) ? (pixelPSZpitch+strip2SZpitch)
+		 : 2.f*strip2SZpitch) //FIXME: make this chosen by configuration for lay11,12 full PS
+		: 0.f;//precise hits otherwise
 
 	      float drtErr = pixelPSZpitch*pixelPSZpitch*2.f/dzSDIn/dzSDIn*dzOutInAbs*dzOutInAbs;//both sides contribute to direction uncertainty
 	      drtErr += sdlMuls*sdlMuls*multDzDr*multDzDr/3.f*coshEta*coshEta;//sloppy: relative muls is 1/3 of total muls
@@ -2856,9 +2891,9 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    }
 	    if (sdlFlag == sdlMasksCumulative[SDLSelectFlags::deltaZPointed]) nDeltaZPointed++;
 	    
-	    const float rt = 0.5f*(rtIn + rtOut);
+	    const float rt = rtOut;
 
-	    const float sdlSlope = rt*k2Rinv1GeVf/ptCut;
+	    const float sdlSlope = std::asin(rt*k2Rinv1GeVf/ptCut);
 	    const float sdlPVoff = 0.1f/rt;
 	    const float sdlCut = sdlSlope + sqrt(sdlMuls*sdlMuls + sdlPVoff*sdlPVoff);
 
@@ -2906,7 +2941,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    const float corrF = mockMode == 0 ? 0.f : 1.f;
 	    bool pass_betaIn_cut = lIn == 0;//pixel seeds were already selected
 	    if (lIn != 0){
-	      const float betaIn_cut = (-sdIn.dr*corrF + dr)*k2Rinv1GeVf/ptCut + 0.02f/sdIn.d;
+	      const float betaIn_cut = (-sdIn.dr*corrF + dr)*k2Rinv1GeVf/ptCut + (mockMode == 3 ? 0.02f/sdIn.d : 0.f);
 	      pass_betaIn_cut = std::abs(betaIn) < betaIn_cut;
 	    }
 	    if (pass_betaIn_cut) sdlFlag |=  1 << SDLSelectFlags::dAlphaIn;
@@ -2943,7 +2978,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      }
 	    }
 
-	    const float betaOut_cut = std::asin(dr*k2Rinv1GeVf/ptCut) + 0.02f/sdOut.d;//FIXME: need faster version
+	    const float betaOut_cut = std::asin(dr*k2Rinv1GeVf/ptCut) + (mockMode == 3 ? 0.02f/sdOut.d : 0.f);//FIXME: need faster version
 	    if (std::abs(betaOut) < betaOut_cut) sdlFlag |=  1 << SDLSelectFlags::dAlphaOut;
 	    else if (cumulativeCuts ) continue;
 	    if (sdlFlag == sdlMasksCumulative[SDLSelectFlags::dAlphaOut]) nOutAlphaCompat++;
@@ -2952,14 +2987,23 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    if (lIn == 0) pt_betaIn = pt_beta;
 	    const float pt_betaOut = dr*k2Rinv1GeVf/sin(betaOut);
 
-	    const float dBetaRes = 0.02f/std::min(sdOut.d,sdIn.d);
+	    const float dBetaRes = mockMode == 3 ? 0.02f/std::min(sdOut.d,sdIn.d) : 0.f;
 	    const float dBetaMuls = sdlThetaMulsF*3.f/std::min(std::abs(pt_beta), pt_betaMax);//need to confirm the range-out value of 7 GeV
 
 	    const float alphaAbs = std::max(std::max(std::abs(sdIn.alpha), std::abs(sdOut.alpha)), 0.01f);
+	    //regularize to alpha of pt_betaMax .. review may want to add resolution
+	    const float alphaInAbsReg = useFullR3Endcap ? 0.f : std::max(std::abs(sdIn.alpha), std::asin(sdIn.rt*k2Rinv1GeVf/3.0f));
+	    const float alphaOutAbsReg = useFullR3Endcap ? 0.f : std::max(std::abs(sdOut.alpha), std::asin(sdOut.rt*k2Rinv1GeVf/3.0f));
+	    const float dBetaLum2 = 0.0f + (lIn < 11 ? 0.0f : alphaInAbsReg*alphaInAbsReg*deltaZLum*deltaZLum/sdIn.z/sdIn.z)
+	      +  (lOut < 11 ? 0.0f : alphaOutAbsReg*alphaOutAbsReg*deltaZLum*deltaZLum/sdOut.z/sdOut.z);
 	    const float dBetaCut2 = (dBetaRes*dBetaRes*2.0f + dBetaMuls*dBetaMuls)
-	      + (lIn < 11 && lOut < 11 ? 0.0f
-		 : lIn >= 11 && lOut >= 11 ? std::max(0.06f*alphaAbs*alphaAbs, 0.0009f)
-		 : std::max(0.06f*alphaAbs*alphaAbs, 0.0002f) );//FIXME: derive a better estimator for this fudge factor
+	      + (mockMode == 3 ?
+		 (lIn < 11 && lOut < 11 ? 0.0f
+		  : lIn >= 11 && lOut >= 11 ? std::max(0.06f*alphaAbs*alphaAbs, 0.0009f)
+		  : std::max(0.06f*alphaAbs*alphaAbs, 0.0002f) )
+		 ://mockMode=1 case is most relevant here
+		 dBetaLum2
+		 );//FIXME: derive a better estimator for this fudge factor
 	    const float dBeta = betaIn - betaOut;
 
 	    const float dZeta = sdIn.zeta - sdOut.zeta;
@@ -3293,6 +3337,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	auto tpEta = p3.Eta();
 	auto tpPhi = p3.Phi();
 
+	auto tpDxy = sim_dxy()[iSim];
+	if (std::abs(tpDxy) > 0.05) continue;
 	
 	if (tpPt < 1.5 && std::abs(p3.Eta())< 1) debug = false;
 	if (debug) std::cout<<"TP: "<<p3.Pt()<<" "<<p3.Eta()<<" "<<p3.Phi();
@@ -3511,7 +3557,9 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    //enum SDLSelectFlags { deltaZ = 0, deltaZPointed, slope, dAlphaIn, dAlphaOut, dBeta};
 	    std::vector<std::pair<SDLink, int> > vSDLwInfo_4of4;
 
-	    const float zGeom = lIn >= 0 && lIn <= 7 && lOut >= 5 && lOut <= 7 ? 2.f*pixelPSZpitch : 2.f*strip2SZpitch;//twice the macro-pixel or strip size
+	    const float zGeom = mockMode == 3 ?
+	      (lIn >= 0 && lIn <= 7 && lOut >= 5 && lOut <= 7 ? 2.f*pixelPSZpitch : 2.f*strip2SZpitch)//twice the macro-pixel or strip size
+	      : 0.f;//precise hits otherwise
 
 	    bool debugSimMatching = tpPt < 2 && hasSDIn_4of4 && hasSDOut_4of4 && has8MHs && has4MDs && debug;
 	    for (auto const& sdIn : vSDIn_4of4){
@@ -3549,17 +3597,19 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		  //apply some loose Z compatibility
 		  //FIXME: refine using inner layer directions (can prune later)		
 		  const float rtOut_o_rtIn = rtOut*rtInvIn;
-		  const float zLo = rtOut_o_rtIn*(zIn - 15.f*(1.f - 1.f/rtOut_o_rtIn)) - zGeom; //15 for the luminous ; zGeom for z geom unit size
-		  const float zHi = rtOut_o_rtIn*(zIn + 15.f*(1.f - 1.f/rtOut_o_rtIn)) + zGeom;
+		  const float zLo = rtOut_o_rtIn*(zIn - deltaZLum*(1.f - 1.f/rtOut_o_rtIn)) - zGeom; //15 for the luminous ; zGeom for z geom unit size
+		  const float zHi = rtOut_o_rtIn*(zIn + deltaZLum*(1.f - 1.f/rtOut_o_rtIn)) + zGeom;
 		
 		  if (zOut > zLo && zOut < zHi) sdlFlag |= 1 << SDLSelectFlags::deltaZ;
 		  if (debugSimMatching && !(sdlFlag & 1 << SDLSelectFlags::deltaZ) ){
 		    std::cout<<"Lum region failed: tpPt "<<tpPt<<" lIn "<<lIn <<" zLo "<<zLo<<" zHi "<<zHi<<" vs zOut "<<zOut<<std::endl;
 		  }
 		} else {//endcap uses matching to r
-		  const float dLum = std::copysign(15.f, zIn);
+		  const float dLum = std::copysign(deltaZLum, zIn);
 		  if (lIn < 11){//B-E
-		    const float rtGeom1 = rtOut < disks2SMaxRadius ? pixelPSZpitch : strip2SZpitch;//FIXME: make this chosen by configuration for lay11,12 full PS
+		    const float rtGeom1 = mockMode == 3 ?
+		      (rtOut < disks2SMaxRadius ? pixelPSZpitch : strip2SZpitch)//FIXME: make this chosen by configuration for lay11,12 full PS
+		      : 0.f;//precise hits otherwise
 		    const float zGeom1 = 0.5f*std::copysign(zGeom,zIn);
 
 		    const float rtLo = rtIn*(zOut + dLum)/(zIn + zGeom1 + dLum) - rtGeom1;
@@ -3570,9 +3620,11 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		      std::cout<<"Lum region failed: tpPt "<<tpPt<<" lIn "<<lIn <<" rtLo "<<rtLo<<" rtHi "<<rtHi<<" vs rtOut "<<rtOut<<std::endl;
 		    }
 		  } else {//E-E
-		    const float rtGeom = rtIn < disks2SMaxRadius && rtOut < disks2SMaxRadius ? 2.f*pixelPSZpitch
-								 : (rtIn < disks2SMaxRadius || rtOut < disks2SMaxRadius ) ? (pixelPSZpitch+strip2SZpitch)
-									   : 2.f*strip2SZpitch; //FIXME: make this chosen by configuration for lay11,12 full PS
+		    const float rtGeom = mockMode == 3 ?
+		      (rtIn < disks2SMaxRadius && rtOut < disks2SMaxRadius ? 2.f*pixelPSZpitch
+		       : (rtIn < disks2SMaxRadius || rtOut < disks2SMaxRadius ) ? (pixelPSZpitch + strip2SZpitch)
+		       : 2.f*strip2SZpitch) //FIXME: make this chosen by configuration for lay11,12 full PS
+		      : 0.f;//precise hits otherwise
 		    
 		    const float rtLo = rtIn*(zOut + dLum)/(zIn  + dLum) - rtGeom;
 		    const float rtHi = rtIn*(zOut - dLum)/(zIn - dLum) + rtGeom;
@@ -3613,7 +3665,9 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		  } else {//endcap; !!! THIS IS BLIND, WAS NOT TESTED !!!
 		    const float dzOutInAbs = std::abs(zOut - zIn);
 		    const float multDzDr = dzOutInAbs*coshEta/(coshEta*coshEta - 1.f);
-		    const float rtGeom1 = rtOut < disks2SMaxRadius ? pixelPSZpitch : strip2SZpitch;//FIXME: make this chosen by configuration for lay11,12 full PS
+		    const float rtGeom1 = mockMode == 3 ?
+		      (rtOut < disks2SMaxRadius ? pixelPSZpitch : strip2SZpitch)//FIXME: make this chosen by configuration for lay11,12 full PS
+		      : 0.f;//precise hits otherwise
 		    
 		    float drtErr = etaErr*multDzDr;
 		    drtErr *= drtErr;
@@ -3651,8 +3705,10 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		    const float coshEta = dr3SDIn/drtSDIn;//direction estimate
 		    const float dzOutInAbs = std::abs(zOut - zIn);
 		    const float multDzDr = dzOutInAbs*coshEta/(coshEta*coshEta - 1.f);
-		    const float rtGeom1 = rtOut < disks2SMaxRadius ? pixelPSZpitch : strip2SZpitch;//FIXME: make this chosen by configuration for lay11,12 full PS
-		    const float zGeom1 = pixelPSZpitch;
+		    const float rtGeom1 = mockMode == 3 ?
+		      (rtOut < disks2SMaxRadius ? pixelPSZpitch : strip2SZpitch)//FIXME: make this chosen by configuration for lay11,12 full PS
+		      : 0.f;//precise hits otherwise
+		    const float zGeom1 = mockMode == 3 ? pixelPSZpitch : 0.f;
 		    
 		    const float kZ = (zOut - zIn)/dzSDIn;
 		    float drtErr = zGeom1*zGeom1*drtSDIn*drtSDIn/dzSDIn/dzSDIn * (1.f - 2.f*kZ + 2.f*kZ*kZ);//Notes:122316
@@ -3678,9 +3734,11 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		  const float coshEta = dr3SDIn/drtSDIn;//direction estimate
 		  const float dzOutInAbs = std::abs(zOut - zIn);
 		  const float multDzDr = dzOutInAbs*coshEta/(coshEta*coshEta - 1.f);
-		  const float rtGeom = rtIn < disks2SMaxRadius && rtOut < disks2SMaxRadius ? 2.f*pixelPSZpitch
-							       : (rtIn < disks2SMaxRadius || rtOut < disks2SMaxRadius ) ? (pixelPSZpitch+strip2SZpitch)
-									 : 2.f*strip2SZpitch; //FIXME: make this chosen by configuration for lay11,12 full PS
+		  const float rtGeom = mockMode == 3 ?
+		    (rtIn < disks2SMaxRadius && rtOut < disks2SMaxRadius ? 2.f*pixelPSZpitch
+		     : (rtIn < disks2SMaxRadius || rtOut < disks2SMaxRadius ) ? (pixelPSZpitch+strip2SZpitch)
+		     : 2.f*strip2SZpitch) //FIXME: make this chosen by configuration for lay11,12 full PS
+		    : 0.f;//precise hits otherwise
 		  
 		  float drtErr = pixelPSZpitch*pixelPSZpitch*2.f/dzSDIn/dzSDIn*dzOutInAbs*dzOutInAbs;//both sides contribute to direction uncertainty
 		  drtErr += sdlMuls*sdlMuls*multDzDr*multDzDr/3.f*coshEta*coshEta;//sloppy: relative muls is 1/3 of total muls
@@ -3703,9 +3761,9 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		  sdlFlag |= 1 << SDLSelectFlags::deltaZPointed;
 		}
 
-		const float rt = 0.5f*(rtIn + rtOut);
+		const float rt = rtOut;
 		
-		const float sdlSlope = rt*k2Rinv1GeVf/ptCut;
+		const float sdlSlope = std::asin(rt*k2Rinv1GeVf/ptCut);
 		const float sdlPVoff = 0.1f/rt;
 		const float sdlCut = sdlSlope + sqrt(sdlMuls*sdlMuls + sdlPVoff*sdlPVoff);
 
@@ -3749,7 +3807,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		const float corrF = mockMode == 0 ? 0.f : 1.f;
 		bool pass_betaIn_cut = lIn == 0;//pixel seeds were already selected
 		if (lIn != 0){
-		  const float betaIn_cut = (-sdIn.dr*corrF + dr)*k2Rinv1GeVf/ptCut + 0.02f/sdIn.d;
+		  const float betaIn_cut = (-sdIn.dr*corrF + dr)*k2Rinv1GeVf/ptCut + (mockMode == 3 ? 0.02f/sdIn.d : 0.f);
 		  pass_betaIn_cut = std::abs(betaIn) < betaIn_cut;
 		}
 		if (pass_betaIn_cut) sdlFlag |=  1 << SDLSelectFlags::dAlphaIn;
@@ -3784,21 +3842,30 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		  }
 		}
 		
-		const float betaOut_cut = std::asin(dr*k2Rinv1GeVf/ptCut) + 0.02f/sdOut.d;//FIXME: need faster version
+		const float betaOut_cut = std::asin(dr*k2Rinv1GeVf/ptCut) + (mockMode == 3 ? 0.02f/sdOut.d : 0.f);//FIXME: need faster version
 		if (std::abs(betaOut) < betaOut_cut) sdlFlag |=  1 << SDLSelectFlags::dAlphaOut;
 
 		float pt_betaIn = dr*k2Rinv1GeVf/sin(betaIn);
 		if (lIn == 0) pt_betaIn = pt_beta;
 		const float pt_betaOut = dr*k2Rinv1GeVf/sin(betaOut);
 		
-		const float dBetaRes = 0.02f/std::min(sdIn.d, sdOut.d);
+		const float dBetaRes = mockMode == 3 ? 0.02f/std::min(sdIn.d, sdOut.d) : 0.f;
 		const float dBetaMuls = sdlThetaMulsF*3.f/std::min(std::abs(pt_beta), pt_betaMax); //need to confirm the range-out value of 7 GeV
 
 		const float alphaAbs = std::max(std::max(std::abs(sdIn.alpha), std::abs(sdOut.alpha)), 0.01f);
+		//regularize to alpha of pt_betaMax .. review may want to add resolution
+		const float alphaInAbsReg = useFullR3Endcap ? 0.f : std::max(std::abs(sdIn.alpha), std::asin(sdIn.rt*k2Rinv1GeVf/3.0f));
+		const float alphaOutAbsReg = useFullR3Endcap ? 0.f : std::max(std::abs(sdOut.alpha), std::asin(sdOut.rt*k2Rinv1GeVf/3.0f));
+		const float dBetaLum2 = 0.0f + (lIn < 11 ? 0.0f : alphaInAbsReg*alphaInAbsReg*deltaZLum*deltaZLum/sdIn.z/sdIn.z)
+		  +  (lOut < 11 ? 0.0f : alphaOutAbsReg*alphaOutAbsReg*deltaZLum*deltaZLum/sdOut.z/sdOut.z);
 		const float dBetaCut2 = (dBetaRes*dBetaRes*2.0f + dBetaMuls*dBetaMuls)
-		  + (lIn < 11 && lOut < 11 ? 0.0f
-		     : lIn >= 11 && lOut >= 11 ? std::max(0.06f*alphaAbs*alphaAbs, 0.0009f)
-		     : std::max(0.06f*alphaAbs*alphaAbs, 0.0002f) );//FIXME: derive a better estimator for this fudge factor
+		  + (mockMode == 3 ?
+		     (lIn < 11 && lOut < 11 ? 0.0f
+		      : lIn >= 11 && lOut >= 11 ? std::max(0.06f*alphaAbs*alphaAbs, 0.0009f)
+		      : std::max(0.06f*alphaAbs*alphaAbs, 0.0002f) )
+		     ://mockMode=1 case is most relevant here
+		     dBetaLum2
+		     );//FIXME: derive a better estimator for this fudge factor
 		const float dBeta = betaIn - betaOut;
 		
 		if (dBeta*dBeta < dBetaCut2) sdlFlag |= 1 << SDLSelectFlags::dBeta;
