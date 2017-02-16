@@ -2787,14 +2787,18 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		&& ( (lIn > 0 && zIn*zOut < 0) || (lIn == 0 && sdIn.p3.Z()*zOut < 0))) continue;
 	    nAll++;
 
+	    const float rt = rtOut;
+	    const float sdlSlope = std::asin(rt*k2Rinv1GeVf/ptCut);
+	    const float dzDrtScale = tan(sdlSlope)/sdlSlope;//FIXME: need approximate value
+
 	    if (lOut < 11){//barrel: match to Z proper
 	      //apply some loose Z compatibility
 	      //FIXME: refine using inner layer directions (can prune later)
 	      const float rtOut_o_rtIn = rtOut*rtInvIn;
-	      const float zLo = rtOut_o_rtIn*(zIn - deltaZLum*(1.f-1.f/rtOut_o_rtIn)) - zGeom; //15 for the luminous ; zGeom for z geom unit size
+	      const float zLo = zIn + (zIn - deltaZLum)*(rtOut_o_rtIn - 1.f)*(zIn > 0.f ? 1.f : dzDrtScale) - zGeom; //slope-correction only on outer end
 	      if (zOut < zLo && cumulativeCuts) continue;
 
-	      const float zHi = rtOut_o_rtIn*(zIn + deltaZLum*(1.f-1.f/rtOut_o_rtIn)) + zGeom;
+	      const float zHi = zIn + (zIn + deltaZLum)*(rtOut_o_rtIn - 1.f)*(zIn < 0.f ? 1.f : dzDrtScale) + zGeom;
 	      if (!(zOut < zLo || zOut > zHi)) sdlFlag |= 1 << SDLSelectFlags::deltaZ;
 	      else if (cumulativeCuts ) continue;
 	    } else {//endcap uses matching to r
@@ -2805,9 +2809,9 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		  : 0.f;//precise hits otherwise
 		const float zGeom1 = 0.5f*std::copysign(zGeom,zIn); //used in B-E region
 
-		const float rtLo = rtIn*(zOut + dLum)/(zIn + zGeom1 + dLum) - rtGeom1;
+		const float rtLo = rtIn*(1.f + (zOut - zIn - zGeom1)/(zIn + zGeom1 + dLum)/dzDrtScale) - rtGeom1;//slope correction only on the lower end
 		if (rtOut < rtLo && cumulativeCuts) continue;
-		const float rtHi = rtIn*(zOut - dLum)/(zIn - zGeom1 - dLum) + rtGeom1;
+		const float rtHi = rtIn*(1.f + (zOut - zIn + zGeom1)/(zIn - zGeom1 - dLum)) + rtGeom1;
 		if (!(rtOut < rtLo || rtOut > rtHi)) sdlFlag |= 1 << SDLSelectFlags::deltaZ;
 		else if (cumulativeCuts ) continue;
 	      } else {//E-E
@@ -2816,10 +2820,12 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		   : (rtIn < disks2SMaxRadius || rtOut < disks2SMaxRadius ) ? (pixelPSZpitch + strip2SZpitch)
 		   : 2.f*strip2SZpitch) //FIXME: make this chosen by configuration for lay11,12 full PS
 		  : 0.f;//precise hits otherwise
+		
+		const float dz = zOut - zIn;
 
-		const float rtLo = rtIn*(zOut + dLum)/(zIn  + dLum) - rtGeom;
+		const float rtLo = rtIn*(1.f + dz/(zIn + dLum)/dzDrtScale) - rtGeom;//slope correction only on the lower end
 		if (rtOut < rtLo && cumulativeCuts) continue;
-		const float rtHi = rtIn*(zOut - dLum)/(zIn - dLum) + rtGeom;
+		const float rtHi = rtIn*(1.f + dz/(zIn - dLum)) + rtGeom;
 		if (!(rtOut < rtLo || rtOut > rtHi)) sdlFlag |= 1 << SDLSelectFlags::deltaZ;
 		else if (cumulativeCuts ) continue;		
 	      }//if (lIn < 11){
@@ -2879,8 +2885,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		dzErr = sqrt(dzErr);
 		const float dzMean = dzSDIn/drtSDIn*drOutIn;
 		const float zWindow = dzErr/drtSDIn*drOutIn + zGeom; //FIXME for ptCut lower than ~0.8 need to add curv path correction
-		const float zLo = zIn + dzMean - zWindow;
-		const float zHi = zIn + dzMean + zWindow;
+		const float zLo = zIn + dzMean*(zIn > 0.f ? 1.f : dzDrtScale) - zWindow;
+		const float zHi = zIn + dzMean*(zIn < 0.f ? 1.f : dzDrtScale) + zWindow;
 		if (!(zOut < zLo || zOut > zHi)) sdlFlag |= 1 << SDLSelectFlags::deltaZPointed;
 		else if (cumulativeCuts ) continue;
 	      } else {//endcap
@@ -2896,9 +2902,9 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		float drtErr = zGeom1*zGeom1*drtSDIn*drtSDIn/dzSDIn/dzSDIn * (1.f - 2.f*kZ + 2.f*kZ*kZ);//Notes:122316
 		drtErr += sdlMuls*sdlMuls*multDzDr*multDzDr/3.f*coshEta*coshEta;//sloppy: relative muls is 1/3 of total muls
 		drtErr = sqrt(drtErr);
-		const float drtMean = drtSDIn*dzOutInAbs/std::abs(dzSDIn); //FIXME for ptCut lower than ~0.8 need to add curv path correction
+		const float drtMean = drtSDIn*dzOutInAbs/std::abs(dzSDIn); //
 		const float rtWindow = drtErr + rtGeom1;
-		const float rtLo = rtIn + drtMean - rtWindow;
+		const float rtLo = rtIn + drtMean/dzDrtScale - rtWindow;
 		const float rtHi = rtIn + drtMean + rtWindow;
 		if (!(kZ < 0 || rtOut < rtLo || rtOut > rtHi)) sdlFlag |= 1 << SDLSelectFlags::deltaZPointed;
 		else if (cumulativeCuts ) continue;
@@ -2921,8 +2927,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      drtErr += sdlMuls*sdlMuls*multDzDr*multDzDr/3.f*coshEta*coshEta;//sloppy: relative muls is 1/3 of total muls
 	      drtErr = sqrt(drtErr);
 	      const float drtMean = drtSDIn*dzOutInAbs/std::abs(dzSDIn);
-	      const float rtWindow = drtErr + rtGeom; //FIXME for ptCut lower than ~0.8 need to add curv path correction
-	      const float rtLo = rtIn + drtMean - rtWindow;
+	      const float rtWindow = drtErr + rtGeom; //
+	      const float rtLo = rtIn + drtMean/dzDrtScale - rtWindow;
 	      const float rtHi = rtIn + drtMean + rtWindow;
 	      if (!(rtOut < rtLo || rtOut > rtHi)) sdlFlag |= 1 << SDLSelectFlags::deltaZPointed;
 	      else if (cumulativeCuts ) continue;
@@ -2932,9 +2938,6 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    }
 	    if (sdlFlag == sdlMasksCumulative[SDLSelectFlags::deltaZPointed]) nDeltaZPointed++;
 	    
-	    const float rt = rtOut;
-
-	    const float sdlSlope = std::asin(rt*k2Rinv1GeVf/ptCut);
 	    const float sdlPVoff = 0.1f/rt;
 	    const float sdlCut = sdlSlope + sqrt(sdlMuls*sdlMuls + sdlPVoff*sdlPVoff);
 
@@ -3634,12 +3637,16 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		if (lOut >= 11
 		    && ( (lIn > 0 && zIn*zOut < 0) || (lIn == 0 && sdIn.p3.Z()*zOut < 0))) continue;
 
+		const float rt = rtOut;
+		const float sdlSlope = std::asin(rt*k2Rinv1GeVf/ptCut);
+		const float dzDrtScale = tan(sdlSlope)/sdlSlope;//FIXME: need approximate value
+		
 		if (lOut < 11){//barrel: match to Z proper
 		  //apply some loose Z compatibility
 		  //FIXME: refine using inner layer directions (can prune later)		
 		  const float rtOut_o_rtIn = rtOut*rtInvIn;
-		  const float zLo = rtOut_o_rtIn*(zIn - deltaZLum*(1.f - 1.f/rtOut_o_rtIn)) - zGeom; //15 for the luminous ; zGeom for z geom unit size
-		  const float zHi = rtOut_o_rtIn*(zIn + deltaZLum*(1.f - 1.f/rtOut_o_rtIn)) + zGeom;
+		  const float zLo = zIn + (zIn - deltaZLum)*(rtOut_o_rtIn - 1.f)*(zIn > 0.f ? 1.f : dzDrtScale) - zGeom; //slope-correction only on outer end
+		  const float zHi = zIn + (zIn + deltaZLum)*(rtOut_o_rtIn - 1.f)*(zIn < 0.f ? 1.f : dzDrtScale) + zGeom;
 		
 		  if (zOut > zLo && zOut < zHi) sdlFlag |= 1 << SDLSelectFlags::deltaZ;
 		  if (debugSimMatching && !(sdlFlag & 1 << SDLSelectFlags::deltaZ) ){
@@ -3653,8 +3660,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		      : 0.f;//precise hits otherwise
 		    const float zGeom1 = 0.5f*std::copysign(zGeom,zIn);
 
-		    const float rtLo = rtIn*(zOut + dLum)/(zIn + zGeom1 + dLum) - rtGeom1;
-		    const float rtHi = rtIn*(zOut - dLum)/(zIn - zGeom1 - dLum) + rtGeom1;
+		    const float rtLo = rtIn*(1.f + (zOut - zIn - zGeom1)/(zIn + zGeom1 + dLum)/dzDrtScale) - rtGeom1;//slope correction only on the lower end
+		    const float rtHi = rtIn*(1.f + (zOut - zIn + zGeom1)/(zIn - zGeom1 - dLum)) + rtGeom1;
 
 		    if (rtOut > rtLo && rtOut < rtHi) sdlFlag |= 1 << SDLSelectFlags::deltaZ;
 		    if (debugSimMatching && !(sdlFlag & 1 << SDLSelectFlags::deltaZ) ){
@@ -3667,8 +3674,10 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		       : 2.f*strip2SZpitch) //FIXME: make this chosen by configuration for lay11,12 full PS
 		      : 0.f;//precise hits otherwise
 		    
-		    const float rtLo = rtIn*(zOut + dLum)/(zIn  + dLum) - rtGeom;
-		    const float rtHi = rtIn*(zOut - dLum)/(zIn - dLum) + rtGeom;
+		    const float dz = zOut - zIn;
+		    
+		    const float rtLo = rtIn*(1.f + dz/(zIn + dLum)/dzDrtScale) - rtGeom;//slope correction only on the lower end
+		    const float rtHi = rtIn*(1.f + dz/(zIn - dLum)) + rtGeom;
 		    if (rtOut > rtLo && rtOut < rtHi) sdlFlag |= 1 << SDLSelectFlags::deltaZ;
 		    if (debugSimMatching && !(sdlFlag & 1 << SDLSelectFlags::deltaZ) ){
 		      std::cout<<"Lum region failed: tpPt "<<tpPt<<" lIn "<<lIn <<" rtLo "<<rtLo<<" rtHi "<<rtHi<<" vs rtOut "<<rtOut<<std::endl;
@@ -3739,8 +3748,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		    dzErr = sqrt(dzErr);
 		    const float dzMean = dzSDIn/drtSDIn*drOutIn;
 		    const float zWindow = dzErr/drtSDIn*drOutIn + zGeom; //FIXME for ptCut lower than ~0.8 need to add curv path correction
-		    const float zLo = zIn + dzMean - zWindow;
-		    const float zHi = zIn + dzMean + zWindow;
+		    const float zLo = zIn + dzMean*(zIn > 0.f ? 1.f : dzDrtScale) - zWindow;
+		    const float zHi = zIn + dzMean*(zIn < 0.f ? 1.f : dzDrtScale) + zWindow;
 		    if (zOut > zLo && zOut < zHi) sdlFlag |= 1 << SDLSelectFlags::deltaZPointed;
 		  } else {//endcap
 		    const float coshEta = dr3SDIn/drtSDIn;//direction estimate
@@ -3755,9 +3764,9 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		    float drtErr = zGeom1*zGeom1*drtSDIn*drtSDIn/dzSDIn/dzSDIn * (1.f - 2.f*kZ + 2.f*kZ*kZ);//Notes:122316
 		    drtErr += sdlMuls*sdlMuls*multDzDr*multDzDr/3.f*coshEta*coshEta;//sloppy: relative muls is 1/3 of total muls
 		    drtErr = sqrt(drtErr);
-		    const float drtMean = drtSDIn*dzOutInAbs/std::abs(dzSDIn); //FIXME for ptCut lower than ~0.8 need to add curv path correction
+		    const float drtMean = drtSDIn*dzOutInAbs/std::abs(dzSDIn); //
 		    const float rtWindow = drtErr + rtGeom1;
-		    const float rtLo = rtIn + drtMean - rtWindow;
+		    const float rtLo = rtIn + drtMean/dzDrtScale - rtWindow;
 		    const float rtHi = rtIn + drtMean + rtWindow;
 		    if (kZ > 0 && rtOut > rtLo && rtOut < rtHi) sdlFlag |= 1 << SDLSelectFlags::deltaZPointed;
 		    if (debugSimMatching && !(sdlFlag & 1 << SDLSelectFlags::deltaZPointed)){
@@ -3785,8 +3794,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		  drtErr += sdlMuls*sdlMuls*multDzDr*multDzDr/3.f*coshEta*coshEta;//sloppy: relative muls is 1/3 of total muls
 		  drtErr = sqrt(drtErr);
 		  const float drtMean = drtSDIn*dzOutInAbs/std::abs(dzSDIn);
-		  const float rtWindow = drtErr + rtGeom; //FIXME for ptCut lower than ~0.8 need to add curv path correction
-		  const float rtLo = rtIn + drtMean - rtWindow;
+		  const float rtWindow = drtErr + rtGeom; //
+		  const float rtLo = rtIn + drtMean/dzDrtScale - rtWindow;
 		  const float rtHi = rtIn + drtMean + rtWindow;
 		  if (rtOut > rtLo && rtOut < rtHi) sdlFlag |= 1 << SDLSelectFlags::deltaZPointed;
 		  
@@ -3802,9 +3811,6 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		  sdlFlag |= 1 << SDLSelectFlags::deltaZPointed;
 		}
 
-		const float rt = rtOut;
-		
-		const float sdlSlope = std::asin(rt*k2Rinv1GeVf/ptCut);
 		const float sdlPVoff = 0.1f/rt;
 		const float sdlCut = sdlSlope + sqrt(sdlMuls*sdlMuls + sdlPVoff*sdlPVoff);
 
