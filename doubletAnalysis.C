@@ -2341,7 +2341,18 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	
 	auto& mockMDfwRef = mockLayerMDfwRef[iL];
 
+	int n_all = 0;
+	int n_dz = 0;
+	int n_dr = 0;
+	int n_dPhiPos = 0;
+	int n_dPhi = 0;
+	
 	auto mdCombine = [&] (decltype(hitsRefLower) hitsL, decltype(hitsRefUpper) hitsU, decltype(mockMDfwRef) mDs){
+	  n_all = 0;
+	  n_dz = 0;
+	  n_dr = 0;
+	  n_dPhiPos = 0;
+	  n_dPhi = 0;
 	  for (auto const& hL : hitsL) {
 	    nHitsTried++; //if (nHitsTried>1) exit(0);
 	    float rt = hL.second.rt;
@@ -2357,36 +2368,45 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    
 	    for (auto const& hU : hitsU) {
 	      float dPhi = 0;
+	      n_all++;
 	      if (iL< 11){ //barrel
 		auto const dz = hL.second.r3.z() - hU.second.r3.z();
 		if (std::abs(dz) > dzCut) continue;
+		n_dz++;
+		n_dr++;
 		
 		const float dPhiPos = std::abs(deltaPhi(hU.second.phi, hL.second.phi));
 		//FIXME: can be tighter
 		if (dPhiPos > miniCut) continue;
+		n_dPhiPos++;
 		
 		dPhi = hL.second.r3.DeltaPhi(hU.second.r3-hL.second.r3);
 		if (std::abs(dPhi) > miniCut) continue;
+		n_dPhi++;
 	      } else { //endcap
 		auto const dz = hU.second.r3.z() - hL.second.r3.z();//could enforce dz from geometry
 		if (std::abs(dz) > 1.0f) continue; //max mini-layer separation is 4 mm
+		n_dz++;
 		
 		auto const dr = hL.second.rt - hU.second.rt;
 		if (std::abs(dr) > dzCut) continue;
+		n_dr++;
 
 		const float miniLum = useFullR3Endcap ? 0.f : deltaZLum/std::abs(hL.second.r3.z());
 		const float miniCutE = miniSlope + sqrt(miniMuls*miniMuls + miniPVoff*miniPVoff + miniLum*miniLum);
 		
 		const float dPhiPos = deltaPhi(hL.second.phi, hU.second.phi);
 		//FIXME: can be tighter
-		if (std::abs(dPhiPos) > miniCut) continue;
+		if (std::abs(dPhiPos) > miniCutE) continue;
+		n_dPhiPos++;
 
 		const float dzFrac = dz/hL.second.r3.z();
 		dPhi = dPhiPos/dzFrac*(1.f + dzFrac);
 		if (useFullR3Endcap){
 		  dPhi = hL.second.r3.DeltaPhi(hU.second.r3-hL.second.r3);
 		}
-		if (std::abs(dPhi) > miniCut) continue;
+		if (std::abs(dPhi) > miniCutE) continue;
+		n_dPhi++;
 
 	      }
 	      
@@ -2434,10 +2454,23 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	  }
 	};
 	mdCombine(hitsRefLower, hitsRefUpper, mockMDfwRef);
+	std::cout<<"MD ref stat "<<iL<<" "<<mockMDfwRef.size()
+		 <<" all "<<n_all
+		 <<" dz "<<n_dz
+		 <<" dr "<<n_dr
+		 <<" dPhiPos "<<n_dPhiPos
+		 <<" dPhi "<<n_dPhi
+		 <<std::endl;
 
 	auto& mockMDfwDNcm = mockLayerMDfwDNcm[iL];
 	mdCombine(hitsOutLower, hitsOutUpper, mockMDfwDNcm);
-	std::cout<<"MD stat "<<iL<<" "<<mockMDfwDNcm.size()<<std::endl;
+	std::cout<<"MD out stat "<<iL<<" "<<mockMDfwDNcm.size()
+		 <<" all "<<n_all
+		 <<" dz "<<n_dz
+		 <<" dr "<<n_dr
+		 <<" dPhiPos "<<n_dPhiPos
+ 		 <<" dPhi "<<n_dPhi
+		 <<std::endl;
 	
 	//now make super-doublets
 	auto& mockSDfwDNcm = mockLayerSDfwDNcm[iL];
