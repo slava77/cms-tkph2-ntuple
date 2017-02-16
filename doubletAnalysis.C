@@ -2403,11 +2403,10 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		const float dzFrac = dz/hL.second.r3.z();
 		dPhi = dPhiPos/dzFrac*(1.f + dzFrac);
 		if (useFullR3Endcap){
-		  dPhi = hL.second.r3.DeltaPhi(hU.second.r3-hL.second.r3);
+		  dPhi = hL.second.r3.DeltaPhi(hU.second.r3-hL.second.r3);//NOTE: this changes combinatorial component. Use only for efficiency studies
 		}
 		if (std::abs(dPhi) > miniCutE) continue;
 		n_dPhi++;
-
 	      }
 	      
 	      MiniDoublet md;
@@ -2436,18 +2435,27 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 
 	      
 	      if (iL>10 && debugReco){
-		float simPtL = itpRL > 0 ? sqrt(sim_px()[itpRL-1]*sim_px()[itpRL-1]+sim_py()[itpRL-1]*sim_py()[itpRL-1]) : 0;
-		float simPtU = itpRU > 0 ? sqrt(sim_px()[itpRU-1]*sim_px()[itpRU-1]+sim_py()[itpRU-1]*sim_py()[itpRU-1]) : 0;
-		std::cout<<"MD on "<<iL<<" i "<<mDs.size()
-			 <<" "<<md.pixL<<" : "<<md.pixU
-			 <<" "<<itpRL-1<<" : "<<itpRU-1
-			 <<" "<<simPtL
-			 <<" "<<simPtU
-			 <<" r "<<hL.second.rt<<" "<<hU.second.rt
-			 <<" z "<<hL.second.r3.z()<<" "<<hU.second.r3.z()
-			 <<" phi "<<hL.second.phi<<" "<<hU.second.phi
-			 <<" alpha "<<md.alpha<<" cutM "<<miniCut
-			 <<std::endl;
+		const float miniLum = useFullR3Endcap ? 0.f : deltaZLum/std::abs(hL.second.r3.z());
+		const float miniCutE = miniSlope + sqrt(miniMuls*miniMuls + miniPVoff*miniPVoff + miniLum*miniLum);
+		if (iL==11&& n_dPhi<10){
+		  float simPtL = itpRL > 0 ? sqrt(sim_px()[itpRL-1]*sim_px()[itpRL-1]+sim_py()[itpRL-1]*sim_py()[itpRL-1]) : 0;
+		  float simPtU = itpRU > 0 ? sqrt(sim_px()[itpRU-1]*sim_px()[itpRU-1]+sim_py()[itpRU-1]*sim_py()[itpRU-1]) : 0;
+		  float simDxyL = itpRL > 0 ? sim_dxy()[itpRL-1] : 99;
+		  float simDxyU = itpRU > 0 ? sim_dxy()[itpRU-1] : 99;
+
+
+		  std::cout<<"MD on "<<iL<<" i "<<mDs.size()
+			   <<" "<<md.pixL<<" : "<<md.pixU
+			   <<" "<<itpRL-1<<" : "<<itpRU-1
+			   <<" pt "<<simPtL<<" "<<simPtU
+			   <<" dxy "<<simDxyL<<" "<<simDxyU
+			   <<" r "<<hL.second.rt<<" "<<hU.second.rt
+			   <<" z "<<hL.second.r3.z()<<" "<<hU.second.r3.z()
+			   <<" phi "<<hL.second.phi<<" "<<hU.second.phi
+			   <<" alpha "<<md.alpha<<" cutM "<<miniCutE
+			   <<" alphaR3 "<<hL.second.r3.DeltaPhi(hU.second.r3-hL.second.r3)
+			   <<std::endl;
+		}
 	      }
 	      mDs.emplace_back(md);
 	    }
