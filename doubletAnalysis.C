@@ -3007,8 +3007,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		betaOut += copysign(std::asin(sdOut.dr*k2Rinv1GeVf/std::abs(pt_beta)), betaOut);//FIXME: need a faster version
 	      } else {
 		const float diffDr = std::abs(sdIn.dr - sdOut.dr)/std::abs(sdIn.dr + sdOut.dr);
-		if (diffDr > 0.05 //only if segment length is different significantly
-		    && betaIn*betaOut > 0.f && std::abs(pt_beta) < pt_betaMax ){ //and the pt_beta is well-defined
+		if (true //do it for all//diffDr > 0.05 //only if segment length is different significantly
+		    && betaIn*betaOut > 0.f && std::abs(pt_beta) < 1.5*pt_betaMax ){ //and the pt_beta is well-defined
 		  const float betaInUpd  = betaIn + copysign(std::asin(sdIn.dr*k2Rinv1GeVf/std::abs(pt_beta)), betaIn);//FIXME: need a faster version
 		  const float betaOutUpd = betaOut + copysign(std::asin(sdOut.dr*k2Rinv1GeVf/std::abs(pt_beta)), betaOut);//FIXME: need a faster version
 		  betaAv = 0.5f*(betaInUpd + betaOutUpd);
@@ -3874,8 +3874,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		    betaOut += copysign(std::asin(sdOut.dr*k2Rinv1GeVf/std::abs(pt_beta)), betaOut);//FIXME: need a faster version
 		  } else {
 		    const float diffDr = std::abs(sdIn.dr - sdOut.dr)/std::abs(sdIn.dr + sdOut.dr);
-		    if (diffDr > 0.05 //only if segment length is different significantly
-			&& betaIn*betaOut > 0.f && std::abs(pt_beta) < pt_betaMax ){ //and the pt_beta is well-defined
+		    if (true //do it for all//diffDr > 0.05 //only if segment length is different significantly
+			&& betaIn*betaOut > 0.f && std::abs(pt_beta) < 1.5*pt_betaMax ){ //and the pt_beta is well-defined
 		      const float betaInUpd  = betaIn + copysign(std::asin(sdIn.dr*k2Rinv1GeVf/std::abs(pt_beta)), betaIn);//FIXME: need a faster version
 		      const float betaOutUpd = betaOut + copysign(std::asin(sdOut.dr*k2Rinv1GeVf/std::abs(pt_beta)), betaOut);//FIXME: need a faster version
 		      betaAv = 0.5f*(betaInUpd + betaOutUpd);
@@ -3916,7 +3916,13 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		const float dBeta = betaIn - betaOut;
 		
 		if (dBeta*dBeta < dBetaCut2) sdlFlag |= 1 << SDLSelectFlags::dBeta;
-
+		if (debugSimMatching && lIn == 5 && lOut == 7 && tpPt > 2 && dBeta*dBeta >= dBetaCut2){
+		  std::cout<<"dB failed pt "<<tpPt<<" dbCut "<<sqrt(dBetaCut2)<<" res "<<dBetaRes<<" muls "<<dBetaMuls
+			   <<" mulPt "<<std::min(std::abs(pt_beta), pt_betaMax)<<" thetaM "<<sdlThetaMulsF
+			   <<" bPt "<<pt_beta<<" dr "<<dr<<" bAv "<<betaAv<<" bI "<<betaIn<<" bO "<<betaOut
+			   <<" dRI "<<sdIn.dr<<" dRO "<<sdOut.dr
+			   <<std::endl;
+		}
 		// if (lIn == 0 && lOut == 7 && tpPt > 1.5f && tpPt < 2.0f){
 		//   std::cout<<__LINE__<<" 5-7: tPt "<<tpPt <<"bO "<<betaOut<<" bOc "<<betaOut_cut<<" = "<<std::asin(dr*k2Rinv1GeVf/ptCut)<<" + "<<0.02f/sdOut.d
 		// 	   <<" dr "<<dr<<" ptCut "<<ptCut<<" ptIn "<<ptIn
@@ -3997,9 +4003,9 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		ha_SDL_dBeta_betaIn_NM1dBeta_8MH[iSDLL]->Fill(sdl.betaIn, dBeta);
 		ha_SDL_dBeta_betaIn_zoom_NM1dBeta_8MH[iSDLL]->Fill(sdl.betaIn, dBeta);
 		ha_SDL_dBeta_betaOut_zoom_NM1dBeta_8MH[iSDLL]->Fill(sdl.betaOut, dBeta);
-
-		if (tpPt > 1.5f && iSDLL == SDL_L5to7 && debugMatchingSim){ //&& !h_0123456 && std::abs(sdl.betaIn - sdl.betaOut)> 0.01){
-		  std::cout<<" tPt "<<tpPt
+		
+		if (debugMatchingSim && tpPt > 2.f && iSDLL == SDL_L5to7 && !h_0123456){ //&& !h_0123456 && std::abs(sdl.betaIn - sdl.betaOut)> 0.01){
+		  std::cout<<"dB-fail tPt "<<tpPt
 			   <<" tEta " << tpEta<<" tPhi "<<tpPhi
 			   <<" dB "<<sdl.betaIn - sdl.betaOut
 			   <<" bI "<<sdl.betaIn
