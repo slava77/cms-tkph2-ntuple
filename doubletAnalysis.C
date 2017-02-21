@@ -2109,8 +2109,10 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	const float rSDfwUpper = rRefUpper + (isBarrel ? sdOffsetB : sdOffsetE);
 
 	int q = 0;
-	if (iParticle == -11 || iParticle == -13 || iParticle == 211 || iParticle == 321 || iParticle == 2212) q = 1;
-	else if (iParticle == 11 || iParticle == 13 || iParticle == -211 || iParticle == -321 || iParticle == -2212) q = -1;
+	if (iParticle == -11 || iParticle == -13 || iParticle == 211 || iParticle == 321 || iParticle == 2212
+	    || iParticle == -3112 || iParticle == 3222 || iParticle == -3312 ) q = 1;
+	else if (iParticle == 11 || iParticle == 13 || iParticle == -211 || iParticle == -321 || iParticle == -2212
+		 || iParticle == 3112 || iParticle == -3222 || iParticle == 3312 ) q = -1;
 	int pstat = 0;
 	TVector3 r3RefLower;
 	TVector3 p3RefLower;
