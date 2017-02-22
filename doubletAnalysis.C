@@ -589,7 +589,7 @@ std::pair<TVector3,TVector3> helixPropagateApproxR(const TVector3& r3, const TVe
   
   auto lastR3 = r3;
   auto lastT3 = p3.Unit();
-  int nIts = 5;
+  int nIts = 7;
 
   while (std::abs(lastR3.Perp() - rDest) > epsilon && nIts >= 0){
     auto lineEst = linePropagateR(lastR3, lastT3*p, rDest, status, useClosest, verbose);
@@ -642,7 +642,7 @@ std::pair<TVector3,TVector3> helixPropagateApproxZ(const TVector3& r3, const TVe
 
   auto lastR3 = r3;
   auto lastT3 = p3.Unit();
-  int nIts = 5;
+  int nIts = 7;
 
   while (std::abs(lastR3.z() - zDest) > epsilon && nIts >= 0){
     auto lineEst = linePropagateZ(lastR3, lastT3*p, zDest, status, useClosest, verbose);
@@ -2101,7 +2101,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	if (pts >2) nHitsLayer2GeV[lay]++;
 	
 	const float mdOffset = miniDelta[lay];
-	const float rNominal = miniRminMean[lay]+1;//this is going to be in between the sector radii
+	const float rNominal = miniRminMean[lay];
 
 	const float rRefLower = rNominal;
 	const float rRefUpper = rNominal+mdOffset;
@@ -3010,7 +3010,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      } else {
 		const float diffDr = std::abs(sdIn.dr - sdOut.dr)/std::abs(sdIn.dr + sdOut.dr);
 		if (true //do it for all//diffDr > 0.05 //only if segment length is different significantly
-		    && betaIn*betaOut > 0.f && std::abs(pt_beta) < 1.5*pt_betaMax ){ //and the pt_beta is well-defined
+		    && betaIn*betaOut > 0.f && std::abs(pt_beta) < 4.f*pt_betaMax ){ //and the pt_beta is well-defined
 		  const float betaInUpd  = betaIn + copysign(std::asin(sdIn.dr*k2Rinv1GeVf/std::abs(pt_beta)), betaIn);//FIXME: need a faster version
 		  const float betaOutUpd = betaOut + copysign(std::asin(sdOut.dr*k2Rinv1GeVf/std::abs(pt_beta)), betaOut);//FIXME: need a faster version
 		  betaAv = 0.5f*(betaInUpd + betaOutUpd);
@@ -3877,7 +3877,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		  } else {
 		    const float diffDr = std::abs(sdIn.dr - sdOut.dr)/std::abs(sdIn.dr + sdOut.dr);
 		    if (true //do it for all//diffDr > 0.05 //only if segment length is different significantly
-			&& betaIn*betaOut > 0.f && std::abs(pt_beta) < 1.5*pt_betaMax ){ //and the pt_beta is well-defined
+			&& betaIn*betaOut > 0.f && std::abs(pt_beta) < 4.f*pt_betaMax ){ //and the pt_beta is well-defined
 		      const float betaInUpd  = betaIn + copysign(std::asin(sdIn.dr*k2Rinv1GeVf/std::abs(pt_beta)), betaIn);//FIXME: need a faster version
 		      const float betaOutUpd = betaOut + copysign(std::asin(sdOut.dr*k2Rinv1GeVf/std::abs(pt_beta)), betaOut);//FIXME: need a faster version
 		      betaAv = 0.5f*(betaInUpd + betaOutUpd);
@@ -3918,7 +3918,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		const float dBeta = betaIn - betaOut;
 		
 		if (dBeta*dBeta < dBetaCut2) sdlFlag |= 1 << SDLSelectFlags::dBeta;
-		if (debugSimMatching && lIn == 5 && lOut == 7 && tpPt > 2 && dBeta*dBeta >= dBetaCut2){
+		if (debugSimMatching && lIn == 5 && lOut == 11 && tpPt > 9 && dBeta*dBeta >= dBetaCut2){
 		  std::cout<<"dB failed pt "<<tpPt<<" dbCut "<<sqrt(dBetaCut2)<<" res "<<dBetaRes<<" muls "<<dBetaMuls
 			   <<" mulPt "<<std::min(std::abs(pt_beta), pt_betaMax)<<" thetaM "<<sdlThetaMulsF
 			   <<" bPt "<<pt_beta<<" dr "<<dr<<" bAv "<<betaAv<<" bI "<<betaIn<<" bO "<<betaOut
@@ -4006,7 +4006,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		ha_SDL_dBeta_betaIn_zoom_NM1dBeta_8MH[iSDLL]->Fill(sdl.betaIn, dBeta);
 		ha_SDL_dBeta_betaOut_zoom_NM1dBeta_8MH[iSDLL]->Fill(sdl.betaOut, dBeta);
 		
-		if (debugMatchingSim && tpPt > 2.f && iSDLL == SDL_L5to7 && !h_0123456){ //&& !h_0123456 && std::abs(sdl.betaIn - sdl.betaOut)> 0.01){
+		if (debugMatchingSim && tpPt > 9.f && iSDLL == SDL_L5to11 && !h_0123456){ //&& !h_0123456 && std::abs(sdl.betaIn - sdl.betaOut)> 0.01){
 		  std::cout<<"dB-fail tPt "<<tpPt
 			   <<" tEta " << tpEta<<" tPhi "<<tpPhi
 			   <<" dB "<<sdl.betaIn - sdl.betaOut
@@ -4016,8 +4016,10 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 			   <<" sO "<<sdl.sdOut.alpha
 			   <<" mI "<<sdl.sdIn.mdRef.alpha
 			   <<" mO "<<sdl.sdOut.mdRef.alpha
-			   <<" mRI ("<<sdl.sdIn.mdRef.r3.Pt()<<", "<<sdl.sdIn.mdRef.r3.Eta()<<", "<<sdl.sdIn.mdRef.r3.Phi()<<")"
-			   <<" mRO ("<<sdl.sdOut.mdRef.r3.Pt()<<", "<<sdl.sdOut.mdRef.r3.Eta()<<", "<<sdl.sdOut.mdRef.r3.Phi()<<")"
+			   <<" mRI ("<<sdl.sdIn.mdRef.r3.Pt()<<", "<<sdl.sdIn.mdRef.r3.Eta()<<", "<<sdl.sdIn.mdRef.r3.Phi()<<", "<<sdl.sdIn.mdRef.r3.Z()<<")"
+			   <<" mOI ("<<sdl.sdIn.mdOut.r3.Pt()<<", "<<sdl.sdIn.mdOut.r3.Eta()<<", "<<sdl.sdIn.mdOut.r3.Phi()<<", "<<sdl.sdIn.mdOut.r3.Z()<<")"
+			   <<" mRO ("<<sdl.sdOut.mdRef.r3.Pt()<<", "<<sdl.sdOut.mdRef.r3.Eta()<<", "<<sdl.sdOut.mdRef.r3.Phi()<<", "<<sdl.sdOut.mdRef.r3.Z() <<")"
+			   <<" mOO ("<<sdl.sdOut.mdOut.r3.Pt()<<", "<<sdl.sdOut.mdOut.r3.Eta()<<", "<<sdl.sdOut.mdOut.r3.Phi()<<", "<<sdl.sdOut.mdOut.r3.Z() <<")"
 			   <<std::endl;
 
 		  std::vector<TVector3> r3Ins;
@@ -4035,22 +4037,20 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		    // int ibx = pix_bunchXing()[iPix];	  
 		    // bool isPrimaryAny = (iProcess == 2 && ibx == 0);
 		    
-		    if (pixH.isBarrel){
-		      if (lay >= minLayer){
-			std::cout<<" "<<lay<<" "<<iipix<<std::endl;
-			
-			if (pixH.p3s.Pt()>0.8*tpPt){
-			  if (lay == layersSDL[iSDLL][0]){
-			    r3Ins.push_back(pixH.r3s);
-			    p3Ins.push_back(pixH.p3s);
-			  } else if (lay == layersSDL[iSDLL][1]){
-			    r3Outs.push_back(pixH.r3s);
-			    p3Outs.push_back(pixH.p3s);			    
-			  }
-			  pixH.print("\t");
+		    if (lay >= minLayer){
+		      std::cout<<" "<<lay<<" "<<iipix<<std::endl;
+		      
+		      if (pixH.p3s.Pt()>0.8*tpPt){
+			if (lay == layersSDL[iSDLL][0] || lay == layersSDL[iSDLL][0]+1){
+			  r3Ins.push_back(pixH.r3s);
+			  p3Ins.push_back(pixH.p3s);
+			} else if (lay == layersSDL[iSDLL][1] || lay == layersSDL[iSDLL][1]+1){
+			  r3Outs.push_back(pixH.r3s);
+			  p3Outs.push_back(pixH.p3s);			    
 			}
+			pixH.print("\t");
 		      }
-		    }		  
+		    }		    
 		  }//iPix; pixelhits
 
 		  //get true values
