@@ -1423,7 +1423,8 @@ int ScanChainMiniDoublets( TChain* chain, int nEvents = -1, bool drawPlots = fal
 
 int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool drawPlots = false, const int mockMode = 0,
 				const double sdOffsetB = 2.0, const double sdOffsetE = 2.0,
-				const int useSeeds = 0, bool layoutOnly = false, bool cumulativeCuts = true, bool addEndcaps = false) {
+				const int useSeeds = 0, bool layoutOnly = false, bool cumulativeCuts = true, bool addEndcaps = false,
+				bool useFullR3Endcap = false, bool effForPromptTracks = false) {
   //mockMode:
   //0 for helix to ref and then straight line;
   //1 for helix to all ref layers;
@@ -1436,7 +1437,6 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
   //cumulativeCuts:
   //false   : computations or analysis of building step is done inclusively (all combinations tried; cuts applied last)
   //true (D): computations or analysis of building step stop after combination fails a cut on a computed value
-  bool useFullR3Endcap = true;
   
   std::cout<<"Running in mockMode "<<mockMode<<std::endl;
   std::cout<<"Running with SD distance "<<sdOffsetB<<" "<<sdOffsetE<<std::endl;
@@ -3383,8 +3383,10 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	auto tpEta = p3.Eta();
 	auto tpPhi = p3.Phi();
 
-	auto tpDxy = sim_dxy()[iSim];
-	if (std::abs(tpDxy) > 0.05) continue;
+	if (effForPromptTracks){
+	  auto tpDxy = sim_dxy()[iSim];
+	  if (std::abs(tpDxy) > 0.05) continue;
+	}
 	
 	if (tpPt < 1.5 && std::abs(p3.Eta())< 1) debug = false;
 	if (debug) std::cout<<"TP: "<<p3.Pt()<<" "<<p3.Eta()<<" "<<p3.Phi();
