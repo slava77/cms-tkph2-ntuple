@@ -2759,6 +2759,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	  const float rtInvIn = sdIn.rtInv;
 	  const float ptIn = sdIn.p3.Pt();
 	  const float zIn = sdIn.r3.z();
+	  const float rIn = sqrt(zIn*zIn + rtIn*rtIn);
 	  const float drtSDIn = sdIn.d;
 	  const float dzSDIn = sdIn.mdOut.z - sdIn.mdRef.z;
 	  const float dr3SDIn = sdIn.mdOut.r - sdIn.mdRef.r;
@@ -2772,7 +2773,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    ptSLo = std::min(10.0f, ptSLo); //don't let this run away either
 	  }
 	  const float ptCut = ptSLo;
-	  const float sdlThetaMulsF = 0.015f*sqrt(0.2f);
+	  const float sdlThetaMulsF = 0.015f*sqrt(0.2f) * (lIn < 11 ? sqrt(rIn/rtIn) : 1.f);//FIXME (later) more realistic material effects is needed
 	  const float sdlMuls = sdlThetaMulsF*3.f/ptCut*4.f;//will need a better guess than x4?
 	  
 	  int iOut = -1;
@@ -3034,7 +3035,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    const float pt_betaOut = dr*k2Rinv1GeVf/sin(betaOut);
 
 	    const float dBetaRes = mockMode == 3 ? 0.02f/std::min(sdOut.d,sdIn.d) : 0.f;
-	    const float dBetaMuls = sdlThetaMulsF*3.f/std::min(std::abs(pt_beta), pt_betaMax);//need to confirm the range-out value of 7 GeV
+	    const float dBetaMuls = sdlThetaMulsF*4.f/std::min(std::abs(pt_beta), pt_betaMax);//need to confirm the range-out value of 7 GeV
 
 	    const float alphaAbs = std::max(std::max(std::abs(sdIn.alpha), std::abs(sdOut.alpha)), 0.01f);
 	    //regularize to alpha of pt_betaMax .. review may want to add resolution
@@ -3615,6 +3616,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      const float rtInvIn = sdIn.rtInv;
 	      const float ptIn = sdIn.p3.Pt();
 	      const float zIn = sdIn.r3.z();
+	      const float rIn = sqrt(zIn*zIn + rtIn*rtIn);
 	      const float drtSDIn = sdIn.d;
 	      const float dzSDIn = sdIn.mdOut.z - sdIn.mdRef.z;
 	      const float dr3SDIn = sdIn.mdOut.r - sdIn.mdRef.r;
@@ -3628,7 +3630,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		ptSLo = std::min(10.0f, ptSLo); //don't let this run away either
 	      }
 	      const float ptCut = ptSLo;
-	      const float sdlThetaMulsF = 0.015f*sqrt(0.2f);
+	      const float sdlThetaMulsF = 0.015f*sqrt(0.2f) * (lIn < 11 ? sqrt(rIn/rtIn) : 1.f);//FIXME (later) more realistic material effects is needed
 	      const float sdlMuls = sdlThetaMulsF*3.f/ptCut*4.f;//will need a better guess than x4?
 	      
 	      for (auto const& sdOut : vSDOut_4of4){
@@ -3901,7 +3903,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		const float pt_betaOut = dr*k2Rinv1GeVf/sin(betaOut);
 		
 		const float dBetaRes = mockMode == 3 ? 0.02f/std::min(sdIn.d, sdOut.d) : 0.f;
-		const float dBetaMuls = sdlThetaMulsF*3.f/std::min(std::abs(pt_beta), pt_betaMax); //need to confirm the range-out value of 7 GeV
+		const float dBetaMuls = sdlThetaMulsF*4.f/std::min(std::abs(pt_beta), pt_betaMax); //need to confirm the range-out value of 7 GeV
 
 		const float alphaAbs = std::max(std::max(std::abs(sdIn.alpha), std::abs(sdOut.alpha)), 0.01f);
 		//regularize to alpha of pt_betaMax .. review may want to add resolution
