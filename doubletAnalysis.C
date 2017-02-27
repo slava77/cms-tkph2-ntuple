@@ -1423,8 +1423,12 @@ int ScanChainMiniDoublets( TChain* chain, int nEvents = -1, bool drawPlots = fal
 
 int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool drawPlots = false, const int mockMode = 0,
 				const double sdOffsetB = 2.0, const double sdOffsetE = 2.0,
-				const int useSeeds = 0, bool layoutOnly = false, bool cumulativeCuts = true, bool addEndcaps = false,
-				bool useFullR3Endcap = false, bool effForPromptTracks = false) {
+				const int useSeeds = 0, const bool layoutOnly = false, const bool cumulativeCuts = true, const bool addEndcaps = false,
+				const bool useFullR3Endcap = false, const bool effForPromptTracks = false){
+  
+  const float minTPdxy = 0;
+  const float maxTPdxy = 1e9;
+  const float maxTPdz = 1e9;
   //mockMode:
   //0 for helix to ref and then straight line;
   //1 for helix to all ref layers;
@@ -1501,6 +1505,20 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
   std::array<TH1F*, SDL_LMAX> ha_num2SD_w012345_4of4_pt;//see SDLSelectFlags definitions
   std::array<TH1F*, SDL_LMAX> ha_num2SD_w0123456_4of4_pt;//see SDLSelectFlags definitions
 
+  std::array<TH1F*, SDL_LMAX> ha_denSDL_loProdXY_pt;
+  std::array<TH1F*, SDL_LMAX> ha_num8MH_loProdXY_pt;
+  std::array<TH1F*, SDL_LMAX> ha_num4MD_loProdXY_pt;
+  std::array<TH1F*, SDL_LMAX> ha_num2SD_4of4_loProdXY_pt;
+  std::array<TH1F*, SDL_LMAX> ha_num2SD_3of4_any_loProdXY_pt;
+
+  std::array<TH1F*, SDL_LMAX> ha_num2SD_w0_4of4_loProdXY_pt;//see SDLSelectFlags definitions
+  std::array<TH1F*, SDL_LMAX> ha_num2SD_w01_4of4_loProdXY_pt;//see SDLSelectFlags definitions
+  std::array<TH1F*, SDL_LMAX> ha_num2SD_w012_4of4_loProdXY_pt;//see SDLSelectFlags definitions
+  std::array<TH1F*, SDL_LMAX> ha_num2SD_w0123_4of4_loProdXY_pt;//see SDLSelectFlags definitions
+  std::array<TH1F*, SDL_LMAX> ha_num2SD_w01234_4of4_loProdXY_pt;//see SDLSelectFlags definitions
+  std::array<TH1F*, SDL_LMAX> ha_num2SD_w012345_4of4_loProdXY_pt;//see SDLSelectFlags definitions
+  std::array<TH1F*, SDL_LMAX> ha_num2SD_w0123456_4of4_loProdXY_pt;//see SDLSelectFlags definitions
+
   std::array<TH2F*, SDL_LMAX> ha_SDL_dBeta_betaIn_NM1dBeta_all;
   std::array<TH2F*, SDL_LMAX> ha_SDL_dBeta_betaIn_zoom_NM1dBeta_all;
 
@@ -1571,6 +1589,9 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 
   std::array<TH1F*, SDL_LMAX> ha_numSDL_4of4_pt;
   std::array<TH1F*, SDL_LMAX> ha_numSDL_3of4_any_pt;
+
+  std::array<TH1F*, SDL_LMAX> ha_numSDL_4of4_loProdXY_pt;
+  std::array<TH1F*, SDL_LMAX> ha_numSDL_3of4_any_loProdXY_pt;
 
   std::array<TH1F*, SDL_LMAX> ha_SDLreco_all_pt;
   std::array<TH1F*, SDL_LMAX> ha_SDLreco_4of4_pt;
@@ -1644,6 +1665,48 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
     hn = Form("h_num2SD_w0123456_4of4_%dto%d_pt", iMin, iMax);
     ha_num2SD_w0123456_4of4_pt[i] = new TH1F(hn.c_str(), hn.c_str(), ptBins.size()-1, ptBins.data());
     outputHV.push_back(ha_num2SD_w0123456_4of4_pt[i]);    
+
+    //same set with low prodXY 
+    hn = Form("h_denSDL_%dto%d_loProdXY_pt", iMin, iMax);
+    ha_denSDL_loProdXY_pt[i] = new TH1F(hn.c_str(), hn.c_str(), ptBins.size()-1, ptBins.data());
+    outputHV.push_back(ha_denSDL_loProdXY_pt[i]);
+    
+    hn = Form("h_num8MH_%dto%d_loProdXY_pt", iMin, iMax);
+    ha_num8MH_loProdXY_pt[i] = new TH1F(hn.c_str(), hn.c_str(), ptBins.size()-1, ptBins.data());    
+    outputHV.push_back(ha_num8MH_loProdXY_pt[i]);
+    
+    hn = Form("h_num4MD_%dto%d_loProdXY_pt", iMin, iMax);
+    ha_num4MD_loProdXY_pt[i] = new TH1F(hn.c_str(), hn.c_str(), ptBins.size()-1, ptBins.data());    
+    outputHV.push_back(ha_num4MD_loProdXY_pt[i]);
+    
+    hn = Form("h_num2SD_4of4_%dto%d_loProdXY_pt", iMin, iMax);
+    ha_num2SD_4of4_loProdXY_pt[i] = new TH1F(hn.c_str(), hn.c_str(), ptBins.size()-1, ptBins.data());
+    outputHV.push_back(ha_num2SD_4of4_loProdXY_pt[i]);    
+    hn = Form("h_num2SD_3of4_any_%dto%d_loProdXY_pt", iMin, iMax);
+    ha_num2SD_3of4_any_loProdXY_pt[i] = new TH1F(hn.c_str(), hn.c_str(), ptBins.size()-1, ptBins.data());
+    outputHV.push_back(ha_num2SD_3of4_any_loProdXY_pt[i]);    
+
+    hn = Form("h_num2SD_w0_4of4_%dto%d_loProdXY_pt", iMin, iMax);
+    ha_num2SD_w0_4of4_loProdXY_pt[i] = new TH1F(hn.c_str(), hn.c_str(), ptBins.size()-1, ptBins.data());    
+    outputHV.push_back(ha_num2SD_w0_4of4_loProdXY_pt[i]);    
+    hn = Form("h_num2SD_w01_4of4_%dto%d_loProdXY_pt", iMin, iMax);
+    ha_num2SD_w01_4of4_loProdXY_pt[i] = new TH1F(hn.c_str(), hn.c_str(), ptBins.size()-1, ptBins.data());    
+    outputHV.push_back(ha_num2SD_w01_4of4_loProdXY_pt[i]);    
+    hn = Form("h_num2SD_w012_4of4_%dto%d_loProdXY_pt", iMin, iMax);
+    ha_num2SD_w012_4of4_loProdXY_pt[i] = new TH1F(hn.c_str(), hn.c_str(), ptBins.size()-1, ptBins.data());    
+    outputHV.push_back(ha_num2SD_w012_4of4_loProdXY_pt[i]);    
+    hn = Form("h_num2SD_w0123_4of4_%dto%d_loProdXY_pt", iMin, iMax);
+    ha_num2SD_w0123_4of4_loProdXY_pt[i] = new TH1F(hn.c_str(), hn.c_str(), ptBins.size()-1, ptBins.data());    
+    outputHV.push_back(ha_num2SD_w0123_4of4_loProdXY_pt[i]);    
+    hn = Form("h_num2SD_w01234_4of4_%dto%d_loProdXY_pt", iMin, iMax);
+    ha_num2SD_w01234_4of4_loProdXY_pt[i] = new TH1F(hn.c_str(), hn.c_str(), ptBins.size()-1, ptBins.data());    
+    outputHV.push_back(ha_num2SD_w01234_4of4_loProdXY_pt[i]);    
+    hn = Form("h_num2SD_w012345_4of4_%dto%d_loProdXY_pt", iMin, iMax);
+    ha_num2SD_w012345_4of4_loProdXY_pt[i] = new TH1F(hn.c_str(), hn.c_str(), ptBins.size()-1, ptBins.data());
+    outputHV.push_back(ha_num2SD_w012345_4of4_loProdXY_pt[i]);    
+    hn = Form("h_num2SD_w0123456_4of4_%dto%d_loProdXY_pt", iMin, iMax);
+    ha_num2SD_w0123456_4of4_loProdXY_pt[i] = new TH1F(hn.c_str(), hn.c_str(), ptBins.size()-1, ptBins.data());
+    outputHV.push_back(ha_num2SD_w0123456_4of4_loProdXY_pt[i]);    
 
     //plots without MC truth requirement
     hn = Form("h2_SDL_dBeta_betaIn_NM1dBeta_all_%dto%d_pt", iMin, iMax);
@@ -1855,6 +1918,13 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
     hn = Form("h_numSDL_3of4_any_%dto%d_pt", iMin, iMax);
     ha_numSDL_3of4_any_pt[i] = new TH1F(hn.c_str(), hn.c_str(), ptBins.size()-1, ptBins.data());
     outputHV.push_back(ha_numSDL_3of4_any_pt[i]);    
+
+    hn = Form("h_numSDL_4of4_%dto%d_loProdXY_pt", iMin, iMax);
+    ha_numSDL_4of4_loProdXY_pt[i] = new TH1F(hn.c_str(), hn.c_str(), ptBins.size()-1, ptBins.data());    
+    outputHV.push_back(ha_numSDL_4of4_loProdXY_pt[i]);    
+    hn = Form("h_numSDL_3of4_any_%dto%d_loProdXY_pt", iMin, iMax);
+    ha_numSDL_3of4_any_loProdXY_pt[i] = new TH1F(hn.c_str(), hn.c_str(), ptBins.size()-1, ptBins.data());
+    outputHV.push_back(ha_numSDL_3of4_any_loProdXY_pt[i]);    
 
     hn = Form("h_SDLreco_all_%dto%d_pt", iMin, iMax);
     ha_SDLreco_all_pt[i] = new TH1F(hn.c_str(), hn.c_str(), ptBins.size()-1, ptBins.data());
@@ -3384,10 +3454,31 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	auto tpEta = p3.Eta();
 	auto tpPhi = p3.Phi();
 
+	auto tpDxy = sim_dxy()[iSim];
+	auto prodX = sim_prodx()[iSim];
+	auto prodY = sim_prody()[iSim];
+	auto prodR2 = prodX*prodX + prodY*prodY;
 	if (effForPromptTracks){
-	  auto tpDxy = sim_dxy()[iSim];
 	  if (std::abs(tpDxy) > 0.05) continue;
+	  if (prodR2 > 0.05*0.05) continue;
 	}
+	if (maxTPdxy > 0){
+	  if (std::abs(tpDxy) > maxTPdxy) continue;
+	  if (prodR2 > maxTPdxy*maxTPdxy) continue;
+	}
+	if (minTPdxy != 0){
+	  if (std::abs(tpDxy) < minTPdxy) continue;
+	  if (prodR2 < minTPdxy*minTPdxy) continue;
+	}
+	
+	auto tpDz = sim_dz()[iSim];
+	auto prodZ = sim_prodz()[iSim];
+	if (maxTPdz > 0){
+	  if (std::abs(tpDz) > maxTPdz) continue;
+	  if (std::abs(prodZ) > maxTPdz) continue;
+	}
+
+	bool isLowProdXY = prodR2 < 4.0;
 	
 	if (tpPt < 1.5 && std::abs(p3.Eta())< 1) debug = false;
 	if (debug) std::cout<<"TP: "<<p3.Pt()<<" "<<p3.Eta()<<" "<<p3.Phi();
@@ -3456,6 +3547,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	  if ( ( (lIn == 0 && nHitsMap[1] + nHitsMap[2] + nHitsMap[3] + nHitsMap[4] > 0) || ( lIn != 0 && nHitsMap[lIn] > 0))
 	      && nHitsMap[lOut] > 0){
 	    ha_denSDL_pt[iSDLL]->Fill(tpPt);
+	    if (isLowProdXY) ha_denSDL_loProdXY_pt[iSDLL]->Fill(tpPt);
 	    if (lIn == 0){
 	      nHitsStatCntMap[lIn]++;
 	      nHitsStatSumMap[lIn] += nHitsMap[1] + nHitsMap[2] + nHitsMap[3] + nHitsMap[4];
@@ -3537,6 +3629,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    }
 	    if (has8MHs){
 	      ha_num8MH_pt[iSDLL]->Fill(tpPt);
+	      if (isLowProdXY) ha_num8MH_loProdXY_pt[iSDLL]->Fill(tpPt);
 	    }
 	    
 	    //match the 4 layer mini-doublets
@@ -3564,6 +3657,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    }
 	    if (has4MDs ){
 	      ha_num4MD_pt[iSDLL]->Fill(tpPt);
+	      if (isLowProdXY) ha_num4MD_loProdXY_pt[iSDLL]->Fill(tpPt);
 	    }
 
 	    std::vector<SuperDoublet> vSDIn_4of4; vSDIn_4of4.reserve(2);
@@ -3597,9 +3691,11 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    if (runDetailedTimers) timerA[T_timeVal_MHMDSDMatch].Stop();	    	   
 	    if (hasSDIn_3of4 && hasSDOut_3of4){
 	      ha_num2SD_3of4_any_pt[iSDLL]->Fill(tpPt);
+	      if (isLowProdXY) ha_num2SD_3of4_any_loProdXY_pt[iSDLL]->Fill(tpPt);
 	    }
 	    if (hasSDIn_4of4 && hasSDOut_4of4){
 	      ha_num2SD_4of4_pt[iSDLL]->Fill(tpPt);
+	      if (isLowProdXY) ha_num2SD_4of4_loProdXY_pt[iSDLL]->Fill(tpPt);
 	    }
 
 	    if (runDetailedTimers) timerA[T_timeVal_SDL].Start(kFALSE);
@@ -4093,6 +4189,16 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    if (h_01234) ha_num2SD_w01234_4of4_pt[iSDLL]->Fill(tpPt);
 	    if (h_012345) ha_num2SD_w012345_4of4_pt[iSDLL]->Fill(tpPt);
 	    if (h_0123456) ha_num2SD_w0123456_4of4_pt[iSDLL]->Fill(tpPt);
+
+	    if (isLowProdXY){
+	      if (h_0) ha_num2SD_w0_4of4_loProdXY_pt[iSDLL]->Fill(tpPt);
+	      if (h_01) ha_num2SD_w01_4of4_loProdXY_pt[iSDLL]->Fill(tpPt);
+	      if (h_012) ha_num2SD_w012_4of4_loProdXY_pt[iSDLL]->Fill(tpPt);
+	      if (h_0123) ha_num2SD_w0123_4of4_loProdXY_pt[iSDLL]->Fill(tpPt);
+	      if (h_01234) ha_num2SD_w01234_4of4_loProdXY_pt[iSDLL]->Fill(tpPt);
+	      if (h_012345) ha_num2SD_w012345_4of4_loProdXY_pt[iSDLL]->Fill(tpPt);
+	      if (h_0123456) ha_num2SD_w0123456_4of4_loProdXY_pt[iSDLL]->Fill(tpPt);
+	    }
 	    
 	    if (runDetailedTimers) timerA[T_timeVal_SDLMatch].Start(kFALSE);
 	    if (!mockLayerSDLsDNcm[iSDLL].empty()){
@@ -4123,11 +4229,13 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    //matching is done: fill numerators
 	    if (! matchingSDLs_byHit3of4[iSDLL].empty()){
 	      ha_numSDL_3of4_any_pt[iSDLL]->Fill(tpPt);
+	      if (isLowProdXY) ha_numSDL_3of4_any_loProdXY_pt[iSDLL]->Fill(tpPt);
 	      if (debug) std::cout<<"\t have 3/4 match "<<std::endl;
 	      hasMatch = true;
 	    }
 	    if (! matchingSDLs_byHit4of4[iSDLL].empty()){
 	      ha_numSDL_4of4_pt[iSDLL]->Fill(tpPt);
+	      if (isLowProdXY) ha_numSDL_4of4_loProdXY_pt[iSDLL]->Fill(tpPt);
 	      if (debug) std::cout<<"\t have 4/4 match "<<std::endl;
 	      hasMatch = true;
 	    }
@@ -4267,6 +4375,26 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
   std::array<TEfficiency*, SDL_LMAX> ha_effSDL_den8MH_4of4_pt;
   std::array<TEfficiency*, SDL_LMAX> ha_effSDL_den8MH_3of4_any_pt;
 
+  std::array<TEfficiency*, SDL_LMAX> ha_eff8MH_loProdXY_pt;
+  std::array<TEfficiency*, SDL_LMAX> ha_eff4MD_loProdXY_pt;
+  std::array<TEfficiency*, SDL_LMAX> ha_eff2SD_4of4_loProdXY_pt;
+  std::array<TEfficiency*, SDL_LMAX> ha_eff2SD_3of4_any_loProdXY_pt;
+  std::array<TEfficiency*, SDL_LMAX> ha_effSDL_4of4_loProdXY_pt;
+  std::array<TEfficiency*, SDL_LMAX> ha_effSDL_3of4_any_loProdXY_pt;
+
+  std::array<TEfficiency*, SDL_LMAX> ha_eff4MD_den8MH_loProdXY_pt;
+  std::array<TEfficiency*, SDL_LMAX> ha_eff2SD_den8MH_4of4_loProdXY_pt;
+  std::array<TEfficiency*, SDL_LMAX> ha_eff2SD_den8MH_3of4_any_loProdXY_pt;
+  std::array<TEfficiency*, SDL_LMAX> ha_eff2SD_w0_den8MH_4of4_loProdXY_pt;
+  std::array<TEfficiency*, SDL_LMAX> ha_eff2SD_w01_den8MH_4of4_loProdXY_pt;
+  std::array<TEfficiency*, SDL_LMAX> ha_eff2SD_w012_den8MH_4of4_loProdXY_pt;
+  std::array<TEfficiency*, SDL_LMAX> ha_eff2SD_w0123_den8MH_4of4_loProdXY_pt;
+  std::array<TEfficiency*, SDL_LMAX> ha_eff2SD_w01234_den8MH_4of4_loProdXY_pt;
+  std::array<TEfficiency*, SDL_LMAX> ha_eff2SD_w012345_den8MH_4of4_loProdXY_pt;
+  std::array<TEfficiency*, SDL_LMAX> ha_eff2SD_w0123456_den8MH_4of4_loProdXY_pt;
+  std::array<TEfficiency*, SDL_LMAX> ha_effSDL_den8MH_4of4_loProdXY_pt;
+  std::array<TEfficiency*, SDL_LMAX> ha_effSDL_den8MH_3of4_any_loProdXY_pt;
+
   std::array<TEfficiency*, SDL_LMAX> ha_fakeSDL_4of4_pt;
   std::array<TEfficiency*, SDL_LMAX> ha_fakeSDL_4of4_eta;
   for (int i = 0; i< SDL_LMAX; ++i){
@@ -4310,6 +4438,45 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
     ha_effSDL_den8MH_4of4_pt[i]->SetTitle(Form("h_effSDL_den8MH_%dto%d_4of4_pt; p_{T} (GeV); Efficiency", iMin, iMax) );
     ha_effSDL_den8MH_3of4_any_pt[i] = new TEfficiency(*ha_numSDL_3of4_any_pt[i], *ha_num8MH_pt[i]);
     ha_effSDL_den8MH_3of4_any_pt[i]->SetTitle(Form("h_effSDL_den8MH_%dto%d_3of4_any_pt; p_{T} (GeV); Efficiency", iMin, iMax) );
+
+    ha_eff8MH_loProdXY_pt[i] = new TEfficiency(*ha_num8MH_loProdXY_pt[i], *ha_denSDL_loProdXY_pt[i]);
+    ha_eff8MH_loProdXY_pt[i]->SetTitle(Form("h_eff8MH_%dto%d_loProdXY_pt; p_{T} (GeV); Efficiency", iMin, iMax) );
+
+    ha_eff4MD_loProdXY_pt[i] = new TEfficiency(*ha_num4MD_loProdXY_pt[i], *ha_denSDL_loProdXY_pt[i]);
+    ha_eff4MD_loProdXY_pt[i]->SetTitle(Form("h_eff4MD_%dto%d_loProdXY_pt; p_{T} (GeV); Efficiency", iMin, iMax) );
+    ha_eff2SD_4of4_loProdXY_pt[i] = new TEfficiency(*ha_num2SD_4of4_loProdXY_pt[i], *ha_denSDL_loProdXY_pt[i]);
+    ha_eff2SD_4of4_loProdXY_pt[i]->SetTitle(Form("h_eff2SD_%dto%d_4of4_loProdXY_pt; p_{T} (GeV); Efficiency", iMin, iMax) );
+    ha_eff2SD_3of4_any_loProdXY_pt[i] = new TEfficiency(*ha_num2SD_3of4_any_loProdXY_pt[i], *ha_denSDL_loProdXY_pt[i]);
+    ha_eff2SD_3of4_any_loProdXY_pt[i]->SetTitle(Form("h_eff2SD_%dto%d_3of4_any_loProdXY_pt; p_{T} (GeV); Efficiency", iMin, iMax) );
+    ha_effSDL_4of4_loProdXY_pt[i] = new TEfficiency(*ha_numSDL_4of4_loProdXY_pt[i], *ha_denSDL_loProdXY_pt[i]);
+    ha_effSDL_4of4_loProdXY_pt[i]->SetTitle(Form("h_effSDL_%dto%d_4of4_loProdXY_pt; p_{T} (GeV); Efficiency", iMin, iMax) );
+    ha_effSDL_3of4_any_loProdXY_pt[i] = new TEfficiency(*ha_numSDL_3of4_any_loProdXY_pt[i], *ha_denSDL_loProdXY_pt[i]);
+    ha_effSDL_3of4_any_loProdXY_pt[i]->SetTitle(Form("h_effSDL_%dto%d_3of4_any_loProdXY_pt; p_{T} (GeV); Efficiency", iMin, iMax) );
+
+    ha_eff4MD_den8MH_loProdXY_pt[i] = new TEfficiency(*ha_num4MD_loProdXY_pt[i], *ha_num8MH_loProdXY_pt[i]);
+    ha_eff4MD_den8MH_loProdXY_pt[i]->SetTitle(Form("h_eff4MD_den8MH_%dto%d_loProdXY_pt; p_{T} (GeV); Efficiency", iMin, iMax) );
+    ha_eff2SD_den8MH_4of4_loProdXY_pt[i] = new TEfficiency(*ha_num2SD_4of4_loProdXY_pt[i], *ha_num8MH_loProdXY_pt[i]);
+    ha_eff2SD_den8MH_4of4_loProdXY_pt[i]->SetTitle(Form("h_eff2SD_den8MH_%dto%d_4of4_loProdXY_pt; p_{T} (GeV); Efficiency", iMin, iMax) );
+    ha_eff2SD_den8MH_3of4_any_loProdXY_pt[i] = new TEfficiency(*ha_num2SD_3of4_any_loProdXY_pt[i], *ha_num8MH_loProdXY_pt[i]);
+    ha_eff2SD_den8MH_3of4_any_loProdXY_pt[i]->SetTitle(Form("h_eff2SD_den8MH_%dto%d_3of4_any_loProdXY_pt; p_{T} (GeV); Efficiency", iMin, iMax) );
+    ha_eff2SD_w0_den8MH_4of4_loProdXY_pt[i] = new TEfficiency(*ha_num2SD_w0_4of4_loProdXY_pt[i], *ha_num8MH_loProdXY_pt[i]);
+    ha_eff2SD_w0_den8MH_4of4_loProdXY_pt[i]->SetTitle(Form("h_eff2SD_w0_den8MH_%dto%d_4of4_loProdXY_pt; p_{T} (GeV); Efficiency", iMin, iMax) );
+    ha_eff2SD_w01_den8MH_4of4_loProdXY_pt[i] = new TEfficiency(*ha_num2SD_w01_4of4_loProdXY_pt[i], *ha_num8MH_loProdXY_pt[i]);
+    ha_eff2SD_w01_den8MH_4of4_loProdXY_pt[i]->SetTitle(Form("h_eff2SD_w01_den8MH_%dto%d_4of4_loProdXY_pt; p_{T} (GeV); Efficiency", iMin, iMax) );
+    ha_eff2SD_w012_den8MH_4of4_loProdXY_pt[i] = new TEfficiency(*ha_num2SD_w012_4of4_loProdXY_pt[i], *ha_num8MH_loProdXY_pt[i]);
+    ha_eff2SD_w012_den8MH_4of4_loProdXY_pt[i]->SetTitle(Form("h_eff2SD_w012_den8MH_%dto%d_4of4_loProdXY_pt; p_{T} (GeV); Efficiency", iMin, iMax) );
+    ha_eff2SD_w0123_den8MH_4of4_loProdXY_pt[i] = new TEfficiency(*ha_num2SD_w0123_4of4_loProdXY_pt[i], *ha_num8MH_loProdXY_pt[i]);
+    ha_eff2SD_w0123_den8MH_4of4_loProdXY_pt[i]->SetTitle(Form("h_eff2SD_w0123_den8MH_%dto%d_4of4_loProdXY_pt; p_{T} (GeV); Efficiency", iMin, iMax) );
+    ha_eff2SD_w01234_den8MH_4of4_loProdXY_pt[i] = new TEfficiency(*ha_num2SD_w01234_4of4_loProdXY_pt[i], *ha_num8MH_loProdXY_pt[i]);
+    ha_eff2SD_w01234_den8MH_4of4_loProdXY_pt[i]->SetTitle(Form("h_eff2SD_w01234_den8MH_%dto%d_4of4_loProdXY_pt; p_{T} (GeV); Efficiency", iMin, iMax) );
+    ha_eff2SD_w012345_den8MH_4of4_loProdXY_pt[i] = new TEfficiency(*ha_num2SD_w012345_4of4_loProdXY_pt[i], *ha_num8MH_loProdXY_pt[i]);
+    ha_eff2SD_w012345_den8MH_4of4_loProdXY_pt[i]->SetTitle(Form("h_eff2SD_w012345_den8MH_%dto%d_4of4_loProdXY_pt; p_{T} (GeV); Efficiency", iMin, iMax) );
+    ha_eff2SD_w0123456_den8MH_4of4_loProdXY_pt[i] = new TEfficiency(*ha_num2SD_w0123456_4of4_loProdXY_pt[i], *ha_num8MH_loProdXY_pt[i]);
+    ha_eff2SD_w0123456_den8MH_4of4_loProdXY_pt[i]->SetTitle(Form("h_eff2SD_w0123456_den8MH_%dto%d_4of4_loProdXY_pt; p_{T} (GeV); Efficiency", iMin, iMax) );
+    ha_effSDL_den8MH_4of4_loProdXY_pt[i] = new TEfficiency(*ha_numSDL_4of4_loProdXY_pt[i], *ha_num8MH_loProdXY_pt[i]);
+    ha_effSDL_den8MH_4of4_loProdXY_pt[i]->SetTitle(Form("h_effSDL_den8MH_%dto%d_4of4_loProdXY_pt; p_{T} (GeV); Efficiency", iMin, iMax) );
+    ha_effSDL_den8MH_3of4_any_loProdXY_pt[i] = new TEfficiency(*ha_numSDL_3of4_any_loProdXY_pt[i], *ha_num8MH_loProdXY_pt[i]);
+    ha_effSDL_den8MH_3of4_any_loProdXY_pt[i]->SetTitle(Form("h_effSDL_den8MH_%dto%d_3of4_any_loProdXY_pt; p_{T} (GeV); Efficiency", iMin, iMax) );
 
     ha_fakeSDL_4of4_pt[i] = new TEfficiency(*ha_SDLreco_no4of4_pt[i], *ha_SDLreco_all_pt[i]);
     ha_fakeSDL_4of4_pt[i]->SetTitle(Form("h_fakeSDL_%dto%d_4of4_pt", iMin, iMax));
@@ -5659,6 +5826,366 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       leg->AddEntry(heff2, "SDLink match | 8 MHits");
       leg->Draw();
       gPad->SaveAs(Form("h_effs_SDL_den8MH_steps_4of4_min0.9_%dto%d_pt_mm%d_D%1.1fcm%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
+    }
+
+    //same set with low production DXY
+    //efficiencies: num/den plots
+    for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
+      if (iSDL == SDL_L5to9) continue;
+      
+      auto hden = ha_denSDL_loProdXY_pt[iSDL];
+      auto hnum1 = ha_numSDL_3of4_any_loProdXY_pt[iSDL];
+      auto hnum2 = ha_numSDL_4of4_loProdXY_pt[iSDL];
+
+      auto cn = hden->GetTitle();
+      TCanvas* cv = new TCanvas(cn, cn, 600, 600);
+      cv->cd();
+      hden->SetStats(0);
+
+      hden->SetLineWidth(2);
+      hnum1->SetLineWidth(2);
+      hnum2->SetLineWidth(2);
+      hden->SetLineColor(kBlack);
+      hnum1->SetLineColor(kRed);
+      hnum2->SetLineColor(kBlue);
+
+      hden->Draw();
+      hden->SetMinimum(0.9);
+      auto ax = hden->GetXaxis();
+      ax->SetRangeUser(0.51, ax->GetXmax());
+      gPad->SetLogx();
+      gPad->SetLogy();
+      hnum1->Draw("same");
+      hnum2->Draw("same");
+
+      auto leg = new TLegend(0.7, 0.65, 0.9, 0.9);
+      leg->SetBorderSize(0);
+      leg->SetFillColor(0);
+      leg->AddEntry(hden, "Denominator");
+      leg->AddEntry(hnum1, "Num: 3 of 4");
+      leg->AddEntry(hnum2, "Num: 4 of 4");
+      leg->Draw();
+      gPad->SaveAs(Form("h_denVSnums_SDL_%dto%d_loProdXY_pt_mm%d_D%1.1fcm%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
+    }
+
+    //efficiencies: eff plots 3/4 vs 4/4
+    for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
+      if (iSDL == SDL_L5to9) continue;
+      
+      auto heff1 = ha_effSDL_3of4_any_loProdXY_pt[iSDL];
+      auto heff2 = ha_effSDL_4of4_loProdXY_pt[iSDL];
+
+      auto cn = heff1->GetName();
+      TCanvas* cv = new TCanvas(cn, cn, 600, 600);
+      cv->cd();
+
+      heff1->Draw();
+      heff2->Draw("same");
+
+      heff1->SetLineWidth(2);
+      heff2->SetLineWidth(2);
+      heff1->SetLineColor(kRed);
+      heff2->SetLineColor(kBlue);
+      heff1->SetMarkerSize(0.8);
+      heff2->SetMarkerSize(0.8);
+      heff1->SetMarkerStyle(22);
+      heff2->SetMarkerStyle(23);
+
+      gPad->SetGridx();
+      gPad->SetGridy();
+      gPad->SetLogx();
+      gPad->PaintModified();
+      auto pg = heff1->GetPaintedGraph();
+      pg->SetMinimum(0.0);
+      pg->SetMaximum(1.02);
+      auto ax = pg->GetXaxis();
+      ax->SetLimits(0.51, ax->GetXmax());
+
+      auto leg = new TLegend(0.7, 0.15, 0.9, 0.3);
+      leg->SetBorderSize(0);
+      leg->SetFillColor(0);
+      leg->AddEntry(heff1, "3 of 4");
+      leg->AddEntry(heff2, "4 of 4");
+      leg->Draw();
+      gPad->SaveAs(Form("h_effs_SDL_%dto%d_loProdXY_pt_mm%d_D%1.1fcm%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
+    }
+    
+    //efficiencies: eff plots 4/4 in steps
+    for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
+      if (iSDL == SDL_L5to9) continue;
+      
+      auto heffH =  ha_eff8MH_loProdXY_pt[iSDL];
+      auto heff =  ha_eff4MD_loProdXY_pt[iSDL];
+      auto heff1 = ha_eff2SD_4of4_loProdXY_pt[iSDL];
+      auto heff2 = ha_effSDL_4of4_loProdXY_pt[iSDL];
+
+      auto cn = heffH->GetName();
+      TCanvas* cv = new TCanvas(cn, cn, 600, 600);
+      cv->cd();
+
+      heffH->Draw();
+      heff->Draw("same");
+      heff1->Draw("same");
+      heff2->Draw("same");
+
+      heffH->SetLineWidth(2);
+      heff->SetLineWidth(2);
+      heff1->SetLineWidth(2);
+      heff2->SetLineWidth(2);
+      heffH->SetLineColor(kCyan);
+      heff->SetLineColor(kBlack);
+      heff1->SetLineColor(kRed);
+      heff2->SetLineColor(kBlue);
+      heffH->SetMarkerSize(0.8);
+      heff->SetMarkerSize(0.8);
+      heff1->SetMarkerSize(0.8);
+      heff2->SetMarkerSize(0.8);
+      heffH->SetMarkerStyle(24);
+      heff->SetMarkerStyle(21);
+      heff1->SetMarkerStyle(22);
+      heff2->SetMarkerStyle(23);
+
+      gPad->SetGridx();
+      gPad->SetGridy();
+      gPad->SetLogx();
+      gPad->PaintModified();
+      auto pg = heffH->GetPaintedGraph();
+      pg->SetMinimum(0.0);
+      pg->SetMaximum(1.02);
+      auto ax = pg->GetXaxis();
+      ax->SetLimits(0.51, ax->GetXmax());
+
+      auto leg = new TLegend(0.6, 0.15, 0.87, 0.4);
+      leg->SetBorderSize(0);
+      leg->SetFillColor(0);
+      leg->AddEntry(heffH, "8 MH match");
+      leg->AddEntry(heff, "4 MD match");
+      leg->AddEntry(heff1, "2 SD match");
+      leg->AddEntry(heff2, "SDLink match");
+      leg->Draw();
+      gPad->SaveAs(Form("h_effs_SDL_steps_4of4_%dto%d_loProdXY_pt_mm%d_D%1.1fcm%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
+    }
+
+    //efficiencies: eff plots 4/4 in steps
+    for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
+      if (iSDL == SDL_L5to9) continue;
+      
+      auto heff =  ha_eff4MD_den8MH_loProdXY_pt[iSDL];
+      auto heff1 = ha_eff2SD_den8MH_4of4_loProdXY_pt[iSDL];
+      auto heff0      = ha_eff2SD_w0_den8MH_4of4_loProdXY_pt[iSDL];
+      auto heff01     = ha_eff2SD_w01_den8MH_4of4_loProdXY_pt[iSDL];
+      auto heff012    = ha_eff2SD_w012_den8MH_4of4_loProdXY_pt[iSDL];
+      auto heff0123   = ha_eff2SD_w0123_den8MH_4of4_loProdXY_pt[iSDL];
+      auto heff01234  = ha_eff2SD_w01234_den8MH_4of4_loProdXY_pt[iSDL];
+      auto heff012345 = ha_eff2SD_w012345_den8MH_4of4_loProdXY_pt[iSDL];
+      auto heff0123456 = ha_eff2SD_w0123456_den8MH_4of4_loProdXY_pt[iSDL];
+      auto heff2 = ha_effSDL_den8MH_4of4_loProdXY_pt[iSDL];
+
+      auto cn = heff->GetName();
+      TCanvas* cv = new TCanvas(cn, cn, 600, 600);
+      cv->cd();
+
+      heff->Draw();
+      heff1->Draw("same");
+      heff01->Draw("same");
+      heff012345->Draw("same");
+      heff2->Draw("same");
+
+      heff->SetLineWidth(2);
+      heff1->SetLineWidth(2);
+      heff01->SetLineWidth(2);
+      heff012345->SetLineWidth(2);
+      heff2->SetLineWidth(2);
+      heff->SetLineColor(kBlack);
+      heff1->SetLineColor(kRed);
+      heff01->SetLineColor(kOrange);
+      heff012345->SetLineColor(kCyan);
+      heff2->SetLineColor(kBlue);
+      heff->SetMarkerSize(0.8);
+      heff1->SetMarkerSize(0.8);
+      heff01->SetMarkerSize(0.8);
+      heff012345->SetMarkerSize(0.8);
+      heff2->SetMarkerSize(0.8);
+      heff->SetMarkerStyle(21);
+      heff1->SetMarkerStyle(22);
+      heff01->SetMarkerStyle(24);
+      heff012345->SetMarkerStyle(25);
+      heff2->SetMarkerStyle(23);
+
+      gPad->SetGridx();
+      gPad->SetGridy();
+      gPad->SetLogx();
+      gPad->PaintModified();
+      auto pg = heff->GetPaintedGraph();
+      pg->SetMinimum(0.0);
+      pg->SetMaximum(1.02);
+      auto ax = pg->GetXaxis();
+      ax->SetLimits(0.51, ax->GetXmax());
+
+      auto leg = new TLegend(0.5, 0.15, 0.87, 0.4);
+      leg->SetBorderSize(0);
+      leg->SetFillColor(0);
+      leg->AddEntry(heff, "4 MD match | 8 MHits");
+      leg->AddEntry(heff1, "2 SD match | 8 MHits");
+      leg->AddEntry(heff01, "2 SD w dZ | 8 MHits");
+      leg->AddEntry(heff012345, "SDLink no #Delta#beta | 8 MHits");
+      leg->AddEntry(heff2, "SDLink match | 8 MHits");
+      leg->Draw();
+      gPad->SaveAs(Form("h_effs_SDL_den8MH_steps_4of4_%dto%d_loProdXY_pt_mm%d_D%1.1fcm%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
+    }
+
+    //efficiencies: eff plots 4/4 in steps
+    for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
+      if (iSDL == SDL_L5to9) continue;
+      
+      auto heff =  ha_eff4MD_den8MH_loProdXY_pt[iSDL];
+      auto heff1 = ha_eff2SD_den8MH_4of4_loProdXY_pt[iSDL];
+      auto heff0      = ha_eff2SD_w0_den8MH_4of4_loProdXY_pt[iSDL];
+      auto heff01     = ha_eff2SD_w01_den8MH_4of4_loProdXY_pt[iSDL];
+      auto heff012    = ha_eff2SD_w012_den8MH_4of4_loProdXY_pt[iSDL];
+      auto heff0123   = ha_eff2SD_w0123_den8MH_4of4_loProdXY_pt[iSDL];
+      auto heff01234  = ha_eff2SD_w01234_den8MH_4of4_loProdXY_pt[iSDL];
+      auto heff012345 = ha_eff2SD_w012345_den8MH_4of4_loProdXY_pt[iSDL];
+      auto heff0123456 = ha_eff2SD_w0123456_den8MH_4of4_loProdXY_pt[iSDL];
+      auto heff2 = ha_effSDL_den8MH_4of4_loProdXY_pt[iSDL];
+
+      auto cn = heff->GetName();
+      TCanvas* cv = new TCanvas(cn, cn, 600, 600);
+      cv->cd();
+
+      heff->Draw();
+      heff1->Draw("same");
+      heff01->Draw("same");
+      heff012->Draw("same");
+      heff0123->Draw("same");
+      heff01234->Draw("same");
+      heff012345->Draw("same");
+      heff2->Draw("same");
+
+      heff->SetLineWidth(2);
+      heff1->SetLineWidth(2);
+      heff01->SetLineWidth(2);
+      heff012->SetLineWidth(2);
+      heff0123->SetLineWidth(2);
+      heff01234->SetLineWidth(2);
+      heff012345->SetLineWidth(2);
+      heff2->SetLineWidth(2);
+      heff->SetLineColor(kBlack);
+      heff1->SetLineColor(kRed);
+      heff01->SetLineColor(kOrange);
+      heff012->SetLineColor(kMagenta);
+      heff0123->SetLineColor(kGray);
+      heff01234->SetLineColor(kGreen);
+      heff012345->SetLineColor(kCyan);
+      heff2->SetLineColor(kBlue);
+      heff->SetMarkerSize(0.8);
+      heff1->SetMarkerSize(0.8);
+      heff01->SetMarkerSize(0.8);
+      heff012->SetMarkerSize(0.8);
+      heff0123->SetMarkerSize(0.8);
+      heff01234->SetMarkerSize(0.8);
+      heff012345->SetMarkerSize(0.8);
+      heff2->SetMarkerSize(0.8);
+      heff->SetMarkerStyle(21);
+      heff1->SetMarkerStyle(22);
+      heff01->SetMarkerStyle(24);
+      heff012->SetMarkerStyle(26);
+      heff0123->SetMarkerStyle(27);
+      heff01234->SetMarkerStyle(28);
+      heff012345->SetMarkerStyle(25);
+      heff2->SetMarkerStyle(23);
+
+      gPad->SetGridx();
+      gPad->SetGridy();
+      gPad->SetLogx();
+      gPad->PaintModified();
+      auto pg = heff->GetPaintedGraph();
+      pg->SetMinimum(0.0);
+      pg->SetMaximum(1.02);
+      auto ax = pg->GetXaxis();
+      ax->SetLimits(0.51, ax->GetXmax());
+
+      auto leg = new TLegend(0.5, 0.15, 0.87, 0.6);
+      leg->SetBorderSize(0);
+      leg->SetFillColor(0);
+      leg->AddEntry(heff, "4 MD match | 8 MHits");
+      leg->AddEntry(heff1, "2 SD match | 8 MHits");
+      leg->AddEntry(heff01, "2 SD w dZ | 8 MHits");
+      leg->AddEntry(heff012, "... and #Delta#phi_{pos} | 8 MHits");
+      leg->AddEntry(heff0123, "... and slope | 8 MHits");
+      leg->AddEntry(heff01234, "... and #Delta#alpha_{in} | 8 MHits");      
+      leg->AddEntry(heff012345, "SDLink no #Delta#beta | 8 MHits");
+      leg->AddEntry(heff2, "SDLink match | 8 MHits");
+      leg->Draw();
+      gPad->SaveAs(Form("h_effs_SDL_den8MH_steps_detailed_4of4_%dto%d_loProdXY_pt_mm%d_D%1.1fcm%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
+    }
+
+    //efficiencies: eff plots 4/4 in steps
+    for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
+      if (iSDL == SDL_L5to9) continue;
+      
+      auto heff =  ha_eff4MD_den8MH_loProdXY_pt[iSDL];
+      auto heff1 = ha_eff2SD_den8MH_4of4_loProdXY_pt[iSDL];
+      auto heff0      = ha_eff2SD_w0_den8MH_4of4_loProdXY_pt[iSDL];
+      auto heff01     = ha_eff2SD_w01_den8MH_4of4_loProdXY_pt[iSDL];
+      auto heff012    = ha_eff2SD_w012_den8MH_4of4_loProdXY_pt[iSDL];
+      auto heff0123   = ha_eff2SD_w0123_den8MH_4of4_loProdXY_pt[iSDL];
+      auto heff01234  = ha_eff2SD_w01234_den8MH_4of4_loProdXY_pt[iSDL];
+      auto heff012345 = ha_eff2SD_w012345_den8MH_4of4_loProdXY_pt[iSDL];
+      auto heff0123456 = ha_eff2SD_w0123456_den8MH_4of4_loProdXY_pt[iSDL];
+      auto heff2 = ha_effSDL_den8MH_4of4_loProdXY_pt[iSDL];
+
+      auto cn = heff->GetName();
+      TCanvas* cv = new TCanvas(cn, cn, 600, 600);
+      cv->cd();
+
+      heff->Draw();
+      heff1->Draw("same");
+      heff01->Draw("same");
+      heff012345->Draw("same");
+      heff2->Draw("same");
+
+      heff->SetLineWidth(2);
+      heff1->SetLineWidth(2);
+      heff01->SetLineWidth(2);
+      heff012345->SetLineWidth(2);
+      heff2->SetLineWidth(2);
+      heff->SetLineColor(kBlack);
+      heff1->SetLineColor(kRed);
+      heff01->SetLineColor(kOrange);
+      heff012345->SetLineColor(kCyan);
+      heff2->SetLineColor(kBlue);
+      heff->SetMarkerSize(0.8);
+      heff1->SetMarkerSize(0.8);
+      heff01->SetMarkerSize(0.8);
+      heff012345->SetMarkerSize(0.8);
+      heff2->SetMarkerSize(0.8);
+      heff->SetMarkerStyle(21);
+      heff1->SetMarkerStyle(22);
+      heff01->SetMarkerStyle(24);
+      heff012345->SetMarkerStyle(25);
+      heff2->SetMarkerStyle(23);
+
+      gPad->SetGridx();
+      gPad->SetGridy();
+      gPad->SetLogx();
+      gPad->PaintModified();
+      auto pg = heff->GetPaintedGraph();
+      pg->SetMinimum(0.9);
+      pg->SetMaximum(1.02);
+      auto ax = pg->GetXaxis();
+      ax->SetLimits(0.51, ax->GetXmax());
+
+      auto leg = new TLegend(0.5, 0.15, 0.87, 0.4);
+      leg->SetBorderSize(0);
+      leg->SetFillColor(0);
+      leg->AddEntry(heff, "4 MD match | 8 MHits");
+      leg->AddEntry(heff1, "2 SD match | 8 MHits");
+      leg->AddEntry(heff01, "2 SD w dZ | 8 MHits");
+      leg->AddEntry(heff012345, "SDLink no #Delta#beta | 8 MHits");
+      leg->AddEntry(heff2, "SDLink match | 8 MHits");
+      leg->Draw();
+      gPad->SaveAs(Form("h_effs_SDL_den8MH_steps_4of4_min0.9_%dto%d_loProdXY_pt_mm%d_D%1.1fcm%1.1fcm_us%d.png", layersSDL[iSDL][0], layersSDL[iSDL][1], mockMode, sdOffsetB, sdOffsetE, useSeeds));
     }
 
     //fakes vs pt
