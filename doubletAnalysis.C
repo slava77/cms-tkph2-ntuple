@@ -1429,6 +1429,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
   const float minTPdxy = 0;
   const float maxTPdxy = 1e9;
   const float maxTPdz = 1e9;
+  const float ptCutAll = 0.5f;
+  const float sinAlphaMax = 0.95f;
   //mockMode:
   //0 for helix to ref and then straight line;
   //1 for helix to all ref layers;
@@ -1456,6 +1458,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
   std::vector<TH1*> outputHV; outputHV.reserve(1024);
   
   std::vector<double> ptBins {0, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.5, 2.0, 3.0, 5.0, 10, 15., 25, 50};
+  if (ptCutAll == 0.5) ptBins = {0, 0.3, 0.4, 0.45, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.5, 2.0, 3.0, 5.0, 10, 15., 25, 50};
 
   constexpr int minLayer = 5;
   
@@ -2281,18 +2284,18 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       timerA[T_timeReco].Start(kFALSE);
       constexpr int maxMDexpected = 100;
       std::array<std::vector<MiniDoublet>, nLayersA+1> mockLayerMDfwRef;
-      for (auto& m : mockLayerMDfwRef ) m.reserve(10000);
+      for (auto& m : mockLayerMDfwRef ) m.reserve(100000);
       std::array<std::vector<MiniDoublet>, nLayersA+1> mockLayerMDfwDNcm;
-      for (auto& m : mockLayerMDfwDNcm ) m.reserve(10000);      
+      for (auto& m : mockLayerMDfwDNcm ) m.reserve(100000);      
 
       std::array<std::vector<SuperDoublet>, nLayersA+1> mockLayerSDfwDNcm;
-      for (auto& m : mockLayerSDfwDNcm ) m.reserve(100000);      
+      for (auto& m : mockLayerSDfwDNcm ) m.reserve(1000000);      
 
       std::array<std::vector<bool>, nLayersA+1> mockLayerSDfwDNcm_isSecondaryGhost;
-      for (auto& m : mockLayerSDfwDNcm_isSecondaryGhost ) m.reserve(100000);  
+      for (auto& m : mockLayerSDfwDNcm_isSecondaryGhost ) m.reserve(1000000);  
       
       std::array<std::vector<SDLink>, SDL_LMAX> mockLayerSDLsDNcm;
-      for (auto& m : mockLayerSDLsDNcm) m.reserve(40000);
+      for (auto& m : mockLayerSDLsDNcm) m.reserve(1000000);
 
       
       if (useSeeds == 1){
@@ -2302,7 +2305,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	  TVector3 p3LH(see_lh_px()[iSeed], see_lh_py()[iSeed], see_lh_pz()[iSeed]);
 	  float ptLH = p3LH.Pt();
 	  float etaLH = p3LH.Eta();
-	  if (ptLH < 1.0) continue; //1 GeV cut
+	  if (ptLH < ptCutAll) continue;
 	  if (std::abs(etaLH) > (addEndcaps ? 3.0f : 1.6f)) continue;
 	  TVector3 r3LH(see_lh_x()[iSeed], see_lh_y()[iSeed], see_lh_z()[iSeed]);
 
@@ -2428,8 +2431,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	  for (auto const& hL : hitsL) {
 	    nHitsTried++; //if (nHitsTried>1) exit(0);
 	    float rt = hL.second.rt;
-	    const float ptCut = 1.0f;
-	    const float miniSlope = std::asin(rt*k2Rinv1GeVf/ptCut);
+	    const float ptCut = ptCutAll;
+	    const float miniSlope = std::asin(std::min(rt*k2Rinv1GeVf/ptCut, sinAlphaMax));
 	    
 	    const float miniMuls = miniMulsPtScale[iL]*3.f/ptCut;
 	    const float rLayNominal = iL >= minLayer ? (iL < 11 ? miniRminMean[iL] : rt ) : 1e12f;
@@ -2589,12 +2592,12 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 
 	    float dPhi;
 	    unsigned int iFlag;
-	    const float ptCut = 1.0f;
+	    const float ptCut = ptCutAll;
 	    float dPhiOut;
 	    
 	    if (iL < 11){//barrel
 	      float rt = rtOut; //FIXME: should be different for mockMode = 0
-	      const float sdSlope = std::asin(rt*k2Rinv1GeVf/ptCut);
+	      const float sdSlope = std::asin(std::min(rt*k2Rinv1GeVf/ptCut, sinAlphaMax));
 	      const float dzDrtScale = tan(sdSlope)/sdSlope;//FIXME: need approximate value
 
 	      //apply some loose Z compatibility
@@ -2637,7 +2640,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      
 	      const float dz = zOut - zRef;
 	      const float rt = rtOut; //FIXME: should be different for mockMode = 0
-	      const float sdSlope = std::asin(rt*k2Rinv1GeVf/ptCut);
+	      const float sdSlope = std::asin(std::min(rt*k2Rinv1GeVf/ptCut, sinAlphaMax));
 
 	      //apply some loose Z compatibility
 	      const float dLum = std::copysign(deltaZLum, zRef);
@@ -2696,7 +2699,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    sd.zeta = sd.d/(mdOut.r3.Z() - sd.z);
 
 	    //loose angle compatibility
-	    float dAlpha_Bfield = std::asin(sd.dr*k2Rinv1GeVf/ptCut);
+	    float dAlpha_Bfield = std::asin(std::min(sd.dr*k2Rinv1GeVf/ptCut, sinAlphaMax));
 	    float dAlpha_res = 0.04f/miniDelta[iL] * (iL < 11 ? 1.0f : std::abs(sd.z/sd.rt) )*(mockMode == 3 ? 1.0f : 0.0f);//4-strip difference
 	    float dAlpha_compat = dAlpha_Bfield + dAlpha_res;
 
@@ -2752,7 +2755,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    
 
 	    
-	    if ( sd.dr > 1.5f*(rtOut - rtRef) && iL < 11){
+	    if ( sd.dr > 4.0f*(rtOut - rtRef) && iL < 11){
 	      //problem in matching
 	      std::cout<<__LINE__
 		       <<" "<<sd.mdRef.r3.Pt()<<" "<<sd.mdRef.r3.Phi()
@@ -2834,12 +2837,12 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	  const float dzSDIn = sdIn.mdOut.z - sdIn.mdRef.z;
 	  const float dr3SDIn = sdIn.mdOut.r - sdIn.mdRef.r;
 	  
-	  float ptSLo = 1.0f;
+	  float ptSLo = ptCutAll;
 	  if (lIn == 0){
 	    //try to use seed pt: the lower bound is good
 	    ptSLo = ptIn;
 	    float ptErr = see_pca_ptErr()[sdIn.iRef];
-	    ptSLo = std::max(1.0f, ptSLo - 10.0f*std::max(ptErr, 0.005f*ptSLo));//FIXME: check high-pt behavior
+	    ptSLo = std::max(ptCutAll, ptSLo - 10.0f*std::max(ptErr, 0.005f*ptSLo));//FIXME: check high-pt behavior
 	    ptSLo = std::min(10.0f, ptSLo); //don't let this run away either
 	  }
 	  const float ptCut = ptSLo;
@@ -2861,7 +2864,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    nAll++;
 
 	    const float rt = rtOut;
-	    const float sdlSlope = std::asin(rt*k2Rinv1GeVf/ptCut);
+	    const float sdlSlope = std::asin(std::min(rt*k2Rinv1GeVf/ptCut, sinAlphaMax));
 	    const float dzDrtScale = tan(sdlSlope)/sdlSlope;//FIXME: need approximate value
 
 	    if (lOut < 11){//barrel: match to Z proper
@@ -2940,7 +2943,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		drtErr *= 9.f; //3 sigma
 		drtErr += sdlMuls*sdlMuls*multDzDr*multDzDr/3.f*coshEta*coshEta;//sloppy: relative muls is 1/3 of total muls
 		drtErr = sqrt(drtErr);
-		const float drtDzIn = ptIn/sdIn.p3.Z();
+		const float drtDzIn = std::abs(ptIn/sdIn.p3.Z());//all tracks are out-going in endcaps?
 
 		const float rtWindow = drtErr + rtGeom1;
 		const float drtMean = drtDzIn*dzOutInAbs*(1.f - drOutIn*drOutIn*kRinv1GeVf*kRinv1GeVf/ptIn/ptIn/24.f);//with curved path correction
@@ -3077,17 +3080,17 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    //apply segment (SD) bend correction
 	    if (mockMode == 1 || mockMode == 3){
 	      if (lIn == 0){
-		betaOut += copysign(std::asin(sdOut.dr*k2Rinv1GeVf/std::abs(pt_beta)), betaOut);//FIXME: need a faster version
+		betaOut += copysign(std::asin(std::min(sdOut.dr*k2Rinv1GeVf/std::abs(pt_beta), sinAlphaMax)), betaOut);//FIXME: need a faster version
 	      } else {
 		const float diffDr = std::abs(sdIn.dr - sdOut.dr)/std::abs(sdIn.dr + sdOut.dr);
 		if (true //do it for all//diffDr > 0.05 //only if segment length is different significantly
 		    && betaIn*betaOut > 0.f && std::abs(pt_beta) < 4.f*pt_betaMax ){ //and the pt_beta is well-defined
-		  const float betaInUpd  = betaIn + copysign(std::asin(sdIn.dr*k2Rinv1GeVf/std::abs(pt_beta)), betaIn);//FIXME: need a faster version
-		  const float betaOutUpd = betaOut + copysign(std::asin(sdOut.dr*k2Rinv1GeVf/std::abs(pt_beta)), betaOut);//FIXME: need a faster version
+		  const float betaInUpd  = betaIn + copysign(std::asin(std::min(sdIn.dr*k2Rinv1GeVf/std::abs(pt_beta), sinAlphaMax)), betaIn);//FIXME: need a faster version
+		  const float betaOutUpd = betaOut + copysign(std::asin(std::min(sdOut.dr*k2Rinv1GeVf/std::abs(pt_beta), sinAlphaMax)), betaOut);//FIXME: need a faster version
 		  betaAv = 0.5f*(betaInUpd + betaOutUpd);
 		  pt_beta = dr*k2Rinv1GeVf/sin(betaAv);//get a better pt estimate
-		  betaIn  += copysign(std::asin(sdIn.dr*k2Rinv1GeVf/std::abs(pt_beta)), betaIn);//FIXME: need a faster version
-		  betaOut += copysign(std::asin(sdOut.dr*k2Rinv1GeVf/std::abs(pt_beta)), betaOut);//FIXME: need a faster version
+		  betaIn  += copysign(std::asin(std::min(sdIn.dr*k2Rinv1GeVf/std::abs(pt_beta), sinAlphaMax)), betaIn);//FIXME: need a faster version
+		  betaOut += copysign(std::asin(std::min(sdOut.dr*k2Rinv1GeVf/std::abs(pt_beta), sinAlphaMax)), betaOut);//FIXME: need a faster version
 		  //update the av and pt
 		  betaAv = 0.5f*(betaIn + betaOut);
 		  pt_beta = dr*k2Rinv1GeVf/sin(betaAv);//get a better pt estimate		  
@@ -3095,7 +3098,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      }
 	    }
 
-	    const float betaOut_cut = std::asin(dr*k2Rinv1GeVf/ptCut) + (mockMode == 3 ? 0.02f/sdOut.d : 0.f);//FIXME: need faster version
+	    const float betaOut_cut = std::asin(std::min(dr*k2Rinv1GeVf/ptCut, sinAlphaMax)) + (mockMode == 3 ? 0.02f/sdOut.d : 0.f);//FIXME: need faster version
 	    if (std::abs(betaOut) < betaOut_cut) sdlFlag |=  1 << SDLSelectFlags::dAlphaOut;
 	    else if (cumulativeCuts ) continue;
 	    if (sdlFlag == sdlMasksCumulative[SDLSelectFlags::dAlphaOut]) nOutAlphaCompat++;
@@ -3109,8 +3112,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 
 	    const float alphaAbs = std::max(std::max(std::abs(sdIn.alpha), std::abs(sdOut.alpha)), 0.01f);
 	    //regularize to alpha of pt_betaMax .. review may want to add resolution
-	    const float alphaInAbsReg = useFullR3Endcap ? 0.f : std::max(std::abs(sdIn.alpha), std::asin(sdIn.rt*k2Rinv1GeVf/3.0f));
-	    const float alphaOutAbsReg = useFullR3Endcap ? 0.f : std::max(std::abs(sdOut.alpha), std::asin(sdOut.rt*k2Rinv1GeVf/3.0f));
+	    const float alphaInAbsReg = useFullR3Endcap ? 0.f : std::max(std::abs(sdIn.alpha), std::asin(std::min(sdIn.rt*k2Rinv1GeVf/3.0f, sinAlphaMax)));
+	    const float alphaOutAbsReg = useFullR3Endcap ? 0.f : std::max(std::abs(sdOut.alpha), std::asin(std::min(sdOut.rt*k2Rinv1GeVf/3.0f, sinAlphaMax)));
 	    const float dBetaLum2 = 0.0f + (lIn < 11 ? 0.0f : alphaInAbsReg*alphaInAbsReg*deltaZLum*deltaZLum/sdIn.z/sdIn.z)
 	      +  (lOut < 11 ? 0.0f : alphaOutAbsReg*alphaOutAbsReg*deltaZLum*deltaZLum/sdOut.z/sdOut.z);
 	    const float dBetaCut2 = (dBetaRes*dBetaRes*2.0f + dBetaMuls*dBetaMuls)
@@ -3309,14 +3312,16 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       auto isdll = SDL_L0to5; sdLink(layersSDL[isdll][0], layersSDL[isdll][1], mockLayerSDLsDNcm[isdll]);
       isdll = SDL_L0to7; sdLink(layersSDL[isdll][0], layersSDL[isdll][1], mockLayerSDLsDNcm[isdll]);
       isdll = SDL_L0to11; sdLink(layersSDL[isdll][0], layersSDL[isdll][1], mockLayerSDLsDNcm[isdll]);
-      isdll = SDL_L5to7; sdLink(layersSDL[isdll][0], layersSDL[isdll][1], mockLayerSDLsDNcm[isdll]);
-      isdll = SDL_L7to9; sdLink(layersSDL[isdll][0], layersSDL[isdll][1], mockLayerSDLsDNcm[isdll]);
-
-      isdll = SDL_L5to11; sdLink(layersSDL[isdll][0], layersSDL[isdll][1], mockLayerSDLsDNcm[isdll]);
-      isdll = SDL_L5to13; sdLink(layersSDL[isdll][0], layersSDL[isdll][1], mockLayerSDLsDNcm[isdll]);
-      isdll = SDL_L7to11; sdLink(layersSDL[isdll][0], layersSDL[isdll][1], mockLayerSDLsDNcm[isdll]);
-      isdll = SDL_L7to13; sdLink(layersSDL[isdll][0], layersSDL[isdll][1], mockLayerSDLsDNcm[isdll]);
-      isdll = SDL_L11to13; sdLink(layersSDL[isdll][0], layersSDL[isdll][1], mockLayerSDLsDNcm[isdll]);
+      if (ptCutAll >= 1.0f || (sdOffsetB <= 6.0f && sdOffsetE <= 6.0f)){//FIXME: NEED A MORE OPTIMAL SOLUTION
+	isdll = SDL_L5to7; sdLink(layersSDL[isdll][0], layersSDL[isdll][1], mockLayerSDLsDNcm[isdll]);
+	isdll = SDL_L7to9; sdLink(layersSDL[isdll][0], layersSDL[isdll][1], mockLayerSDLsDNcm[isdll]);
+	
+	isdll = SDL_L5to11; sdLink(layersSDL[isdll][0], layersSDL[isdll][1], mockLayerSDLsDNcm[isdll]);
+	isdll = SDL_L5to13; sdLink(layersSDL[isdll][0], layersSDL[isdll][1], mockLayerSDLsDNcm[isdll]);
+	isdll = SDL_L7to11; sdLink(layersSDL[isdll][0], layersSDL[isdll][1], mockLayerSDLsDNcm[isdll]);
+	isdll = SDL_L7to13; sdLink(layersSDL[isdll][0], layersSDL[isdll][1], mockLayerSDLsDNcm[isdll]);
+	isdll = SDL_L11to13; sdLink(layersSDL[isdll][0], layersSDL[isdll][1], mockLayerSDLsDNcm[isdll]);
+      }
       
       //link the links to TrackLinks
       std::vector<TrackLink> tracks;
@@ -3325,117 +3330,118 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       int nSDLL_dC = 0;
       int nSDLL_pass = 0;
       int isdlIn = -1;
-      for (auto const& sdlIn : mockLayerSDLsDNcm[SDL_L5to7] ){
-	bool hasOuter = false;
-	isdlIn++;
-
-	int isdlOut = -1;
-	for (auto const& sdlOut : mockLayerSDLsDNcm[SDL_L7to9]){
-	  isdlOut++;
-	  if (sdlIn.lOut == sdlOut.lIn && sdlIn.iOut == sdlOut.iIn){
-	    //shared mid-point
-	    countMatchMidPoint++;
-	    nSDLL_all++;
-	    
-	    auto const dPt = sdlIn.pt - sdlOut.pt;
-	    auto const dC = 1.f/sdlIn.pt - 1.f/sdlOut.pt;
-
-	    if (std::abs(dC) > 0.05 ) continue;
-	    nSDLL_dC++;
-	    if (sdlIn.sdInGhost || sdlIn.sdOutGhost || sdlOut.sdOutGhost) continue;
-	    nSDLL_pass++;
-	    	    
-	    if (debugReco){
-	      if (sdlIn.itp >=0 && sdlOut.itp >= 0){
-		TVector3 p3In(sim_px()[sdlIn.itp], sim_py()[sdlIn.itp], sim_pz()[sdlIn.itp]);
-		TVector3 p3Out(sim_px()[sdlOut.itp], sim_py()[sdlOut.itp], sim_pz()[sdlOut.itp]);
-		std::cout<<"TT: i "<<isdlIn<<" - "<<isdlOut<<" c "<<countMatchMidPoint
-			 <<" itp "<<sdlIn.itp<<" - "<<sdlOut.itp
-			 <<" ntp "<<sdlIn.ntp<<" - "<<sdlOut.ntp
-			 <<" tppt "<<p3In.Pt()<<" - "<<p3Out.Pt()
-			 <<" sdlpt "<<sdlIn.pt<<" - "<<sdlOut.pt
-			 <<" # "<<sdlIn.sdIn.mdRef.pixL
-			 <<" "<<sdlIn.sdIn.mdRef.pixU
-			 <<" "<<sdlIn.sdIn.mdOut.pixL
-			 <<" "<<sdlIn.sdIn.mdOut.pixU
-			 <<" # "<<sdlIn.sdOut.mdRef.pixL
-			 <<" "<<sdlIn.sdOut.mdRef.pixU
-			 <<" "<<sdlIn.sdOut.mdOut.pixL
-			 <<" "<<sdlIn.sdOut.mdOut.pixU
-			 <<" # "<<sdlOut.sdOut.mdRef.pixL
-			 <<" "<<sdlOut.sdOut.mdRef.pixU
-			 <<" "<<sdlOut.sdOut.mdOut.pixL
-			 <<" "<<sdlOut.sdOut.mdOut.pixU
-			 <<std::endl;
-	      } else if (sdlIn.itp >=0){
-		TVector3 p3In(sim_px()[sdlIn.itp], sim_py()[sdlIn.itp], sim_pz()[sdlIn.itp]);
-		std::cout<<"TF: i "<<isdlIn<<" - "<<isdlOut<<" c "<<countMatchMidPoint
-			 <<" itp "<<sdlIn.itp<<" - "<<sdlOut.itp
-			 <<" ntp "<<sdlIn.ntp<<" - "<<sdlOut.ntp
-			 <<" tppt "<<p3In.Pt()<<" - "<<0.f
-			 <<" sdlpt "<<sdlIn.pt<<" - "<<sdlOut.pt
-			 <<" # "<<sdlIn.sdIn.mdRef.pixL
-			 <<" "<<sdlIn.sdIn.mdRef.pixU
-			 <<" "<<sdlIn.sdIn.mdOut.pixL
-			 <<" "<<sdlIn.sdIn.mdOut.pixU
-			 <<" # "<<sdlIn.sdOut.mdRef.pixL
-			 <<" "<<sdlIn.sdOut.mdRef.pixU
-			 <<" "<<sdlIn.sdOut.mdOut.pixL
-			 <<" "<<sdlIn.sdOut.mdOut.pixU
-			 <<" # "<<sdlOut.sdOut.mdRef.pixL
-			 <<" "<<sdlOut.sdOut.mdRef.pixU
-			 <<" "<<sdlOut.sdOut.mdOut.pixL
-			 <<" "<<sdlOut.sdOut.mdOut.pixU
-			 <<std::endl;
-	      } else if (sdlOut.itp >= 0){
-		TVector3 p3Out(sim_px()[sdlOut.itp], sim_py()[sdlOut.itp], sim_pz()[sdlOut.itp]);
-		std::cout<<"FT: i "<<isdlIn<<" - "<<isdlOut<<" c "<<countMatchMidPoint
-			 <<" itp "<<sdlIn.itp<<" - "<<sdlOut.itp
-			 <<" ntp "<<sdlIn.ntp<<" - "<<sdlOut.ntp
-			 <<" tppt "<<0.f<<" - "<<p3Out.Pt()
-			 <<" sdlpt "<<sdlIn.pt<<" - "<<sdlOut.pt
-			 <<" # "<<sdlIn.sdIn.mdRef.pixL
-			 <<" "<<sdlIn.sdIn.mdRef.pixU
-			 <<" "<<sdlIn.sdIn.mdOut.pixL
-			 <<" "<<sdlIn.sdIn.mdOut.pixU
-			 <<" # "<<sdlIn.sdOut.mdRef.pixL
-			 <<" "<<sdlIn.sdOut.mdRef.pixU
-			 <<" "<<sdlIn.sdOut.mdOut.pixL
-			 <<" "<<sdlIn.sdOut.mdOut.pixU
-			 <<" # "<<sdlOut.sdOut.mdRef.pixL
-			 <<" "<<sdlOut.sdOut.mdRef.pixU
-			 <<" "<<sdlOut.sdOut.mdOut.pixL
-			 <<" "<<sdlOut.sdOut.mdOut.pixU
-			 <<std::endl;	      
-	      } else {
-		std::cout<<"FF: i "<<isdlIn<<" - "<<isdlOut<<" c "<<countMatchMidPoint
-			 <<" sdlpt "<<sdlIn.pt<<" - "<<sdlOut.pt
-			 <<" # "<<sdlIn.sdIn.mdRef.pixL
-			 <<" "<<sdlIn.sdIn.mdRef.pixU
-			 <<" "<<sdlIn.sdIn.mdOut.pixL
-			 <<" "<<sdlIn.sdIn.mdOut.pixU
-			 <<" # "<<sdlIn.sdOut.mdRef.pixL
-			 <<" "<<sdlIn.sdOut.mdRef.pixU
-			 <<" "<<sdlIn.sdOut.mdOut.pixL
-			 <<" "<<sdlIn.sdOut.mdOut.pixU
-			 <<" # "<<sdlOut.sdOut.mdRef.pixL
-			 <<" "<<sdlOut.sdOut.mdRef.pixU
-			 <<" "<<sdlOut.sdOut.mdOut.pixL
-			 <<" "<<sdlOut.sdOut.mdOut.pixU
-			 <<std::endl;	      
-	      }
-	    }//if debugReco
-
-	  }//match in-out at mid-point
+      if (ptCutAll >= 1.0f){//FIXME: NEED A MORE OPTIMAL SOLUTION
+	for (auto const& sdlIn : mockLayerSDLsDNcm[SDL_L5to7] ){
+	  bool hasOuter = false;
+	  isdlIn++;
 	  
-	}//sdlOut
-      }//sdlIn
+	  int isdlOut = -1;
+	  for (auto const& sdlOut : mockLayerSDLsDNcm[SDL_L7to9]){
+	    isdlOut++;
+	    if (sdlIn.lOut == sdlOut.lIn && sdlIn.iOut == sdlOut.iIn){
+	      //shared mid-point
+	      countMatchMidPoint++;
+	      nSDLL_all++;
+	      
+	      auto const dPt = sdlIn.pt - sdlOut.pt;
+	      auto const dC = 1.f/sdlIn.pt - 1.f/sdlOut.pt;
+	      
+	      if (std::abs(dC) > 0.05 ) continue;
+	      nSDLL_dC++;
+	      if (sdlIn.sdInGhost || sdlIn.sdOutGhost || sdlOut.sdOutGhost) continue;
+	      nSDLL_pass++;
+	      
+	      if (debugReco){
+		if (sdlIn.itp >=0 && sdlOut.itp >= 0){
+		  TVector3 p3In(sim_px()[sdlIn.itp], sim_py()[sdlIn.itp], sim_pz()[sdlIn.itp]);
+		  TVector3 p3Out(sim_px()[sdlOut.itp], sim_py()[sdlOut.itp], sim_pz()[sdlOut.itp]);
+		  std::cout<<"TT: i "<<isdlIn<<" - "<<isdlOut<<" c "<<countMatchMidPoint
+			   <<" itp "<<sdlIn.itp<<" - "<<sdlOut.itp
+			   <<" ntp "<<sdlIn.ntp<<" - "<<sdlOut.ntp
+			   <<" tppt "<<p3In.Pt()<<" - "<<p3Out.Pt()
+			   <<" sdlpt "<<sdlIn.pt<<" - "<<sdlOut.pt
+			   <<" # "<<sdlIn.sdIn.mdRef.pixL
+			   <<" "<<sdlIn.sdIn.mdRef.pixU
+			   <<" "<<sdlIn.sdIn.mdOut.pixL
+			   <<" "<<sdlIn.sdIn.mdOut.pixU
+			   <<" # "<<sdlIn.sdOut.mdRef.pixL
+			   <<" "<<sdlIn.sdOut.mdRef.pixU
+			   <<" "<<sdlIn.sdOut.mdOut.pixL
+			   <<" "<<sdlIn.sdOut.mdOut.pixU
+			   <<" # "<<sdlOut.sdOut.mdRef.pixL
+			   <<" "<<sdlOut.sdOut.mdRef.pixU
+			   <<" "<<sdlOut.sdOut.mdOut.pixL
+			   <<" "<<sdlOut.sdOut.mdOut.pixU
+			   <<std::endl;
+		} else if (sdlIn.itp >=0){
+		  TVector3 p3In(sim_px()[sdlIn.itp], sim_py()[sdlIn.itp], sim_pz()[sdlIn.itp]);
+		  std::cout<<"TF: i "<<isdlIn<<" - "<<isdlOut<<" c "<<countMatchMidPoint
+			   <<" itp "<<sdlIn.itp<<" - "<<sdlOut.itp
+			   <<" ntp "<<sdlIn.ntp<<" - "<<sdlOut.ntp
+			   <<" tppt "<<p3In.Pt()<<" - "<<0.f
+			   <<" sdlpt "<<sdlIn.pt<<" - "<<sdlOut.pt
+			   <<" # "<<sdlIn.sdIn.mdRef.pixL
+			   <<" "<<sdlIn.sdIn.mdRef.pixU
+			   <<" "<<sdlIn.sdIn.mdOut.pixL
+			   <<" "<<sdlIn.sdIn.mdOut.pixU
+			   <<" # "<<sdlIn.sdOut.mdRef.pixL
+			   <<" "<<sdlIn.sdOut.mdRef.pixU
+			   <<" "<<sdlIn.sdOut.mdOut.pixL
+			   <<" "<<sdlIn.sdOut.mdOut.pixU
+			   <<" # "<<sdlOut.sdOut.mdRef.pixL
+			   <<" "<<sdlOut.sdOut.mdRef.pixU
+			   <<" "<<sdlOut.sdOut.mdOut.pixL
+			   <<" "<<sdlOut.sdOut.mdOut.pixU
+			   <<std::endl;
+		} else if (sdlOut.itp >= 0){
+		  TVector3 p3Out(sim_px()[sdlOut.itp], sim_py()[sdlOut.itp], sim_pz()[sdlOut.itp]);
+		  std::cout<<"FT: i "<<isdlIn<<" - "<<isdlOut<<" c "<<countMatchMidPoint
+			   <<" itp "<<sdlIn.itp<<" - "<<sdlOut.itp
+			   <<" ntp "<<sdlIn.ntp<<" - "<<sdlOut.ntp
+			   <<" tppt "<<0.f<<" - "<<p3Out.Pt()
+			   <<" sdlpt "<<sdlIn.pt<<" - "<<sdlOut.pt
+			   <<" # "<<sdlIn.sdIn.mdRef.pixL
+			   <<" "<<sdlIn.sdIn.mdRef.pixU
+			   <<" "<<sdlIn.sdIn.mdOut.pixL
+			   <<" "<<sdlIn.sdIn.mdOut.pixU
+			   <<" # "<<sdlIn.sdOut.mdRef.pixL
+			   <<" "<<sdlIn.sdOut.mdRef.pixU
+			   <<" "<<sdlIn.sdOut.mdOut.pixL
+			   <<" "<<sdlIn.sdOut.mdOut.pixU
+			   <<" # "<<sdlOut.sdOut.mdRef.pixL
+			   <<" "<<sdlOut.sdOut.mdRef.pixU
+			   <<" "<<sdlOut.sdOut.mdOut.pixL
+			   <<" "<<sdlOut.sdOut.mdOut.pixU
+			   <<std::endl;	      
+		} else {
+		  std::cout<<"FF: i "<<isdlIn<<" - "<<isdlOut<<" c "<<countMatchMidPoint
+			   <<" sdlpt "<<sdlIn.pt<<" - "<<sdlOut.pt
+			   <<" # "<<sdlIn.sdIn.mdRef.pixL
+			   <<" "<<sdlIn.sdIn.mdRef.pixU
+			   <<" "<<sdlIn.sdIn.mdOut.pixL
+			   <<" "<<sdlIn.sdIn.mdOut.pixU
+			   <<" # "<<sdlIn.sdOut.mdRef.pixL
+			   <<" "<<sdlIn.sdOut.mdRef.pixU
+			   <<" "<<sdlIn.sdOut.mdOut.pixL
+			   <<" "<<sdlIn.sdOut.mdOut.pixU
+			   <<" # "<<sdlOut.sdOut.mdRef.pixL
+			   <<" "<<sdlOut.sdOut.mdRef.pixU
+			   <<" "<<sdlOut.sdOut.mdOut.pixL
+			   <<" "<<sdlOut.sdOut.mdOut.pixU
+			   <<std::endl;	      
+		}
+	      }//if debugReco
+	      
+	    }//match in-out at mid-point
+	    
+	  }//sdlOut
+	}//sdlIn
 
-      std::cout<<"nSDLL 5-7-9 "
-	       <<" all "<<nSDLL_all
-	       <<" dC "<<nSDLL_dC
-	       <<" final "<<nSDLL_pass<<std::endl;
-      
+	std::cout<<"nSDLL 5-7-9 "
+		 <<" all "<<nSDLL_all
+		 <<" dC "<<nSDLL_dC
+		 <<" final "<<nSDLL_pass<<std::endl;
+      }//ptCutAll >= 1.0f
 
 
       timerA[T_timeReco].Stop();
@@ -3449,7 +3455,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	TVector3 p3(sim_px()[iSim], sim_py()[iSim], sim_pz()[iSim]);
 	bool debug = false;
 	auto tpPt = p3.Pt();
-	if (tpPt < 0.5 ) continue;
+	if (tpPt < 0.5*ptCutAll ) continue;
 	
 	auto tpEta = p3.Eta();
 	auto tpPhi = p3.Phi();
@@ -3717,12 +3723,12 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      const float dzSDIn = sdIn.mdOut.z - sdIn.mdRef.z;
 	      const float dr3SDIn = sdIn.mdOut.r - sdIn.mdRef.r;
 	      
-	      float ptSLo = 1.0f;
+	      float ptSLo = ptCutAll;
 	      if (lIn == 0){
 		//try to use seed pt: the lower bound is good
 		ptSLo = ptIn;
 		float ptErr = see_pca_ptErr()[sdIn.iRef];
-		ptSLo = std::max(1.0f, ptSLo - 10.0f*std::max(ptErr, 0.005f*ptSLo));//FIXME: check high-pt behavior
+		ptSLo = std::max(ptCutAll, ptSLo - 10.0f*std::max(ptErr, 0.005f*ptSLo));//FIXME: check high-pt behavior
 		ptSLo = std::min(10.0f, ptSLo); //don't let this run away either
 	      }
 	      const float ptCut = ptSLo;
@@ -3740,7 +3746,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		    && ( (lIn > 0 && zIn*zOut < 0) || (lIn == 0 && sdIn.p3.Z()*zOut < 0))) continue;
 
 		const float rt = rtOut;
-		const float sdlSlope = std::asin(rt*k2Rinv1GeVf/ptCut);
+		const float sdlSlope = std::asin(std::min(rt*k2Rinv1GeVf/ptCut, sinAlphaMax));
 		const float dzDrtScale = tan(sdlSlope)/sdlSlope;//FIXME: need approximate value
 		
 		if (lOut < 11){//barrel: match to Z proper
@@ -3827,7 +3833,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		    drtErr *= 9.f; //3 sigma
 		    drtErr += sdlMuls*sdlMuls*multDzDr*multDzDr/3.f*coshEta*coshEta;//sloppy; mulsThetaPos ~ 1/sqrt(3.)*mulsTheta
 		    drtErr = sqrt(drtErr);
-		    const float drtDzIn = ptIn/sdIn.p3.Z();
+		    const float drtDzIn = std::abs(ptIn/sdIn.p3.Z());//all tracks are out-going in endcaps?
 		    
 		    const float rtWindow = drtErr + rtGeom1;
 		    const float drtMean = drtDzIn*dzOutInAbs*(1.f - drOutIn*drOutIn*kRinv1GeVf*kRinv1GeVf/ptIn/ptIn/24.f);//with curved path correction
@@ -3973,17 +3979,17 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		//apply segment (SD) bend correction
 		if (mockMode == 1 || mockMode == 3){
 		  if (lIn == 0){
-		    betaOut += copysign(std::asin(sdOut.dr*k2Rinv1GeVf/std::abs(pt_beta)), betaOut);//FIXME: need a faster version
+		    betaOut += copysign(std::asin(std::min(sdOut.dr*k2Rinv1GeVf/std::abs(pt_beta), sinAlphaMax)), betaOut);//FIXME: need a faster version
 		  } else {
 		    const float diffDr = std::abs(sdIn.dr - sdOut.dr)/std::abs(sdIn.dr + sdOut.dr);
 		    if (true //do it for all//diffDr > 0.05 //only if segment length is different significantly
 			&& betaIn*betaOut > 0.f && std::abs(pt_beta) < 4.f*pt_betaMax ){ //and the pt_beta is well-defined
-		      const float betaInUpd  = betaIn + copysign(std::asin(sdIn.dr*k2Rinv1GeVf/std::abs(pt_beta)), betaIn);//FIXME: need a faster version
-		      const float betaOutUpd = betaOut + copysign(std::asin(sdOut.dr*k2Rinv1GeVf/std::abs(pt_beta)), betaOut);//FIXME: need a faster version
+		      const float betaInUpd  = betaIn + copysign(std::asin(std::min(sdIn.dr*k2Rinv1GeVf/std::abs(pt_beta), sinAlphaMax)), betaIn);//FIXME: need a faster version
+		      const float betaOutUpd = betaOut + copysign(std::asin(std::min(sdOut.dr*k2Rinv1GeVf/std::abs(pt_beta), sinAlphaMax)), betaOut);//FIXME: need a faster version
 		      betaAv = 0.5f*(betaInUpd + betaOutUpd);
 		      pt_beta = dr*k2Rinv1GeVf/sin(betaAv);//get a better pt estimate
-		      betaIn  += copysign(std::asin(sdIn.dr*k2Rinv1GeVf/std::abs(pt_beta)), betaIn);//FIXME: need a faster version
-		      betaOut += copysign(std::asin(sdOut.dr*k2Rinv1GeVf/std::abs(pt_beta)), betaOut);//FIXME: need a faster version
+		      betaIn  += copysign(std::asin(std::min(sdIn.dr*k2Rinv1GeVf/std::abs(pt_beta), sinAlphaMax)), betaIn);//FIXME: need a faster version
+		      betaOut += copysign(std::asin(std::min(sdOut.dr*k2Rinv1GeVf/std::abs(pt_beta), sinAlphaMax)), betaOut);//FIXME: need a faster version
 		      //update the av and pt
 		      betaAv = 0.5f*(betaIn + betaOut);
 		      pt_beta = dr*k2Rinv1GeVf/sin(betaAv);//get a better pt estimate		  
@@ -3991,7 +3997,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		  }
 		}
 		
-		const float betaOut_cut = std::asin(dr*k2Rinv1GeVf/ptCut) + (mockMode == 3 ? 0.02f/sdOut.d : 0.f);//FIXME: need faster version
+		const float betaOut_cut = std::asin(std::min(dr*k2Rinv1GeVf/ptCut, sinAlphaMax)) + (mockMode == 3 ? 0.02f/sdOut.d : 0.f);//FIXME: need faster version
 		if (std::abs(betaOut) < betaOut_cut) sdlFlag |=  1 << SDLSelectFlags::dAlphaOut;
 
 		float pt_betaIn = dr*k2Rinv1GeVf/sin(betaIn);
@@ -4003,8 +4009,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 
 		const float alphaAbs = std::max(std::max(std::abs(sdIn.alpha), std::abs(sdOut.alpha)), 0.01f);
 		//regularize to alpha of pt_betaMax .. review may want to add resolution
-		const float alphaInAbsReg = useFullR3Endcap ? 0.f : std::max(std::abs(sdIn.alpha), std::asin(sdIn.rt*k2Rinv1GeVf/3.0f));
-		const float alphaOutAbsReg = useFullR3Endcap ? 0.f : std::max(std::abs(sdOut.alpha), std::asin(sdOut.rt*k2Rinv1GeVf/3.0f));
+		const float alphaInAbsReg = useFullR3Endcap ? 0.f : std::max(std::abs(sdIn.alpha), std::asin(std::min(sdIn.rt*k2Rinv1GeVf/3.0f, sinAlphaMax)));
+		const float alphaOutAbsReg = useFullR3Endcap ? 0.f : std::max(std::abs(sdOut.alpha), std::asin(std::min(sdOut.rt*k2Rinv1GeVf/3.0f, sinAlphaMax)));
 		const float dBetaLum2 = 0.0f + (lIn < 11 ? 0.0f : alphaInAbsReg*alphaInAbsReg*deltaZLum*deltaZLum/sdIn.z/sdIn.z)
 		  +  (lOut < 11 ? 0.0f : alphaOutAbsReg*alphaOutAbsReg*deltaZLum*deltaZLum/sdOut.z/sdOut.z);
 		const float dBetaCut2 = (dBetaRes*dBetaRes*2.0f + dBetaMuls*dBetaMuls)
@@ -4026,7 +4032,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 			   <<std::endl;
 		}
 		// if (lIn == 0 && lOut == 7 && tpPt > 1.5f && tpPt < 2.0f){
-		//   std::cout<<__LINE__<<" 5-7: tPt "<<tpPt <<"bO "<<betaOut<<" bOc "<<betaOut_cut<<" = "<<std::asin(dr*k2Rinv1GeVf/ptCut)<<" + "<<0.02f/sdOut.d
+		//   std::cout<<__LINE__<<" 5-7: tPt "<<tpPt <<"bO "<<betaOut<<" bOc "<<betaOut_cut<<" = "<<std::asin(std::min(dr*k2Rinv1GeVf/ptCut, sinAlphaMax)<<" + "<<0.02f/sdOut.d
 		// 	   <<" dr "<<dr<<" ptCut "<<ptCut<<" ptIn "<<ptIn
 		// 	   <<" bI "<<betaIn<<" dB "<<dBeta<<" dBc "<<sqrt(dBetaCut2)
 		// 	   <<std::endl;
