@@ -2821,8 +2821,10 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	int ndBeta = 0;
 	
 	const float zGeom = mockMode == 3 ?
-	  (lIn >= 0 && lIn <= 7 && lOut >= 5 && lOut <= 7 ? 2.f*pixelPSZpitch : 2.f*strip2SZpitch)//twice the macro-pixel or strip size
-	  : 0.f;//precise hits otherwise
+	(lIn == 0 ? 0.05f : ( (lIn >= 5 && lIn <= 7) ? pixelPSZpitch : ( (lIn >= 8 && lIn <= 10) ? strip2SZpitch : 0.f)))
+	+//add the macro-pixel or strip size
+	(lOut == 0 ? 0.05f : ( (lOut >= 5 && lOut <= 7) ? pixelPSZpitch : ( (lOut >= 8 && lOut <= 10) ? strip2SZpitch : 0.f)))	      
+	: 0.f;//precise hits otherwise
 	
 	int iIn = -1;
 	for ( auto const& sdIn : sdInV ) {
@@ -2883,11 +2885,13 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		const float rtGeom1 = mockMode == 3 ?
 		  (rtOut < disks2SMaxRadius ? pixelPSZpitch : strip2SZpitch)//FIXME: make this chosen by configuration for lay11,12 full PS
 		  : 0.f;//precise hits otherwise
-		const float zGeom1 = 0.5f*std::copysign(zGeom,zIn); //used in B-E region
+		const float zGeom1 = std::copysign(zGeom,zIn); //used in B-E region
 
 		const float rtLo = rtIn*(1.f + (zOut - zIn - zGeom1)/(zIn + zGeom1 + dLum)/dzDrtScale) - rtGeom1;//slope correction only on the lower end
 		if (rtOut < rtLo && cumulativeCuts) continue;
-		const float rtHi = rtIn*(1.f + (zOut - zIn + zGeom1)/(zIn - zGeom1 - dLum)) + rtGeom1;
+		float zInForHi = zIn - zGeom1 - dLum;
+		if (zInForHi*zIn < 0 ) zInForHi = std::copysign(0.1f, zIn);
+		const float rtHi = rtIn*(1.f + (zOut - zIn + zGeom1)/zInForHi) + rtGeom1;
 		if (!(rtOut < rtLo || rtOut > rtHi)) sdlFlag |= 1 << SDLSelectFlags::deltaZ;
 		else if (cumulativeCuts ) continue;
 	      } else {//E-E
@@ -3712,7 +3716,9 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    std::vector<std::pair<SDLink, int> > vSDLwInfo_4of4;
 
 	    const float zGeom = mockMode == 3 ?
-	      (lIn >= 0 && lIn <= 7 && lOut >= 5 && lOut <= 7 ? 2.f*pixelPSZpitch : 2.f*strip2SZpitch)//twice the macro-pixel or strip size
+	      (lIn == 0 ? 0.05f : ( (lIn >= 5 && lIn <= 7) ? pixelPSZpitch : ( (lIn >= 8 && lIn <= 10) ? strip2SZpitch : 0.f)))
+	      +//add the macro-pixel or strip size
+	      (lOut == 0 ? 0.05f : ( (lOut >= 5 && lOut <= 7) ? pixelPSZpitch : ( (lOut >= 8 && lOut <= 10) ? strip2SZpitch : 0.f)))	      
 	      : 0.f;//precise hits otherwise
 
 	    bool debugSimMatching = tpPt < 2 && hasSDIn_4of4 && hasSDOut_4of4 && has8MHs && has4MDs && debug;
@@ -3769,14 +3775,31 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		    const float rtGeom1 = mockMode == 3 ?
 		      (rtOut < disks2SMaxRadius ? pixelPSZpitch : strip2SZpitch)//FIXME: make this chosen by configuration for lay11,12 full PS
 		      : 0.f;//precise hits otherwise
-		    const float zGeom1 = 0.5f*std::copysign(zGeom,zIn);
+		    const float zGeom1 = std::copysign(zGeom,zIn);
 
 		    const float rtLo = rtIn*(1.f + (zOut - zIn - zGeom1)/(zIn + zGeom1 + dLum)/dzDrtScale) - rtGeom1;//slope correction only on the lower end
-		    const float rtHi = rtIn*(1.f + (zOut - zIn + zGeom1)/(zIn - zGeom1 - dLum)) + rtGeom1;
+		    float zInForHi = zIn - zGeom1 - dLum;
+		    if (zInForHi*zIn < 0 ) zInForHi = std::copysign(0.1f, zIn);		    
+		    const float rtHi = rtIn*(1.f + (zOut - zIn + zGeom1)/zInForHi) + rtGeom1;
 
 		    if (rtOut > rtLo && rtOut < rtHi) sdlFlag |= 1 << SDLSelectFlags::deltaZ;
-		    if (debugSimMatching && !(sdlFlag & 1 << SDLSelectFlags::deltaZ) ){
-		      std::cout<<"Lum region failed: tpPt "<<tpPt<<" lIn "<<lIn <<" rtLo "<<rtLo<<" rtHi "<<rtHi<<" vs rtOut "<<rtOut<<std::endl;
+		    if (debugSimMatching && lIn == 0 && lOut == 11 && tpPt >0.8 && tpPt < 1.0 && std::sqrt(prodR2)<0.05 && !(sdlFlag & 1 << SDLSelectFlags::deltaZ) ){
+		      std::cout<<"Lum region failed: tpPt "<<tpPt<<" tpEta "<<tpEta<<" tpZ "<<prodZ
+			       <<" lIn "<<lIn <<" rtLo "<<rtLo<<" rtHi "<<rtHi<<" vs rtOut "<<rtOut
+			       <<" ptIn "<<ptIn<<" ptCut "<<ptCut
+			       <<" rtIn "<<rtIn<<" zO "<<zOut<<" zI "<<zIn<<" zG1 "<<zGeom1<<" rtG1 "<<rtGeom1
+			       <<std::endl;
+		      for (int iPix = 0; iPix< nPix; ++iPix){
+			
+			int iipix = sim_pixelIdx()[iSim][iPix];
+			PixelHit pixH(iipix);
+			int lay = pixH.lay;
+			
+			std::cout<<" "<<lay<<" "<<iipix<<std::endl;		      
+			if (pixH.p3s.Pt()>0.8*tpPt){
+			  pixH.print("\t");
+			}
+		      }//iPix; pixelhits
 		    }
 		  } else {//E-E
 		    const float rtGeom = mockMode == 3 ?
