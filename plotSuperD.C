@@ -74,7 +74,7 @@ void plotEffOverlay(const TString ltol, const TString ltolTxt, bool include_g2 =
   auto leg = new TLegend(0.6, 0.12, 0.9, 0.37);
   leg->SetBorderSize(0);
   leg->SetFillColor(0);
-  leg->AddEntry(he_b, "Baseline", "LP");
+  leg->AddEntry(he_b, "Equidistant", "LP");
   leg->AddEntry(he_g8, "Grouped 8 cm", "LP");
   if (include_g2) leg->AddEntry(he_g2, "Grouped 2 cm", "LP");
   leg->Draw();
