@@ -6,7 +6,9 @@ void printEfficiency(const TFile* f, const std::string hN, const std::string hD)
 
 }
 
-void plotEffOverlay(const TString ltol, const TString ltolTxt, bool include_g2 = false){
+void plotEffOverlay(const TString ltol, const TString ltolTxt, bool include_g2 = false, bool zoomY = true, bool pt1GeV = true){
+  const float minY = zoomY ? 0.9f : 0.0f;
+  const float minX = pt1GeV ? 0.51 : 0.31;
   auto fb = new TFile("outHistogramsSuperD_mm3_D16.0cm24.0cm_us1.root");
   auto fg2 = include_g2 ? new TFile("outHistogramsSuperD_mm3_D2.0cm2.0cm_us1.root") : nullptr;  
   auto fg8 = new TFile("outHistogramsSuperD_mm3_D8.0cm8.0cm_us1.root");
@@ -48,11 +50,11 @@ void plotEffOverlay(const TString ltol, const TString ltolTxt, bool include_g2 =
   he_b->Draw();
   gPad->PaintModified();
   pg = he_b->GetPaintedGraph();
-  pg->SetMinimum(0.9);
+  pg->SetMinimum(minY);
   pg->SetMaximum(1.02);
   auto ax = pg->GetXaxis();
 
-  ax->SetLimits(0.51, ax->GetXmax());
+  ax->SetLimits(minX, ax->GetXmax());
   gPad->SetLogx();
   gPad->SetGridx();
   gPad->SetGridy();
@@ -60,7 +62,7 @@ void plotEffOverlay(const TString ltol, const TString ltolTxt, bool include_g2 =
   he_g8->Draw("same");
 
   std::cout<<"Relative ratios:"<<std::endl;
-  for (int i = 7; i < 12; ++i){
+  for (int i = pt1GeV ? 7 : 4; i < 12; ++i){//only 1 GeV and 0.5 GeV options; binning changes
     std::cout<<"p_T > "<<hn_b->GetXaxis()->GetBinLowEdge(i)
 	     <<" d(b) "<<hd_b->Integral(i,100) <<" d(8) "<< hd_g8->Integral(i,100)
 	     <<" e(b)/e(g8) "<<(hn_b->Integral(i,100)/hd_b->Integral(i,100))/(hn_g8->Integral(i,100)/hd_g8->Integral(i,100));
@@ -69,12 +71,12 @@ void plotEffOverlay(const TString ltol, const TString ltolTxt, bool include_g2 =
     std::cout<<std::endl;
   }
     
-  auto leg = new TLegend(0.7, 0.15, 0.9, 0.35);
+  auto leg = new TLegend(0.6, 0.12, 0.9, 0.37);
   leg->SetBorderSize(0);
   leg->SetFillColor(0);
   leg->AddEntry(he_b, "Baseline", "LP");
   leg->AddEntry(he_g8, "Grouped 8 cm", "LP");
   if (include_g2) leg->AddEntry(he_g2, "Grouped 2 cm", "LP");
   leg->Draw();
-  gPad->SaveAs("heff_"+ltol+"_SDL_8MH_b_vs_g8"+ (include_g2? "_vs_g2" : "")+".png");
+  gPad->SaveAs("heff_"+ltol+"_SDL_8MH_b_vs_g8"+ (include_g2? "_vs_g2" : "")+(zoomY ? "min0.9" : "")+".png");
 }
