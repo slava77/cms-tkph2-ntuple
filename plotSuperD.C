@@ -13,8 +13,8 @@ void plotEffOverlay(const TString ltol, const TString ltolTxt, bool include_g2 =
   auto fg2 = include_g2 ? new TFile("outHistogramsSuperD_mm3_D2.0cm2.0cm_us1.root") : nullptr;  
   auto fg8 = new TFile("outHistogramsSuperD_mm3_D8.0cm8.0cm_us1.root");
 
-  hd_b = (TH1F*)fb->Get("h_num8MH_"+ltol+"_pt");
-  hn_b = (TH1F*)fb->Get("h_numSDL_4of4_"+ltol+"_pt");
+  hd_b = (TH1F*)fb->Get("h_num8MH_"+ltol+"_loProdXY_pt");
+  hn_b = (TH1F*)fb->Get("h_numSDL_4of4_"+ltol+"_loProdXY_pt");
   he_b = new TEfficiency(*hn_b, *hd_b);
   he_b->SetTitle("Barrel-barrel "+ltolTxt+", PU=140; p_{T}, GeV; Efficiency");
 
@@ -22,13 +22,13 @@ void plotEffOverlay(const TString ltol, const TString ltolTxt, bool include_g2 =
   TH1F* hn_g2;
   TEfficiency* he_g2;
   if (include_g2){
-    hd_g2 = (TH1F*)fg2->Get("h_num8MH_"+ltol+"_pt");
-    hn_g2 = (TH1F*)fg2->Get("h_numSDL_4of4_"+ltol+"_pt");
+    hd_g2 = (TH1F*)fg2->Get("h_num8MH_"+ltol+"_loProdXY_pt");
+    hn_g2 = (TH1F*)fg2->Get("h_numSDL_4of4_"+ltol+"_loProdXY_pt");
     he_g2 = new TEfficiency(*hn_g2, *hd_g2);
   }
 
-  hd_g8 = (TH1F*)fg8->Get("h_num8MH_"+ltol+"_pt");
-  hn_g8 = (TH1F*)fg8->Get("h_numSDL_4of4_"+ltol+"_pt");
+  hd_g8 = (TH1F*)fg8->Get("h_num8MH_"+ltol+"_loProdXY_pt");
+  hn_g8 = (TH1F*)fg8->Get("h_numSDL_4of4_"+ltol+"_loProdXY_pt");
   he_g8 = new TEfficiency(*hn_g8, *hd_g8);
 
   he_b->SetLineColor(kBlue);
