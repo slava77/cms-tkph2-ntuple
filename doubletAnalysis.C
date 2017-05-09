@@ -1429,7 +1429,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
   const float minTPdxy = 0;
   const float maxTPdxy = 1e9;
   const float maxTPdz = 1e9;
-  const float ptCutAll = 0.5f;
+  const float ptCutAll = 1.0f;
   const float sinAlphaMax = 0.95f;
   //mockMode:
   //0 for helix to ref and then straight line;
