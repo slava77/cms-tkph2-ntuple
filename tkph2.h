@@ -16,6 +16,15 @@ class tkph2 {
 private: 
 protected: 
 	unsigned int index;
+	unsigned long long	event_;
+	TBranch *event_branch;
+	bool event_isLoaded;
+	unsigned int	lumi_;
+	TBranch *lumi_branch;
+	bool lumi_isLoaded;
+	unsigned int	run_;
+	TBranch *run_branch;
+	bool run_isLoaded;
 	vector<float> *trk_px_;
 	TBranch *trk_px_branch;
 	bool trk_px_isLoaded;
@@ -28,9 +37,39 @@ protected:
 	vector<float> *trk_pt_;
 	TBranch *trk_pt_branch;
 	bool trk_pt_isLoaded;
+	vector<float> *trk_inner_px_;
+	TBranch *trk_inner_px_branch;
+	bool trk_inner_px_isLoaded;
+	vector<float> *trk_inner_py_;
+	TBranch *trk_inner_py_branch;
+	bool trk_inner_py_isLoaded;
+	vector<float> *trk_inner_pz_;
+	TBranch *trk_inner_pz_branch;
+	bool trk_inner_pz_isLoaded;
+	vector<float> *trk_inner_pt_;
+	TBranch *trk_inner_pt_branch;
+	bool trk_inner_pt_isLoaded;
+	vector<float> *trk_outer_px_;
+	TBranch *trk_outer_px_branch;
+	bool trk_outer_px_isLoaded;
+	vector<float> *trk_outer_py_;
+	TBranch *trk_outer_py_branch;
+	bool trk_outer_py_isLoaded;
+	vector<float> *trk_outer_pz_;
+	TBranch *trk_outer_pz_branch;
+	bool trk_outer_pz_isLoaded;
+	vector<float> *trk_outer_pt_;
+	TBranch *trk_outer_pt_branch;
+	bool trk_outer_pt_isLoaded;
 	vector<float> *trk_eta_;
 	TBranch *trk_eta_branch;
 	bool trk_eta_isLoaded;
+	vector<float> *trk_lambda_;
+	TBranch *trk_lambda_branch;
+	bool trk_lambda_isLoaded;
+	vector<float> *trk_cotTheta_;
+	TBranch *trk_cotTheta_branch;
+	bool trk_cotTheta_isLoaded;
 	vector<float> *trk_phi_;
 	TBranch *trk_phi_branch;
 	bool trk_phi_isLoaded;
@@ -46,6 +85,9 @@ protected:
 	vector<float> *trk_etaErr_;
 	TBranch *trk_etaErr_branch;
 	bool trk_etaErr_isLoaded;
+	vector<float> *trk_lambdaErr_;
+	TBranch *trk_lambdaErr_branch;
+	bool trk_lambdaErr_isLoaded;
 	vector<float> *trk_phiErr_;
 	TBranch *trk_phiErr_branch;
 	bool trk_phiErr_isLoaded;
@@ -55,48 +97,96 @@ protected:
 	vector<float> *trk_dzErr_;
 	TBranch *trk_dzErr_branch;
 	bool trk_dzErr_isLoaded;
+	vector<float> *trk_refpoint_x_;
+	TBranch *trk_refpoint_x_branch;
+	bool trk_refpoint_x_isLoaded;
+	vector<float> *trk_refpoint_y_;
+	TBranch *trk_refpoint_y_branch;
+	bool trk_refpoint_y_isLoaded;
+	vector<float> *trk_refpoint_z_;
+	TBranch *trk_refpoint_z_branch;
+	bool trk_refpoint_z_isLoaded;
 	vector<float> *trk_nChi2_;
 	TBranch *trk_nChi2_branch;
 	bool trk_nChi2_isLoaded;
-	vector<float> *trk_shareFrac_;
-	TBranch *trk_shareFrac_branch;
-	bool trk_shareFrac_isLoaded;
 	vector<int> *trk_q_;
 	TBranch *trk_q_branch;
 	bool trk_q_isLoaded;
-	vector<int> *trk_nValid_;
+	vector<unsigned int> *trk_nValid_;
 	TBranch *trk_nValid_branch;
 	bool trk_nValid_isLoaded;
-	vector<int> *trk_nInvalid_;
+	vector<unsigned int> *trk_nInvalid_;
 	TBranch *trk_nInvalid_branch;
 	bool trk_nInvalid_isLoaded;
-	vector<int> *trk_nPixel_;
+	vector<unsigned int> *trk_nPixel_;
 	TBranch *trk_nPixel_branch;
 	bool trk_nPixel_isLoaded;
-	vector<int> *trk_nStrip_;
+	vector<unsigned int> *trk_nStrip_;
 	TBranch *trk_nStrip_branch;
 	bool trk_nStrip_isLoaded;
-	vector<int> *trk_n3DLay_;
+	vector<unsigned int> *trk_nPixelLay_;
+	TBranch *trk_nPixelLay_branch;
+	bool trk_nPixelLay_isLoaded;
+	vector<unsigned int> *trk_nStripLay_;
+	TBranch *trk_nStripLay_branch;
+	bool trk_nStripLay_isLoaded;
+	vector<unsigned int> *trk_n3DLay_;
 	TBranch *trk_n3DLay_branch;
 	bool trk_n3DLay_isLoaded;
-	vector<int> *trk_algo_;
+	vector<unsigned int> *trk_nOuterLost_;
+	TBranch *trk_nOuterLost_branch;
+	bool trk_nOuterLost_isLoaded;
+	vector<unsigned int> *trk_nInnerLost_;
+	TBranch *trk_nInnerLost_branch;
+	bool trk_nInnerLost_isLoaded;
+	vector<unsigned int> *trk_algo_;
 	TBranch *trk_algo_branch;
 	bool trk_algo_isLoaded;
-	vector<int> *trk_isHP_;
+	vector<unsigned int> *trk_originalAlgo_;
+	TBranch *trk_originalAlgo_branch;
+	bool trk_originalAlgo_isLoaded;
+	vector<ULong64_t> *trk_algoMask_;
+	TBranch *trk_algoMask_branch;
+	bool trk_algoMask_isLoaded;
+	vector<unsigned short> *trk_stopReason_;
+	TBranch *trk_stopReason_branch;
+	bool trk_stopReason_isLoaded;
+	vector<short> *trk_isHP_;
 	TBranch *trk_isHP_branch;
 	bool trk_isHP_isLoaded;
 	vector<int> *trk_seedIdx_;
 	TBranch *trk_seedIdx_branch;
 	bool trk_seedIdx_isLoaded;
-	vector<int> *trk_simIdx_;
-	TBranch *trk_simIdx_branch;
-	bool trk_simIdx_isLoaded;
-	vector<vector<int> > *trk_pixelIdx_;
-	TBranch *trk_pixelIdx_branch;
-	bool trk_pixelIdx_isLoaded;
-	vector<vector<int> > *trk_stripIdx_;
-	TBranch *trk_stripIdx_branch;
-	bool trk_stripIdx_isLoaded;
+	vector<int> *trk_vtxIdx_;
+	TBranch *trk_vtxIdx_branch;
+	bool trk_vtxIdx_isLoaded;
+	vector<vector<float> > *trk_shareFrac_;
+	TBranch *trk_shareFrac_branch;
+	bool trk_shareFrac_isLoaded;
+	vector<vector<int> > *trk_simTrkIdx_;
+	TBranch *trk_simTrkIdx_branch;
+	bool trk_simTrkIdx_isLoaded;
+	vector<vector<int> > *trk_hitIdx_;
+	TBranch *trk_hitIdx_branch;
+	bool trk_hitIdx_isLoaded;
+	vector<vector<int> > *trk_hitType_;
+	TBranch *trk_hitType_branch;
+	bool trk_hitType_isLoaded;
+	vector<int> *sim_event_;
+	TBranch *sim_event_branch;
+	bool sim_event_isLoaded;
+	vector<int> *sim_bunchCrossing_;
+	TBranch *sim_bunchCrossing_branch;
+	bool sim_bunchCrossing_isLoaded;
+	vector<int> *sim_pdgId_;
+	TBranch *sim_pdgId_branch;
+	bool sim_pdgId_isLoaded;
+	vector<vector<int> > *sim_genPdgIds_;
+	TBranch *sim_genPdgIds_branch;
+	bool sim_genPdgIds_isLoaded;
+	vector<int> *sim_isFromBHadron_;
+	TBranch *sim_isFromBHadron_branch;
+	bool sim_isFromBHadron_isLoaded;
 	vector<float> *sim_px_;
 	TBranch *sim_px_branch;
 	bool sim_px_isLoaded;
@@ -115,75 +205,93 @@ protected:
 	vector<float> *sim_phi_;
 	TBranch *sim_phi_branch;
 	bool sim_phi_isLoaded;
-	vector<float> *sim_dxy_;
-	TBranch *sim_dxy_branch;
-	bool sim_dxy_isLoaded;
-	vector<float> *sim_dz_;
-	TBranch *sim_dz_branch;
-	bool sim_dz_isLoaded;
-	vector<float> *sim_prodx_;
-	TBranch *sim_prodx_branch;
-	bool sim_prodx_isLoaded;
-	vector<float> *sim_prody_;
-	TBranch *sim_prody_branch;
-	bool sim_prody_isLoaded;
-	vector<float> *sim_prodz_;
-	TBranch *sim_prodz_branch;
-	bool sim_prodz_isLoaded;
-	vector<float> *sim_shareFrac_;
-	TBranch *sim_shareFrac_branch;
-	bool sim_shareFrac_isLoaded;
+	vector<float> *sim_pca_pt_;
+	TBranch *sim_pca_pt_branch;
+	bool sim_pca_pt_isLoaded;
+	vector<float> *sim_pca_eta_;
+	TBranch *sim_pca_eta_branch;
+	bool sim_pca_eta_isLoaded;
+	vector<float> *sim_pca_lambda_;
+	TBranch *sim_pca_lambda_branch;
+	bool sim_pca_lambda_isLoaded;
+	vector<float> *sim_pca_cotTheta_;
+	TBranch *sim_pca_cotTheta_branch;
+	bool sim_pca_cotTheta_isLoaded;
+	vector<float> *sim_pca_phi_;
+	TBranch *sim_pca_phi_branch;
+	bool sim_pca_phi_isLoaded;
+	vector<float> *sim_pca_dxy_;
+	TBranch *sim_pca_dxy_branch;
+	bool sim_pca_dxy_isLoaded;
+	vector<float> *sim_pca_dz_;
+	TBranch *sim_pca_dz_branch;
+	bool sim_pca_dz_isLoaded;
 	vector<int> *sim_q_;
 	TBranch *sim_q_branch;
 	bool sim_q_isLoaded;
-	vector<int> *sim_nValid_;
+	vector<unsigned int> *sim_nValid_;
 	TBranch *sim_nValid_branch;
 	bool sim_nValid_isLoaded;
-	vector<int> *sim_nPixel_;
+	vector<unsigned int> *sim_nPixel_;
 	TBranch *sim_nPixel_branch;
 	bool sim_nPixel_isLoaded;
-	vector<int> *sim_nStrip_;
+	vector<unsigned int> *sim_nStrip_;
 	TBranch *sim_nStrip_branch;
 	bool sim_nStrip_isLoaded;
-	vector<int> *sim_n3DLay_;
+	vector<unsigned int> *sim_nLay_;
+	TBranch *sim_nLay_branch;
+	bool sim_nLay_isLoaded;
+	vector<unsigned int> *sim_nPixelLay_;
+	TBranch *sim_nPixelLay_branch;
+	bool sim_nPixelLay_isLoaded;
+	vector<unsigned int> *sim_n3DLay_;
 	TBranch *sim_n3DLay_branch;
 	bool sim_n3DLay_isLoaded;
-	vector<int> *sim_trkIdx_;
+	vector<vector<int> > *sim_trkIdx_;
 	TBranch *sim_trkIdx_branch;
 	bool sim_trkIdx_isLoaded;
-	vector<vector<int> > *sim_pixelIdx_;
-	TBranch *sim_pixelIdx_branch;
-	bool sim_pixelIdx_isLoaded;
-	vector<vector<int> > *sim_stripIdx_;
-	TBranch *sim_stripIdx_branch;
-	bool sim_stripIdx_isLoaded;
-	vector<int> *pix_isBarrel_;
+	vector<vector<float> > *sim_shareFrac_;
+	TBranch *sim_shareFrac_branch;
+	bool sim_shareFrac_isLoaded;
+	vector<vector<int> > *sim_seedIdx_;
+	TBranch *sim_seedIdx_branch;
+	bool sim_seedIdx_isLoaded;
+	vector<int> *sim_parentVtxIdx_;
+	TBranch *sim_parentVtxIdx_branch;
+	bool sim_parentVtxIdx_isLoaded;
+	vector<vector<int> > *sim_decayVtxIdx_;
+	TBranch *sim_decayVtxIdx_branch;
+	bool sim_decayVtxIdx_isLoaded;
+	vector<vector<int> > *sim_simHitIdx_;
+	TBranch *sim_simHitIdx_branch;
+	bool sim_simHitIdx_isLoaded;
+	vector<short> *pix_isBarrel_;
 	TBranch *pix_isBarrel_branch;
 	bool pix_isBarrel_isLoaded;
-	vector<int> *pix_lay_;
+	vector<unsigned short> *pix_det_;
+	TBranch *pix_det_branch;
+	bool pix_det_isLoaded;
+	vector<unsigned short> *pix_lay_;
 	TBranch *pix_lay_branch;
 	bool pix_lay_isLoaded;
-	vector<int> *pix_detId_;
+	vector<unsigned int> *pix_detId_;
 	TBranch *pix_detId_branch;
 	bool pix_detId_isLoaded;
-	vector<int> *pix_nSimTrk_;
-	TBranch *pix_nSimTrk_branch;
-	bool pix_nSimTrk_isLoaded;
-	vector<int> *pix_simTrkIdx_;
-	TBranch *pix_simTrkIdx_branch;
-	bool pix_simTrkIdx_isLoaded;
-	vector<int> *pix_particle_;
-	TBranch *pix_particle_branch;
-	bool pix_particle_isLoaded;
-	vector<int> *pix_process_;
-	TBranch *pix_process_branch;
-	bool pix_process_isLoaded;
-	vector<int> *pix_bunchXing_;
-	TBranch *pix_bunchXing_branch;
-	bool pix_bunchXing_isLoaded;
-	vector<int> *pix_event_;
-	TBranch *pix_event_branch;
-	bool pix_event_isLoaded;
+	vector<vector<int> > *pix_trkIdx_;
+	TBranch *pix_trkIdx_branch;
+	bool pix_trkIdx_isLoaded;
+	vector<vector<int> > *pix_seeIdx_;
+	TBranch *pix_seeIdx_branch;
+	bool pix_seeIdx_isLoaded;
+	vector<vector<int> > *pix_simHitIdx_;
+	TBranch *pix_simHitIdx_branch;
+	bool pix_simHitIdx_isLoaded;
+	vector<vector<float> > *pix_chargeFraction_;
+	TBranch *pix_chargeFraction_branch;
+	bool pix_chargeFraction_isLoaded;
+	vector<unsigned short> *pix_simType_;
+	TBranch *pix_simType_branch;
+	bool pix_simType_isLoaded;
 	vector<float> *pix_x_;
 	TBranch *pix_x_branch;
 	bool pix_x_isLoaded;
@@ -211,192 +319,132 @@ protected:
 	vector<float> *pix_zx_;
 	TBranch *pix_zx_branch;
 	bool pix_zx_isLoaded;
-	vector<float> *pix_xsim_;
-	TBranch *pix_xsim_branch;
-	bool pix_xsim_isLoaded;
-	vector<float> *pix_ysim_;
-	TBranch *pix_ysim_branch;
-	bool pix_ysim_isLoaded;
-	vector<float> *pix_zsim_;
-	TBranch *pix_zsim_branch;
-	bool pix_zsim_isLoaded;
-	vector<float> *pix_pxsim_;
-	TBranch *pix_pxsim_branch;
-	bool pix_pxsim_isLoaded;
-	vector<float> *pix_pysim_;
-	TBranch *pix_pysim_branch;
-	bool pix_pysim_isLoaded;
-	vector<float> *pix_pzsim_;
-	TBranch *pix_pzsim_branch;
-	bool pix_pzsim_isLoaded;
-	vector<float> *pix_pathprop_;
-	TBranch *pix_pathprop_branch;
-	bool pix_pathprop_isLoaded;
-	vector<float> *pix_xsimprop_;
-	TBranch *pix_xsimprop_branch;
-	bool pix_xsimprop_isLoaded;
-	vector<float> *pix_ysimprop_;
-	TBranch *pix_ysimprop_branch;
-	bool pix_ysimprop_isLoaded;
-	vector<float> *pix_zsimprop_;
-	TBranch *pix_zsimprop_branch;
-	bool pix_zsimprop_isLoaded;
-	vector<float> *pix_pxsimprop_;
-	TBranch *pix_pxsimprop_branch;
-	bool pix_pxsimprop_isLoaded;
-	vector<float> *pix_pysimprop_;
-	TBranch *pix_pysimprop_branch;
-	bool pix_pysimprop_isLoaded;
-	vector<float> *pix_pzsimprop_;
-	TBranch *pix_pzsimprop_branch;
-	bool pix_pzsimprop_isLoaded;
-	vector<float> *pix_eloss_;
-	TBranch *pix_eloss_branch;
-	bool pix_eloss_isLoaded;
 	vector<float> *pix_radL_;
 	TBranch *pix_radL_branch;
 	bool pix_radL_isLoaded;
 	vector<float> *pix_bbxi_;
 	TBranch *pix_bbxi_branch;
 	bool pix_bbxi_isLoaded;
-	vector<int> *str_isBarrel_;
-	TBranch *str_isBarrel_branch;
-	bool str_isBarrel_isLoaded;
-	vector<int> *str_isStereo_;
-	TBranch *str_isStereo_branch;
-	bool str_isStereo_isLoaded;
-	vector<int> *str_det_;
-	TBranch *str_det_branch;
-	bool str_det_isLoaded;
-	vector<int> *str_lay_;
-	TBranch *str_lay_branch;
-	bool str_lay_isLoaded;
-	vector<int> *str_detId_;
-	TBranch *str_detId_branch;
-	bool str_detId_isLoaded;
-	vector<int> *str_nSimTrk_;
-	TBranch *str_nSimTrk_branch;
-	bool str_nSimTrk_isLoaded;
-	vector<int> *str_simTrkIdx_;
-	TBranch *str_simTrkIdx_branch;
-	bool str_simTrkIdx_isLoaded;
-	vector<int> *str_particle_;
-	TBranch *str_particle_branch;
-	bool str_particle_isLoaded;
-	vector<int> *str_process_;
-	TBranch *str_process_branch;
-	bool str_process_isLoaded;
-	vector<int> *str_bunchXing_;
-	TBranch *str_bunchXing_branch;
-	bool str_bunchXing_isLoaded;
-	vector<int> *str_event_;
-	TBranch *str_event_branch;
-	bool str_event_isLoaded;
-	vector<float> *str_x_;
-	TBranch *str_x_branch;
-	bool str_x_isLoaded;
-	vector<float> *str_y_;
-	TBranch *str_y_branch;
-	bool str_y_isLoaded;
-	vector<float> *str_z_;
-	TBranch *str_z_branch;
-	bool str_z_isLoaded;
-	vector<float> *str_xx_;
-	TBranch *str_xx_branch;
-	bool str_xx_isLoaded;
-	vector<float> *str_xy_;
-	TBranch *str_xy_branch;
-	bool str_xy_isLoaded;
-	vector<float> *str_yy_;
-	TBranch *str_yy_branch;
-	bool str_yy_isLoaded;
-	vector<float> *str_yz_;
-	TBranch *str_yz_branch;
-	bool str_yz_isLoaded;
-	vector<float> *str_zz_;
-	TBranch *str_zz_branch;
-	bool str_zz_isLoaded;
-	vector<float> *str_zx_;
-	TBranch *str_zx_branch;
-	bool str_zx_isLoaded;
-	vector<float> *str_xsim_;
-	TBranch *str_xsim_branch;
-	bool str_xsim_isLoaded;
-	vector<float> *str_ysim_;
-	TBranch *str_ysim_branch;
-	bool str_ysim_isLoaded;
-	vector<float> *str_zsim_;
-	TBranch *str_zsim_branch;
-	bool str_zsim_isLoaded;
-	vector<float> *str_pxsim_;
-	TBranch *str_pxsim_branch;
-	bool str_pxsim_isLoaded;
-	vector<float> *str_pysim_;
-	TBranch *str_pysim_branch;
-	bool str_pysim_isLoaded;
-	vector<float> *str_pzsim_;
-	TBranch *str_pzsim_branch;
-	bool str_pzsim_isLoaded;
-	vector<float> *str_eloss_;
-	TBranch *str_eloss_branch;
-	bool str_eloss_isLoaded;
-	vector<float> *str_radL_;
-	TBranch *str_radL_branch;
-	bool str_radL_isLoaded;
-	vector<float> *str_bbxi_;
-	TBranch *str_bbxi_branch;
-	bool str_bbxi_isLoaded;
-	vector<int> *glu_isBarrel_;
-	TBranch *glu_isBarrel_branch;
-	bool glu_isBarrel_isLoaded;
-	vector<int> *glu_det_;
-	TBranch *glu_det_branch;
-	bool glu_det_isLoaded;
-	vector<int> *glu_lay_;
-	TBranch *glu_lay_branch;
-	bool glu_lay_isLoaded;
-	vector<int> *glu_detId_;
-	TBranch *glu_detId_branch;
-	bool glu_detId_isLoaded;
-	vector<int> *glu_monoIdx_;
-	TBranch *glu_monoIdx_branch;
-	bool glu_monoIdx_isLoaded;
-	vector<int> *glu_stereoIdx_;
-	TBranch *glu_stereoIdx_branch;
-	bool glu_stereoIdx_isLoaded;
-	vector<float> *glu_x_;
-	TBranch *glu_x_branch;
-	bool glu_x_isLoaded;
-	vector<float> *glu_y_;
-	TBranch *glu_y_branch;
-	bool glu_y_isLoaded;
-	vector<float> *glu_z_;
-	TBranch *glu_z_branch;
-	bool glu_z_isLoaded;
-	vector<float> *glu_xx_;
-	TBranch *glu_xx_branch;
-	bool glu_xx_isLoaded;
-	vector<float> *glu_xy_;
-	TBranch *glu_xy_branch;
-	bool glu_xy_isLoaded;
-	vector<float> *glu_yy_;
-	TBranch *glu_yy_branch;
-	bool glu_yy_isLoaded;
-	vector<float> *glu_yz_;
-	TBranch *glu_yz_branch;
-	bool glu_yz_isLoaded;
-	vector<float> *glu_zz_;
-	TBranch *glu_zz_branch;
-	bool glu_zz_isLoaded;
-	vector<float> *glu_zx_;
-	TBranch *glu_zx_branch;
-	bool glu_zx_isLoaded;
-	vector<float> *glu_radL_;
-	TBranch *glu_radL_branch;
-	bool glu_radL_isLoaded;
-	vector<float> *glu_bbxi_;
-	TBranch *glu_bbxi_branch;
-	bool glu_bbxi_isLoaded;
+	vector<short> *ph2_isBarrel_;
+	TBranch *ph2_isBarrel_branch;
+	bool ph2_isBarrel_isLoaded;
+	vector<unsigned short> *ph2_det_;
+	TBranch *ph2_det_branch;
+	bool ph2_det_isLoaded;
+	vector<unsigned short> *ph2_lay_;
+	TBranch *ph2_lay_branch;
+	bool ph2_lay_isLoaded;
+	vector<unsigned int> *ph2_detId_;
+	TBranch *ph2_detId_branch;
+	bool ph2_detId_isLoaded;
+	vector<vector<int> > *ph2_trkIdx_;
+	TBranch *ph2_trkIdx_branch;
+	bool ph2_trkIdx_isLoaded;
+	vector<vector<int> > *ph2_seeIdx_;
+	TBranch *ph2_seeIdx_branch;
+	bool ph2_seeIdx_isLoaded;
+	vector<vector<int> > *ph2_simHitIdx_;
+	TBranch *ph2_simHitIdx_branch;
+	bool ph2_simHitIdx_isLoaded;
+	vector<unsigned short> *ph2_simType_;
+	TBranch *ph2_simType_branch;
+	bool ph2_simType_isLoaded;
+	vector<float> *ph2_x_;
+	TBranch *ph2_x_branch;
+	bool ph2_x_isLoaded;
+	vector<float> *ph2_y_;
+	TBranch *ph2_y_branch;
+	bool ph2_y_isLoaded;
+	vector<float> *ph2_z_;
+	TBranch *ph2_z_branch;
+	bool ph2_z_isLoaded;
+	vector<float> *ph2_xx_;
+	TBranch *ph2_xx_branch;
+	bool ph2_xx_isLoaded;
+	vector<float> *ph2_xy_;
+	TBranch *ph2_xy_branch;
+	bool ph2_xy_isLoaded;
+	vector<float> *ph2_yy_;
+	TBranch *ph2_yy_branch;
+	bool ph2_yy_isLoaded;
+	vector<float> *ph2_yz_;
+	TBranch *ph2_yz_branch;
+	bool ph2_yz_isLoaded;
+	vector<float> *ph2_zz_;
+	TBranch *ph2_zz_branch;
+	bool ph2_zz_isLoaded;
+	vector<float> *ph2_zx_;
+	TBranch *ph2_zx_branch;
+	bool ph2_zx_isLoaded;
+	vector<float> *ph2_radL_;
+	TBranch *ph2_radL_branch;
+	bool ph2_radL_isLoaded;
+	vector<float> *ph2_bbxi_;
+	TBranch *ph2_bbxi_branch;
+	bool ph2_bbxi_isLoaded;
+	vector<short> *inv_isBarrel_;
+	TBranch *inv_isBarrel_branch;
+	bool inv_isBarrel_isLoaded;
+	vector<unsigned short> *inv_det_;
+	TBranch *inv_det_branch;
+	bool inv_det_isLoaded;
+	vector<unsigned short> *inv_lay_;
+	TBranch *inv_lay_branch;
+	bool inv_lay_isLoaded;
+	vector<unsigned int> *inv_detId_;
+	TBranch *inv_detId_branch;
+	bool inv_detId_isLoaded;
+	vector<unsigned short> *inv_type_;
+	TBranch *inv_type_branch;
+	bool inv_type_isLoaded;
+	vector<unsigned short> *simhit_det_;
+	TBranch *simhit_det_branch;
+	bool simhit_det_isLoaded;
+	vector<unsigned short> *simhit_lay_;
+	TBranch *simhit_lay_branch;
+	bool simhit_lay_isLoaded;
+	vector<unsigned int> *simhit_detId_;
+	TBranch *simhit_detId_branch;
+	bool simhit_detId_isLoaded;
+	vector<float> *simhit_x_;
+	TBranch *simhit_x_branch;
+	bool simhit_x_isLoaded;
+	vector<float> *simhit_y_;
+	TBranch *simhit_y_branch;
+	bool simhit_y_isLoaded;
+	vector<float> *simhit_z_;
+	TBranch *simhit_z_branch;
+	bool simhit_z_isLoaded;
+	vector<float> *simhit_px_;
+	TBranch *simhit_px_branch;
+	bool simhit_px_isLoaded;
+	vector<float> *simhit_py_;
+	TBranch *simhit_py_branch;
+	bool simhit_py_isLoaded;
+	vector<float> *simhit_pz_;
+	TBranch *simhit_pz_branch;
+	bool simhit_pz_isLoaded;
+	vector<int> *simhit_particle_;
+	TBranch *simhit_particle_branch;
+	bool simhit_particle_isLoaded;
+	vector<short> *simhit_process_;
+	TBranch *simhit_process_branch;
+	bool simhit_process_isLoaded;
+	vector<float> *simhit_eloss_;
+	TBranch *simhit_eloss_branch;
+	bool simhit_eloss_isLoaded;
+	vector<float> *simhit_tof_;
+	TBranch *simhit_tof_branch;
+	bool simhit_tof_isLoaded;
+	vector<int> *simhit_simTrkIdx_;
+	TBranch *simhit_simTrkIdx_branch;
+	bool simhit_simTrkIdx_isLoaded;
+	vector<vector<int> > *simhit_hitIdx_;
+	TBranch *simhit_hitIdx_branch;
+	bool simhit_hitIdx_isLoaded;
+	vector<vector<int> > *simhit_hitType_;
+	TBranch *simhit_hitType_branch;
+	bool simhit_hitType_isLoaded;
 	float	bsp_x_;
 	TBranch *bsp_x_branch;
 	bool bsp_x_isLoaded;
@@ -415,117 +463,198 @@ protected:
 	float	bsp_sigmaz_;
 	TBranch *bsp_sigmaz_branch;
 	bool bsp_sigmaz_isLoaded;
-	vector<float> *see_lh_px_;
-	TBranch *see_lh_px_branch;
-	bool see_lh_px_isLoaded;
-	vector<float> *see_lh_py_;
-	TBranch *see_lh_py_branch;
-	bool see_lh_py_isLoaded;
-	vector<float> *see_lh_pz_;
-	TBranch *see_lh_pz_branch;
-	bool see_lh_pz_isLoaded;
-	vector<float> *see_lh_pt_;
-	TBranch *see_lh_pt_branch;
-	bool see_lh_pt_isLoaded;
-	vector<float> *see_lh_eta_;
-	TBranch *see_lh_eta_branch;
-	bool see_lh_eta_isLoaded;
-	vector<float> *see_lh_phi_;
-	TBranch *see_lh_phi_branch;
-	bool see_lh_phi_isLoaded;
-	vector<float> *see_lh_x_;
-	TBranch *see_lh_x_branch;
-	bool see_lh_x_isLoaded;
-	vector<float> *see_lh_y_;
-	TBranch *see_lh_y_branch;
-	bool see_lh_y_isLoaded;
-	vector<float> *see_lh_z_;
-	TBranch *see_lh_z_branch;
-	bool see_lh_z_isLoaded;
-	vector<float> *see_pca_px_;
-	TBranch *see_pca_px_branch;
-	bool see_pca_px_isLoaded;
-	vector<float> *see_pca_py_;
-	TBranch *see_pca_py_branch;
-	bool see_pca_py_isLoaded;
-	vector<float> *see_pca_pz_;
-	TBranch *see_pca_pz_branch;
-	bool see_pca_pz_isLoaded;
-	vector<float> *see_pca_pt_;
-	TBranch *see_pca_pt_branch;
-	bool see_pca_pt_isLoaded;
-	vector<float> *see_pca_eta_;
-	TBranch *see_pca_eta_branch;
-	bool see_pca_eta_isLoaded;
-	vector<float> *see_pca_phi_;
-	TBranch *see_pca_phi_branch;
-	bool see_pca_phi_isLoaded;
-	vector<float> *see_pca_x_;
-	TBranch *see_pca_x_branch;
-	bool see_pca_x_isLoaded;
-	vector<float> *see_pca_y_;
-	TBranch *see_pca_y_branch;
-	bool see_pca_y_isLoaded;
-	vector<float> *see_pca_z_;
-	TBranch *see_pca_z_branch;
-	bool see_pca_z_isLoaded;
-	vector<float> *see_pca_dxy_;
-	TBranch *see_pca_dxy_branch;
-	bool see_pca_dxy_isLoaded;
-	vector<float> *see_pca_dz_;
-	TBranch *see_pca_dz_branch;
-	bool see_pca_dz_isLoaded;
-	vector<float> *see_pca_ptErr_;
-	TBranch *see_pca_ptErr_branch;
-	bool see_pca_ptErr_isLoaded;
-	vector<float> *see_pca_etaErr_;
-	TBranch *see_pca_etaErr_branch;
-	bool see_pca_etaErr_isLoaded;
-	vector<float> *see_pca_phiErr_;
-	TBranch *see_pca_phiErr_branch;
-	bool see_pca_phiErr_isLoaded;
-	vector<float> *see_pca_dxyErr_;
-	TBranch *see_pca_dxyErr_branch;
-	bool see_pca_dxyErr_isLoaded;
-	vector<float> *see_pca_dzErr_;
-	TBranch *see_pca_dzErr_branch;
-	bool see_pca_dzErr_isLoaded;
+	vector<short> *see_fitok_;
+	TBranch *see_fitok_branch;
+	bool see_fitok_isLoaded;
+	vector<float> *see_px_;
+	TBranch *see_px_branch;
+	bool see_px_isLoaded;
+	vector<float> *see_py_;
+	TBranch *see_py_branch;
+	bool see_py_isLoaded;
+	vector<float> *see_pz_;
+	TBranch *see_pz_branch;
+	bool see_pz_isLoaded;
+	vector<float> *see_pt_;
+	TBranch *see_pt_branch;
+	bool see_pt_isLoaded;
+	vector<float> *see_eta_;
+	TBranch *see_eta_branch;
+	bool see_eta_isLoaded;
+	vector<float> *see_phi_;
+	TBranch *see_phi_branch;
+	bool see_phi_isLoaded;
+	vector<float> *see_dxy_;
+	TBranch *see_dxy_branch;
+	bool see_dxy_isLoaded;
+	vector<float> *see_dz_;
+	TBranch *see_dz_branch;
+	bool see_dz_isLoaded;
+	vector<float> *see_ptErr_;
+	TBranch *see_ptErr_branch;
+	bool see_ptErr_isLoaded;
+	vector<float> *see_etaErr_;
+	TBranch *see_etaErr_branch;
+	bool see_etaErr_isLoaded;
+	vector<float> *see_phiErr_;
+	TBranch *see_phiErr_branch;
+	bool see_phiErr_isLoaded;
+	vector<float> *see_dxyErr_;
+	TBranch *see_dxyErr_branch;
+	bool see_dxyErr_isLoaded;
+	vector<float> *see_dzErr_;
+	TBranch *see_dzErr_branch;
+	bool see_dzErr_isLoaded;
 	vector<float> *see_chi2_;
 	TBranch *see_chi2_branch;
 	bool see_chi2_isLoaded;
+	vector<float> *see_statePt_;
+	TBranch *see_statePt_branch;
+	bool see_statePt_isLoaded;
+	vector<float> *see_stateTrajX_;
+	TBranch *see_stateTrajX_branch;
+	bool see_stateTrajX_isLoaded;
+	vector<float> *see_stateTrajY_;
+	TBranch *see_stateTrajY_branch;
+	bool see_stateTrajY_isLoaded;
+	vector<float> *see_stateTrajPx_;
+	TBranch *see_stateTrajPx_branch;
+	bool see_stateTrajPx_isLoaded;
+	vector<float> *see_stateTrajPy_;
+	TBranch *see_stateTrajPy_branch;
+	bool see_stateTrajPy_isLoaded;
+	vector<float> *see_stateTrajPz_;
+	TBranch *see_stateTrajPz_branch;
+	bool see_stateTrajPz_isLoaded;
 	vector<int> *see_q_;
 	TBranch *see_q_branch;
 	bool see_q_isLoaded;
-	vector<int> *see_nValid_;
+	vector<unsigned int> *see_nValid_;
 	TBranch *see_nValid_branch;
 	bool see_nValid_isLoaded;
-	vector<int> *see_nPixel_;
+	vector<unsigned int> *see_nPixel_;
 	TBranch *see_nPixel_branch;
 	bool see_nPixel_isLoaded;
-	vector<int> *see_nGlued_;
+	vector<unsigned int> *see_nGlued_;
 	TBranch *see_nGlued_branch;
 	bool see_nGlued_isLoaded;
-	vector<int> *see_nStrip_;
+	vector<unsigned int> *see_nStrip_;
 	TBranch *see_nStrip_branch;
 	bool see_nStrip_isLoaded;
-	vector<int> *see_algo_;
+	vector<unsigned int> *see_nPhase2OT_;
+	TBranch *see_nPhase2OT_branch;
+	bool see_nPhase2OT_isLoaded;
+	vector<unsigned int> *see_algo_;
 	TBranch *see_algo_branch;
 	bool see_algo_isLoaded;
-	vector<vector<int> > *see_pixelIdx_;
-	TBranch *see_pixelIdx_branch;
-	bool see_pixelIdx_isLoaded;
-	vector<vector<int> > *see_gluedIdx_;
-	TBranch *see_gluedIdx_branch;
-	bool see_gluedIdx_isLoaded;
-	vector<vector<int> > *see_stripIdx_;
-	TBranch *see_stripIdx_branch;
-	bool see_stripIdx_isLoaded;
-	vector<int> *algo_offset_;
-	TBranch *algo_offset_branch;
-	bool algo_offset_isLoaded;
+	vector<unsigned short> *see_stopReason_;
+	TBranch *see_stopReason_branch;
+	bool see_stopReason_isLoaded;
+	vector<int> *see_trkIdx_;
+	TBranch *see_trkIdx_branch;
+	bool see_trkIdx_isLoaded;
+	vector<vector<float> > *see_shareFrac_;
+	TBranch *see_shareFrac_branch;
+	bool see_shareFrac_isLoaded;
+	vector<vector<int> > *see_simTrkIdx_;
+	TBranch *see_simTrkIdx_branch;
+	bool see_simTrkIdx_isLoaded;
+	vector<vector<int> > *see_hitIdx_;
+	TBranch *see_hitIdx_branch;
+	bool see_hitIdx_isLoaded;
+	vector<vector<int> > *see_hitType_;
+	TBranch *see_hitType_branch;
+	bool see_hitType_isLoaded;
+	vector<unsigned int> *see_offset_;
+	TBranch *see_offset_branch;
+	bool see_offset_isLoaded;
+	vector<float> *vtx_x_;
+	TBranch *vtx_x_branch;
+	bool vtx_x_isLoaded;
+	vector<float> *vtx_y_;
+	TBranch *vtx_y_branch;
+	bool vtx_y_isLoaded;
+	vector<float> *vtx_z_;
+	TBranch *vtx_z_branch;
+	bool vtx_z_isLoaded;
+	vector<float> *vtx_xErr_;
+	TBranch *vtx_xErr_branch;
+	bool vtx_xErr_isLoaded;
+	vector<float> *vtx_yErr_;
+	TBranch *vtx_yErr_branch;
+	bool vtx_yErr_isLoaded;
+	vector<float> *vtx_zErr_;
+	TBranch *vtx_zErr_branch;
+	bool vtx_zErr_isLoaded;
+	vector<float> *vtx_ndof_;
+	TBranch *vtx_ndof_branch;
+	bool vtx_ndof_isLoaded;
+	vector<float> *vtx_chi2_;
+	TBranch *vtx_chi2_branch;
+	bool vtx_chi2_isLoaded;
+	vector<short> *vtx_fake_;
+	TBranch *vtx_fake_branch;
+	bool vtx_fake_isLoaded;
+	vector<short> *vtx_valid_;
+	TBranch *vtx_valid_branch;
+	bool vtx_valid_isLoaded;
+	vector<vector<int> > *vtx_trkIdx_;
+	TBranch *vtx_trkIdx_branch;
+	bool vtx_trkIdx_isLoaded;
+	vector<int> *simvtx_event_;
+	TBranch *simvtx_event_branch;
+	bool simvtx_event_isLoaded;
+	vector<int> *simvtx_bunchCrossing_;
+	TBranch *simvtx_bunchCrossing_branch;
+	bool simvtx_bunchCrossing_isLoaded;
+	vector<unsigned int> *simvtx_processType_;
+	TBranch *simvtx_processType_branch;
+	bool simvtx_processType_isLoaded;
+	vector<float> *simvtx_x_;
+	TBranch *simvtx_x_branch;
+	bool simvtx_x_isLoaded;
+	vector<float> *simvtx_y_;
+	TBranch *simvtx_y_branch;
+	bool simvtx_y_isLoaded;
+	vector<float> *simvtx_z_;
+	TBranch *simvtx_z_branch;
+	bool simvtx_z_isLoaded;
+	vector<vector<int> > *simvtx_sourceSimIdx_;
+	TBranch *simvtx_sourceSimIdx_branch;
+	bool simvtx_sourceSimIdx_isLoaded;
+	vector<vector<int> > *simvtx_daughterSimIdx_;
+	TBranch *simvtx_daughterSimIdx_branch;
+	bool simvtx_daughterSimIdx_isLoaded;
+	vector<int> *simpv_idx_;
+	TBranch *simpv_idx_branch;
+	bool simpv_idx_isLoaded;
 public: 
 void Init(TTree *tree) {
   tree->SetMakeClass(1);
+	event_branch = 0;
+	if (tree->GetBranch("event") != 0) {
+		event_branch = tree->GetBranch("event");
+		event_branch->SetAddress(&event_);
+	}
+	if(event_branch == 0 ) {
+	cout << "Branch event does not exist." << endl;
+	}
+	lumi_branch = 0;
+	if (tree->GetBranch("lumi") != 0) {
+		lumi_branch = tree->GetBranch("lumi");
+		lumi_branch->SetAddress(&lumi_);
+	}
+	if(lumi_branch == 0 ) {
+	cout << "Branch lumi does not exist." << endl;
+	}
+	run_branch = 0;
+	if (tree->GetBranch("run") != 0) {
+		run_branch = tree->GetBranch("run");
+		run_branch->SetAddress(&run_);
+	}
+	if(run_branch == 0 ) {
+	cout << "Branch run does not exist." << endl;
+	}
 	trk_px_branch = 0;
 	if (tree->GetBranch("trk_px") != 0) {
 		trk_px_branch = tree->GetBranch("trk_px");
@@ -558,6 +687,70 @@ void Init(TTree *tree) {
 	if(trk_pt_branch == 0 ) {
 	cout << "Branch trk_pt does not exist." << endl;
 	}
+	trk_inner_px_branch = 0;
+	if (tree->GetBranch("trk_inner_px") != 0) {
+		trk_inner_px_branch = tree->GetBranch("trk_inner_px");
+		trk_inner_px_branch->SetAddress(&trk_inner_px_);
+	}
+	if(trk_inner_px_branch == 0 ) {
+	cout << "Branch trk_inner_px does not exist." << endl;
+	}
+	trk_inner_py_branch = 0;
+	if (tree->GetBranch("trk_inner_py") != 0) {
+		trk_inner_py_branch = tree->GetBranch("trk_inner_py");
+		trk_inner_py_branch->SetAddress(&trk_inner_py_);
+	}
+	if(trk_inner_py_branch == 0 ) {
+	cout << "Branch trk_inner_py does not exist." << endl;
+	}
+	trk_inner_pz_branch = 0;
+	if (tree->GetBranch("trk_inner_pz") != 0) {
+		trk_inner_pz_branch = tree->GetBranch("trk_inner_pz");
+		trk_inner_pz_branch->SetAddress(&trk_inner_pz_);
+	}
+	if(trk_inner_pz_branch == 0 ) {
+	cout << "Branch trk_inner_pz does not exist." << endl;
+	}
+	trk_inner_pt_branch = 0;
+	if (tree->GetBranch("trk_inner_pt") != 0) {
+		trk_inner_pt_branch = tree->GetBranch("trk_inner_pt");
+		trk_inner_pt_branch->SetAddress(&trk_inner_pt_);
+	}
+	if(trk_inner_pt_branch == 0 ) {
+	cout << "Branch trk_inner_pt does not exist." << endl;
+	}
+	trk_outer_px_branch = 0;
+	if (tree->GetBranch("trk_outer_px") != 0) {
+		trk_outer_px_branch = tree->GetBranch("trk_outer_px");
+		trk_outer_px_branch->SetAddress(&trk_outer_px_);
+	}
+	if(trk_outer_px_branch == 0 ) {
+	cout << "Branch trk_outer_px does not exist." << endl;
+	}
+	trk_outer_py_branch = 0;
+	if (tree->GetBranch("trk_outer_py") != 0) {
+		trk_outer_py_branch = tree->GetBranch("trk_outer_py");
+		trk_outer_py_branch->SetAddress(&trk_outer_py_);
+	}
+	if(trk_outer_py_branch == 0 ) {
+	cout << "Branch trk_outer_py does not exist." << endl;
+	}
+	trk_outer_pz_branch = 0;
+	if (tree->GetBranch("trk_outer_pz") != 0) {
+		trk_outer_pz_branch = tree->GetBranch("trk_outer_pz");
+		trk_outer_pz_branch->SetAddress(&trk_outer_pz_);
+	}
+	if(trk_outer_pz_branch == 0 ) {
+	cout << "Branch trk_outer_pz does not exist." << endl;
+	}
+	trk_outer_pt_branch = 0;
+	if (tree->GetBranch("trk_outer_pt") != 0) {
+		trk_outer_pt_branch = tree->GetBranch("trk_outer_pt");
+		trk_outer_pt_branch->SetAddress(&trk_outer_pt_);
+	}
+	if(trk_outer_pt_branch == 0 ) {
+	cout << "Branch trk_outer_pt does not exist." << endl;
+	}
 	trk_eta_branch = 0;
 	if (tree->GetBranch("trk_eta") != 0) {
 		trk_eta_branch = tree->GetBranch("trk_eta");
@@ -565,6 +758,22 @@ void Init(TTree *tree) {
 	}
 	if(trk_eta_branch == 0 ) {
 	cout << "Branch trk_eta does not exist." << endl;
+	}
+	trk_lambda_branch = 0;
+	if (tree->GetBranch("trk_lambda") != 0) {
+		trk_lambda_branch = tree->GetBranch("trk_lambda");
+		trk_lambda_branch->SetAddress(&trk_lambda_);
+	}
+	if(trk_lambda_branch == 0 ) {
+	cout << "Branch trk_lambda does not exist." << endl;
+	}
+	trk_cotTheta_branch = 0;
+	if (tree->GetBranch("trk_cotTheta") != 0) {
+		trk_cotTheta_branch = tree->GetBranch("trk_cotTheta");
+		trk_cotTheta_branch->SetAddress(&trk_cotTheta_);
+	}
+	if(trk_cotTheta_branch == 0 ) {
+	cout << "Branch trk_cotTheta does not exist." << endl;
 	}
 	trk_phi_branch = 0;
 	if (tree->GetBranch("trk_phi") != 0) {
@@ -606,6 +815,14 @@ void Init(TTree *tree) {
 	if(trk_etaErr_branch == 0 ) {
 	cout << "Branch trk_etaErr does not exist." << endl;
 	}
+	trk_lambdaErr_branch = 0;
+	if (tree->GetBranch("trk_lambdaErr") != 0) {
+		trk_lambdaErr_branch = tree->GetBranch("trk_lambdaErr");
+		trk_lambdaErr_branch->SetAddress(&trk_lambdaErr_);
+	}
+	if(trk_lambdaErr_branch == 0 ) {
+	cout << "Branch trk_lambdaErr does not exist." << endl;
+	}
 	trk_phiErr_branch = 0;
 	if (tree->GetBranch("trk_phiErr") != 0) {
 		trk_phiErr_branch = tree->GetBranch("trk_phiErr");
@@ -630,6 +847,30 @@ void Init(TTree *tree) {
 	if(trk_dzErr_branch == 0 ) {
 	cout << "Branch trk_dzErr does not exist." << endl;
 	}
+	trk_refpoint_x_branch = 0;
+	if (tree->GetBranch("trk_refpoint_x") != 0) {
+		trk_refpoint_x_branch = tree->GetBranch("trk_refpoint_x");
+		trk_refpoint_x_branch->SetAddress(&trk_refpoint_x_);
+	}
+	if(trk_refpoint_x_branch == 0 ) {
+	cout << "Branch trk_refpoint_x does not exist." << endl;
+	}
+	trk_refpoint_y_branch = 0;
+	if (tree->GetBranch("trk_refpoint_y") != 0) {
+		trk_refpoint_y_branch = tree->GetBranch("trk_refpoint_y");
+		trk_refpoint_y_branch->SetAddress(&trk_refpoint_y_);
+	}
+	if(trk_refpoint_y_branch == 0 ) {
+	cout << "Branch trk_refpoint_y does not exist." << endl;
+	}
+	trk_refpoint_z_branch = 0;
+	if (tree->GetBranch("trk_refpoint_z") != 0) {
+		trk_refpoint_z_branch = tree->GetBranch("trk_refpoint_z");
+		trk_refpoint_z_branch->SetAddress(&trk_refpoint_z_);
+	}
+	if(trk_refpoint_z_branch == 0 ) {
+	cout << "Branch trk_refpoint_z does not exist." << endl;
+	}
 	trk_nChi2_branch = 0;
 	if (tree->GetBranch("trk_nChi2") != 0) {
 		trk_nChi2_branch = tree->GetBranch("trk_nChi2");
@@ -637,14 +878,6 @@ void Init(TTree *tree) {
 	}
 	if(trk_nChi2_branch == 0 ) {
 	cout << "Branch trk_nChi2 does not exist." << endl;
-	}
-	trk_shareFrac_branch = 0;
-	if (tree->GetBranch("trk_shareFrac") != 0) {
-		trk_shareFrac_branch = tree->GetBranch("trk_shareFrac");
-		trk_shareFrac_branch->SetAddress(&trk_shareFrac_);
-	}
-	if(trk_shareFrac_branch == 0 ) {
-	cout << "Branch trk_shareFrac does not exist." << endl;
 	}
 	trk_q_branch = 0;
 	if (tree->GetBranch("trk_q") != 0) {
@@ -686,6 +919,22 @@ void Init(TTree *tree) {
 	if(trk_nStrip_branch == 0 ) {
 	cout << "Branch trk_nStrip does not exist." << endl;
 	}
+	trk_nPixelLay_branch = 0;
+	if (tree->GetBranch("trk_nPixelLay") != 0) {
+		trk_nPixelLay_branch = tree->GetBranch("trk_nPixelLay");
+		trk_nPixelLay_branch->SetAddress(&trk_nPixelLay_);
+	}
+	if(trk_nPixelLay_branch == 0 ) {
+	cout << "Branch trk_nPixelLay does not exist." << endl;
+	}
+	trk_nStripLay_branch = 0;
+	if (tree->GetBranch("trk_nStripLay") != 0) {
+		trk_nStripLay_branch = tree->GetBranch("trk_nStripLay");
+		trk_nStripLay_branch->SetAddress(&trk_nStripLay_);
+	}
+	if(trk_nStripLay_branch == 0 ) {
+	cout << "Branch trk_nStripLay does not exist." << endl;
+	}
 	trk_n3DLay_branch = 0;
 	if (tree->GetBranch("trk_n3DLay") != 0) {
 		trk_n3DLay_branch = tree->GetBranch("trk_n3DLay");
@@ -694,6 +943,22 @@ void Init(TTree *tree) {
 	if(trk_n3DLay_branch == 0 ) {
 	cout << "Branch trk_n3DLay does not exist." << endl;
 	}
+	trk_nOuterLost_branch = 0;
+	if (tree->GetBranch("trk_nOuterLost") != 0) {
+		trk_nOuterLost_branch = tree->GetBranch("trk_nOuterLost");
+		trk_nOuterLost_branch->SetAddress(&trk_nOuterLost_);
+	}
+	if(trk_nOuterLost_branch == 0 ) {
+	cout << "Branch trk_nOuterLost does not exist." << endl;
+	}
+	trk_nInnerLost_branch = 0;
+	if (tree->GetBranch("trk_nInnerLost") != 0) {
+		trk_nInnerLost_branch = tree->GetBranch("trk_nInnerLost");
+		trk_nInnerLost_branch->SetAddress(&trk_nInnerLost_);
+	}
+	if(trk_nInnerLost_branch == 0 ) {
+	cout << "Branch trk_nInnerLost does not exist." << endl;
+	}
 	trk_algo_branch = 0;
 	if (tree->GetBranch("trk_algo") != 0) {
 		trk_algo_branch = tree->GetBranch("trk_algo");
@@ -701,6 +966,30 @@ void Init(TTree *tree) {
 	}
 	if(trk_algo_branch == 0 ) {
 	cout << "Branch trk_algo does not exist." << endl;
+	}
+	trk_originalAlgo_branch = 0;
+	if (tree->GetBranch("trk_originalAlgo") != 0) {
+		trk_originalAlgo_branch = tree->GetBranch("trk_originalAlgo");
+		trk_originalAlgo_branch->SetAddress(&trk_originalAlgo_);
+	}
+	if(trk_originalAlgo_branch == 0 ) {
+	cout << "Branch trk_originalAlgo does not exist." << endl;
+	}
+	trk_algoMask_branch = 0;
+	if (tree->GetBranch("trk_algoMask") != 0) {
+		trk_algoMask_branch = tree->GetBranch("trk_algoMask");
+		trk_algoMask_branch->SetAddress(&trk_algoMask_);
+	}
+	if(trk_algoMask_branch == 0 ) {
+	cout << "Branch trk_algoMask does not exist." << endl;
+	}
+	trk_stopReason_branch = 0;
+	if (tree->GetBranch("trk_stopReason") != 0) {
+		trk_stopReason_branch = tree->GetBranch("trk_stopReason");
+		trk_stopReason_branch->SetAddress(&trk_stopReason_);
+	}
+	if(trk_stopReason_branch == 0 ) {
+	cout << "Branch trk_stopReason does not exist." << endl;
 	}
 	trk_isHP_branch = 0;
 	if (tree->GetBranch("trk_isHP") != 0) {
@@ -718,29 +1007,85 @@ void Init(TTree *tree) {
 	if(trk_seedIdx_branch == 0 ) {
 	cout << "Branch trk_seedIdx does not exist." << endl;
 	}
-	trk_simIdx_branch = 0;
-	if (tree->GetBranch("trk_simIdx") != 0) {
-		trk_simIdx_branch = tree->GetBranch("trk_simIdx");
-		trk_simIdx_branch->SetAddress(&trk_simIdx_);
+	trk_vtxIdx_branch = 0;
+	if (tree->GetBranch("trk_vtxIdx") != 0) {
+		trk_vtxIdx_branch = tree->GetBranch("trk_vtxIdx");
+		trk_vtxIdx_branch->SetAddress(&trk_vtxIdx_);
 	}
-	if(trk_simIdx_branch == 0 ) {
-	cout << "Branch trk_simIdx does not exist." << endl;
+	if(trk_vtxIdx_branch == 0 ) {
+	cout << "Branch trk_vtxIdx does not exist." << endl;
 	}
-	trk_pixelIdx_branch = 0;
-	if (tree->GetBranch("trk_pixelIdx") != 0) {
-		trk_pixelIdx_branch = tree->GetBranch("trk_pixelIdx");
-		trk_pixelIdx_branch->SetAddress(&trk_pixelIdx_);
+	trk_shareFrac_branch = 0;
+	if (tree->GetBranch("trk_shareFrac") != 0) {
+		trk_shareFrac_branch = tree->GetBranch("trk_shareFrac");
+		trk_shareFrac_branch->SetAddress(&trk_shareFrac_);
 	}
-	if(trk_pixelIdx_branch == 0 ) {
-	cout << "Branch trk_pixelIdx does not exist." << endl;
+	if(trk_shareFrac_branch == 0 ) {
+	cout << "Branch trk_shareFrac does not exist." << endl;
 	}
-	trk_stripIdx_branch = 0;
-	if (tree->GetBranch("trk_stripIdx") != 0) {
-		trk_stripIdx_branch = tree->GetBranch("trk_stripIdx");
-		trk_stripIdx_branch->SetAddress(&trk_stripIdx_);
+	trk_simTrkIdx_branch = 0;
+	if (tree->GetBranch("trk_simTrkIdx") != 0) {
+		trk_simTrkIdx_branch = tree->GetBranch("trk_simTrkIdx");
+		trk_simTrkIdx_branch->SetAddress(&trk_simTrkIdx_);
 	}
-	if(trk_stripIdx_branch == 0 ) {
-	cout << "Branch trk_stripIdx does not exist." << endl;
+	if(trk_simTrkIdx_branch == 0 ) {
+	cout << "Branch trk_simTrkIdx does not exist." << endl;
+	}
+	trk_hitIdx_branch = 0;
+	if (tree->GetBranch("trk_hitIdx") != 0) {
+		trk_hitIdx_branch = tree->GetBranch("trk_hitIdx");
+		trk_hitIdx_branch->SetAddress(&trk_hitIdx_);
+	}
+	if(trk_hitIdx_branch == 0 ) {
+	cout << "Branch trk_hitIdx does not exist." << endl;
+	}
+	trk_hitType_branch = 0;
+	if (tree->GetBranch("trk_hitType") != 0) {
+		trk_hitType_branch = tree->GetBranch("trk_hitType");
+		trk_hitType_branch->SetAddress(&trk_hitType_);
+	}
+	if(trk_hitType_branch == 0 ) {
+	cout << "Branch trk_hitType does not exist." << endl;
+	}
+	sim_event_branch = 0;
+	if (tree->GetBranch("sim_event") != 0) {
+		sim_event_branch = tree->GetBranch("sim_event");
+		sim_event_branch->SetAddress(&sim_event_);
+	}
+	if(sim_event_branch == 0 ) {
+	cout << "Branch sim_event does not exist." << endl;
+	}
+	sim_bunchCrossing_branch = 0;
+	if (tree->GetBranch("sim_bunchCrossing") != 0) {
+		sim_bunchCrossing_branch = tree->GetBranch("sim_bunchCrossing");
+		sim_bunchCrossing_branch->SetAddress(&sim_bunchCrossing_);
+	}
+	if(sim_bunchCrossing_branch == 0 ) {
+	cout << "Branch sim_bunchCrossing does not exist." << endl;
+	}
+	sim_pdgId_branch = 0;
+	if (tree->GetBranch("sim_pdgId") != 0) {
+		sim_pdgId_branch = tree->GetBranch("sim_pdgId");
+		sim_pdgId_branch->SetAddress(&sim_pdgId_);
+	}
+	if(sim_pdgId_branch == 0 ) {
+	cout << "Branch sim_pdgId does not exist." << endl;
+	}
+	sim_genPdgIds_branch = 0;
+	if (tree->GetBranch("sim_genPdgIds") != 0) {
+		sim_genPdgIds_branch = tree->GetBranch("sim_genPdgIds");
+		sim_genPdgIds_branch->SetAddress(&sim_genPdgIds_);
+	}
+	if(sim_genPdgIds_branch == 0 ) {
+	cout << "Branch sim_genPdgIds does not exist." << endl;
+	}
+	sim_isFromBHadron_branch = 0;
+	if (tree->GetBranch("sim_isFromBHadron") != 0) {
+		sim_isFromBHadron_branch = tree->GetBranch("sim_isFromBHadron");
+		sim_isFromBHadron_branch->SetAddress(&sim_isFromBHadron_);
+	}
+	if(sim_isFromBHadron_branch == 0 ) {
+	cout << "Branch sim_isFromBHadron does not exist." << endl;
 	}
 	sim_px_branch = 0;
 	if (tree->GetBranch("sim_px") != 0) {
@@ -790,53 +1135,61 @@ void Init(TTree *tree) {
 	if(sim_phi_branch == 0 ) {
 	cout << "Branch sim_phi does not exist." << endl;
 	}
-	sim_dxy_branch = 0;
-	if (tree->GetBranch("sim_dxy") != 0) {
-		sim_dxy_branch = tree->GetBranch("sim_dxy");
-		sim_dxy_branch->SetAddress(&sim_dxy_);
+	sim_pca_pt_branch = 0;
+	if (tree->GetBranch("sim_pca_pt") != 0) {
+		sim_pca_pt_branch = tree->GetBranch("sim_pca_pt");
+		sim_pca_pt_branch->SetAddress(&sim_pca_pt_);
 	}
-	if(sim_dxy_branch == 0 ) {
-	cout << "Branch sim_dxy does not exist." << endl;
+	if(sim_pca_pt_branch == 0 ) {
+	cout << "Branch sim_pca_pt does not exist." << endl;
 	}
-	sim_dz_branch = 0;
-	if (tree->GetBranch("sim_dz") != 0) {
-		sim_dz_branch = tree->GetBranch("sim_dz");
-		sim_dz_branch->SetAddress(&sim_dz_);
+	sim_pca_eta_branch = 0;
+	if (tree->GetBranch("sim_pca_eta") != 0) {
+		sim_pca_eta_branch = tree->GetBranch("sim_pca_eta");
+		sim_pca_eta_branch->SetAddress(&sim_pca_eta_);
 	}
-	if(sim_dz_branch == 0 ) {
-	cout << "Branch sim_dz does not exist." << endl;
+	if(sim_pca_eta_branch == 0 ) {
+	cout << "Branch sim_pca_eta does not exist." << endl;
 	}
-	sim_prodx_branch = 0;
-	if (tree->GetBranch("sim_prodx") != 0) {
-		sim_prodx_branch = tree->GetBranch("sim_prodx");
-		sim_prodx_branch->SetAddress(&sim_prodx_);
+	sim_pca_lambda_branch = 0;
+	if (tree->GetBranch("sim_pca_lambda") != 0) {
+		sim_pca_lambda_branch = tree->GetBranch("sim_pca_lambda");
+		sim_pca_lambda_branch->SetAddress(&sim_pca_lambda_);
 	}
-	if(sim_prodx_branch == 0 ) {
-	cout << "Branch sim_prodx does not exist." << endl;
+	if(sim_pca_lambda_branch == 0 ) {
+	cout << "Branch sim_pca_lambda does not exist." << endl;
 	}
-	sim_prody_branch = 0;
-	if (tree->GetBranch("sim_prody") != 0) {
-		sim_prody_branch = tree->GetBranch("sim_prody");
-		sim_prody_branch->SetAddress(&sim_prody_);
+	sim_pca_cotTheta_branch = 0;
+	if (tree->GetBranch("sim_pca_cotTheta") != 0) {
+		sim_pca_cotTheta_branch = tree->GetBranch("sim_pca_cotTheta");
+		sim_pca_cotTheta_branch->SetAddress(&sim_pca_cotTheta_);
 	}
-	if(sim_prody_branch == 0 ) {
-	cout << "Branch sim_prody does not exist." << endl;
+	if(sim_pca_cotTheta_branch == 0 ) {
+	cout << "Branch sim_pca_cotTheta does not exist." << endl;
 	}
-	sim_prodz_branch = 0;
-	if (tree->GetBranch("sim_prodz") != 0) {
-		sim_prodz_branch = tree->GetBranch("sim_prodz");
-		sim_prodz_branch->SetAddress(&sim_prodz_);
+	sim_pca_phi_branch = 0;
+	if (tree->GetBranch("sim_pca_phi") != 0) {
+		sim_pca_phi_branch = tree->GetBranch("sim_pca_phi");
+		sim_pca_phi_branch->SetAddress(&sim_pca_phi_);
 	}
-	if(sim_prodz_branch == 0 ) {
-	cout << "Branch sim_prodz does not exist." << endl;
+	if(sim_pca_phi_branch == 0 ) {
+	cout << "Branch sim_pca_phi does not exist." << endl;
 	}
-	sim_shareFrac_branch = 0;
-	if (tree->GetBranch("sim_shareFrac") != 0) {
-		sim_shareFrac_branch = tree->GetBranch("sim_shareFrac");
-		sim_shareFrac_branch->SetAddress(&sim_shareFrac_);
+	sim_pca_dxy_branch = 0;
+	if (tree->GetBranch("sim_pca_dxy") != 0) {
+		sim_pca_dxy_branch = tree->GetBranch("sim_pca_dxy");
+		sim_pca_dxy_branch->SetAddress(&sim_pca_dxy_);
 	}
-	if(sim_shareFrac_branch == 0 ) {
-	cout << "Branch sim_shareFrac does not exist." << endl;
+	if(sim_pca_dxy_branch == 0 ) {
+	cout << "Branch sim_pca_dxy does not exist." << endl;
+	}
+	sim_pca_dz_branch = 0;
+	if (tree->GetBranch("sim_pca_dz") != 0) {
+		sim_pca_dz_branch = tree->GetBranch("sim_pca_dz");
+		sim_pca_dz_branch->SetAddress(&sim_pca_dz_);
+	}
+	if(sim_pca_dz_branch == 0 ) {
+	cout << "Branch sim_pca_dz does not exist." << endl;
 	}
 	sim_q_branch = 0;
 	if (tree->GetBranch("sim_q") != 0) {
@@ -870,6 +1223,22 @@ void Init(TTree *tree) {
 	if(sim_nStrip_branch == 0 ) {
 	cout << "Branch sim_nStrip does not exist." << endl;
 	}
+	sim_nLay_branch = 0;
+	if (tree->GetBranch("sim_nLay") != 0) {
+		sim_nLay_branch = tree->GetBranch("sim_nLay");
+		sim_nLay_branch->SetAddress(&sim_nLay_);
+	}
+	if(sim_nLay_branch == 0 ) {
+	cout << "Branch sim_nLay does not exist." << endl;
+	}
+	sim_nPixelLay_branch = 0;
+	if (tree->GetBranch("sim_nPixelLay") != 0) {
+		sim_nPixelLay_branch = tree->GetBranch("sim_nPixelLay");
+		sim_nPixelLay_branch->SetAddress(&sim_nPixelLay_);
+	}
+	if(sim_nPixelLay_branch == 0 ) {
+	cout << "Branch sim_nPixelLay does not exist." << endl;
+	}
 	sim_n3DLay_branch = 0;
 	if (tree->GetBranch("sim_n3DLay") != 0) {
 		sim_n3DLay_branch = tree->GetBranch("sim_n3DLay");
@@ -886,21 +1255,45 @@ void Init(TTree *tree) {
 	if(sim_trkIdx_branch == 0 ) {
 	cout << "Branch sim_trkIdx does not exist." << endl;
 	}
-	sim_pixelIdx_branch = 0;
-	if (tree->GetBranch("sim_pixelIdx") != 0) {
-		sim_pixelIdx_branch = tree->GetBranch("sim_pixelIdx");
-		sim_pixelIdx_branch->SetAddress(&sim_pixelIdx_);
+	sim_shareFrac_branch = 0;
+	if (tree->GetBranch("sim_shareFrac") != 0) {
+		sim_shareFrac_branch = tree->GetBranch("sim_shareFrac");
+		sim_shareFrac_branch->SetAddress(&sim_shareFrac_);
 	}
-	if(sim_pixelIdx_branch == 0 ) {
-	cout << "Branch sim_pixelIdx does not exist." << endl;
+	if(sim_shareFrac_branch == 0 ) {
+	cout << "Branch sim_shareFrac does not exist." << endl;
 	}
-	sim_stripIdx_branch = 0;
-	if (tree->GetBranch("sim_stripIdx") != 0) {
-		sim_stripIdx_branch = tree->GetBranch("sim_stripIdx");
-		sim_stripIdx_branch->SetAddress(&sim_stripIdx_);
+	sim_seedIdx_branch = 0;
+	if (tree->GetBranch("sim_seedIdx") != 0) {
+		sim_seedIdx_branch = tree->GetBranch("sim_seedIdx");
+		sim_seedIdx_branch->SetAddress(&sim_seedIdx_);
 	}
-	if(sim_stripIdx_branch == 0 ) {
-	cout << "Branch sim_stripIdx does not exist." << endl;
+	if(sim_seedIdx_branch == 0 ) {
+	cout << "Branch sim_seedIdx does not exist." << endl;
+	}
+	sim_parentVtxIdx_branch = 0;
+	if (tree->GetBranch("sim_parentVtxIdx") != 0) {
+		sim_parentVtxIdx_branch = tree->GetBranch("sim_parentVtxIdx");
+		sim_parentVtxIdx_branch->SetAddress(&sim_parentVtxIdx_);
+	}
+	if(sim_parentVtxIdx_branch == 0 ) {
+	cout << "Branch sim_parentVtxIdx does not exist." << endl;
+	}
+	sim_decayVtxIdx_branch = 0;
+	if (tree->GetBranch("sim_decayVtxIdx") != 0) {
+		sim_decayVtxIdx_branch = tree->GetBranch("sim_decayVtxIdx");
+		sim_decayVtxIdx_branch->SetAddress(&sim_decayVtxIdx_);
+	}
+	if(sim_decayVtxIdx_branch == 0 ) {
+	cout << "Branch sim_decayVtxIdx does not exist." << endl;
+	}
+	sim_simHitIdx_branch = 0;
+	if (tree->GetBranch("sim_simHitIdx") != 0) {
+		sim_simHitIdx_branch = tree->GetBranch("sim_simHitIdx");
+		sim_simHitIdx_branch->SetAddress(&sim_simHitIdx_);
+	}
+	if(sim_simHitIdx_branch == 0 ) {
+	cout << "Branch sim_simHitIdx does not exist." << endl;
 	}
 	pix_isBarrel_branch = 0;
 	if (tree->GetBranch("pix_isBarrel") != 0) {
@@ -909,6 +1302,14 @@ void Init(TTree *tree) {
 	}
 	if(pix_isBarrel_branch == 0 ) {
 	cout << "Branch pix_isBarrel does not exist." << endl;
+	}
+	pix_det_branch = 0;
+	if (tree->GetBranch("pix_det") != 0) {
+		pix_det_branch = tree->GetBranch("pix_det");
+		pix_det_branch->SetAddress(&pix_det_);
+	}
+	if(pix_det_branch == 0 ) {
+	cout << "Branch pix_det does not exist." << endl;
 	}
 	pix_lay_branch = 0;
 	if (tree->GetBranch("pix_lay") != 0) {
@@ -926,53 +1327,45 @@ void Init(TTree *tree) {
 	if(pix_detId_branch == 0 ) {
 	cout << "Branch pix_detId does not exist." << endl;
 	}
-	pix_nSimTrk_branch = 0;
-	if (tree->GetBranch("pix_nSimTrk") != 0) {
-		pix_nSimTrk_branch = tree->GetBranch("pix_nSimTrk");
-		pix_nSimTrk_branch->SetAddress(&pix_nSimTrk_);
+	pix_trkIdx_branch = 0;
+	if (tree->GetBranch("pix_trkIdx") != 0) {
+		pix_trkIdx_branch = tree->GetBranch("pix_trkIdx");
+		pix_trkIdx_branch->SetAddress(&pix_trkIdx_);
 	}
-	if(pix_nSimTrk_branch == 0 ) {
-	cout << "Branch pix_nSimTrk does not exist." << endl;
+	if(pix_trkIdx_branch == 0 ) {
+	cout << "Branch pix_trkIdx does not exist." << endl;
 	}
-	pix_simTrkIdx_branch = 0;
-	if (tree->GetBranch("pix_simTrkIdx") != 0) {
-		pix_simTrkIdx_branch = tree->GetBranch("pix_simTrkIdx");
-		pix_simTrkIdx_branch->SetAddress(&pix_simTrkIdx_);
+	pix_seeIdx_branch = 0;
+	if (tree->GetBranch("pix_seeIdx") != 0) {
+		pix_seeIdx_branch = tree->GetBranch("pix_seeIdx");
+		pix_seeIdx_branch->SetAddress(&pix_seeIdx_);
 	}
-	if(pix_simTrkIdx_branch == 0 ) {
-	cout << "Branch pix_simTrkIdx does not exist." << endl;
+	if(pix_seeIdx_branch == 0 ) {
+	cout << "Branch pix_seeIdx does not exist." << endl;
 	}
-	pix_particle_branch = 0;
-	if (tree->GetBranch("pix_particle") != 0) {
-		pix_particle_branch = tree->GetBranch("pix_particle");
-		pix_particle_branch->SetAddress(&pix_particle_);
+	pix_simHitIdx_branch = 0;
+	if (tree->GetBranch("pix_simHitIdx") != 0) {
+		pix_simHitIdx_branch = tree->GetBranch("pix_simHitIdx");
+		pix_simHitIdx_branch->SetAddress(&pix_simHitIdx_);
 	}
-	if(pix_particle_branch == 0 ) {
-	cout << "Branch pix_particle does not exist." << endl;
+	if(pix_simHitIdx_branch == 0 ) {
+	cout << "Branch pix_simHitIdx does not exist." << endl;
 	}
-	pix_process_branch = 0;
-	if (tree->GetBranch("pix_process") != 0) {
-		pix_process_branch = tree->GetBranch("pix_process");
-		pix_process_branch->SetAddress(&pix_process_);
+	pix_chargeFraction_branch = 0;
+	if (tree->GetBranch("pix_chargeFraction") != 0) {
+		pix_chargeFraction_branch = tree->GetBranch("pix_chargeFraction");
+		pix_chargeFraction_branch->SetAddress(&pix_chargeFraction_);
 	}
-	if(pix_process_branch == 0 ) {
-	cout << "Branch pix_process does not exist." << endl;
+	if(pix_chargeFraction_branch == 0 ) {
+	cout << "Branch pix_chargeFraction does not exist." << endl;
 	}
-	pix_bunchXing_branch = 0;
-	if (tree->GetBranch("pix_bunchXing") != 0) {
-		pix_bunchXing_branch = tree->GetBranch("pix_bunchXing");
-		pix_bunchXing_branch->SetAddress(&pix_bunchXing_);
+	pix_simType_branch = 0;
+	if (tree->GetBranch("pix_simType") != 0) {
+		pix_simType_branch = tree->GetBranch("pix_simType");
+		pix_simType_branch->SetAddress(&pix_simType_);
 	}
-	if(pix_bunchXing_branch == 0 ) {
-	cout << "Branch pix_bunchXing does not exist." << endl;
-	}
-	pix_event_branch = 0;
-	if (tree->GetBranch("pix_event") != 0) {
-		pix_event_branch = tree->GetBranch("pix_event");
-		pix_event_branch->SetAddress(&pix_event_);
-	}
-	if(pix_event_branch == 0 ) {
-	cout << "Branch pix_event does not exist." << endl;
+	if(pix_simType_branch == 0 ) {
+	cout << "Branch pix_simType does not exist." << endl;
 	}
 	pix_x_branch = 0;
 	if (tree->GetBranch("pix_x") != 0) {
@@ -1046,118 +1439,6 @@ void Init(TTree *tree) {
 	if(pix_zx_branch == 0 ) {
 	cout << "Branch pix_zx does not exist." << endl;
 	}
-	pix_xsim_branch = 0;
-	if (tree->GetBranch("pix_xsim") != 0) {
-		pix_xsim_branch = tree->GetBranch("pix_xsim");
-		pix_xsim_branch->SetAddress(&pix_xsim_);
-	}
-	if(pix_xsim_branch == 0 ) {
-	cout << "Branch pix_xsim does not exist." << endl;
-	}
-	pix_ysim_branch = 0;
-	if (tree->GetBranch("pix_ysim") != 0) {
-		pix_ysim_branch = tree->GetBranch("pix_ysim");
-		pix_ysim_branch->SetAddress(&pix_ysim_);
-	}
-	if(pix_ysim_branch == 0 ) {
-	cout << "Branch pix_ysim does not exist." << endl;
-	}
-	pix_zsim_branch = 0;
-	if (tree->GetBranch("pix_zsim") != 0) {
-		pix_zsim_branch = tree->GetBranch("pix_zsim");
-		pix_zsim_branch->SetAddress(&pix_zsim_);
-	}
-	if(pix_zsim_branch == 0 ) {
-	cout << "Branch pix_zsim does not exist." << endl;
-	}
-	pix_pxsim_branch = 0;
-	if (tree->GetBranch("pix_pxsim") != 0) {
-		pix_pxsim_branch = tree->GetBranch("pix_pxsim");
-		pix_pxsim_branch->SetAddress(&pix_pxsim_);
-	}
-	if(pix_pxsim_branch == 0 ) {
-	cout << "Branch pix_pxsim does not exist." << endl;
-	}
-	pix_pysim_branch = 0;
-	if (tree->GetBranch("pix_pysim") != 0) {
-		pix_pysim_branch = tree->GetBranch("pix_pysim");
-		pix_pysim_branch->SetAddress(&pix_pysim_);
-	}
-	if(pix_pysim_branch == 0 ) {
-	cout << "Branch pix_pysim does not exist." << endl;
-	}
-	pix_pzsim_branch = 0;
-	if (tree->GetBranch("pix_pzsim") != 0) {
-		pix_pzsim_branch = tree->GetBranch("pix_pzsim");
-		pix_pzsim_branch->SetAddress(&pix_pzsim_);
-	}
-	if(pix_pzsim_branch == 0 ) {
-	cout << "Branch pix_pzsim does not exist." << endl;
-	}
-	pix_pathprop_branch = 0;
-	if (tree->GetBranch("pix_pathprop") != 0) {
-		pix_pathprop_branch = tree->GetBranch("pix_pathprop");
-		pix_pathprop_branch->SetAddress(&pix_pathprop_);
-	}
-	if(pix_pathprop_branch == 0 ) {
-	cout << "Branch pix_pathprop does not exist." << endl;
-	}
-	pix_xsimprop_branch = 0;
-	if (tree->GetBranch("pix_xsimprop") != 0) {
-		pix_xsimprop_branch = tree->GetBranch("pix_xsimprop");
-		pix_xsimprop_branch->SetAddress(&pix_xsimprop_);
-	}
-	if(pix_xsimprop_branch == 0 ) {
-	cout << "Branch pix_xsimprop does not exist." << endl;
-	}
-	pix_ysimprop_branch = 0;
-	if (tree->GetBranch("pix_ysimprop") != 0) {
-		pix_ysimprop_branch = tree->GetBranch("pix_ysimprop");
-		pix_ysimprop_branch->SetAddress(&pix_ysimprop_);
-	}
-	if(pix_ysimprop_branch == 0 ) {
-	cout << "Branch pix_ysimprop does not exist." << endl;
-	}
-	pix_zsimprop_branch = 0;
-	if (tree->GetBranch("pix_zsimprop") != 0) {
-		pix_zsimprop_branch = tree->GetBranch("pix_zsimprop");
-		pix_zsimprop_branch->SetAddress(&pix_zsimprop_);
-	}
-	if(pix_zsimprop_branch == 0 ) {
-	cout << "Branch pix_zsimprop does not exist." << endl;
-	}
-	pix_pxsimprop_branch = 0;
-	if (tree->GetBranch("pix_pxsimprop") != 0) {
-		pix_pxsimprop_branch = tree->GetBranch("pix_pxsimprop");
-		pix_pxsimprop_branch->SetAddress(&pix_pxsimprop_);
-	}
-	if(pix_pxsimprop_branch == 0 ) {
-	cout << "Branch pix_pxsimprop does not exist." << endl;
-	}
-	pix_pysimprop_branch = 0;
-	if (tree->GetBranch("pix_pysimprop") != 0) {
-		pix_pysimprop_branch = tree->GetBranch("pix_pysimprop");
-		pix_pysimprop_branch->SetAddress(&pix_pysimprop_);
-	}
-	if(pix_pysimprop_branch == 0 ) {
-	cout << "Branch pix_pysimprop does not exist." << endl;
-	}
-	pix_pzsimprop_branch = 0;
-	if (tree->GetBranch("pix_pzsimprop") != 0) {
-		pix_pzsimprop_branch = tree->GetBranch("pix_pzsimprop");
-		pix_pzsimprop_branch->SetAddress(&pix_pzsimprop_);
-	}
-	if(pix_pzsimprop_branch == 0 ) {
-	cout << "Branch pix_pzsimprop does not exist." << endl;
-	}
-	pix_eloss_branch = 0;
-	if (tree->GetBranch("pix_eloss") != 0) {
-		pix_eloss_branch = tree->GetBranch("pix_eloss");
-		pix_eloss_branch->SetAddress(&pix_eloss_);
-	}
-	if(pix_eloss_branch == 0 ) {
-	cout << "Branch pix_eloss does not exist." << endl;
-	}
 	pix_radL_branch = 0;
 	if (tree->GetBranch("pix_radL") != 0) {
 		pix_radL_branch = tree->GetBranch("pix_radL");
@@ -1174,373 +1455,325 @@ void Init(TTree *tree) {
 	if(pix_bbxi_branch == 0 ) {
 	cout << "Branch pix_bbxi does not exist." << endl;
 	}
-	str_isBarrel_branch = 0;
-	if (tree->GetBranch("str_isBarrel") != 0) {
-		str_isBarrel_branch = tree->GetBranch("str_isBarrel");
-		str_isBarrel_branch->SetAddress(&str_isBarrel_);
+	ph2_isBarrel_branch = 0;
+	if (tree->GetBranch("ph2_isBarrel") != 0) {
+		ph2_isBarrel_branch = tree->GetBranch("ph2_isBarrel");
+		ph2_isBarrel_branch->SetAddress(&ph2_isBarrel_);
 	}
-	if(str_isBarrel_branch == 0 ) {
-	cout << "Branch str_isBarrel does not exist." << endl;
-	}
-	str_isStereo_branch = 0;
-	if (tree->GetBranch("str_isStereo") != 0) {
-		str_isStereo_branch = tree->GetBranch("str_isStereo");
-		str_isStereo_branch->SetAddress(&str_isStereo_);
+	if(ph2_isBarrel_branch == 0 ) {
+	cout << "Branch ph2_isBarrel does not exist." << endl;
+	}
+	ph2_det_branch = 0;
+	if (tree->GetBranch("ph2_det") != 0) {
+		ph2_det_branch = tree->GetBranch("ph2_det");
+		ph2_det_branch->SetAddress(&ph2_det_);
 	}
-	if(str_isStereo_branch == 0 ) {
-	cout << "Branch str_isStereo does not exist." << endl;
-	}
-	str_det_branch = 0;
-	if (tree->GetBranch("str_det") != 0) {
-		str_det_branch = tree->GetBranch("str_det");
-		str_det_branch->SetAddress(&str_det_);
+	if(ph2_det_branch == 0 ) {
+	cout << "Branch ph2_det does not exist." << endl;
+	}
+	ph2_lay_branch = 0;
+	if (tree->GetBranch("ph2_lay") != 0) {
+		ph2_lay_branch = tree->GetBranch("ph2_lay");
+		ph2_lay_branch->SetAddress(&ph2_lay_);
 	}
-	if(str_det_branch == 0 ) {
-	cout << "Branch str_det does not exist." << endl;
-	}
-	str_lay_branch = 0;
-	if (tree->GetBranch("str_lay") != 0) {
-		str_lay_branch = tree->GetBranch("str_lay");
-		str_lay_branch->SetAddress(&str_lay_);
+	if(ph2_lay_branch == 0 ) {
+	cout << "Branch ph2_lay does not exist." << endl;
+	}
+	ph2_detId_branch = 0;
+	if (tree->GetBranch("ph2_detId") != 0) {
+		ph2_detId_branch = tree->GetBranch("ph2_detId");
+		ph2_detId_branch->SetAddress(&ph2_detId_);
 	}
-	if(str_lay_branch == 0 ) {
-	cout << "Branch str_lay does not exist." << endl;
-	}
-	str_detId_branch = 0;
-	if (tree->GetBranch("str_detId") != 0) {
-		str_detId_branch = tree->GetBranch("str_detId");
-		str_detId_branch->SetAddress(&str_detId_);
+	if(ph2_detId_branch == 0 ) {
+	cout << "Branch ph2_detId does not exist." << endl;
+	}
+	ph2_trkIdx_branch = 0;
+	if (tree->GetBranch("ph2_trkIdx") != 0) {
+		ph2_trkIdx_branch = tree->GetBranch("ph2_trkIdx");
+		ph2_trkIdx_branch->SetAddress(&ph2_trkIdx_);
 	}
-	if(str_detId_branch == 0 ) {
-	cout << "Branch str_detId does not exist." << endl;
-	}
-	str_nSimTrk_branch = 0;
-	if (tree->GetBranch("str_nSimTrk") != 0) {
-		str_nSimTrk_branch = tree->GetBranch("str_nSimTrk");
-		str_nSimTrk_branch->SetAddress(&str_nSimTrk_);
+	if(ph2_trkIdx_branch == 0 ) {
+	cout << "Branch ph2_trkIdx does not exist." << endl;
+	}
+	ph2_seeIdx_branch = 0;
+	if (tree->GetBranch("ph2_seeIdx") != 0) {
+		ph2_seeIdx_branch = tree->GetBranch("ph2_seeIdx");
+		ph2_seeIdx_branch->SetAddress(&ph2_seeIdx_);
 	}
-	if(str_nSimTrk_branch == 0 ) {
-	cout << "Branch str_nSimTrk does not exist." << endl;
-	}
-	str_simTrkIdx_branch = 0;
-	if (tree->GetBranch("str_simTrkIdx") != 0) {
-		str_simTrkIdx_branch = tree->GetBranch("str_simTrkIdx");
-		str_simTrkIdx_branch->SetAddress(&str_simTrkIdx_);
+	if(ph2_seeIdx_branch == 0 ) {
+	cout << "Branch ph2_seeIdx does not exist." << endl;
+	}
+	ph2_simHitIdx_branch = 0;
+	if (tree->GetBranch("ph2_simHitIdx") != 0) {
+		ph2_simHitIdx_branch = tree->GetBranch("ph2_simHitIdx");
+		ph2_simHitIdx_branch->SetAddress(&ph2_simHitIdx_);
 	}
-	if(str_simTrkIdx_branch == 0 ) {
-	cout << "Branch str_simTrkIdx does not exist." << endl;
-	}
-	str_particle_branch = 0;
-	if (tree->GetBranch("str_particle") != 0) {
-		str_particle_branch = tree->GetBranch("str_particle");
-		str_particle_branch->SetAddress(&str_particle_);
+	if(ph2_simHitIdx_branch == 0 ) {
+	cout << "Branch ph2_simHitIdx does not exist." << endl;
+	}
+	ph2_simType_branch = 0;
+	if (tree->GetBranch("ph2_simType") != 0) {
+		ph2_simType_branch = tree->GetBranch("ph2_simType");
+		ph2_simType_branch->SetAddress(&ph2_simType_);
 	}
-	if(str_particle_branch == 0 ) {
-	cout << "Branch str_particle does not exist." << endl;
-	}
-	str_process_branch = 0;
-	if (tree->GetBranch("str_process") != 0) {
-		str_process_branch = tree->GetBranch("str_process");
-		str_process_branch->SetAddress(&str_process_);
+	if(ph2_simType_branch == 0 ) {
+	cout << "Branch ph2_simType does not exist." << endl;
+	}
+	ph2_x_branch = 0;
+	if (tree->GetBranch("ph2_x") != 0) {
+		ph2_x_branch = tree->GetBranch("ph2_x");
+		ph2_x_branch->SetAddress(&ph2_x_);
 	}
-	if(str_process_branch == 0 ) {
-	cout << "Branch str_process does not exist." << endl;
-	}
-	str_bunchXing_branch = 0;
-	if (tree->GetBranch("str_bunchXing") != 0) {
-		str_bunchXing_branch = tree->GetBranch("str_bunchXing");
-		str_bunchXing_branch->SetAddress(&str_bunchXing_);
+	if(ph2_x_branch == 0 ) {
+	cout << "Branch ph2_x does not exist." << endl;
+	}
+	ph2_y_branch = 0;
+	if (tree->GetBranch("ph2_y") != 0) {
+		ph2_y_branch = tree->GetBranch("ph2_y");
+		ph2_y_branch->SetAddress(&ph2_y_);
 	}
-	if(str_bunchXing_branch == 0 ) {
-	cout << "Branch str_bunchXing does not exist." << endl;
-	}
-	str_event_branch = 0;
-	if (tree->GetBranch("str_event") != 0) {
-		str_event_branch = tree->GetBranch("str_event");
-		str_event_branch->SetAddress(&str_event_);
+	if(ph2_y_branch == 0 ) {
+	cout << "Branch ph2_y does not exist." << endl;
+	}
+	ph2_z_branch = 0;
+	if (tree->GetBranch("ph2_z") != 0) {
+		ph2_z_branch = tree->GetBranch("ph2_z");
+		ph2_z_branch->SetAddress(&ph2_z_);
 	}
-	if(str_event_branch == 0 ) {
-	cout << "Branch str_event does not exist." << endl;
-	}
-	str_x_branch = 0;
-	if (tree->GetBranch("str_x") != 0) {
-		str_x_branch = tree->GetBranch("str_x");
-		str_x_branch->SetAddress(&str_x_);
+	if(ph2_z_branch == 0 ) {
+	cout << "Branch ph2_z does not exist." << endl;
+	}
+	ph2_xx_branch = 0;
+	if (tree->GetBranch("ph2_xx") != 0) {
+		ph2_xx_branch = tree->GetBranch("ph2_xx");
+		ph2_xx_branch->SetAddress(&ph2_xx_);
 	}
-	if(str_x_branch == 0 ) {
-	cout << "Branch str_x does not exist." << endl;
-	}
-	str_y_branch = 0;
-	if (tree->GetBranch("str_y") != 0) {
-		str_y_branch = tree->GetBranch("str_y");
-		str_y_branch->SetAddress(&str_y_);
+	if(ph2_xx_branch == 0 ) {
+	cout << "Branch ph2_xx does not exist." << endl;
+	}
+	ph2_xy_branch = 0;
+	if (tree->GetBranch("ph2_xy") != 0) {
+		ph2_xy_branch = tree->GetBranch("ph2_xy");
+		ph2_xy_branch->SetAddress(&ph2_xy_);
 	}
-	if(str_y_branch == 0 ) {
-	cout << "Branch str_y does not exist." << endl;
+	if(ph2_xy_branch == 0 ) {
+	cout << "Branch ph2_xy does not exist." << endl;
 	}
-	str_z_branch = 0;
-	if (tree->GetBranch("str_z") != 0) {
-		str_z_branch = tree->GetBranch("str_z");
-		str_z_branch->SetAddress(&str_z_);
+	ph2_yy_branch = 0;
+	if (tree->GetBranch("ph2_yy") != 0) {
+		ph2_yy_branch = tree->GetBranch("ph2_yy");
+		ph2_yy_branch->SetAddress(&ph2_yy_);
 	}
-	if(str_z_branch == 0 ) {
-	cout << "Branch str_z does not exist." << endl;
+	if(ph2_yy_branch == 0 ) {
+	cout << "Branch ph2_yy does not exist." << endl;
 	}
-	str_xx_branch = 0;
-	if (tree->GetBranch("str_xx") != 0) {
-		str_xx_branch = tree->GetBranch("str_xx");
-		str_xx_branch->SetAddress(&str_xx_);
+	ph2_yz_branch = 0;
+	if (tree->GetBranch("ph2_yz") != 0) {
+		ph2_yz_branch = tree->GetBranch("ph2_yz");
+		ph2_yz_branch->SetAddress(&ph2_yz_);
 	}
-	if(str_xx_branch == 0 ) {
-	cout << "Branch str_xx does not exist." << endl;
+	if(ph2_yz_branch == 0 ) {
+	cout << "Branch ph2_yz does not exist." << endl;
 	}
-	str_xy_branch = 0;
-	if (tree->GetBranch("str_xy") != 0) {
-		str_xy_branch = tree->GetBranch("str_xy");
-		str_xy_branch->SetAddress(&str_xy_);
+	ph2_zz_branch = 0;
+	if (tree->GetBranch("ph2_zz") != 0) {
+		ph2_zz_branch = tree->GetBranch("ph2_zz");
+		ph2_zz_branch->SetAddress(&ph2_zz_);
 	}
-	if(str_xy_branch == 0 ) {
-	cout << "Branch str_xy does not exist." << endl;
+	if(ph2_zz_branch == 0 ) {
+	cout << "Branch ph2_zz does not exist." << endl;
 	}
-	str_yy_branch = 0;
-	if (tree->GetBranch("str_yy") != 0) {
-		str_yy_branch = tree->GetBranch("str_yy");
-		str_yy_branch->SetAddress(&str_yy_);
+	ph2_zx_branch = 0;
+	if (tree->GetBranch("ph2_zx") != 0) {
+		ph2_zx_branch = tree->GetBranch("ph2_zx");
+		ph2_zx_branch->SetAddress(&ph2_zx_);
 	}
-	if(str_yy_branch == 0 ) {
-	cout << "Branch str_yy does not exist." << endl;
+	if(ph2_zx_branch == 0 ) {
+	cout << "Branch ph2_zx does not exist." << endl;
 	}
-	str_yz_branch = 0;
-	if (tree->GetBranch("str_yz") != 0) {
-		str_yz_branch = tree->GetBranch("str_yz");
-		str_yz_branch->SetAddress(&str_yz_);
+	ph2_radL_branch = 0;
+	if (tree->GetBranch("ph2_radL") != 0) {
+		ph2_radL_branch = tree->GetBranch("ph2_radL");
+		ph2_radL_branch->SetAddress(&ph2_radL_);
 	}
-	if(str_yz_branch == 0 ) {
-	cout << "Branch str_yz does not exist." << endl;
+	if(ph2_radL_branch == 0 ) {
+	cout << "Branch ph2_radL does not exist." << endl;
 	}
-	str_zz_branch = 0;
-	if (tree->GetBranch("str_zz") != 0) {
-		str_zz_branch = tree->GetBranch("str_zz");
-		str_zz_branch->SetAddress(&str_zz_);
+	ph2_bbxi_branch = 0;
+	if (tree->GetBranch("ph2_bbxi") != 0) {
+		ph2_bbxi_branch = tree->GetBranch("ph2_bbxi");
+		ph2_bbxi_branch->SetAddress(&ph2_bbxi_);
 	}
-	if(str_zz_branch == 0 ) {
-	cout << "Branch str_zz does not exist." << endl;
+	if(ph2_bbxi_branch == 0 ) {
+	cout << "Branch ph2_bbxi does not exist." << endl;
 	}
-	str_zx_branch = 0;
-	if (tree->GetBranch("str_zx") != 0) {
-		str_zx_branch = tree->GetBranch("str_zx");
-		str_zx_branch->SetAddress(&str_zx_);
+	inv_isBarrel_branch = 0;
+	if (tree->GetBranch("inv_isBarrel") != 0) {
+		inv_isBarrel_branch = tree->GetBranch("inv_isBarrel");
+		inv_isBarrel_branch->SetAddress(&inv_isBarrel_);
 	}
-	if(str_zx_branch == 0 ) {
-	cout << "Branch str_zx does not exist." << endl;
+	if(inv_isBarrel_branch == 0 ) {
+	cout << "Branch inv_isBarrel does not exist." << endl;
 	}
-	str_xsim_branch = 0;
-	if (tree->GetBranch("str_xsim") != 0) {
-		str_xsim_branch = tree->GetBranch("str_xsim");
-		str_xsim_branch->SetAddress(&str_xsim_);
+	inv_det_branch = 0;
+	if (tree->GetBranch("inv_det") != 0) {
+		inv_det_branch = tree->GetBranch("inv_det");
+		inv_det_branch->SetAddress(&inv_det_);
 	}
-	if(str_xsim_branch == 0 ) {
-	cout << "Branch str_xsim does not exist." << endl;
+	if(inv_det_branch == 0 ) {
+	cout << "Branch inv_det does not exist." << endl;
 	}
-	str_ysim_branch = 0;
-	if (tree->GetBranch("str_ysim") != 0) {
-		str_ysim_branch = tree->GetBranch("str_ysim");
-		str_ysim_branch->SetAddress(&str_ysim_);
+	inv_lay_branch = 0;
+	if (tree->GetBranch("inv_lay") != 0) {
+		inv_lay_branch = tree->GetBranch("inv_lay");
+		inv_lay_branch->SetAddress(&inv_lay_);
 	}
-	if(str_ysim_branch == 0 ) {
-	cout << "Branch str_ysim does not exist." << endl;
+	if(inv_lay_branch == 0 ) {
+	cout << "Branch inv_lay does not exist." << endl;
 	}
-	str_zsim_branch = 0;
-	if (tree->GetBranch("str_zsim") != 0) {
-		str_zsim_branch = tree->GetBranch("str_zsim");
-		str_zsim_branch->SetAddress(&str_zsim_);
+	inv_detId_branch = 0;
+	if (tree->GetBranch("inv_detId") != 0) {
+		inv_detId_branch = tree->GetBranch("inv_detId");
+		inv_detId_branch->SetAddress(&inv_detId_);
 	}
-	if(str_zsim_branch == 0 ) {
-	cout << "Branch str_zsim does not exist." << endl;
+	if(inv_detId_branch == 0 ) {
+	cout << "Branch inv_detId does not exist." << endl;
 	}
-	str_pxsim_branch = 0;
-	if (tree->GetBranch("str_pxsim") != 0) {
-		str_pxsim_branch = tree->GetBranch("str_pxsim");
-		str_pxsim_branch->SetAddress(&str_pxsim_);
+	inv_type_branch = 0;
+	if (tree->GetBranch("inv_type") != 0) {
+		inv_type_branch = tree->GetBranch("inv_type");
+		inv_type_branch->SetAddress(&inv_type_);
 	}
-	if(str_pxsim_branch == 0 ) {
-	cout << "Branch str_pxsim does not exist." << endl;
+	if(inv_type_branch == 0 ) {
+	cout << "Branch inv_type does not exist." << endl;
 	}
-	str_pysim_branch = 0;
-	if (tree->GetBranch("str_pysim") != 0) {
-		str_pysim_branch = tree->GetBranch("str_pysim");
-		str_pysim_branch->SetAddress(&str_pysim_);
+	simhit_det_branch = 0;
+	if (tree->GetBranch("simhit_det") != 0) {
+		simhit_det_branch = tree->GetBranch("simhit_det");
+		simhit_det_branch->SetAddress(&simhit_det_);
 	}
-	if(str_pysim_branch == 0 ) {
-	cout << "Branch str_pysim does not exist." << endl;
+	if(simhit_det_branch == 0 ) {
+	cout << "Branch simhit_det does not exist." << endl;
 	}
-	str_pzsim_branch = 0;
-	if (tree->GetBranch("str_pzsim") != 0) {
-		str_pzsim_branch = tree->GetBranch("str_pzsim");
-		str_pzsim_branch->SetAddress(&str_pzsim_);
+	simhit_lay_branch = 0;
+	if (tree->GetBranch("simhit_lay") != 0) {
+		simhit_lay_branch = tree->GetBranch("simhit_lay");
+		simhit_lay_branch->SetAddress(&simhit_lay_);
 	}
-	if(str_pzsim_branch == 0 ) {
-	cout << "Branch str_pzsim does not exist." << endl;
+	if(simhit_lay_branch == 0 ) {
+	cout << "Branch simhit_lay does not exist." << endl;
 	}
-	str_eloss_branch = 0;
-	if (tree->GetBranch("str_eloss") != 0) {
-		str_eloss_branch = tree->GetBranch("str_eloss");
-		str_eloss_branch->SetAddress(&str_eloss_);
+	simhit_detId_branch = 0;
+	if (tree->GetBranch("simhit_detId") != 0) {
+		simhit_detId_branch = tree->GetBranch("simhit_detId");
+		simhit_detId_branch->SetAddress(&simhit_detId_);
 	}
-	if(str_eloss_branch == 0 ) {
-	cout << "Branch str_eloss does not exist." << endl;
+	if(simhit_detId_branch == 0 ) {
+	cout << "Branch simhit_detId does not exist." << endl;
 	}
-	str_radL_branch = 0;
-	if (tree->GetBranch("str_radL") != 0) {
-		str_radL_branch = tree->GetBranch("str_radL");
-		str_radL_branch->SetAddress(&str_radL_);
+	simhit_x_branch = 0;
+	if (tree->GetBranch("simhit_x") != 0) {
+		simhit_x_branch = tree->GetBranch("simhit_x");
+		simhit_x_branch->SetAddress(&simhit_x_);
 	}
-	if(str_radL_branch == 0 ) {
-	cout << "Branch str_radL does not exist." << endl;
+	if(simhit_x_branch == 0 ) {
+	cout << "Branch simhit_x does not exist." << endl;
 	}
-	str_bbxi_branch = 0;
-	if (tree->GetBranch("str_bbxi") != 0) {
-		str_bbxi_branch = tree->GetBranch("str_bbxi");
-		str_bbxi_branch->SetAddress(&str_bbxi_);
+	simhit_y_branch = 0;
+	if (tree->GetBranch("simhit_y") != 0) {
+		simhit_y_branch = tree->GetBranch("simhit_y");
+		simhit_y_branch->SetAddress(&simhit_y_);
 	}
-	if(str_bbxi_branch == 0 ) {
-	cout << "Branch str_bbxi does not exist." << endl;
+	if(simhit_y_branch == 0 ) {
+	cout << "Branch simhit_y does not exist." << endl;
 	}
-	glu_isBarrel_branch = 0;
-	if (tree->GetBranch("glu_isBarrel") != 0) {
-		glu_isBarrel_branch = tree->GetBranch("glu_isBarrel");
-		glu_isBarrel_branch->SetAddress(&glu_isBarrel_);
+	simhit_z_branch = 0;
+	if (tree->GetBranch("simhit_z") != 0) {
+		simhit_z_branch = tree->GetBranch("simhit_z");
+		simhit_z_branch->SetAddress(&simhit_z_);
 	}
-	if(glu_isBarrel_branch == 0 ) {
-	cout << "Branch glu_isBarrel does not exist." << endl;
+	if(simhit_z_branch == 0 ) {
+	cout << "Branch simhit_z does not exist." << endl;
 	}
-	glu_det_branch = 0;
-	if (tree->GetBranch("glu_det") != 0) {
-		glu_det_branch = tree->GetBranch("glu_det");
-		glu_det_branch->SetAddress(&glu_det_);
+	simhit_px_branch = 0;
+	if (tree->GetBranch("simhit_px") != 0) {
+		simhit_px_branch = tree->GetBranch("simhit_px");
+		simhit_px_branch->SetAddress(&simhit_px_);
 	}
-	if(glu_det_branch == 0 ) {
-	cout << "Branch glu_det does not exist." << endl;
+	if(simhit_px_branch == 0 ) {
+	cout << "Branch simhit_px does not exist." << endl;
 	}
-	glu_lay_branch = 0;
-	if (tree->GetBranch("glu_lay") != 0) {
-		glu_lay_branch = tree->GetBranch("glu_lay");
-		glu_lay_branch->SetAddress(&glu_lay_);
+	simhit_py_branch = 0;
+	if (tree->GetBranch("simhit_py") != 0) {
+		simhit_py_branch = tree->GetBranch("simhit_py");
+		simhit_py_branch->SetAddress(&simhit_py_);
 	}
-	if(glu_lay_branch == 0 ) {
-	cout << "Branch glu_lay does not exist." << endl;
+	if(simhit_py_branch == 0 ) {
+	cout << "Branch simhit_py does not exist." << endl;
 	}
-	glu_detId_branch = 0;
-	if (tree->GetBranch("glu_detId") != 0) {
-		glu_detId_branch = tree->GetBranch("glu_detId");
-		glu_detId_branch->SetAddress(&glu_detId_);
+	simhit_pz_branch = 0;
+	if (tree->GetBranch("simhit_pz") != 0) {
+		simhit_pz_branch = tree->GetBranch("simhit_pz");
+		simhit_pz_branch->SetAddress(&simhit_pz_);
 	}
-	if(glu_detId_branch == 0 ) {
-	cout << "Branch glu_detId does not exist." << endl;
+	if(simhit_pz_branch == 0 ) {
+	cout << "Branch simhit_pz does not exist." << endl;
 	}
-	glu_monoIdx_branch = 0;
-	if (tree->GetBranch("glu_monoIdx") != 0) {
-		glu_monoIdx_branch = tree->GetBranch("glu_monoIdx");
-		glu_monoIdx_branch->SetAddress(&glu_monoIdx_);
+	simhit_particle_branch = 0;
+	if (tree->GetBranch("simhit_particle") != 0) {
+		simhit_particle_branch = tree->GetBranch("simhit_particle");
+		simhit_particle_branch->SetAddress(&simhit_particle_);
 	}
-	if(glu_monoIdx_branch == 0 ) {
-	cout << "Branch glu_monoIdx does not exist." << endl;
+	if(simhit_particle_branch == 0 ) {
+	cout << "Branch simhit_particle does not exist." << endl;
 	}
-	glu_stereoIdx_branch = 0;
-	if (tree->GetBranch("glu_stereoIdx") != 0) {
-		glu_stereoIdx_branch = tree->GetBranch("glu_stereoIdx");
-		glu_stereoIdx_branch->SetAddress(&glu_stereoIdx_);
+	simhit_process_branch = 0;
+	if (tree->GetBranch("simhit_process") != 0) {
+		simhit_process_branch = tree->GetBranch("simhit_process");
+		simhit_process_branch->SetAddress(&simhit_process_);
 	}
-	if(glu_stereoIdx_branch == 0 ) {
-	cout << "Branch glu_stereoIdx does not exist." << endl;
+	if(simhit_process_branch == 0 ) {
+	cout << "Branch simhit_process does not exist." << endl;
 	}
-	glu_x_branch = 0;
-	if (tree->GetBranch("glu_x") != 0) {
-		glu_x_branch = tree->GetBranch("glu_x");
-		glu_x_branch->SetAddress(&glu_x_);
+	simhit_eloss_branch = 0;
+	if (tree->GetBranch("simhit_eloss") != 0) {
+		simhit_eloss_branch = tree->GetBranch("simhit_eloss");
+		simhit_eloss_branch->SetAddress(&simhit_eloss_);
 	}
-	if(glu_x_branch == 0 ) {
-	cout << "Branch glu_x does not exist." << endl;
+	if(simhit_eloss_branch == 0 ) {
+	cout << "Branch simhit_eloss does not exist." << endl;
 	}
-	glu_y_branch = 0;
-	if (tree->GetBranch("glu_y") != 0) {
-		glu_y_branch = tree->GetBranch("glu_y");
-		glu_y_branch->SetAddress(&glu_y_);
+	simhit_tof_branch = 0;
+	if (tree->GetBranch("simhit_tof") != 0) {
+		simhit_tof_branch = tree->GetBranch("simhit_tof");
+		simhit_tof_branch->SetAddress(&simhit_tof_);
 	}
-	if(glu_y_branch == 0 ) {
-	cout << "Branch glu_y does not exist." << endl;
+	if(simhit_tof_branch == 0 ) {
+	cout << "Branch simhit_tof does not exist." << endl;
 	}
-	glu_z_branch = 0;
-	if (tree->GetBranch("glu_z") != 0) {
-		glu_z_branch = tree->GetBranch("glu_z");
-		glu_z_branch->SetAddress(&glu_z_);
+	simhit_simTrkIdx_branch = 0;
+	if (tree->GetBranch("simhit_simTrkIdx") != 0) {
+		simhit_simTrkIdx_branch = tree->GetBranch("simhit_simTrkIdx");
+		simhit_simTrkIdx_branch->SetAddress(&simhit_simTrkIdx_);
 	}
-	if(glu_z_branch == 0 ) {
-	cout << "Branch glu_z does not exist." << endl;
+	if(simhit_simTrkIdx_branch == 0 ) {
+	cout << "Branch simhit_simTrkIdx does not exist." << endl;
 	}
-	glu_xx_branch = 0;
-	if (tree->GetBranch("glu_xx") != 0) {
-		glu_xx_branch = tree->GetBranch("glu_xx");
-		glu_xx_branch->SetAddress(&glu_xx_);
+	simhit_hitIdx_branch = 0;
+	if (tree->GetBranch("simhit_hitIdx") != 0) {
+		simhit_hitIdx_branch = tree->GetBranch("simhit_hitIdx");
+		simhit_hitIdx_branch->SetAddress(&simhit_hitIdx_);
 	}
-	if(glu_xx_branch == 0 ) {
-	cout << "Branch glu_xx does not exist." << endl;
+	if(simhit_hitIdx_branch == 0 ) {
+	cout << "Branch simhit_hitIdx does not exist." << endl;
 	}
-	glu_xy_branch = 0;
-	if (tree->GetBranch("glu_xy") != 0) {
-		glu_xy_branch = tree->GetBranch("glu_xy");
-		glu_xy_branch->SetAddress(&glu_xy_);
+	simhit_hitType_branch = 0;
+	if (tree->GetBranch("simhit_hitType") != 0) {
+		simhit_hitType_branch = tree->GetBranch("simhit_hitType");
+		simhit_hitType_branch->SetAddress(&simhit_hitType_);
 	}
-	if(glu_xy_branch == 0 ) {
-	cout << "Branch glu_xy does not exist." << endl;
-	}
-	glu_yy_branch = 0;
-	if (tree->GetBranch("glu_yy") != 0) {
-		glu_yy_branch = tree->GetBranch("glu_yy");
-		glu_yy_branch->SetAddress(&glu_yy_);
-	}
-	if(glu_yy_branch == 0 ) {
-	cout << "Branch glu_yy does not exist." << endl;
-	}
-	glu_yz_branch = 0;
-	if (tree->GetBranch("glu_yz") != 0) {
-		glu_yz_branch = tree->GetBranch("glu_yz");
-		glu_yz_branch->SetAddress(&glu_yz_);
-	}
-	if(glu_yz_branch == 0 ) {
-	cout << "Branch glu_yz does not exist." << endl;
-	}
-	glu_zz_branch = 0;
-	if (tree->GetBranch("glu_zz") != 0) {
-		glu_zz_branch = tree->GetBranch("glu_zz");
-		glu_zz_branch->SetAddress(&glu_zz_);
-	}
-	if(glu_zz_branch == 0 ) {
-	cout << "Branch glu_zz does not exist." << endl;
-	}
-	glu_zx_branch = 0;
-	if (tree->GetBranch("glu_zx") != 0) {
-		glu_zx_branch = tree->GetBranch("glu_zx");
-		glu_zx_branch->SetAddress(&glu_zx_);
-	}
-	if(glu_zx_branch == 0 ) {
-	cout << "Branch glu_zx does not exist." << endl;
-	}
-	glu_radL_branch = 0;
-	if (tree->GetBranch("glu_radL") != 0) {
-		glu_radL_branch = tree->GetBranch("glu_radL");
-		glu_radL_branch->SetAddress(&glu_radL_);
-	}
-	if(glu_radL_branch == 0 ) {
-	cout << "Branch glu_radL does not exist." << endl;
-	}
-	glu_bbxi_branch = 0;
-	if (tree->GetBranch("glu_bbxi") != 0) {
-		glu_bbxi_branch = tree->GetBranch("glu_bbxi");
-		glu_bbxi_branch->SetAddress(&glu_bbxi_);
-	}
-	if(glu_bbxi_branch == 0 ) {
-	cout << "Branch glu_bbxi does not exist." << endl;
+	if(simhit_hitType_branch == 0 ) {
+	cout << "Branch simhit_hitType does not exist." << endl;
 	}
 	bsp_x_branch = 0;
 	if (tree->GetBranch("bsp_x") != 0) {
@@ -1590,205 +1823,117 @@ void Init(TTree *tree) {
 	if(bsp_sigmaz_branch == 0 ) {
 	cout << "Branch bsp_sigmaz does not exist." << endl;
 	}
-	see_lh_px_branch = 0;
-	if (tree->GetBranch("see_lh_px") != 0) {
-		see_lh_px_branch = tree->GetBranch("see_lh_px");
-		see_lh_px_branch->SetAddress(&see_lh_px_);
+	see_fitok_branch = 0;
+	if (tree->GetBranch("see_fitok") != 0) {
+		see_fitok_branch = tree->GetBranch("see_fitok");
+		see_fitok_branch->SetAddress(&see_fitok_);
 	}
-	if(see_lh_px_branch == 0 ) {
-	cout << "Branch see_lh_px does not exist." << endl;
+	if(see_fitok_branch == 0 ) {
+	cout << "Branch see_fitok does not exist." << endl;
 	}
-	see_lh_py_branch = 0;
-	if (tree->GetBranch("see_lh_py") != 0) {
-		see_lh_py_branch = tree->GetBranch("see_lh_py");
-		see_lh_py_branch->SetAddress(&see_lh_py_);
+	see_px_branch = 0;
+	if (tree->GetBranch("see_px") != 0) {
+		see_px_branch = tree->GetBranch("see_px");
+		see_px_branch->SetAddress(&see_px_);
 	}
-	if(see_lh_py_branch == 0 ) {
-	cout << "Branch see_lh_py does not exist." << endl;
+	if(see_px_branch == 0 ) {
+	cout << "Branch see_px does not exist." << endl;
 	}
-	see_lh_pz_branch = 0;
-	if (tree->GetBranch("see_lh_pz") != 0) {
-		see_lh_pz_branch = tree->GetBranch("see_lh_pz");
-		see_lh_pz_branch->SetAddress(&see_lh_pz_);
+	see_py_branch = 0;
+	if (tree->GetBranch("see_py") != 0) {
+		see_py_branch = tree->GetBranch("see_py");
+		see_py_branch->SetAddress(&see_py_);
 	}
-	if(see_lh_pz_branch == 0 ) {
-	cout << "Branch see_lh_pz does not exist." << endl;
+	if(see_py_branch == 0 ) {
+	cout << "Branch see_py does not exist." << endl;
 	}
-	see_lh_pt_branch = 0;
-	if (tree->GetBranch("see_lh_pt") != 0) {
-		see_lh_pt_branch = tree->GetBranch("see_lh_pt");
-		see_lh_pt_branch->SetAddress(&see_lh_pt_);
+	see_pz_branch = 0;
+	if (tree->GetBranch("see_pz") != 0) {
+		see_pz_branch = tree->GetBranch("see_pz");
+		see_pz_branch->SetAddress(&see_pz_);
 	}
-	if(see_lh_pt_branch == 0 ) {
-	cout << "Branch see_lh_pt does not exist." << endl;
+	if(see_pz_branch == 0 ) {
+	cout << "Branch see_pz does not exist." << endl;
 	}
-	see_lh_eta_branch = 0;
-	if (tree->GetBranch("see_lh_eta") != 0) {
-		see_lh_eta_branch = tree->GetBranch("see_lh_eta");
-		see_lh_eta_branch->SetAddress(&see_lh_eta_);
+	see_pt_branch = 0;
+	if (tree->GetBranch("see_pt") != 0) {
+		see_pt_branch = tree->GetBranch("see_pt");
+		see_pt_branch->SetAddress(&see_pt_);
 	}
-	if(see_lh_eta_branch == 0 ) {
-	cout << "Branch see_lh_eta does not exist." << endl;
+	if(see_pt_branch == 0 ) {
+	cout << "Branch see_pt does not exist." << endl;
 	}
-	see_lh_phi_branch = 0;
-	if (tree->GetBranch("see_lh_phi") != 0) {
-		see_lh_phi_branch = tree->GetBranch("see_lh_phi");
-		see_lh_phi_branch->SetAddress(&see_lh_phi_);
+	see_eta_branch = 0;
+	if (tree->GetBranch("see_eta") != 0) {
+		see_eta_branch = tree->GetBranch("see_eta");
+		see_eta_branch->SetAddress(&see_eta_);
 	}
-	if(see_lh_phi_branch == 0 ) {
-	cout << "Branch see_lh_phi does not exist." << endl;
+	if(see_eta_branch == 0 ) {
+	cout << "Branch see_eta does not exist." << endl;
 	}
-	see_lh_x_branch = 0;
-	if (tree->GetBranch("see_lh_x") != 0) {
-		see_lh_x_branch = tree->GetBranch("see_lh_x");
-		see_lh_x_branch->SetAddress(&see_lh_x_);
+	see_phi_branch = 0;
+	if (tree->GetBranch("see_phi") != 0) {
+		see_phi_branch = tree->GetBranch("see_phi");
+		see_phi_branch->SetAddress(&see_phi_);
 	}
-	if(see_lh_x_branch == 0 ) {
-	cout << "Branch see_lh_x does not exist." << endl;
+	if(see_phi_branch == 0 ) {
+	cout << "Branch see_phi does not exist." << endl;
 	}
-	see_lh_y_branch = 0;
-	if (tree->GetBranch("see_lh_y") != 0) {
-		see_lh_y_branch = tree->GetBranch("see_lh_y");
-		see_lh_y_branch->SetAddress(&see_lh_y_);
+	see_dxy_branch = 0;
+	if (tree->GetBranch("see_dxy") != 0) {
+		see_dxy_branch = tree->GetBranch("see_dxy");
+		see_dxy_branch->SetAddress(&see_dxy_);
 	}
-	if(see_lh_y_branch == 0 ) {
-	cout << "Branch see_lh_y does not exist." << endl;
+	if(see_dxy_branch == 0 ) {
+	cout << "Branch see_dxy does not exist." << endl;
 	}
-	see_lh_z_branch = 0;
-	if (tree->GetBranch("see_lh_z") != 0) {
-		see_lh_z_branch = tree->GetBranch("see_lh_z");
-		see_lh_z_branch->SetAddress(&see_lh_z_);
+	see_dz_branch = 0;
+	if (tree->GetBranch("see_dz") != 0) {
+		see_dz_branch = tree->GetBranch("see_dz");
+		see_dz_branch->SetAddress(&see_dz_);
 	}
-	if(see_lh_z_branch == 0 ) {
-	cout << "Branch see_lh_z does not exist." << endl;
+	if(see_dz_branch == 0 ) {
+	cout << "Branch see_dz does not exist." << endl;
 	}
-	see_pca_px_branch = 0;
-	if (tree->GetBranch("see_pca_px") != 0) {
-		see_pca_px_branch = tree->GetBranch("see_pca_px");
-		see_pca_px_branch->SetAddress(&see_pca_px_);
+	see_ptErr_branch = 0;
+	if (tree->GetBranch("see_ptErr") != 0) {
+		see_ptErr_branch = tree->GetBranch("see_ptErr");
+		see_ptErr_branch->SetAddress(&see_ptErr_);
 	}
-	if(see_pca_px_branch == 0 ) {
-	cout << "Branch see_pca_px does not exist." << endl;
+	if(see_ptErr_branch == 0 ) {
+	cout << "Branch see_ptErr does not exist." << endl;
 	}
-	see_pca_py_branch = 0;
-	if (tree->GetBranch("see_pca_py") != 0) {
-		see_pca_py_branch = tree->GetBranch("see_pca_py");
-		see_pca_py_branch->SetAddress(&see_pca_py_);
+	see_etaErr_branch = 0;
+	if (tree->GetBranch("see_etaErr") != 0) {
+		see_etaErr_branch = tree->GetBranch("see_etaErr");
+		see_etaErr_branch->SetAddress(&see_etaErr_);
 	}
-	if(see_pca_py_branch == 0 ) {
-	cout << "Branch see_pca_py does not exist." << endl;
+	if(see_etaErr_branch == 0 ) {
+	cout << "Branch see_etaErr does not exist." << endl;
 	}
-	see_pca_pz_branch = 0;
-	if (tree->GetBranch("see_pca_pz") != 0) {
-		see_pca_pz_branch = tree->GetBranch("see_pca_pz");
-		see_pca_pz_branch->SetAddress(&see_pca_pz_);
+	see_phiErr_branch = 0;
+	if (tree->GetBranch("see_phiErr") != 0) {
+		see_phiErr_branch = tree->GetBranch("see_phiErr");
+		see_phiErr_branch->SetAddress(&see_phiErr_);
 	}
-	if(see_pca_pz_branch == 0 ) {
-	cout << "Branch see_pca_pz does not exist." << endl;
+	if(see_phiErr_branch == 0 ) {
+	cout << "Branch see_phiErr does not exist." << endl;
 	}
-	see_pca_pt_branch = 0;
-	if (tree->GetBranch("see_pca_pt") != 0) {
-		see_pca_pt_branch = tree->GetBranch("see_pca_pt");
-		see_pca_pt_branch->SetAddress(&see_pca_pt_);
+	see_dxyErr_branch = 0;
+	if (tree->GetBranch("see_dxyErr") != 0) {
+		see_dxyErr_branch = tree->GetBranch("see_dxyErr");
+		see_dxyErr_branch->SetAddress(&see_dxyErr_);
 	}
-	if(see_pca_pt_branch == 0 ) {
-	cout << "Branch see_pca_pt does not exist." << endl;
+	if(see_dxyErr_branch == 0 ) {
+	cout << "Branch see_dxyErr does not exist." << endl;
 	}
-	see_pca_eta_branch = 0;
-	if (tree->GetBranch("see_pca_eta") != 0) {
-		see_pca_eta_branch = tree->GetBranch("see_pca_eta");
-		see_pca_eta_branch->SetAddress(&see_pca_eta_);
+	see_dzErr_branch = 0;
+	if (tree->GetBranch("see_dzErr") != 0) {
+		see_dzErr_branch = tree->GetBranch("see_dzErr");
+		see_dzErr_branch->SetAddress(&see_dzErr_);
 	}
-	if(see_pca_eta_branch == 0 ) {
-	cout << "Branch see_pca_eta does not exist." << endl;
-	}
-	see_pca_phi_branch = 0;
-	if (tree->GetBranch("see_pca_phi") != 0) {
-		see_pca_phi_branch = tree->GetBranch("see_pca_phi");
-		see_pca_phi_branch->SetAddress(&see_pca_phi_);
-	}
-	if(see_pca_phi_branch == 0 ) {
-	cout << "Branch see_pca_phi does not exist." << endl;
-	}
-	see_pca_x_branch = 0;
-	if (tree->GetBranch("see_pca_x") != 0) {
-		see_pca_x_branch = tree->GetBranch("see_pca_x");
-		see_pca_x_branch->SetAddress(&see_pca_x_);
-	}
-	if(see_pca_x_branch == 0 ) {
-	cout << "Branch see_pca_x does not exist." << endl;
-	}
-	see_pca_y_branch = 0;
-	if (tree->GetBranch("see_pca_y") != 0) {
-		see_pca_y_branch = tree->GetBranch("see_pca_y");
-		see_pca_y_branch->SetAddress(&see_pca_y_);
-	}
-	if(see_pca_y_branch == 0 ) {
-	cout << "Branch see_pca_y does not exist." << endl;
-	}
-	see_pca_z_branch = 0;
-	if (tree->GetBranch("see_pca_z") != 0) {
-		see_pca_z_branch = tree->GetBranch("see_pca_z");
-		see_pca_z_branch->SetAddress(&see_pca_z_);
-	}
-	if(see_pca_z_branch == 0 ) {
-	cout << "Branch see_pca_z does not exist." << endl;
-	}
-	see_pca_dxy_branch = 0;
-	if (tree->GetBranch("see_pca_dxy") != 0) {
-		see_pca_dxy_branch = tree->GetBranch("see_pca_dxy");
-		see_pca_dxy_branch->SetAddress(&see_pca_dxy_);
-	}
-	if(see_pca_dxy_branch == 0 ) {
-	cout << "Branch see_pca_dxy does not exist." << endl;
-	}
-	see_pca_dz_branch = 0;
-	if (tree->GetBranch("see_pca_dz") != 0) {
-		see_pca_dz_branch = tree->GetBranch("see_pca_dz");
-		see_pca_dz_branch->SetAddress(&see_pca_dz_);
-	}
-	if(see_pca_dz_branch == 0 ) {
-	cout << "Branch see_pca_dz does not exist." << endl;
-	}
-	see_pca_ptErr_branch = 0;
-	if (tree->GetBranch("see_pca_ptErr") != 0) {
-		see_pca_ptErr_branch = tree->GetBranch("see_pca_ptErr");
-		see_pca_ptErr_branch->SetAddress(&see_pca_ptErr_);
-	}
-	if(see_pca_ptErr_branch == 0 ) {
-	cout << "Branch see_pca_ptErr does not exist." << endl;
-	}
-	see_pca_etaErr_branch = 0;
-	if (tree->GetBranch("see_pca_etaErr") != 0) {
-		see_pca_etaErr_branch = tree->GetBranch("see_pca_etaErr");
-		see_pca_etaErr_branch->SetAddress(&see_pca_etaErr_);
-	}
-	if(see_pca_etaErr_branch == 0 ) {
-	cout << "Branch see_pca_etaErr does not exist." << endl;
-	}
-	see_pca_phiErr_branch = 0;
-	if (tree->GetBranch("see_pca_phiErr") != 0) {
-		see_pca_phiErr_branch = tree->GetBranch("see_pca_phiErr");
-		see_pca_phiErr_branch->SetAddress(&see_pca_phiErr_);
-	}
-	if(see_pca_phiErr_branch == 0 ) {
-	cout << "Branch see_pca_phiErr does not exist." << endl;
-	}
-	see_pca_dxyErr_branch = 0;
-	if (tree->GetBranch("see_pca_dxyErr") != 0) {
-		see_pca_dxyErr_branch = tree->GetBranch("see_pca_dxyErr");
-		see_pca_dxyErr_branch->SetAddress(&see_pca_dxyErr_);
-	}
-	if(see_pca_dxyErr_branch == 0 ) {
-	cout << "Branch see_pca_dxyErr does not exist." << endl;
-	}
-	see_pca_dzErr_branch = 0;
-	if (tree->GetBranch("see_pca_dzErr") != 0) {
-		see_pca_dzErr_branch = tree->GetBranch("see_pca_dzErr");
-		see_pca_dzErr_branch->SetAddress(&see_pca_dzErr_);
-	}
-	if(see_pca_dzErr_branch == 0 ) {
-	cout << "Branch see_pca_dzErr does not exist." << endl;
+	if(see_dzErr_branch == 0 ) {
+	cout << "Branch see_dzErr does not exist." << endl;
 	}
 	see_chi2_branch = 0;
 	if (tree->GetBranch("see_chi2") != 0) {
@@ -1797,6 +1942,54 @@ void Init(TTree *tree) {
 	}
 	if(see_chi2_branch == 0 ) {
 	cout << "Branch see_chi2 does not exist." << endl;
+	}
+	see_statePt_branch = 0;
+	if (tree->GetBranch("see_statePt") != 0) {
+		see_statePt_branch = tree->GetBranch("see_statePt");
+		see_statePt_branch->SetAddress(&see_statePt_);
+	}
+	if(see_statePt_branch == 0 ) {
+	cout << "Branch see_statePt does not exist." << endl;
+	}
+	see_stateTrajX_branch = 0;
+	if (tree->GetBranch("see_stateTrajX") != 0) {
+		see_stateTrajX_branch = tree->GetBranch("see_stateTrajX");
+		see_stateTrajX_branch->SetAddress(&see_stateTrajX_);
+	}
+	if(see_stateTrajX_branch == 0 ) {
+	cout << "Branch see_stateTrajX does not exist." << endl;
+	}
+	see_stateTrajY_branch = 0;
+	if (tree->GetBranch("see_stateTrajY") != 0) {
+		see_stateTrajY_branch = tree->GetBranch("see_stateTrajY");
+		see_stateTrajY_branch->SetAddress(&see_stateTrajY_);
+	}
+	if(see_stateTrajY_branch == 0 ) {
+	cout << "Branch see_stateTrajY does not exist." << endl;
+	}
+	see_stateTrajPx_branch = 0;
+	if (tree->GetBranch("see_stateTrajPx") != 0) {
+		see_stateTrajPx_branch = tree->GetBranch("see_stateTrajPx");
+		see_stateTrajPx_branch->SetAddress(&see_stateTrajPx_);
+	}
+	if(see_stateTrajPx_branch == 0 ) {
+	cout << "Branch see_stateTrajPx does not exist." << endl;
+	}
+	see_stateTrajPy_branch = 0;
+	if (tree->GetBranch("see_stateTrajPy") != 0) {
+		see_stateTrajPy_branch = tree->GetBranch("see_stateTrajPy");
+		see_stateTrajPy_branch->SetAddress(&see_stateTrajPy_);
+	}
+	if(see_stateTrajPy_branch == 0 ) {
+	cout << "Branch see_stateTrajPy does not exist." << endl;
+	}
+	see_stateTrajPz_branch = 0;
+	if (tree->GetBranch("see_stateTrajPz") != 0) {
+		see_stateTrajPz_branch = tree->GetBranch("see_stateTrajPz");
+		see_stateTrajPz_branch->SetAddress(&see_stateTrajPz_);
+	}
+	if(see_stateTrajPz_branch == 0 ) {
+	cout << "Branch see_stateTrajPz does not exist." << endl;
 	}
 	see_q_branch = 0;
 	if (tree->GetBranch("see_q") != 0) {
@@ -1838,6 +2031,14 @@ void Init(TTree *tree) {
 	if(see_nStrip_branch == 0 ) {
 	cout << "Branch see_nStrip does not exist." << endl;
 	}
+	see_nPhase2OT_branch = 0;
+	if (tree->GetBranch("see_nPhase2OT") != 0) {
+		see_nPhase2OT_branch = tree->GetBranch("see_nPhase2OT");
+		see_nPhase2OT_branch->SetAddress(&see_nPhase2OT_);
+	}
+	if(see_nPhase2OT_branch == 0 ) {
+	cout << "Branch see_nPhase2OT does not exist." << endl;
+	}
 	see_algo_branch = 0;
 	if (tree->GetBranch("see_algo") != 0) {
 		see_algo_branch = tree->GetBranch("see_algo");
@@ -1846,37 +2047,221 @@ void Init(TTree *tree) {
 	if(see_algo_branch == 0 ) {
 	cout << "Branch see_algo does not exist." << endl;
 	}
-	see_pixelIdx_branch = 0;
-	if (tree->GetBranch("see_pixelIdx") != 0) {
-		see_pixelIdx_branch = tree->GetBranch("see_pixelIdx");
-		see_pixelIdx_branch->SetAddress(&see_pixelIdx_);
+	see_stopReason_branch = 0;
+	if (tree->GetBranch("see_stopReason") != 0) {
+		see_stopReason_branch = tree->GetBranch("see_stopReason");
+		see_stopReason_branch->SetAddress(&see_stopReason_);
 	}
-	if(see_pixelIdx_branch == 0 ) {
-	cout << "Branch see_pixelIdx does not exist." << endl;
+	if(see_stopReason_branch == 0 ) {
+	cout << "Branch see_stopReason does not exist." << endl;
 	}
-	see_gluedIdx_branch = 0;
-	if (tree->GetBranch("see_gluedIdx") != 0) {
-		see_gluedIdx_branch = tree->GetBranch("see_gluedIdx");
-		see_gluedIdx_branch->SetAddress(&see_gluedIdx_);
+	see_trkIdx_branch = 0;
+	if (tree->GetBranch("see_trkIdx") != 0) {
+		see_trkIdx_branch = tree->GetBranch("see_trkIdx");
+		see_trkIdx_branch->SetAddress(&see_trkIdx_);
 	}
-	if(see_gluedIdx_branch == 0 ) {
-	cout << "Branch see_gluedIdx does not exist." << endl;
+	if(see_trkIdx_branch == 0 ) {
+	cout << "Branch see_trkIdx does not exist." << endl;
 	}
-	see_stripIdx_branch = 0;
-	if (tree->GetBranch("see_stripIdx") != 0) {
-		see_stripIdx_branch = tree->GetBranch("see_stripIdx");
-		see_stripIdx_branch->SetAddress(&see_stripIdx_);
+	see_shareFrac_branch = 0;
+	if (tree->GetBranch("see_shareFrac") != 0) {
+		see_shareFrac_branch = tree->GetBranch("see_shareFrac");
+		see_shareFrac_branch->SetAddress(&see_shareFrac_);
 	}
-	if(see_stripIdx_branch == 0 ) {
-	cout << "Branch see_stripIdx does not exist." << endl;
+	if(see_shareFrac_branch == 0 ) {
+	cout << "Branch see_shareFrac does not exist." << endl;
 	}
-	algo_offset_branch = 0;
-	if (tree->GetBranch("algo_offset") != 0) {
-		algo_offset_branch = tree->GetBranch("algo_offset");
-		algo_offset_branch->SetAddress(&algo_offset_);
+	see_simTrkIdx_branch = 0;
+	if (tree->GetBranch("see_simTrkIdx") != 0) {
+		see_simTrkIdx_branch = tree->GetBranch("see_simTrkIdx");
+		see_simTrkIdx_branch->SetAddress(&see_simTrkIdx_);
 	}
-	if(algo_offset_branch == 0 ) {
-	cout << "Branch algo_offset does not exist." << endl;
+	if(see_simTrkIdx_branch == 0 ) {
+	cout << "Branch see_simTrkIdx does not exist." << endl;
+	}
+	see_hitIdx_branch = 0;
+	if (tree->GetBranch("see_hitIdx") != 0) {
+		see_hitIdx_branch = tree->GetBranch("see_hitIdx");
+		see_hitIdx_branch->SetAddress(&see_hitIdx_);
+	}
+	if(see_hitIdx_branch == 0 ) {
+	cout << "Branch see_hitIdx does not exist." << endl;
+	}
+	see_hitType_branch = 0;
+	if (tree->GetBranch("see_hitType") != 0) {
+		see_hitType_branch = tree->GetBranch("see_hitType");
+		see_hitType_branch->SetAddress(&see_hitType_);
+	}
+	if(see_hitType_branch == 0 ) {
+	cout << "Branch see_hitType does not exist." << endl;
+	}
+	see_offset_branch = 0;
+	if (tree->GetBranch("see_offset") != 0) {
+		see_offset_branch = tree->GetBranch("see_offset");
+		see_offset_branch->SetAddress(&see_offset_);
+	}
+	if(see_offset_branch == 0 ) {
+	cout << "Branch see_offset does not exist." << endl;
+	}
+	vtx_x_branch = 0;
+	if (tree->GetBranch("vtx_x") != 0) {
+		vtx_x_branch = tree->GetBranch("vtx_x");
+		vtx_x_branch->SetAddress(&vtx_x_);
+	}
+	if(vtx_x_branch == 0 ) {
+	cout << "Branch vtx_x does not exist." << endl;
+	}
+	vtx_y_branch = 0;
+	if (tree->GetBranch("vtx_y") != 0) {
+		vtx_y_branch = tree->GetBranch("vtx_y");
+		vtx_y_branch->SetAddress(&vtx_y_);
+	}
+	if(vtx_y_branch == 0 ) {
+	cout << "Branch vtx_y does not exist." << endl;
+	}
+	vtx_z_branch = 0;
+	if (tree->GetBranch("vtx_z") != 0) {
+		vtx_z_branch = tree->GetBranch("vtx_z");
+		vtx_z_branch->SetAddress(&vtx_z_);
+	}
+	if(vtx_z_branch == 0 ) {
+	cout << "Branch vtx_z does not exist." << endl;
+	}
+	vtx_xErr_branch = 0;
+	if (tree->GetBranch("vtx_xErr") != 0) {
+		vtx_xErr_branch = tree->GetBranch("vtx_xErr");
+		vtx_xErr_branch->SetAddress(&vtx_xErr_);
+	}
+	if(vtx_xErr_branch == 0 ) {
+	cout << "Branch vtx_xErr does not exist." << endl;
+	}
+	vtx_yErr_branch = 0;
+	if (tree->GetBranch("vtx_yErr") != 0) {
+		vtx_yErr_branch = tree->GetBranch("vtx_yErr");
+		vtx_yErr_branch->SetAddress(&vtx_yErr_);
+	}
+	if(vtx_yErr_branch == 0 ) {
+	cout << "Branch vtx_yErr does not exist." << endl;
+	}
+	vtx_zErr_branch = 0;
+	if (tree->GetBranch("vtx_zErr") != 0) {
+		vtx_zErr_branch = tree->GetBranch("vtx_zErr");
+		vtx_zErr_branch->SetAddress(&vtx_zErr_);
+	}
+	if(vtx_zErr_branch == 0 ) {
+	cout << "Branch vtx_zErr does not exist." << endl;
+	}
+	vtx_ndof_branch = 0;
+	if (tree->GetBranch("vtx_ndof") != 0) {
+		vtx_ndof_branch = tree->GetBranch("vtx_ndof");
+		vtx_ndof_branch->SetAddress(&vtx_ndof_);
+	}
+	if(vtx_ndof_branch == 0 ) {
+	cout << "Branch vtx_ndof does not exist." << endl;
+	}
+	vtx_chi2_branch = 0;
+	if (tree->GetBranch("vtx_chi2") != 0) {
+		vtx_chi2_branch = tree->GetBranch("vtx_chi2");
+		vtx_chi2_branch->SetAddress(&vtx_chi2_);
+	}
+	if(vtx_chi2_branch == 0 ) {
+	cout << "Branch vtx_chi2 does not exist." << endl;
+	}
+	vtx_fake_branch = 0;
+	if (tree->GetBranch("vtx_fake") != 0) {
+		vtx_fake_branch = tree->GetBranch("vtx_fake");
+		vtx_fake_branch->SetAddress(&vtx_fake_);
+	}
+	if(vtx_fake_branch == 0 ) {
+	cout << "Branch vtx_fake does not exist." << endl;
+	}
+	vtx_valid_branch = 0;
+	if (tree->GetBranch("vtx_valid") != 0) {
+		vtx_valid_branch = tree->GetBranch("vtx_valid");
+		vtx_valid_branch->SetAddress(&vtx_valid_);
+	}
+	if(vtx_valid_branch == 0 ) {
+	cout << "Branch vtx_valid does not exist." << endl;
+	}
+	vtx_trkIdx_branch = 0;
+	if (tree->GetBranch("vtx_trkIdx") != 0) {
+		vtx_trkIdx_branch = tree->GetBranch("vtx_trkIdx");
+		vtx_trkIdx_branch->SetAddress(&vtx_trkIdx_);
+	}
+	if(vtx_trkIdx_branch == 0 ) {
+	cout << "Branch vtx_trkIdx does not exist." << endl;
+	}
+	simvtx_event_branch = 0;
+	if (tree->GetBranch("simvtx_event") != 0) {
+		simvtx_event_branch = tree->GetBranch("simvtx_event");
+		simvtx_event_branch->SetAddress(&simvtx_event_);
+	}
+	if(simvtx_event_branch == 0 ) {
+	cout << "Branch simvtx_event does not exist." << endl;
+	}
+	simvtx_bunchCrossing_branch = 0;
+	if (tree->GetBranch("simvtx_bunchCrossing") != 0) {
+		simvtx_bunchCrossing_branch = tree->GetBranch("simvtx_bunchCrossing");
+		simvtx_bunchCrossing_branch->SetAddress(&simvtx_bunchCrossing_);
+	}
+	if(simvtx_bunchCrossing_branch == 0 ) {
+	cout << "Branch simvtx_bunchCrossing does not exist." << endl;
+	}
+	simvtx_processType_branch = 0;
+	if (tree->GetBranch("simvtx_processType") != 0) {
+		simvtx_processType_branch = tree->GetBranch("simvtx_processType");
+		simvtx_processType_branch->SetAddress(&simvtx_processType_);
+	}
+	if(simvtx_processType_branch == 0 ) {
+	cout << "Branch simvtx_processType does not exist." << endl;
+	}
+	simvtx_x_branch = 0;
+	if (tree->GetBranch("simvtx_x") != 0) {
+		simvtx_x_branch = tree->GetBranch("simvtx_x");
+		simvtx_x_branch->SetAddress(&simvtx_x_);
+	}
+	if(simvtx_x_branch == 0 ) {
+	cout << "Branch simvtx_x does not exist." << endl;
+	}
+	simvtx_y_branch = 0;
+	if (tree->GetBranch("simvtx_y") != 0) {
+		simvtx_y_branch = tree->GetBranch("simvtx_y");
+		simvtx_y_branch->SetAddress(&simvtx_y_);
+	}
+	if(simvtx_y_branch == 0 ) {
+	cout << "Branch simvtx_y does not exist." << endl;
+	}
+	simvtx_z_branch = 0;
+	if (tree->GetBranch("simvtx_z") != 0) {
+		simvtx_z_branch = tree->GetBranch("simvtx_z");
+		simvtx_z_branch->SetAddress(&simvtx_z_);
+	}
+	if(simvtx_z_branch == 0 ) {
+	cout << "Branch simvtx_z does not exist." << endl;
+	}
+	simvtx_sourceSimIdx_branch = 0;
+	if (tree->GetBranch("simvtx_sourceSimIdx") != 0) {
+		simvtx_sourceSimIdx_branch = tree->GetBranch("simvtx_sourceSimIdx");
+		simvtx_sourceSimIdx_branch->SetAddress(&simvtx_sourceSimIdx_);
+	}
+	if(simvtx_sourceSimIdx_branch == 0 ) {
+	cout << "Branch simvtx_sourceSimIdx does not exist." << endl;
+	}
+	simvtx_daughterSimIdx_branch = 0;
+	if (tree->GetBranch("simvtx_daughterSimIdx") != 0) {
+		simvtx_daughterSimIdx_branch = tree->GetBranch("simvtx_daughterSimIdx");
+		simvtx_daughterSimIdx_branch->SetAddress(&simvtx_daughterSimIdx_);
+	}
+	if(simvtx_daughterSimIdx_branch == 0 ) {
+	cout << "Branch simvtx_daughterSimIdx does not exist." << endl;
+	}
+	simpv_idx_branch = 0;
+	if (tree->GetBranch("simpv_idx") != 0) {
+		simpv_idx_branch = tree->GetBranch("simpv_idx");
+		simpv_idx_branch->SetAddress(&simpv_idx_);
+	}
+	if(simpv_idx_branch == 0 ) {
+	cout << "Branch simpv_idx does not exist." << endl;
 	}
   tree->SetMakeClass(0);
 }
@@ -1884,62 +2269,98 @@ void GetEntry(unsigned int idx)
 	// this only marks branches as not loaded, saving a lot of time
 	{
 		index = idx;
+		event_isLoaded = false;
+		lumi_isLoaded = false;
+		run_isLoaded = false;
 		trk_px_isLoaded = false;
 		trk_py_isLoaded = false;
 		trk_pz_isLoaded = false;
 		trk_pt_isLoaded = false;
+		trk_inner_px_isLoaded = false;
+		trk_inner_py_isLoaded = false;
+		trk_inner_pz_isLoaded = false;
+		trk_inner_pt_isLoaded = false;
+		trk_outer_px_isLoaded = false;
+		trk_outer_py_isLoaded = false;
+		trk_outer_pz_isLoaded = false;
+		trk_outer_pt_isLoaded = false;
 		trk_eta_isLoaded = false;
+		trk_lambda_isLoaded = false;
+		trk_cotTheta_isLoaded = false;
 		trk_phi_isLoaded = false;
 		trk_dxy_isLoaded = false;
 		trk_dz_isLoaded = false;
 		trk_ptErr_isLoaded = false;
 		trk_etaErr_isLoaded = false;
+		trk_lambdaErr_isLoaded = false;
 		trk_phiErr_isLoaded = false;
 		trk_dxyErr_isLoaded = false;
 		trk_dzErr_isLoaded = false;
+		trk_refpoint_x_isLoaded = false;
+		trk_refpoint_y_isLoaded = false;
+		trk_refpoint_z_isLoaded = false;
 		trk_nChi2_isLoaded = false;
-		trk_shareFrac_isLoaded = false;
 		trk_q_isLoaded = false;
 		trk_nValid_isLoaded = false;
 		trk_nInvalid_isLoaded = false;
 		trk_nPixel_isLoaded = false;
 		trk_nStrip_isLoaded = false;
+		trk_nPixelLay_isLoaded = false;
+		trk_nStripLay_isLoaded = false;
 		trk_n3DLay_isLoaded = false;
+		trk_nOuterLost_isLoaded = false;
+		trk_nInnerLost_isLoaded = false;
 		trk_algo_isLoaded = false;
+		trk_originalAlgo_isLoaded = false;
+		trk_algoMask_isLoaded = false;
+		trk_stopReason_isLoaded = false;
 		trk_isHP_isLoaded = false;
 		trk_seedIdx_isLoaded = false;
-		trk_simIdx_isLoaded = false;
-		trk_pixelIdx_isLoaded = false;
-		trk_stripIdx_isLoaded = false;
+		trk_vtxIdx_isLoaded = false;
+		trk_shareFrac_isLoaded = false;
+		trk_simTrkIdx_isLoaded = false;
+		trk_hitIdx_isLoaded = false;
+		trk_hitType_isLoaded = false;
+		sim_event_isLoaded = false;
+		sim_bunchCrossing_isLoaded = false;
+		sim_pdgId_isLoaded = false;
+		sim_genPdgIds_isLoaded = false;
+		sim_isFromBHadron_isLoaded = false;
 		sim_px_isLoaded = false;
 		sim_py_isLoaded = false;
 		sim_pz_isLoaded = false;
 		sim_pt_isLoaded = false;
 		sim_eta_isLoaded = false;
 		sim_phi_isLoaded = false;
-		sim_dxy_isLoaded = false;
-		sim_dz_isLoaded = false;
-		sim_prodx_isLoaded = false;
-		sim_prody_isLoaded = false;
-		sim_prodz_isLoaded = false;
-		sim_shareFrac_isLoaded = false;
+		sim_pca_pt_isLoaded = false;
+		sim_pca_eta_isLoaded = false;
+		sim_pca_lambda_isLoaded = false;
+		sim_pca_cotTheta_isLoaded = false;
+		sim_pca_phi_isLoaded = false;
+		sim_pca_dxy_isLoaded = false;
+		sim_pca_dz_isLoaded = false;
 		sim_q_isLoaded = false;
 		sim_nValid_isLoaded = false;
 		sim_nPixel_isLoaded = false;
 		sim_nStrip_isLoaded = false;
+		sim_nLay_isLoaded = false;
+		sim_nPixelLay_isLoaded = false;
 		sim_n3DLay_isLoaded = false;
 		sim_trkIdx_isLoaded = false;
-		sim_pixelIdx_isLoaded = false;
-		sim_stripIdx_isLoaded = false;
+		sim_shareFrac_isLoaded = false;
+		sim_seedIdx_isLoaded = false;
+		sim_parentVtxIdx_isLoaded = false;
+		sim_decayVtxIdx_isLoaded = false;
+		sim_simHitIdx_isLoaded = false;
 		pix_isBarrel_isLoaded = false;
+		pix_det_isLoaded = false;
 		pix_lay_isLoaded = false;
 		pix_detId_isLoaded = false;
-		pix_nSimTrk_isLoaded = false;
-		pix_simTrkIdx_isLoaded = false;
-		pix_particle_isLoaded = false;
-		pix_process_isLoaded = false;
-		pix_bunchXing_isLoaded = false;
-		pix_event_isLoaded = false;
+		pix_trkIdx_isLoaded = false;
+		pix_seeIdx_isLoaded = false;
+		pix_simHitIdx_isLoaded = false;
+		pix_chargeFraction_isLoaded = false;
+		pix_simType_isLoaded = false;
 		pix_x_isLoaded = false;
 		pix_y_isLoaded = false;
 		pix_z_isLoaded = false;
@@ -1949,171 +2370,206 @@ void GetEntry(unsigned int idx)
 		pix_yz_isLoaded = false;
 		pix_zz_isLoaded = false;
 		pix_zx_isLoaded = false;
-		pix_xsim_isLoaded = false;
-		pix_ysim_isLoaded = false;
-		pix_zsim_isLoaded = false;
-		pix_pxsim_isLoaded = false;
-		pix_pysim_isLoaded = false;
-		pix_pzsim_isLoaded = false;
-		pix_pathprop_isLoaded = false;
-		pix_xsimprop_isLoaded = false;
-		pix_ysimprop_isLoaded = false;
-		pix_zsimprop_isLoaded = false;
-		pix_pxsimprop_isLoaded = false;
-		pix_pysimprop_isLoaded = false;
-		pix_pzsimprop_isLoaded = false;
-		pix_eloss_isLoaded = false;
 		pix_radL_isLoaded = false;
 		pix_bbxi_isLoaded = false;
-		str_isBarrel_isLoaded = false;
-		str_isStereo_isLoaded = false;
-		str_det_isLoaded = false;
-		str_lay_isLoaded = false;
-		str_detId_isLoaded = false;
-		str_nSimTrk_isLoaded = false;
-		str_simTrkIdx_isLoaded = false;
-		str_particle_isLoaded = false;
-		str_process_isLoaded = false;
-		str_bunchXing_isLoaded = false;
-		str_event_isLoaded = false;
-		str_x_isLoaded = false;
-		str_y_isLoaded = false;
-		str_z_isLoaded = false;
-		str_xx_isLoaded = false;
-		str_xy_isLoaded = false;
-		str_yy_isLoaded = false;
-		str_yz_isLoaded = false;
-		str_zz_isLoaded = false;
-		str_zx_isLoaded = false;
-		str_xsim_isLoaded = false;
-		str_ysim_isLoaded = false;
-		str_zsim_isLoaded = false;
-		str_pxsim_isLoaded = false;
-		str_pysim_isLoaded = false;
-		str_pzsim_isLoaded = false;
-		str_eloss_isLoaded = false;
-		str_radL_isLoaded = false;
-		str_bbxi_isLoaded = false;
-		glu_isBarrel_isLoaded = false;
-		glu_det_isLoaded = false;
-		glu_lay_isLoaded = false;
-		glu_detId_isLoaded = false;
-		glu_monoIdx_isLoaded = false;
-		glu_stereoIdx_isLoaded = false;
-		glu_x_isLoaded = false;
-		glu_y_isLoaded = false;
-		glu_z_isLoaded = false;
-		glu_xx_isLoaded = false;
-		glu_xy_isLoaded = false;
-		glu_yy_isLoaded = false;
-		glu_yz_isLoaded = false;
-		glu_zz_isLoaded = false;
-		glu_zx_isLoaded = false;
-		glu_radL_isLoaded = false;
-		glu_bbxi_isLoaded = false;
+		ph2_isBarrel_isLoaded = false;
+		ph2_det_isLoaded = false;
+		ph2_lay_isLoaded = false;
+		ph2_detId_isLoaded = false;
+		ph2_trkIdx_isLoaded = false;
+		ph2_seeIdx_isLoaded = false;
+		ph2_simHitIdx_isLoaded = false;
+		ph2_simType_isLoaded = false;
+		ph2_x_isLoaded = false;
+		ph2_y_isLoaded = false;
+		ph2_z_isLoaded = false;
+		ph2_xx_isLoaded = false;
+		ph2_xy_isLoaded = false;
+		ph2_yy_isLoaded = false;
+		ph2_yz_isLoaded = false;
+		ph2_zz_isLoaded = false;
+		ph2_zx_isLoaded = false;
+		ph2_radL_isLoaded = false;
+		ph2_bbxi_isLoaded = false;
+		inv_isBarrel_isLoaded = false;
+		inv_det_isLoaded = false;
+		inv_lay_isLoaded = false;
+		inv_detId_isLoaded = false;
+		inv_type_isLoaded = false;
+		simhit_det_isLoaded = false;
+		simhit_lay_isLoaded = false;
+		simhit_detId_isLoaded = false;
+		simhit_x_isLoaded = false;
+		simhit_y_isLoaded = false;
+		simhit_z_isLoaded = false;
+		simhit_px_isLoaded = false;
+		simhit_py_isLoaded = false;
+		simhit_pz_isLoaded = false;
+		simhit_particle_isLoaded = false;
+		simhit_process_isLoaded = false;
+		simhit_eloss_isLoaded = false;
+		simhit_tof_isLoaded = false;
+		simhit_simTrkIdx_isLoaded = false;
+		simhit_hitIdx_isLoaded = false;
+		simhit_hitType_isLoaded = false;
 		bsp_x_isLoaded = false;
 		bsp_y_isLoaded = false;
 		bsp_z_isLoaded = false;
 		bsp_sigmax_isLoaded = false;
 		bsp_sigmay_isLoaded = false;
 		bsp_sigmaz_isLoaded = false;
-		see_lh_px_isLoaded = false;
-		see_lh_py_isLoaded = false;
-		see_lh_pz_isLoaded = false;
-		see_lh_pt_isLoaded = false;
-		see_lh_eta_isLoaded = false;
-		see_lh_phi_isLoaded = false;
-		see_lh_x_isLoaded = false;
-		see_lh_y_isLoaded = false;
-		see_lh_z_isLoaded = false;
-		see_pca_px_isLoaded = false;
-		see_pca_py_isLoaded = false;
-		see_pca_pz_isLoaded = false;
-		see_pca_pt_isLoaded = false;
-		see_pca_eta_isLoaded = false;
-		see_pca_phi_isLoaded = false;
-		see_pca_x_isLoaded = false;
-		see_pca_y_isLoaded = false;
-		see_pca_z_isLoaded = false;
-		see_pca_dxy_isLoaded = false;
-		see_pca_dz_isLoaded = false;
-		see_pca_ptErr_isLoaded = false;
-		see_pca_etaErr_isLoaded = false;
-		see_pca_phiErr_isLoaded = false;
-		see_pca_dxyErr_isLoaded = false;
-		see_pca_dzErr_isLoaded = false;
+		see_fitok_isLoaded = false;
+		see_px_isLoaded = false;
+		see_py_isLoaded = false;
+		see_pz_isLoaded = false;
+		see_pt_isLoaded = false;
+		see_eta_isLoaded = false;
+		see_phi_isLoaded = false;
+		see_dxy_isLoaded = false;
+		see_dz_isLoaded = false;
+		see_ptErr_isLoaded = false;
+		see_etaErr_isLoaded = false;
+		see_phiErr_isLoaded = false;
+		see_dxyErr_isLoaded = false;
+		see_dzErr_isLoaded = false;
 		see_chi2_isLoaded = false;
+		see_statePt_isLoaded = false;
+		see_stateTrajX_isLoaded = false;
+		see_stateTrajY_isLoaded = false;
+		see_stateTrajPx_isLoaded = false;
+		see_stateTrajPy_isLoaded = false;
+		see_stateTrajPz_isLoaded = false;
 		see_q_isLoaded = false;
 		see_nValid_isLoaded = false;
 		see_nPixel_isLoaded = false;
 		see_nGlued_isLoaded = false;
 		see_nStrip_isLoaded = false;
+		see_nPhase2OT_isLoaded = false;
 		see_algo_isLoaded = false;
-		see_pixelIdx_isLoaded = false;
-		see_gluedIdx_isLoaded = false;
-		see_stripIdx_isLoaded = false;
-		algo_offset_isLoaded = false;
+		see_stopReason_isLoaded = false;
+		see_trkIdx_isLoaded = false;
+		see_shareFrac_isLoaded = false;
+		see_simTrkIdx_isLoaded = false;
+		see_hitIdx_isLoaded = false;
+		see_hitType_isLoaded = false;
+		see_offset_isLoaded = false;
+		vtx_x_isLoaded = false;
+		vtx_y_isLoaded = false;
+		vtx_z_isLoaded = false;
+		vtx_xErr_isLoaded = false;
+		vtx_yErr_isLoaded = false;
+		vtx_zErr_isLoaded = false;
+		vtx_ndof_isLoaded = false;
+		vtx_chi2_isLoaded = false;
+		vtx_fake_isLoaded = false;
+		vtx_valid_isLoaded = false;
+		vtx_trkIdx_isLoaded = false;
+		simvtx_event_isLoaded = false;
+		simvtx_bunchCrossing_isLoaded = false;
+		simvtx_processType_isLoaded = false;
+		simvtx_x_isLoaded = false;
+		simvtx_y_isLoaded = false;
+		simvtx_z_isLoaded = false;
+		simvtx_sourceSimIdx_isLoaded = false;
+		simvtx_daughterSimIdx_isLoaded = false;
+		simpv_idx_isLoaded = false;
 	}
 
 void LoadAllBranches() 
 	// load all branches
 {
+	if (event_branch != 0) event();
+	if (lumi_branch != 0) lumi();
+	if (run_branch != 0) run();
 	if (trk_px_branch != 0) trk_px();
 	if (trk_py_branch != 0) trk_py();
 	if (trk_pz_branch != 0) trk_pz();
 	if (trk_pt_branch != 0) trk_pt();
+	if (trk_inner_px_branch != 0) trk_inner_px();
+	if (trk_inner_py_branch != 0) trk_inner_py();
+	if (trk_inner_pz_branch != 0) trk_inner_pz();
+	if (trk_inner_pt_branch != 0) trk_inner_pt();
+	if (trk_outer_px_branch != 0) trk_outer_px();
+	if (trk_outer_py_branch != 0) trk_outer_py();
+	if (trk_outer_pz_branch != 0) trk_outer_pz();
+	if (trk_outer_pt_branch != 0) trk_outer_pt();
 	if (trk_eta_branch != 0) trk_eta();
+	if (trk_lambda_branch != 0) trk_lambda();
+	if (trk_cotTheta_branch != 0) trk_cotTheta();
 	if (trk_phi_branch != 0) trk_phi();
 	if (trk_dxy_branch != 0) trk_dxy();
 	if (trk_dz_branch != 0) trk_dz();
 	if (trk_ptErr_branch != 0) trk_ptErr();
 	if (trk_etaErr_branch != 0) trk_etaErr();
+	if (trk_lambdaErr_branch != 0) trk_lambdaErr();
 	if (trk_phiErr_branch != 0) trk_phiErr();
 	if (trk_dxyErr_branch != 0) trk_dxyErr();
 	if (trk_dzErr_branch != 0) trk_dzErr();
+	if (trk_refpoint_x_branch != 0) trk_refpoint_x();
+	if (trk_refpoint_y_branch != 0) trk_refpoint_y();
+	if (trk_refpoint_z_branch != 0) trk_refpoint_z();
 	if (trk_nChi2_branch != 0) trk_nChi2();
-	if (trk_shareFrac_branch != 0) trk_shareFrac();
 	if (trk_q_branch != 0) trk_q();
 	if (trk_nValid_branch != 0) trk_nValid();
 	if (trk_nInvalid_branch != 0) trk_nInvalid();
 	if (trk_nPixel_branch != 0) trk_nPixel();
 	if (trk_nStrip_branch != 0) trk_nStrip();
+	if (trk_nPixelLay_branch != 0) trk_nPixelLay();
+	if (trk_nStripLay_branch != 0) trk_nStripLay();
 	if (trk_n3DLay_branch != 0) trk_n3DLay();
+	if (trk_nOuterLost_branch != 0) trk_nOuterLost();
+	if (trk_nInnerLost_branch != 0) trk_nInnerLost();
 	if (trk_algo_branch != 0) trk_algo();
+	if (trk_originalAlgo_branch != 0) trk_originalAlgo();
+	if (trk_algoMask_branch != 0) trk_algoMask();
+	if (trk_stopReason_branch != 0) trk_stopReason();
 	if (trk_isHP_branch != 0) trk_isHP();
 	if (trk_seedIdx_branch != 0) trk_seedIdx();
-	if (trk_simIdx_branch != 0) trk_simIdx();
-	if (trk_pixelIdx_branch != 0) trk_pixelIdx();
-	if (trk_stripIdx_branch != 0) trk_stripIdx();
+	if (trk_vtxIdx_branch != 0) trk_vtxIdx();
+	if (trk_shareFrac_branch != 0) trk_shareFrac();
+	if (trk_simTrkIdx_branch != 0) trk_simTrkIdx();
+	if (trk_hitIdx_branch != 0) trk_hitIdx();
+	if (trk_hitType_branch != 0) trk_hitType();
+	if (sim_event_branch != 0) sim_event();
+	if (sim_bunchCrossing_branch != 0) sim_bunchCrossing();
+	if (sim_pdgId_branch != 0) sim_pdgId();
+	if (sim_genPdgIds_branch != 0) sim_genPdgIds();
+	if (sim_isFromBHadron_branch != 0) sim_isFromBHadron();
 	if (sim_px_branch != 0) sim_px();
 	if (sim_py_branch != 0) sim_py();
 	if (sim_pz_branch != 0) sim_pz();
 	if (sim_pt_branch != 0) sim_pt();
 	if (sim_eta_branch != 0) sim_eta();
 	if (sim_phi_branch != 0) sim_phi();
-	if (sim_dxy_branch != 0) sim_dxy();
-	if (sim_dz_branch != 0) sim_dz();
-	if (sim_prodx_branch != 0) sim_prodx();
-	if (sim_prody_branch != 0) sim_prody();
-	if (sim_prodz_branch != 0) sim_prodz();
-	if (sim_shareFrac_branch != 0) sim_shareFrac();
+	if (sim_pca_pt_branch != 0) sim_pca_pt();
+	if (sim_pca_eta_branch != 0) sim_pca_eta();
+	if (sim_pca_lambda_branch != 0) sim_pca_lambda();
+	if (sim_pca_cotTheta_branch != 0) sim_pca_cotTheta();
+	if (sim_pca_phi_branch != 0) sim_pca_phi();
+	if (sim_pca_dxy_branch != 0) sim_pca_dxy();
+	if (sim_pca_dz_branch != 0) sim_pca_dz();
 	if (sim_q_branch != 0) sim_q();
 	if (sim_nValid_branch != 0) sim_nValid();
 	if (sim_nPixel_branch != 0) sim_nPixel();
 	if (sim_nStrip_branch != 0) sim_nStrip();
+	if (sim_nLay_branch != 0) sim_nLay();
+	if (sim_nPixelLay_branch != 0) sim_nPixelLay();
 	if (sim_n3DLay_branch != 0) sim_n3DLay();
 	if (sim_trkIdx_branch != 0) sim_trkIdx();
-	if (sim_pixelIdx_branch != 0) sim_pixelIdx();
-	if (sim_stripIdx_branch != 0) sim_stripIdx();
+	if (sim_shareFrac_branch != 0) sim_shareFrac();
+	if (sim_seedIdx_branch != 0) sim_seedIdx();
+	if (sim_parentVtxIdx_branch != 0) sim_parentVtxIdx();
+	if (sim_decayVtxIdx_branch != 0) sim_decayVtxIdx();
+	if (sim_simHitIdx_branch != 0) sim_simHitIdx();
 	if (pix_isBarrel_branch != 0) pix_isBarrel();
+	if (pix_det_branch != 0) pix_det();
 	if (pix_lay_branch != 0) pix_lay();
 	if (pix_detId_branch != 0) pix_detId();
-	if (pix_nSimTrk_branch != 0) pix_nSimTrk();
-	if (pix_simTrkIdx_branch != 0) pix_simTrkIdx();
-	if (pix_particle_branch != 0) pix_particle();
-	if (pix_process_branch != 0) pix_process();
-	if (pix_bunchXing_branch != 0) pix_bunchXing();
-	if (pix_event_branch != 0) pix_event();
+	if (pix_trkIdx_branch != 0) pix_trkIdx();
+	if (pix_seeIdx_branch != 0) pix_seeIdx();
+	if (pix_simHitIdx_branch != 0) pix_simHitIdx();
+	if (pix_chargeFraction_branch != 0) pix_chargeFraction();
+	if (pix_simType_branch != 0) pix_simType();
 	if (pix_x_branch != 0) pix_x();
 	if (pix_y_branch != 0) pix_y();
 	if (pix_z_branch != 0) pix_z();
@@ -2123,112 +2579,149 @@ void LoadAllBranches()
 	if (pix_yz_branch != 0) pix_yz();
 	if (pix_zz_branch != 0) pix_zz();
 	if (pix_zx_branch != 0) pix_zx();
-	if (pix_xsim_branch != 0) pix_xsim();
-	if (pix_ysim_branch != 0) pix_ysim();
-	if (pix_zsim_branch != 0) pix_zsim();
-	if (pix_pxsim_branch != 0) pix_pxsim();
-	if (pix_pysim_branch != 0) pix_pysim();
-	if (pix_pzsim_branch != 0) pix_pzsim();
-	if (pix_pathprop_branch != 0) pix_pathprop();
-	if (pix_xsimprop_branch != 0) pix_xsimprop();
-	if (pix_ysimprop_branch != 0) pix_ysimprop();
-	if (pix_zsimprop_branch != 0) pix_zsimprop();
-	if (pix_pxsimprop_branch != 0) pix_pxsimprop();
-	if (pix_pysimprop_branch != 0) pix_pysimprop();
-	if (pix_pzsimprop_branch != 0) pix_pzsimprop();
-	if (pix_eloss_branch != 0) pix_eloss();
 	if (pix_radL_branch != 0) pix_radL();
 	if (pix_bbxi_branch != 0) pix_bbxi();
-	if (str_isBarrel_branch != 0) str_isBarrel();
-	if (str_isStereo_branch != 0) str_isStereo();
-	if (str_det_branch != 0) str_det();
-	if (str_lay_branch != 0) str_lay();
-	if (str_detId_branch != 0) str_detId();
-	if (str_nSimTrk_branch != 0) str_nSimTrk();
-	if (str_simTrkIdx_branch != 0) str_simTrkIdx();
-	if (str_particle_branch != 0) str_particle();
-	if (str_process_branch != 0) str_process();
-	if (str_bunchXing_branch != 0) str_bunchXing();
-	if (str_event_branch != 0) str_event();
-	if (str_x_branch != 0) str_x();
-	if (str_y_branch != 0) str_y();
-	if (str_z_branch != 0) str_z();
-	if (str_xx_branch != 0) str_xx();
-	if (str_xy_branch != 0) str_xy();
-	if (str_yy_branch != 0) str_yy();
-	if (str_yz_branch != 0) str_yz();
-	if (str_zz_branch != 0) str_zz();
-	if (str_zx_branch != 0) str_zx();
-	if (str_xsim_branch != 0) str_xsim();
-	if (str_ysim_branch != 0) str_ysim();
-	if (str_zsim_branch != 0) str_zsim();
-	if (str_pxsim_branch != 0) str_pxsim();
-	if (str_pysim_branch != 0) str_pysim();
-	if (str_pzsim_branch != 0) str_pzsim();
-	if (str_eloss_branch != 0) str_eloss();
-	if (str_radL_branch != 0) str_radL();
-	if (str_bbxi_branch != 0) str_bbxi();
-	if (glu_isBarrel_branch != 0) glu_isBarrel();
-	if (glu_det_branch != 0) glu_det();
-	if (glu_lay_branch != 0) glu_lay();
-	if (glu_detId_branch != 0) glu_detId();
-	if (glu_monoIdx_branch != 0) glu_monoIdx();
-	if (glu_stereoIdx_branch != 0) glu_stereoIdx();
-	if (glu_x_branch != 0) glu_x();
-	if (glu_y_branch != 0) glu_y();
-	if (glu_z_branch != 0) glu_z();
-	if (glu_xx_branch != 0) glu_xx();
-	if (glu_xy_branch != 0) glu_xy();
-	if (glu_yy_branch != 0) glu_yy();
-	if (glu_yz_branch != 0) glu_yz();
-	if (glu_zz_branch != 0) glu_zz();
-	if (glu_zx_branch != 0) glu_zx();
-	if (glu_radL_branch != 0) glu_radL();
-	if (glu_bbxi_branch != 0) glu_bbxi();
+	if (ph2_isBarrel_branch != 0) ph2_isBarrel();
+	if (ph2_det_branch != 0) ph2_det();
+	if (ph2_lay_branch != 0) ph2_lay();
+	if (ph2_detId_branch != 0) ph2_detId();
+	if (ph2_trkIdx_branch != 0) ph2_trkIdx();
+	if (ph2_seeIdx_branch != 0) ph2_seeIdx();
+	if (ph2_simHitIdx_branch != 0) ph2_simHitIdx();
+	if (ph2_simType_branch != 0) ph2_simType();
+	if (ph2_x_branch != 0) ph2_x();
+	if (ph2_y_branch != 0) ph2_y();
+	if (ph2_z_branch != 0) ph2_z();
+	if (ph2_xx_branch != 0) ph2_xx();
+	if (ph2_xy_branch != 0) ph2_xy();
+	if (ph2_yy_branch != 0) ph2_yy();
+	if (ph2_yz_branch != 0) ph2_yz();
+	if (ph2_zz_branch != 0) ph2_zz();
+	if (ph2_zx_branch != 0) ph2_zx();
+	if (ph2_radL_branch != 0) ph2_radL();
+	if (ph2_bbxi_branch != 0) ph2_bbxi();
+	if (inv_isBarrel_branch != 0) inv_isBarrel();
+	if (inv_det_branch != 0) inv_det();
+	if (inv_lay_branch != 0) inv_lay();
+	if (inv_detId_branch != 0) inv_detId();
+	if (inv_type_branch != 0) inv_type();
+	if (simhit_det_branch != 0) simhit_det();
+	if (simhit_lay_branch != 0) simhit_lay();
+	if (simhit_detId_branch != 0) simhit_detId();
+	if (simhit_x_branch != 0) simhit_x();
+	if (simhit_y_branch != 0) simhit_y();
+	if (simhit_z_branch != 0) simhit_z();
+	if (simhit_px_branch != 0) simhit_px();
+	if (simhit_py_branch != 0) simhit_py();
+	if (simhit_pz_branch != 0) simhit_pz();
+	if (simhit_particle_branch != 0) simhit_particle();
+	if (simhit_process_branch != 0) simhit_process();
+	if (simhit_eloss_branch != 0) simhit_eloss();
+	if (simhit_tof_branch != 0) simhit_tof();
+	if (simhit_simTrkIdx_branch != 0) simhit_simTrkIdx();
+	if (simhit_hitIdx_branch != 0) simhit_hitIdx();
+	if (simhit_hitType_branch != 0) simhit_hitType();
 	if (bsp_x_branch != 0) bsp_x();
 	if (bsp_y_branch != 0) bsp_y();
 	if (bsp_z_branch != 0) bsp_z();
 	if (bsp_sigmax_branch != 0) bsp_sigmax();
 	if (bsp_sigmay_branch != 0) bsp_sigmay();
 	if (bsp_sigmaz_branch != 0) bsp_sigmaz();
-	if (see_lh_px_branch != 0) see_lh_px();
-	if (see_lh_py_branch != 0) see_lh_py();
-	if (see_lh_pz_branch != 0) see_lh_pz();
-	if (see_lh_pt_branch != 0) see_lh_pt();
-	if (see_lh_eta_branch != 0) see_lh_eta();
-	if (see_lh_phi_branch != 0) see_lh_phi();
-	if (see_lh_x_branch != 0) see_lh_x();
-	if (see_lh_y_branch != 0) see_lh_y();
-	if (see_lh_z_branch != 0) see_lh_z();
-	if (see_pca_px_branch != 0) see_pca_px();
-	if (see_pca_py_branch != 0) see_pca_py();
-	if (see_pca_pz_branch != 0) see_pca_pz();
-	if (see_pca_pt_branch != 0) see_pca_pt();
-	if (see_pca_eta_branch != 0) see_pca_eta();
-	if (see_pca_phi_branch != 0) see_pca_phi();
-	if (see_pca_x_branch != 0) see_pca_x();
-	if (see_pca_y_branch != 0) see_pca_y();
-	if (see_pca_z_branch != 0) see_pca_z();
-	if (see_pca_dxy_branch != 0) see_pca_dxy();
-	if (see_pca_dz_branch != 0) see_pca_dz();
-	if (see_pca_ptErr_branch != 0) see_pca_ptErr();
-	if (see_pca_etaErr_branch != 0) see_pca_etaErr();
-	if (see_pca_phiErr_branch != 0) see_pca_phiErr();
-	if (see_pca_dxyErr_branch != 0) see_pca_dxyErr();
-	if (see_pca_dzErr_branch != 0) see_pca_dzErr();
+	if (see_fitok_branch != 0) see_fitok();
+	if (see_px_branch != 0) see_px();
+	if (see_py_branch != 0) see_py();
+	if (see_pz_branch != 0) see_pz();
+	if (see_pt_branch != 0) see_pt();
+	if (see_eta_branch != 0) see_eta();
+	if (see_phi_branch != 0) see_phi();
+	if (see_dxy_branch != 0) see_dxy();
+	if (see_dz_branch != 0) see_dz();
+	if (see_ptErr_branch != 0) see_ptErr();
+	if (see_etaErr_branch != 0) see_etaErr();
+	if (see_phiErr_branch != 0) see_phiErr();
+	if (see_dxyErr_branch != 0) see_dxyErr();
+	if (see_dzErr_branch != 0) see_dzErr();
 	if (see_chi2_branch != 0) see_chi2();
+	if (see_statePt_branch != 0) see_statePt();
+	if (see_stateTrajX_branch != 0) see_stateTrajX();
+	if (see_stateTrajY_branch != 0) see_stateTrajY();
+	if (see_stateTrajPx_branch != 0) see_stateTrajPx();
+	if (see_stateTrajPy_branch != 0) see_stateTrajPy();
+	if (see_stateTrajPz_branch != 0) see_stateTrajPz();
 	if (see_q_branch != 0) see_q();
 	if (see_nValid_branch != 0) see_nValid();
 	if (see_nPixel_branch != 0) see_nPixel();
 	if (see_nGlued_branch != 0) see_nGlued();
 	if (see_nStrip_branch != 0) see_nStrip();
+	if (see_nPhase2OT_branch != 0) see_nPhase2OT();
 	if (see_algo_branch != 0) see_algo();
-	if (see_pixelIdx_branch != 0) see_pixelIdx();
-	if (see_gluedIdx_branch != 0) see_gluedIdx();
-	if (see_stripIdx_branch != 0) see_stripIdx();
-	if (algo_offset_branch != 0) algo_offset();
+	if (see_stopReason_branch != 0) see_stopReason();
+	if (see_trkIdx_branch != 0) see_trkIdx();
+	if (see_shareFrac_branch != 0) see_shareFrac();
+	if (see_simTrkIdx_branch != 0) see_simTrkIdx();
+	if (see_hitIdx_branch != 0) see_hitIdx();
+	if (see_hitType_branch != 0) see_hitType();
+	if (see_offset_branch != 0) see_offset();
+	if (vtx_x_branch != 0) vtx_x();
+	if (vtx_y_branch != 0) vtx_y();
+	if (vtx_z_branch != 0) vtx_z();
+	if (vtx_xErr_branch != 0) vtx_xErr();
+	if (vtx_yErr_branch != 0) vtx_yErr();
+	if (vtx_zErr_branch != 0) vtx_zErr();
+	if (vtx_ndof_branch != 0) vtx_ndof();
+	if (vtx_chi2_branch != 0) vtx_chi2();
+	if (vtx_fake_branch != 0) vtx_fake();
+	if (vtx_valid_branch != 0) vtx_valid();
+	if (vtx_trkIdx_branch != 0) vtx_trkIdx();
+	if (simvtx_event_branch != 0) simvtx_event();
+	if (simvtx_bunchCrossing_branch != 0) simvtx_bunchCrossing();
+	if (simvtx_processType_branch != 0) simvtx_processType();
+	if (simvtx_x_branch != 0) simvtx_x();
+	if (simvtx_y_branch != 0) simvtx_y();
+	if (simvtx_z_branch != 0) simvtx_z();
+	if (simvtx_sourceSimIdx_branch != 0) simvtx_sourceSimIdx();
+	if (simvtx_daughterSimIdx_branch != 0) simvtx_daughterSimIdx();
+	if (simpv_idx_branch != 0) simpv_idx();
 }
 
+	unsigned long long &event(){
+		if (not event_isLoaded) {
+			if (event_branch != 0) {
+				event_branch->GetEntry(index);
+			} else { 
+				printf("branch event_branch does not exist!\n");
+				exit(1);
+			}
+			event_isLoaded = true;
+		}
+		return event_;
+	}
+	unsigned int &lumi()
+	{
+		if (not lumi_isLoaded) {
+			if (lumi_branch != 0) {
+				lumi_branch->GetEntry(index);
+			} else { 
+				printf("branch lumi_branch does not exist!\n");
+				exit(1);
+			}
+			lumi_isLoaded = true;
+		}
+		return lumi_;
+	}
+	unsigned int &run()
+	{
+		if (not run_isLoaded) {
+			if (run_branch != 0) {
+				run_branch->GetEntry(index);
+			} else { 
+				printf("branch run_branch does not exist!\n");
+				exit(1);
+			}
+			run_isLoaded = true;
+		}
+		return run_;
+	}
 	vector<float> &trk_px()
 	{
 		if (not trk_px_isLoaded) {
@@ -2281,6 +2774,110 @@ void LoadAllBranches()
 		}
 		return *trk_pt_;
 	}
+	vector<float> &trk_inner_px()
+	{
+		if (not trk_inner_px_isLoaded) {
+			if (trk_inner_px_branch != 0) {
+				trk_inner_px_branch->GetEntry(index);
+			} else { 
+				printf("branch trk_inner_px_branch does not exist!\n");
+				exit(1);
+			}
+			trk_inner_px_isLoaded = true;
+		}
+		return *trk_inner_px_;
+	}
+	vector<float> &trk_inner_py()
+	{
+		if (not trk_inner_py_isLoaded) {
+			if (trk_inner_py_branch != 0) {
+				trk_inner_py_branch->GetEntry(index);
+			} else { 
+				printf("branch trk_inner_py_branch does not exist!\n");
+				exit(1);
+			}
+			trk_inner_py_isLoaded = true;
+		}
+		return *trk_inner_py_;
+	}
+	vector<float> &trk_inner_pz()
+	{
+		if (not trk_inner_pz_isLoaded) {
+			if (trk_inner_pz_branch != 0) {
+				trk_inner_pz_branch->GetEntry(index);
+			} else { 
+				printf("branch trk_inner_pz_branch does not exist!\n");
+				exit(1);
+			}
+			trk_inner_pz_isLoaded = true;
+		}
+		return *trk_inner_pz_;
+	}
+	vector<float> &trk_inner_pt()
+	{
+		if (not trk_inner_pt_isLoaded) {
+			if (trk_inner_pt_branch != 0) {
+				trk_inner_pt_branch->GetEntry(index);
+			} else { 
+				printf("branch trk_inner_pt_branch does not exist!\n");
+				exit(1);
+			}
+			trk_inner_pt_isLoaded = true;
+		}
+		return *trk_inner_pt_;
+	}
+	vector<float> &trk_outer_px()
+	{
+		if (not trk_outer_px_isLoaded) {
+			if (trk_outer_px_branch != 0) {
+				trk_outer_px_branch->GetEntry(index);
+			} else { 
+				printf("branch trk_outer_px_branch does not exist!\n");
+				exit(1);
+			}
+			trk_outer_px_isLoaded = true;
+		}
+		return *trk_outer_px_;
+	}
+	vector<float> &trk_outer_py()
+	{
+		if (not trk_outer_py_isLoaded) {
+			if (trk_outer_py_branch != 0) {
+				trk_outer_py_branch->GetEntry(index);
+			} else { 
+				printf("branch trk_outer_py_branch does not exist!\n");
+				exit(1);
+			}
+			trk_outer_py_isLoaded = true;
+		}
+		return *trk_outer_py_;
+	}
+	vector<float> &trk_outer_pz()
+	{
+		if (not trk_outer_pz_isLoaded) {
+			if (trk_outer_pz_branch != 0) {
+				trk_outer_pz_branch->GetEntry(index);
+			} else { 
+				printf("branch trk_outer_pz_branch does not exist!\n");
+				exit(1);
+			}
+			trk_outer_pz_isLoaded = true;
+		}
+		return *trk_outer_pz_;
+	}
+	vector<float> &trk_outer_pt()
+	{
+		if (not trk_outer_pt_isLoaded) {
+			if (trk_outer_pt_branch != 0) {
+				trk_outer_pt_branch->GetEntry(index);
+			} else { 
+				printf("branch trk_outer_pt_branch does not exist!\n");
+				exit(1);
+			}
+			trk_outer_pt_isLoaded = true;
+		}
+		return *trk_outer_pt_;
+	}
 	vector<float> &trk_eta()
 	{
 		if (not trk_eta_isLoaded) {
@@ -2293,6 +2890,32 @@ void LoadAllBranches()
 			trk_eta_isLoaded = true;
 		}
 		return *trk_eta_;
+	}
+	vector<float> &trk_lambda()
+	{
+		if (not trk_lambda_isLoaded) {
+			if (trk_lambda_branch != 0) {
+				trk_lambda_branch->GetEntry(index);
+			} else { 
+				printf("branch trk_lambda_branch does not exist!\n");
+				exit(1);
+			}
+			trk_lambda_isLoaded = true;
+		}
+		return *trk_lambda_;
+	}
+	vector<float> &trk_cotTheta()
+	{
+		if (not trk_cotTheta_isLoaded) {
+			if (trk_cotTheta_branch != 0) {
+				trk_cotTheta_branch->GetEntry(index);
+			} else { 
+				printf("branch trk_cotTheta_branch does not exist!\n");
+				exit(1);
+			}
+			trk_cotTheta_isLoaded = true;
+		}
+		return *trk_cotTheta_;
 	}
 	vector<float> &trk_phi()
 	{
@@ -2359,6 +2982,19 @@ void LoadAllBranches()
 		}
 		return *trk_etaErr_;
 	}
+	vector<float> &trk_lambdaErr()
+	{
+		if (not trk_lambdaErr_isLoaded) {
+			if (trk_lambdaErr_branch != 0) {
+				trk_lambdaErr_branch->GetEntry(index);
+			} else { 
+				printf("branch trk_lambdaErr_branch does not exist!\n");
+				exit(1);
+			}
+			trk_lambdaErr_isLoaded = true;
+		}
+		return *trk_lambdaErr_;
+	}
 	vector<float> &trk_phiErr()
 	{
 		if (not trk_phiErr_isLoaded) {
@@ -2398,6 +3034,45 @@ void LoadAllBranches()
 		}
 		return *trk_dzErr_;
 	}
+	vector<float> &trk_refpoint_x()
+	{
+		if (not trk_refpoint_x_isLoaded) {
+			if (trk_refpoint_x_branch != 0) {
+				trk_refpoint_x_branch->GetEntry(index);
+			} else { 
+				printf("branch trk_refpoint_x_branch does not exist!\n");
+				exit(1);
+			}
+			trk_refpoint_x_isLoaded = true;
+		}
+		return *trk_refpoint_x_;
+	}
+	vector<float> &trk_refpoint_y()
+	{
+		if (not trk_refpoint_y_isLoaded) {
+			if (trk_refpoint_y_branch != 0) {
+				trk_refpoint_y_branch->GetEntry(index);
+			} else { 
+				printf("branch trk_refpoint_y_branch does not exist!\n");
+				exit(1);
+			}
+			trk_refpoint_y_isLoaded = true;
+		}
+		return *trk_refpoint_y_;
+	}
+	vector<float> &trk_refpoint_z()
+	{
+		if (not trk_refpoint_z_isLoaded) {
+			if (trk_refpoint_z_branch != 0) {
+				trk_refpoint_z_branch->GetEntry(index);
+			} else { 
+				printf("branch trk_refpoint_z_branch does not exist!\n");
+				exit(1);
+			}
+			trk_refpoint_z_isLoaded = true;
+		}
+		return *trk_refpoint_z_;
+	}
 	vector<float> &trk_nChi2()
 	{
 		if (not trk_nChi2_isLoaded) {
@@ -2410,19 +3085,6 @@ void LoadAllBranches()
 			trk_nChi2_isLoaded = true;
 		}
 		return *trk_nChi2_;
-	}
-	vector<float> &trk_shareFrac()
-	{
-		if (not trk_shareFrac_isLoaded) {
-			if (trk_shareFrac_branch != 0) {
-				trk_shareFrac_branch->GetEntry(index);
-			} else { 
-				printf("branch trk_shareFrac_branch does not exist!\n");
-				exit(1);
-			}
-			trk_shareFrac_isLoaded = true;
-		}
-		return *trk_shareFrac_;
 	}
 	vector<int> &trk_q()
 	{
@@ -2437,7 +3099,7 @@ void LoadAllBranches()
 		}
 		return *trk_q_;
 	}
-	vector<int> &trk_nValid()
+	vector<unsigned int> &trk_nValid()
 	{
 		if (not trk_nValid_isLoaded) {
 			if (trk_nValid_branch != 0) {
@@ -2450,7 +3112,7 @@ void LoadAllBranches()
 		}
 		return *trk_nValid_;
 	}
-	vector<int> &trk_nInvalid()
+	vector<unsigned int> &trk_nInvalid()
 	{
 		if (not trk_nInvalid_isLoaded) {
 			if (trk_nInvalid_branch != 0) {
@@ -2463,7 +3125,7 @@ void LoadAllBranches()
 		}
 		return *trk_nInvalid_;
 	}
-	vector<int> &trk_nPixel()
+	vector<unsigned int> &trk_nPixel()
 	{
 		if (not trk_nPixel_isLoaded) {
 			if (trk_nPixel_branch != 0) {
@@ -2476,7 +3138,7 @@ void LoadAllBranches()
 		}
 		return *trk_nPixel_;
 	}
-	vector<int> &trk_nStrip()
+	vector<unsigned int> &trk_nStrip()
 	{
 		if (not trk_nStrip_isLoaded) {
 			if (trk_nStrip_branch != 0) {
@@ -2489,7 +3151,33 @@ void LoadAllBranches()
 		}
 		return *trk_nStrip_;
 	}
-	vector<int> &trk_n3DLay()
+	vector<unsigned int> &trk_nPixelLay()
+	{
+		if (not trk_nPixelLay_isLoaded) {
+			if (trk_nPixelLay_branch != 0) {
+				trk_nPixelLay_branch->GetEntry(index);
+			} else { 
+				printf("branch trk_nPixelLay_branch does not exist!\n");
+				exit(1);
+			}
+			trk_nPixelLay_isLoaded = true;
+		}
+		return *trk_nPixelLay_;
+	}
+	vector<unsigned int> &trk_nStripLay()
+	{
+		if (not trk_nStripLay_isLoaded) {
+			if (trk_nStripLay_branch != 0) {
+				trk_nStripLay_branch->GetEntry(index);
+			} else { 
+				printf("branch trk_nStripLay_branch does not exist!\n");
+				exit(1);
+			}
+			trk_nStripLay_isLoaded = true;
+		}
+		return *trk_nStripLay_;
+	}
+	vector<unsigned int> &trk_n3DLay()
 	{
 		if (not trk_n3DLay_isLoaded) {
 			if (trk_n3DLay_branch != 0) {
@@ -2502,7 +3190,33 @@ void LoadAllBranches()
 		}
 		return *trk_n3DLay_;
 	}
-	vector<int> &trk_algo()
+	vector<unsigned int> &trk_nOuterLost()
+	{
+		if (not trk_nOuterLost_isLoaded) {
+			if (trk_nOuterLost_branch != 0) {
+				trk_nOuterLost_branch->GetEntry(index);
+			} else { 
+				printf("branch trk_nOuterLost_branch does not exist!\n");
+				exit(1);
+			}
+			trk_nOuterLost_isLoaded = true;
+		}
+		return *trk_nOuterLost_;
+	}
+	vector<unsigned int> &trk_nInnerLost()
+	{
+		if (not trk_nInnerLost_isLoaded) {
+			if (trk_nInnerLost_branch != 0) {
+				trk_nInnerLost_branch->GetEntry(index);
+			} else { 
+				printf("branch trk_nInnerLost_branch does not exist!\n");
+				exit(1);
+			}
+			trk_nInnerLost_isLoaded = true;
+		}
+		return *trk_nInnerLost_;
+	}
+	vector<unsigned int> &trk_algo()
 	{
 		if (not trk_algo_isLoaded) {
 			if (trk_algo_branch != 0) {
@@ -2515,7 +3229,46 @@ void LoadAllBranches()
 		}
 		return *trk_algo_;
 	}
-	vector<int> &trk_isHP()
+	vector<unsigned int> &trk_originalAlgo()
+	{
+		if (not trk_originalAlgo_isLoaded) {
+			if (trk_originalAlgo_branch != 0) {
+				trk_originalAlgo_branch->GetEntry(index);
+			} else { 
+				printf("branch trk_originalAlgo_branch does not exist!\n");
+				exit(1);
+			}
+			trk_originalAlgo_isLoaded = true;
+		}
+		return *trk_originalAlgo_;
+	}
+	vector<ULong64_t> &trk_algoMask()
+	{
+		if (not trk_algoMask_isLoaded) {
+			if (trk_algoMask_branch != 0) {
+				trk_algoMask_branch->GetEntry(index);
+			} else { 
+				printf("branch trk_algoMask_branch does not exist!\n");
+				exit(1);
+			}
+			trk_algoMask_isLoaded = true;
+		}
+		return *trk_algoMask_;
+	}
+	vector<unsigned short> &trk_stopReason()
+	{
+		if (not trk_stopReason_isLoaded) {
+			if (trk_stopReason_branch != 0) {
+				trk_stopReason_branch->GetEntry(index);
+			} else { 
+				printf("branch trk_stopReason_branch does not exist!\n");
+				exit(1);
+			}
+			trk_stopReason_isLoaded = true;
+		}
+		return *trk_stopReason_;
+	}
+	vector<short> &trk_isHP()
 	{
 		if (not trk_isHP_isLoaded) {
 			if (trk_isHP_branch != 0) {
@@ -2541,44 +3294,135 @@ void LoadAllBranches()
 		}
 		return *trk_seedIdx_;
 	}
-	vector<int> &trk_simIdx()
+	vector<int> &trk_vtxIdx()
 	{
-		if (not trk_simIdx_isLoaded) {
-			if (trk_simIdx_branch != 0) {
-				trk_simIdx_branch->GetEntry(index);
+		if (not trk_vtxIdx_isLoaded) {
+			if (trk_vtxIdx_branch != 0) {
+				trk_vtxIdx_branch->GetEntry(index);
 			} else { 
-				printf("branch trk_simIdx_branch does not exist!\n");
+				printf("branch trk_vtxIdx_branch does not exist!\n");
 				exit(1);
 			}
-			trk_simIdx_isLoaded = true;
+			trk_vtxIdx_isLoaded = true;
 		}
-		return *trk_simIdx_;
+		return *trk_vtxIdx_;
 	}
-	vector<vector<int> > &trk_pixelIdx()
+	vector<vector<float> > &trk_shareFrac()
 	{
-		if (not trk_pixelIdx_isLoaded) {
-			if (trk_pixelIdx_branch != 0) {
-				trk_pixelIdx_branch->GetEntry(index);
+		if (not trk_shareFrac_isLoaded) {
+			if (trk_shareFrac_branch != 0) {
+				trk_shareFrac_branch->GetEntry(index);
 			} else { 
-				printf("branch trk_pixelIdx_branch does not exist!\n");
+				printf("branch trk_shareFrac_branch does not exist!\n");
 				exit(1);
 			}
-			trk_pixelIdx_isLoaded = true;
+			trk_shareFrac_isLoaded = true;
 		}
-		return *trk_pixelIdx_;
+		return *trk_shareFrac_;
 	}
-	vector<vector<int> > &trk_stripIdx()
+	vector<vector<int> > &trk_simTrkIdx()
 	{
-		if (not trk_stripIdx_isLoaded) {
-			if (trk_stripIdx_branch != 0) {
-				trk_stripIdx_branch->GetEntry(index);
+		if (not trk_simTrkIdx_isLoaded) {
+			if (trk_simTrkIdx_branch != 0) {
+				trk_simTrkIdx_branch->GetEntry(index);
 			} else { 
-				printf("branch trk_stripIdx_branch does not exist!\n");
+				printf("branch trk_simTrkIdx_branch does not exist!\n");
 				exit(1);
 			}
-			trk_stripIdx_isLoaded = true;
+			trk_simTrkIdx_isLoaded = true;
 		}
-		return *trk_stripIdx_;
+		return *trk_simTrkIdx_;
+	}
+	vector<vector<int> > &trk_hitIdx()
+	{
+		if (not trk_hitIdx_isLoaded) {
+			if (trk_hitIdx_branch != 0) {
+				trk_hitIdx_branch->GetEntry(index);
+			} else { 
+				printf("branch trk_hitIdx_branch does not exist!\n");
+				exit(1);
+			}
+			trk_hitIdx_isLoaded = true;
+		}
+		return *trk_hitIdx_;
+	}
+	vector<vector<int> > &trk_hitType()
+	{
+		if (not trk_hitType_isLoaded) {
+			if (trk_hitType_branch != 0) {
+				trk_hitType_branch->GetEntry(index);
+			} else { 
+				printf("branch trk_hitType_branch does not exist!\n");
+				exit(1);
+			}
+			trk_hitType_isLoaded = true;
+		}
+		return *trk_hitType_;
+	}
+	vector<int> &sim_event()
+	{
+		if (not sim_event_isLoaded) {
+			if (sim_event_branch != 0) {
+				sim_event_branch->GetEntry(index);
+			} else { 
+				printf("branch sim_event_branch does not exist!\n");
+				exit(1);
+			}
+			sim_event_isLoaded = true;
+		}
+		return *sim_event_;
+	}
+	vector<int> &sim_bunchCrossing()
+	{
+		if (not sim_bunchCrossing_isLoaded) {
+			if (sim_bunchCrossing_branch != 0) {
+				sim_bunchCrossing_branch->GetEntry(index);
+			} else { 
+				printf("branch sim_bunchCrossing_branch does not exist!\n");
+				exit(1);
+			}
+			sim_bunchCrossing_isLoaded = true;
+		}
+		return *sim_bunchCrossing_;
+	}
+	vector<int> &sim_pdgId()
+	{
+		if (not sim_pdgId_isLoaded) {
+			if (sim_pdgId_branch != 0) {
+				sim_pdgId_branch->GetEntry(index);
+			} else { 
+				printf("branch sim_pdgId_branch does not exist!\n");
+				exit(1);
+			}
+			sim_pdgId_isLoaded = true;
+		}
+		return *sim_pdgId_;
+	}
+	vector<vector<int> > &sim_genPdgIds()
+	{
+		if (not sim_genPdgIds_isLoaded) {
+			if (sim_genPdgIds_branch != 0) {
+				sim_genPdgIds_branch->GetEntry(index);
+			} else { 
+				printf("branch sim_genPdgIds_branch does not exist!\n");
+				exit(1);
+			}
+			sim_genPdgIds_isLoaded = true;
+		}
+		return *sim_genPdgIds_;
+	}
+	vector<int> &sim_isFromBHadron()
+	{
+		if (not sim_isFromBHadron_isLoaded) {
+			if (sim_isFromBHadron_branch != 0) {
+				sim_isFromBHadron_branch->GetEntry(index);
+			} else { 
+				printf("branch sim_isFromBHadron_branch does not exist!\n");
+				exit(1);
+			}
+			sim_isFromBHadron_isLoaded = true;
+		}
+		return *sim_isFromBHadron_;
 	}
 	vector<float> &sim_px()
 	{
@@ -2658,83 +3502,96 @@ void LoadAllBranches()
 		}
 		return *sim_phi_;
 	}
-	vector<float> &sim_dxy()
+	vector<float> &sim_pca_pt()
 	{
-		if (not sim_dxy_isLoaded) {
-			if (sim_dxy_branch != 0) {
-				sim_dxy_branch->GetEntry(index);
+		if (not sim_pca_pt_isLoaded) {
+			if (sim_pca_pt_branch != 0) {
+				sim_pca_pt_branch->GetEntry(index);
 			} else { 
-				printf("branch sim_dxy_branch does not exist!\n");
+				printf("branch sim_pca_pt_branch does not exist!\n");
 				exit(1);
 			}
-			sim_dxy_isLoaded = true;
+			sim_pca_pt_isLoaded = true;
 		}
-		return *sim_dxy_;
+		return *sim_pca_pt_;
 	}
-	vector<float> &sim_dz()
+	vector<float> &sim_pca_eta()
 	{
-		if (not sim_dz_isLoaded) {
-			if (sim_dz_branch != 0) {
-				sim_dz_branch->GetEntry(index);
+		if (not sim_pca_eta_isLoaded) {
+			if (sim_pca_eta_branch != 0) {
+				sim_pca_eta_branch->GetEntry(index);
 			} else { 
-				printf("branch sim_dz_branch does not exist!\n");
+				printf("branch sim_pca_eta_branch does not exist!\n");
 				exit(1);
 			}
-			sim_dz_isLoaded = true;
+			sim_pca_eta_isLoaded = true;
 		}
-		return *sim_dz_;
+		return *sim_pca_eta_;
 	}
-	vector<float> &sim_prodx()
+	vector<float> &sim_pca_lambda()
 	{
-		if (not sim_prodx_isLoaded) {
-			if (sim_prodx_branch != 0) {
-				sim_prodx_branch->GetEntry(index);
+		if (not sim_pca_lambda_isLoaded) {
+			if (sim_pca_lambda_branch != 0) {
+				sim_pca_lambda_branch->GetEntry(index);
 			} else { 
-				printf("branch sim_prodx_branch does not exist!\n");
+				printf("branch sim_pca_lambda_branch does not exist!\n");
 				exit(1);
 			}
-			sim_prodx_isLoaded = true;
+			sim_pca_lambda_isLoaded = true;
 		}
-		return *sim_prodx_;
+		return *sim_pca_lambda_;
 	}
-	vector<float> &sim_prody()
+	vector<float> &sim_pca_cotTheta()
 	{
-		if (not sim_prody_isLoaded) {
-			if (sim_prody_branch != 0) {
-				sim_prody_branch->GetEntry(index);
+		if (not sim_pca_cotTheta_isLoaded) {
+			if (sim_pca_cotTheta_branch != 0) {
+				sim_pca_cotTheta_branch->GetEntry(index);
 			} else { 
-				printf("branch sim_prody_branch does not exist!\n");
+				printf("branch sim_pca_cotTheta_branch does not exist!\n");
 				exit(1);
 			}
-			sim_prody_isLoaded = true;
+			sim_pca_cotTheta_isLoaded = true;
 		}
-		return *sim_prody_;
+		return *sim_pca_cotTheta_;
 	}
-	vector<float> &sim_prodz()
+	vector<float> &sim_pca_phi()
 	{
-		if (not sim_prodz_isLoaded) {
-			if (sim_prodz_branch != 0) {
-				sim_prodz_branch->GetEntry(index);
+		if (not sim_pca_phi_isLoaded) {
+			if (sim_pca_phi_branch != 0) {
+				sim_pca_phi_branch->GetEntry(index);
 			} else { 
-				printf("branch sim_prodz_branch does not exist!\n");
+				printf("branch sim_pca_phi_branch does not exist!\n");
 				exit(1);
 			}
-			sim_prodz_isLoaded = true;
+			sim_pca_phi_isLoaded = true;
 		}
-		return *sim_prodz_;
+		return *sim_pca_phi_;
 	}
-	vector<float> &sim_shareFrac()
+	vector<float> &sim_pca_dxy()
 	{
-		if (not sim_shareFrac_isLoaded) {
-			if (sim_shareFrac_branch != 0) {
-				sim_shareFrac_branch->GetEntry(index);
+		if (not sim_pca_dxy_isLoaded) {
+			if (sim_pca_dxy_branch != 0) {
+				sim_pca_dxy_branch->GetEntry(index);
 			} else { 
-				printf("branch sim_shareFrac_branch does not exist!\n");
+				printf("branch sim_pca_dxy_branch does not exist!\n");
 				exit(1);
 			}
-			sim_shareFrac_isLoaded = true;
+			sim_pca_dxy_isLoaded = true;
 		}
-		return *sim_shareFrac_;
+		return *sim_pca_dxy_;
+	}
+	vector<float> &sim_pca_dz()
+	{
+		if (not sim_pca_dz_isLoaded) {
+			if (sim_pca_dz_branch != 0) {
+				sim_pca_dz_branch->GetEntry(index);
+			} else { 
+				printf("branch sim_pca_dz_branch does not exist!\n");
+				exit(1);
+			}
+			sim_pca_dz_isLoaded = true;
+		}
+		return *sim_pca_dz_;
 	}
 	vector<int> &sim_q()
 	{
@@ -2749,7 +3606,7 @@ void LoadAllBranches()
 		}
 		return *sim_q_;
 	}
-	vector<int> &sim_nValid()
+	vector<unsigned int> &sim_nValid()
 	{
 		if (not sim_nValid_isLoaded) {
 			if (sim_nValid_branch != 0) {
@@ -2762,7 +3619,7 @@ void LoadAllBranches()
 		}
 		return *sim_nValid_;
 	}
-	vector<int> &sim_nPixel()
+	vector<unsigned int> &sim_nPixel()
 	{
 		if (not sim_nPixel_isLoaded) {
 			if (sim_nPixel_branch != 0) {
@@ -2775,7 +3632,7 @@ void LoadAllBranches()
 		}
 		return *sim_nPixel_;
 	}
-	vector<int> &sim_nStrip()
+	vector<unsigned int> &sim_nStrip()
 	{
 		if (not sim_nStrip_isLoaded) {
 			if (sim_nStrip_branch != 0) {
@@ -2788,7 +3645,33 @@ void LoadAllBranches()
 		}
 		return *sim_nStrip_;
 	}
-	vector<int> &sim_n3DLay()
+	vector<unsigned int> &sim_nLay()
+	{
+		if (not sim_nLay_isLoaded) {
+			if (sim_nLay_branch != 0) {
+				sim_nLay_branch->GetEntry(index);
+			} else { 
+				printf("branch sim_nLay_branch does not exist!\n");
+				exit(1);
+			}
+			sim_nLay_isLoaded = true;
+		}
+		return *sim_nLay_;
+	}
+	vector<unsigned int> &sim_nPixelLay()
+	{
+		if (not sim_nPixelLay_isLoaded) {
+			if (sim_nPixelLay_branch != 0) {
+				sim_nPixelLay_branch->GetEntry(index);
+			} else { 
+				printf("branch sim_nPixelLay_branch does not exist!\n");
+				exit(1);
+			}
+			sim_nPixelLay_isLoaded = true;
+		}
+		return *sim_nPixelLay_;
+	}
+	vector<unsigned int> &sim_n3DLay()
 	{
 		if (not sim_n3DLay_isLoaded) {
 			if (sim_n3DLay_branch != 0) {
@@ -2801,7 +3684,7 @@ void LoadAllBranches()
 		}
 		return *sim_n3DLay_;
 	}
-	vector<int> &sim_trkIdx()
+	vector<vector<int> > &sim_trkIdx()
 	{
 		if (not sim_trkIdx_isLoaded) {
 			if (sim_trkIdx_branch != 0) {
@@ -2814,33 +3697,72 @@ void LoadAllBranches()
 		}
 		return *sim_trkIdx_;
 	}
-	vector<vector<int> > &sim_pixelIdx()
+	vector<vector<float> > &sim_shareFrac()
 	{
-		if (not sim_pixelIdx_isLoaded) {
-			if (sim_pixelIdx_branch != 0) {
-				sim_pixelIdx_branch->GetEntry(index);
+		if (not sim_shareFrac_isLoaded) {
+			if (sim_shareFrac_branch != 0) {
+				sim_shareFrac_branch->GetEntry(index);
 			} else { 
-				printf("branch sim_pixelIdx_branch does not exist!\n");
+				printf("branch sim_shareFrac_branch does not exist!\n");
 				exit(1);
 			}
-			sim_pixelIdx_isLoaded = true;
+			sim_shareFrac_isLoaded = true;
 		}
-		return *sim_pixelIdx_;
+		return *sim_shareFrac_;
 	}
-	vector<vector<int> > &sim_stripIdx()
+	vector<vector<int> > &sim_seedIdx()
 	{
-		if (not sim_stripIdx_isLoaded) {
-			if (sim_stripIdx_branch != 0) {
-				sim_stripIdx_branch->GetEntry(index);
+		if (not sim_seedIdx_isLoaded) {
+			if (sim_seedIdx_branch != 0) {
+				sim_seedIdx_branch->GetEntry(index);
 			} else { 
-				printf("branch sim_stripIdx_branch does not exist!\n");
+				printf("branch sim_seedIdx_branch does not exist!\n");
 				exit(1);
 			}
-			sim_stripIdx_isLoaded = true;
+			sim_seedIdx_isLoaded = true;
 		}
-		return *sim_stripIdx_;
+		return *sim_seedIdx_;
 	}
-	vector<int> &pix_isBarrel()
+	vector<int> &sim_parentVtxIdx()
+	{
+		if (not sim_parentVtxIdx_isLoaded) {
+			if (sim_parentVtxIdx_branch != 0) {
+				sim_parentVtxIdx_branch->GetEntry(index);
+			} else { 
+				printf("branch sim_parentVtxIdx_branch does not exist!\n");
+				exit(1);
+			}
+			sim_parentVtxIdx_isLoaded = true;
+		}
+		return *sim_parentVtxIdx_;
+	}
+	vector<vector<int> > &sim_decayVtxIdx()
+	{
+		if (not sim_decayVtxIdx_isLoaded) {
+			if (sim_decayVtxIdx_branch != 0) {
+				sim_decayVtxIdx_branch->GetEntry(index);
+			} else { 
+				printf("branch sim_decayVtxIdx_branch does not exist!\n");
+				exit(1);
+			}
+			sim_decayVtxIdx_isLoaded = true;
+		}
+		return *sim_decayVtxIdx_;
+	}
+	vector<vector<int> > &sim_simHitIdx()
+	{
+		if (not sim_simHitIdx_isLoaded) {
+			if (sim_simHitIdx_branch != 0) {
+				sim_simHitIdx_branch->GetEntry(index);
+			} else { 
+				printf("branch sim_simHitIdx_branch does not exist!\n");
+				exit(1);
+			}
+			sim_simHitIdx_isLoaded = true;
+		}
+		return *sim_simHitIdx_;
+	}
+	vector<short> &pix_isBarrel()
 	{
 		if (not pix_isBarrel_isLoaded) {
 			if (pix_isBarrel_branch != 0) {
@@ -2853,7 +3775,20 @@ void LoadAllBranches()
 		}
 		return *pix_isBarrel_;
 	}
-	vector<int> &pix_lay()
+	vector<unsigned short> &pix_det()
+	{
+		if (not pix_det_isLoaded) {
+			if (pix_det_branch != 0) {
+				pix_det_branch->GetEntry(index);
+			} else { 
+				printf("branch pix_det_branch does not exist!\n");
+				exit(1);
+			}
+			pix_det_isLoaded = true;
+		}
+		return *pix_det_;
+	}
+	vector<unsigned short> &pix_lay()
 	{
 		if (not pix_lay_isLoaded) {
 			if (pix_lay_branch != 0) {
@@ -2866,7 +3801,7 @@ void LoadAllBranches()
 		}
 		return *pix_lay_;
 	}
-	vector<int> &pix_detId()
+	vector<unsigned int> &pix_detId()
 	{
 		if (not pix_detId_isLoaded) {
 			if (pix_detId_branch != 0) {
@@ -2879,83 +3814,70 @@ void LoadAllBranches()
 		}
 		return *pix_detId_;
 	}
-	vector<int> &pix_nSimTrk()
+	vector<vector<int> > &pix_trkIdx()
 	{
-		if (not pix_nSimTrk_isLoaded) {
-			if (pix_nSimTrk_branch != 0) {
-				pix_nSimTrk_branch->GetEntry(index);
+		if (not pix_trkIdx_isLoaded) {
+			if (pix_trkIdx_branch != 0) {
+				pix_trkIdx_branch->GetEntry(index);
 			} else { 
-				printf("branch pix_nSimTrk_branch does not exist!\n");
+				printf("branch pix_trkIdx_branch does not exist!\n");
 				exit(1);
 			}
-			pix_nSimTrk_isLoaded = true;
+			pix_trkIdx_isLoaded = true;
 		}
-		return *pix_nSimTrk_;
+		return *pix_trkIdx_;
 	}
-	vector<int> &pix_simTrkIdx()
+	vector<vector<int> > &pix_seeIdx()
 	{
-		if (not pix_simTrkIdx_isLoaded) {
-			if (pix_simTrkIdx_branch != 0) {
-				pix_simTrkIdx_branch->GetEntry(index);
+		if (not pix_seeIdx_isLoaded) {
+			if (pix_seeIdx_branch != 0) {
+				pix_seeIdx_branch->GetEntry(index);
 			} else { 
-				printf("branch pix_simTrkIdx_branch does not exist!\n");
+				printf("branch pix_seeIdx_branch does not exist!\n");
 				exit(1);
 			}
-			pix_simTrkIdx_isLoaded = true;
+			pix_seeIdx_isLoaded = true;
 		}
-		return *pix_simTrkIdx_;
+		return *pix_seeIdx_;
 	}
-	vector<int> &pix_particle()
+	vector<vector<int> > &pix_simHitIdx()
 	{
-		if (not pix_particle_isLoaded) {
-			if (pix_particle_branch != 0) {
-				pix_particle_branch->GetEntry(index);
+		if (not pix_simHitIdx_isLoaded) {
+			if (pix_simHitIdx_branch != 0) {
+				pix_simHitIdx_branch->GetEntry(index);
 			} else { 
-				printf("branch pix_particle_branch does not exist!\n");
+				printf("branch pix_simHitIdx_branch does not exist!\n");
 				exit(1);
 			}
-			pix_particle_isLoaded = true;
+			pix_simHitIdx_isLoaded = true;
 		}
-		return *pix_particle_;
+		return *pix_simHitIdx_;
 	}
-	vector<int> &pix_process()
+	vector<vector<float> > &pix_chargeFraction()
 	{
-		if (not pix_process_isLoaded) {
-			if (pix_process_branch != 0) {
-				pix_process_branch->GetEntry(index);
+		if (not pix_chargeFraction_isLoaded) {
+			if (pix_chargeFraction_branch != 0) {
+				pix_chargeFraction_branch->GetEntry(index);
 			} else { 
-				printf("branch pix_process_branch does not exist!\n");
+				printf("branch pix_chargeFraction_branch does not exist!\n");
 				exit(1);
 			}
-			pix_process_isLoaded = true;
+			pix_chargeFraction_isLoaded = true;
 		}
-		return *pix_process_;
+		return *pix_chargeFraction_;
 	}
-	vector<int> &pix_bunchXing()
+	vector<unsigned short> &pix_simType()
 	{
-		if (not pix_bunchXing_isLoaded) {
-			if (pix_bunchXing_branch != 0) {
-				pix_bunchXing_branch->GetEntry(index);
+		if (not pix_simType_isLoaded) {
+			if (pix_simType_branch != 0) {
+				pix_simType_branch->GetEntry(index);
 			} else { 
-				printf("branch pix_bunchXing_branch does not exist!\n");
+				printf("branch pix_simType_branch does not exist!\n");
 				exit(1);
 			}
-			pix_bunchXing_isLoaded = true;
+			pix_simType_isLoaded = true;
 		}
-		return *pix_bunchXing_;
-	}
-	vector<int> &pix_event()
-	{
-		if (not pix_event_isLoaded) {
-			if (pix_event_branch != 0) {
-				pix_event_branch->GetEntry(index);
-			} else { 
-				printf("branch pix_event_branch does not exist!\n");
-				exit(1);
-			}
-			pix_event_isLoaded = true;
-		}
-		return *pix_event_;
+		return *pix_simType_;
 	}
 	vector<float> &pix_x()
 	{
@@ -3074,188 +3996,6 @@ void LoadAllBranches()
 		}
 		return *pix_zx_;
 	}
-	vector<float> &pix_xsim()
-	{
-		if (not pix_xsim_isLoaded) {
-			if (pix_xsim_branch != 0) {
-				pix_xsim_branch->GetEntry(index);
-			} else { 
-				printf("branch pix_xsim_branch does not exist!\n");
-				exit(1);
-			}
-			pix_xsim_isLoaded = true;
-		}
-		return *pix_xsim_;
-	}
-	vector<float> &pix_ysim()
-	{
-		if (not pix_ysim_isLoaded) {
-			if (pix_ysim_branch != 0) {
-				pix_ysim_branch->GetEntry(index);
-			} else { 
-				printf("branch pix_ysim_branch does not exist!\n");
-				exit(1);
-			}
-			pix_ysim_isLoaded = true;
-		}
-		return *pix_ysim_;
-	}
-	vector<float> &pix_zsim()
-	{
-		if (not pix_zsim_isLoaded) {
-			if (pix_zsim_branch != 0) {
-				pix_zsim_branch->GetEntry(index);
-			} else { 
-				printf("branch pix_zsim_branch does not exist!\n");
-				exit(1);
-			}
-			pix_zsim_isLoaded = true;
-		}
-		return *pix_zsim_;
-	}
-	vector<float> &pix_pxsim()
-	{
-		if (not pix_pxsim_isLoaded) {
-			if (pix_pxsim_branch != 0) {
-				pix_pxsim_branch->GetEntry(index);
-			} else { 
-				printf("branch pix_pxsim_branch does not exist!\n");
-				exit(1);
-			}
-			pix_pxsim_isLoaded = true;
-		}
-		return *pix_pxsim_;
-	}
-	vector<float> &pix_pysim()
-	{
-		if (not pix_pysim_isLoaded) {
-			if (pix_pysim_branch != 0) {
-				pix_pysim_branch->GetEntry(index);
-			} else { 
-				printf("branch pix_pysim_branch does not exist!\n");
-				exit(1);
-			}
-			pix_pysim_isLoaded = true;
-		}
-		return *pix_pysim_;
-	}
-	vector<float> &pix_pzsim()
-	{
-		if (not pix_pzsim_isLoaded) {
-			if (pix_pzsim_branch != 0) {
-				pix_pzsim_branch->GetEntry(index);
-			} else { 
-				printf("branch pix_pzsim_branch does not exist!\n");
-				exit(1);
-			}
-			pix_pzsim_isLoaded = true;
-		}
-		return *pix_pzsim_;
-	}
-	vector<float> &pix_pathprop()
-	{
-		if (not pix_pathprop_isLoaded) {
-			if (pix_pathprop_branch != 0) {
-				pix_pathprop_branch->GetEntry(index);
-			} else { 
-				printf("branch pix_pathprop_branch does not exist!\n");
-				exit(1);
-			}
-			pix_pathprop_isLoaded = true;
-		}
-		return *pix_pathprop_;
-	}
-	vector<float> &pix_xsimprop()
-	{
-		if (not pix_xsimprop_isLoaded) {
-			if (pix_xsimprop_branch != 0) {
-				pix_xsimprop_branch->GetEntry(index);
-			} else { 
-				printf("branch pix_xsimprop_branch does not exist!\n");
-				exit(1);
-			}
-			pix_xsimprop_isLoaded = true;
-		}
-		return *pix_xsimprop_;
-	}
-	vector<float> &pix_ysimprop()
-	{
-		if (not pix_ysimprop_isLoaded) {
-			if (pix_ysimprop_branch != 0) {
-				pix_ysimprop_branch->GetEntry(index);
-			} else { 
-				printf("branch pix_ysimprop_branch does not exist!\n");
-				exit(1);
-			}
-			pix_ysimprop_isLoaded = true;
-		}
-		return *pix_ysimprop_;
-	}
-	vector<float> &pix_zsimprop()
-	{
-		if (not pix_zsimprop_isLoaded) {
-			if (pix_zsimprop_branch != 0) {
-				pix_zsimprop_branch->GetEntry(index);
-			} else { 
-				printf("branch pix_zsimprop_branch does not exist!\n");
-				exit(1);
-			}
-			pix_zsimprop_isLoaded = true;
-		}
-		return *pix_zsimprop_;
-	}
-	vector<float> &pix_pxsimprop()
-	{
-		if (not pix_pxsimprop_isLoaded) {
-			if (pix_pxsimprop_branch != 0) {
-				pix_pxsimprop_branch->GetEntry(index);
-			} else { 
-				printf("branch pix_pxsimprop_branch does not exist!\n");
-				exit(1);
-			}
-			pix_pxsimprop_isLoaded = true;
-		}
-		return *pix_pxsimprop_;
-	}
-	vector<float> &pix_pysimprop()
-	{
-		if (not pix_pysimprop_isLoaded) {
-			if (pix_pysimprop_branch != 0) {
-				pix_pysimprop_branch->GetEntry(index);
-			} else { 
-				printf("branch pix_pysimprop_branch does not exist!\n");
-				exit(1);
-			}
-			pix_pysimprop_isLoaded = true;
-		}
-		return *pix_pysimprop_;
-	}
-	vector<float> &pix_pzsimprop()
-	{
-		if (not pix_pzsimprop_isLoaded) {
-			if (pix_pzsimprop_branch != 0) {
-				pix_pzsimprop_branch->GetEntry(index);
-			} else { 
-				printf("branch pix_pzsimprop_branch does not exist!\n");
-				exit(1);
-			}
-			pix_pzsimprop_isLoaded = true;
-		}
-		return *pix_pzsimprop_;
-	}
-	vector<float> &pix_eloss()
-	{
-		if (not pix_eloss_isLoaded) {
-			if (pix_eloss_branch != 0) {
-				pix_eloss_branch->GetEntry(index);
-			} else { 
-				printf("branch pix_eloss_branch does not exist!\n");
-				exit(1);
-			}
-			pix_eloss_isLoaded = true;
-		}
-		return *pix_eloss_;
-	}
 	vector<float> &pix_radL()
 	{
 		if (not pix_radL_isLoaded) {
@@ -3282,603 +4022,525 @@ void LoadAllBranches()
 		}
 		return *pix_bbxi_;
 	}
-	vector<int> &str_isBarrel()
+	vector<short> &ph2_isBarrel()
 	{
-		if (not str_isBarrel_isLoaded) {
-			if (str_isBarrel_branch != 0) {
-				str_isBarrel_branch->GetEntry(index);
+		if (not ph2_isBarrel_isLoaded) {
+			if (ph2_isBarrel_branch != 0) {
+				ph2_isBarrel_branch->GetEntry(index);
 			} else { 
-				printf("branch str_isBarrel_branch does not exist!\n");
+				printf("branch ph2_isBarrel_branch does not exist!\n");
 				exit(1);
 			}
-			str_isBarrel_isLoaded = true;
+			ph2_isBarrel_isLoaded = true;
 		}
-		return *str_isBarrel_;
+		return *ph2_isBarrel_;
 	}
-	vector<int> &str_isStereo()
+	vector<unsigned short> &ph2_det()
 	{
-		if (not str_isStereo_isLoaded) {
-			if (str_isStereo_branch != 0) {
-				str_isStereo_branch->GetEntry(index);
+		if (not ph2_det_isLoaded) {
+			if (ph2_det_branch != 0) {
+				ph2_det_branch->GetEntry(index);
 			} else { 
-				printf("branch str_isStereo_branch does not exist!\n");
+				printf("branch ph2_det_branch does not exist!\n");
 				exit(1);
 			}
-			str_isStereo_isLoaded = true;
+			ph2_det_isLoaded = true;
 		}
-		return *str_isStereo_;
+		return *ph2_det_;
 	}
-	vector<int> &str_det()
+	vector<unsigned short> &ph2_lay()
 	{
-		if (not str_det_isLoaded) {
-			if (str_det_branch != 0) {
-				str_det_branch->GetEntry(index);
+		if (not ph2_lay_isLoaded) {
+			if (ph2_lay_branch != 0) {
+				ph2_lay_branch->GetEntry(index);
 			} else { 
-				printf("branch str_det_branch does not exist!\n");
+				printf("branch ph2_lay_branch does not exist!\n");
 				exit(1);
 			}
-			str_det_isLoaded = true;
+			ph2_lay_isLoaded = true;
 		}
-		return *str_det_;
+		return *ph2_lay_;
 	}
-	vector<int> &str_lay()
+	vector<unsigned int> &ph2_detId()
 	{
-		if (not str_lay_isLoaded) {
-			if (str_lay_branch != 0) {
-				str_lay_branch->GetEntry(index);
+		if (not ph2_detId_isLoaded) {
+			if (ph2_detId_branch != 0) {
+				ph2_detId_branch->GetEntry(index);
 			} else { 
-				printf("branch str_lay_branch does not exist!\n");
+				printf("branch ph2_detId_branch does not exist!\n");
 				exit(1);
 			}
-			str_lay_isLoaded = true;
+			ph2_detId_isLoaded = true;
 		}
-		return *str_lay_;
+		return *ph2_detId_;
 	}
-	vector<int> &str_detId()
+	vector<vector<int> > &ph2_trkIdx()
 	{
-		if (not str_detId_isLoaded) {
-			if (str_detId_branch != 0) {
-				str_detId_branch->GetEntry(index);
+		if (not ph2_trkIdx_isLoaded) {
+			if (ph2_trkIdx_branch != 0) {
+				ph2_trkIdx_branch->GetEntry(index);
 			} else { 
-				printf("branch str_detId_branch does not exist!\n");
+				printf("branch ph2_trkIdx_branch does not exist!\n");
 				exit(1);
 			}
-			str_detId_isLoaded = true;
+			ph2_trkIdx_isLoaded = true;
 		}
-		return *str_detId_;
+		return *ph2_trkIdx_;
 	}
-	vector<int> &str_nSimTrk()
+	vector<vector<int> > &ph2_seeIdx()
 	{
-		if (not str_nSimTrk_isLoaded) {
-			if (str_nSimTrk_branch != 0) {
-				str_nSimTrk_branch->GetEntry(index);
+		if (not ph2_seeIdx_isLoaded) {
+			if (ph2_seeIdx_branch != 0) {
+				ph2_seeIdx_branch->GetEntry(index);
 			} else { 
-				printf("branch str_nSimTrk_branch does not exist!\n");
+				printf("branch ph2_seeIdx_branch does not exist!\n");
 				exit(1);
 			}
-			str_nSimTrk_isLoaded = true;
+			ph2_seeIdx_isLoaded = true;
 		}
-		return *str_nSimTrk_;
+		return *ph2_seeIdx_;
 	}
-	vector<int> &str_simTrkIdx()
+	vector<vector<int> > &ph2_simHitIdx()
 	{
-		if (not str_simTrkIdx_isLoaded) {
-			if (str_simTrkIdx_branch != 0) {
-				str_simTrkIdx_branch->GetEntry(index);
+		if (not ph2_simHitIdx_isLoaded) {
+			if (ph2_simHitIdx_branch != 0) {
+				ph2_simHitIdx_branch->GetEntry(index);
 			} else { 
-				printf("branch str_simTrkIdx_branch does not exist!\n");
+				printf("branch ph2_simHitIdx_branch does not exist!\n");
 				exit(1);
 			}
-			str_simTrkIdx_isLoaded = true;
+			ph2_simHitIdx_isLoaded = true;
 		}
-		return *str_simTrkIdx_;
+		return *ph2_simHitIdx_;
 	}
-	vector<int> &str_particle()
+	vector<unsigned short> &ph2_simType()
 	{
-		if (not str_particle_isLoaded) {
-			if (str_particle_branch != 0) {
-				str_particle_branch->GetEntry(index);
+		if (not ph2_simType_isLoaded) {
+			if (ph2_simType_branch != 0) {
+				ph2_simType_branch->GetEntry(index);
 			} else { 
-				printf("branch str_particle_branch does not exist!\n");
+				printf("branch ph2_simType_branch does not exist!\n");
 				exit(1);
 			}
-			str_particle_isLoaded = true;
+			ph2_simType_isLoaded = true;
 		}
-		return *str_particle_;
+		return *ph2_simType_;
 	}
-	vector<int> &str_process()
+	vector<float> &ph2_x()
 	{
-		if (not str_process_isLoaded) {
-			if (str_process_branch != 0) {
-				str_process_branch->GetEntry(index);
+		if (not ph2_x_isLoaded) {
+			if (ph2_x_branch != 0) {
+				ph2_x_branch->GetEntry(index);
 			} else { 
-				printf("branch str_process_branch does not exist!\n");
+				printf("branch ph2_x_branch does not exist!\n");
 				exit(1);
 			}
-			str_process_isLoaded = true;
+			ph2_x_isLoaded = true;
 		}
-		return *str_process_;
+		return *ph2_x_;
 	}
-	vector<int> &str_bunchXing()
+	vector<float> &ph2_y()
 	{
-		if (not str_bunchXing_isLoaded) {
-			if (str_bunchXing_branch != 0) {
-				str_bunchXing_branch->GetEntry(index);
+		if (not ph2_y_isLoaded) {
+			if (ph2_y_branch != 0) {
+				ph2_y_branch->GetEntry(index);
 			} else { 
-				printf("branch str_bunchXing_branch does not exist!\n");
+				printf("branch ph2_y_branch does not exist!\n");
 				exit(1);
 			}
-			str_bunchXing_isLoaded = true;
+			ph2_y_isLoaded = true;
 		}
-		return *str_bunchXing_;
+		return *ph2_y_;
 	}
-	vector<int> &str_event()
+	vector<float> &ph2_z()
 	{
-		if (not str_event_isLoaded) {
-			if (str_event_branch != 0) {
-				str_event_branch->GetEntry(index);
+		if (not ph2_z_isLoaded) {
+			if (ph2_z_branch != 0) {
+				ph2_z_branch->GetEntry(index);
 			} else { 
-				printf("branch str_event_branch does not exist!\n");
+				printf("branch ph2_z_branch does not exist!\n");
 				exit(1);
 			}
-			str_event_isLoaded = true;
+			ph2_z_isLoaded = true;
 		}
-		return *str_event_;
+		return *ph2_z_;
 	}
-	vector<float> &str_x()
+	vector<float> &ph2_xx()
 	{
-		if (not str_x_isLoaded) {
-			if (str_x_branch != 0) {
-				str_x_branch->GetEntry(index);
+		if (not ph2_xx_isLoaded) {
+			if (ph2_xx_branch != 0) {
+				ph2_xx_branch->GetEntry(index);
 			} else { 
-				printf("branch str_x_branch does not exist!\n");
+				printf("branch ph2_xx_branch does not exist!\n");
 				exit(1);
 			}
-			str_x_isLoaded = true;
+			ph2_xx_isLoaded = true;
 		}
-		return *str_x_;
+		return *ph2_xx_;
 	}
-	vector<float> &str_y()
+	vector<float> &ph2_xy()
 	{
-		if (not str_y_isLoaded) {
-			if (str_y_branch != 0) {
-				str_y_branch->GetEntry(index);
+		if (not ph2_xy_isLoaded) {
+			if (ph2_xy_branch != 0) {
+				ph2_xy_branch->GetEntry(index);
 			} else { 
-				printf("branch str_y_branch does not exist!\n");
+				printf("branch ph2_xy_branch does not exist!\n");
 				exit(1);
 			}
-			str_y_isLoaded = true;
+			ph2_xy_isLoaded = true;
 		}
-		return *str_y_;
+		return *ph2_xy_;
 	}
-	vector<float> &str_z()
+	vector<float> &ph2_yy()
 	{
-		if (not str_z_isLoaded) {
-			if (str_z_branch != 0) {
-				str_z_branch->GetEntry(index);
+		if (not ph2_yy_isLoaded) {
+			if (ph2_yy_branch != 0) {
+				ph2_yy_branch->GetEntry(index);
 			} else { 
-				printf("branch str_z_branch does not exist!\n");
+				printf("branch ph2_yy_branch does not exist!\n");
 				exit(1);
 			}
-			str_z_isLoaded = true;
+			ph2_yy_isLoaded = true;
 		}
-		return *str_z_;
+		return *ph2_yy_;
 	}
-	vector<float> &str_xx()
+	vector<float> &ph2_yz()
 	{
-		if (not str_xx_isLoaded) {
-			if (str_xx_branch != 0) {
-				str_xx_branch->GetEntry(index);
+		if (not ph2_yz_isLoaded) {
+			if (ph2_yz_branch != 0) {
+				ph2_yz_branch->GetEntry(index);
 			} else { 
-				printf("branch str_xx_branch does not exist!\n");
+				printf("branch ph2_yz_branch does not exist!\n");
 				exit(1);
 			}
-			str_xx_isLoaded = true;
+			ph2_yz_isLoaded = true;
 		}
-		return *str_xx_;
+		return *ph2_yz_;
 	}
-	vector<float> &str_xy()
+	vector<float> &ph2_zz()
 	{
-		if (not str_xy_isLoaded) {
-			if (str_xy_branch != 0) {
-				str_xy_branch->GetEntry(index);
+		if (not ph2_zz_isLoaded) {
+			if (ph2_zz_branch != 0) {
+				ph2_zz_branch->GetEntry(index);
 			} else { 
-				printf("branch str_xy_branch does not exist!\n");
+				printf("branch ph2_zz_branch does not exist!\n");
 				exit(1);
 			}
-			str_xy_isLoaded = true;
+			ph2_zz_isLoaded = true;
 		}
-		return *str_xy_;
+		return *ph2_zz_;
 	}
-	vector<float> &str_yy()
+	vector<float> &ph2_zx()
 	{
-		if (not str_yy_isLoaded) {
-			if (str_yy_branch != 0) {
-				str_yy_branch->GetEntry(index);
+		if (not ph2_zx_isLoaded) {
+			if (ph2_zx_branch != 0) {
+				ph2_zx_branch->GetEntry(index);
 			} else { 
-				printf("branch str_yy_branch does not exist!\n");
+				printf("branch ph2_zx_branch does not exist!\n");
 				exit(1);
 			}
-			str_yy_isLoaded = true;
+			ph2_zx_isLoaded = true;
 		}
-		return *str_yy_;
+		return *ph2_zx_;
 	}
-	vector<float> &str_yz()
+	vector<float> &ph2_radL()
 	{
-		if (not str_yz_isLoaded) {
-			if (str_yz_branch != 0) {
-				str_yz_branch->GetEntry(index);
+		if (not ph2_radL_isLoaded) {
+			if (ph2_radL_branch != 0) {
+				ph2_radL_branch->GetEntry(index);
 			} else { 
-				printf("branch str_yz_branch does not exist!\n");
+				printf("branch ph2_radL_branch does not exist!\n");
 				exit(1);
 			}
-			str_yz_isLoaded = true;
+			ph2_radL_isLoaded = true;
 		}
-		return *str_yz_;
+		return *ph2_radL_;
 	}
-	vector<float> &str_zz()
+	vector<float> &ph2_bbxi()
 	{
-		if (not str_zz_isLoaded) {
-			if (str_zz_branch != 0) {
-				str_zz_branch->GetEntry(index);
+		if (not ph2_bbxi_isLoaded) {
+			if (ph2_bbxi_branch != 0) {
+				ph2_bbxi_branch->GetEntry(index);
 			} else { 
-				printf("branch str_zz_branch does not exist!\n");
+				printf("branch ph2_bbxi_branch does not exist!\n");
 				exit(1);
 			}
-			str_zz_isLoaded = true;
+			ph2_bbxi_isLoaded = true;
 		}
-		return *str_zz_;
+		return *ph2_bbxi_;
 	}
-	vector<float> &str_zx()
+	vector<short> &inv_isBarrel()
 	{
-		if (not str_zx_isLoaded) {
-			if (str_zx_branch != 0) {
-				str_zx_branch->GetEntry(index);
+		if (not inv_isBarrel_isLoaded) {
+			if (inv_isBarrel_branch != 0) {
+				inv_isBarrel_branch->GetEntry(index);
 			} else { 
-				printf("branch str_zx_branch does not exist!\n");
+				printf("branch inv_isBarrel_branch does not exist!\n");
 				exit(1);
 			}
-			str_zx_isLoaded = true;
+			inv_isBarrel_isLoaded = true;
 		}
-		return *str_zx_;
+		return *inv_isBarrel_;
 	}
-	vector<float> &str_xsim()
+	vector<unsigned short> &inv_det()
 	{
-		if (not str_xsim_isLoaded) {
-			if (str_xsim_branch != 0) {
-				str_xsim_branch->GetEntry(index);
+		if (not inv_det_isLoaded) {
+			if (inv_det_branch != 0) {
+				inv_det_branch->GetEntry(index);
 			} else { 
-				printf("branch str_xsim_branch does not exist!\n");
+				printf("branch inv_det_branch does not exist!\n");
 				exit(1);
 			}
-			str_xsim_isLoaded = true;
+			inv_det_isLoaded = true;
 		}
-		return *str_xsim_;
+		return *inv_det_;
 	}
-	vector<float> &str_ysim()
+	vector<unsigned short> &inv_lay()
 	{
-		if (not str_ysim_isLoaded) {
-			if (str_ysim_branch != 0) {
-				str_ysim_branch->GetEntry(index);
+		if (not inv_lay_isLoaded) {
+			if (inv_lay_branch != 0) {
+				inv_lay_branch->GetEntry(index);
 			} else { 
-				printf("branch str_ysim_branch does not exist!\n");
+				printf("branch inv_lay_branch does not exist!\n");
 				exit(1);
 			}
-			str_ysim_isLoaded = true;
+			inv_lay_isLoaded = true;
 		}
-		return *str_ysim_;
+		return *inv_lay_;
 	}
-	vector<float> &str_zsim()
+	vector<unsigned int> &inv_detId()
 	{
-		if (not str_zsim_isLoaded) {
-			if (str_zsim_branch != 0) {
-				str_zsim_branch->GetEntry(index);
+		if (not inv_detId_isLoaded) {
+			if (inv_detId_branch != 0) {
+				inv_detId_branch->GetEntry(index);
 			} else { 
-				printf("branch str_zsim_branch does not exist!\n");
+				printf("branch inv_detId_branch does not exist!\n");
 				exit(1);
 			}
-			str_zsim_isLoaded = true;
+			inv_detId_isLoaded = true;
 		}
-		return *str_zsim_;
+		return *inv_detId_;
 	}
-	vector<float> &str_pxsim()
+	vector<unsigned short> &inv_type()
 	{
-		if (not str_pxsim_isLoaded) {
-			if (str_pxsim_branch != 0) {
-				str_pxsim_branch->GetEntry(index);
+		if (not inv_type_isLoaded) {
+			if (inv_type_branch != 0) {
+				inv_type_branch->GetEntry(index);
 			} else { 
-				printf("branch str_pxsim_branch does not exist!\n");
+				printf("branch inv_type_branch does not exist!\n");
 				exit(1);
 			}
-			str_pxsim_isLoaded = true;
+			inv_type_isLoaded = true;
 		}
-		return *str_pxsim_;
+		return *inv_type_;
 	}
-	vector<float> &str_pysim()
+	vector<unsigned short> &simhit_det()
 	{
-		if (not str_pysim_isLoaded) {
-			if (str_pysim_branch != 0) {
-				str_pysim_branch->GetEntry(index);
+		if (not simhit_det_isLoaded) {
+			if (simhit_det_branch != 0) {
+				simhit_det_branch->GetEntry(index);
 			} else { 
-				printf("branch str_pysim_branch does not exist!\n");
+				printf("branch simhit_det_branch does not exist!\n");
 				exit(1);
 			}
-			str_pysim_isLoaded = true;
+			simhit_det_isLoaded = true;
 		}
-		return *str_pysim_;
+		return *simhit_det_;
 	}
-	vector<float> &str_pzsim()
+	vector<unsigned short> &simhit_lay()
 	{
-		if (not str_pzsim_isLoaded) {
-			if (str_pzsim_branch != 0) {
-				str_pzsim_branch->GetEntry(index);
+		if (not simhit_lay_isLoaded) {
+			if (simhit_lay_branch != 0) {
+				simhit_lay_branch->GetEntry(index);
 			} else { 
-				printf("branch str_pzsim_branch does not exist!\n");
+				printf("branch simhit_lay_branch does not exist!\n");
 				exit(1);
 			}
-			str_pzsim_isLoaded = true;
+			simhit_lay_isLoaded = true;
 		}
-		return *str_pzsim_;
+		return *simhit_lay_;
 	}
-	vector<float> &str_eloss()
+	vector<unsigned int> &simhit_detId()
 	{
-		if (not str_eloss_isLoaded) {
-			if (str_eloss_branch != 0) {
-				str_eloss_branch->GetEntry(index);
+		if (not simhit_detId_isLoaded) {
+			if (simhit_detId_branch != 0) {
+				simhit_detId_branch->GetEntry(index);
 			} else { 
-				printf("branch str_eloss_branch does not exist!\n");
+				printf("branch simhit_detId_branch does not exist!\n");
 				exit(1);
 			}
-			str_eloss_isLoaded = true;
+			simhit_detId_isLoaded = true;
 		}
-		return *str_eloss_;
+		return *simhit_detId_;
 	}
-	vector<float> &str_radL()
+	vector<float> &simhit_x()
 	{
-		if (not str_radL_isLoaded) {
-			if (str_radL_branch != 0) {
-				str_radL_branch->GetEntry(index);
+		if (not simhit_x_isLoaded) {
+			if (simhit_x_branch != 0) {
+				simhit_x_branch->GetEntry(index);
 			} else { 
-				printf("branch str_radL_branch does not exist!\n");
+				printf("branch simhit_x_branch does not exist!\n");
 				exit(1);
 			}
-			str_radL_isLoaded = true;
+			simhit_x_isLoaded = true;
 		}
-		return *str_radL_;
+		return *simhit_x_;
 	}
-	vector<float> &str_bbxi()
+	vector<float> &simhit_y()
 	{
-		if (not str_bbxi_isLoaded) {
-			if (str_bbxi_branch != 0) {
-				str_bbxi_branch->GetEntry(index);
+		if (not simhit_y_isLoaded) {
+			if (simhit_y_branch != 0) {
+				simhit_y_branch->GetEntry(index);
 			} else { 
-				printf("branch str_bbxi_branch does not exist!\n");
+				printf("branch simhit_y_branch does not exist!\n");
 				exit(1);
 			}
-			str_bbxi_isLoaded = true;
+			simhit_y_isLoaded = true;
 		}
-		return *str_bbxi_;
+		return *simhit_y_;
 	}
-	vector<int> &glu_isBarrel()
+	vector<float> &simhit_z()
 	{
-		if (not glu_isBarrel_isLoaded) {
-			if (glu_isBarrel_branch != 0) {
-				glu_isBarrel_branch->GetEntry(index);
+		if (not simhit_z_isLoaded) {
+			if (simhit_z_branch != 0) {
+				simhit_z_branch->GetEntry(index);
 			} else { 
-				printf("branch glu_isBarrel_branch does not exist!\n");
+				printf("branch simhit_z_branch does not exist!\n");
 				exit(1);
 			}
-			glu_isBarrel_isLoaded = true;
+			simhit_z_isLoaded = true;
 		}
-		return *glu_isBarrel_;
+		return *simhit_z_;
 	}
-	vector<int> &glu_det()
+	vector<float> &simhit_px()
 	{
-		if (not glu_det_isLoaded) {
-			if (glu_det_branch != 0) {
-				glu_det_branch->GetEntry(index);
+		if (not simhit_px_isLoaded) {
+			if (simhit_px_branch != 0) {
+				simhit_px_branch->GetEntry(index);
 			} else { 
-				printf("branch glu_det_branch does not exist!\n");
+				printf("branch simhit_px_branch does not exist!\n");
 				exit(1);
 			}
-			glu_det_isLoaded = true;
+			simhit_px_isLoaded = true;
 		}
-		return *glu_det_;
+		return *simhit_px_;
 	}
-	vector<int> &glu_lay()
+	vector<float> &simhit_py()
 	{
-		if (not glu_lay_isLoaded) {
-			if (glu_lay_branch != 0) {
-				glu_lay_branch->GetEntry(index);
+		if (not simhit_py_isLoaded) {
+			if (simhit_py_branch != 0) {
+				simhit_py_branch->GetEntry(index);
 			} else { 
-				printf("branch glu_lay_branch does not exist!\n");
+				printf("branch simhit_py_branch does not exist!\n");
 				exit(1);
 			}
-			glu_lay_isLoaded = true;
+			simhit_py_isLoaded = true;
 		}
-		return *glu_lay_;
+		return *simhit_py_;
 	}
-	vector<int> &glu_detId()
+	vector<float> &simhit_pz()
 	{
-		if (not glu_detId_isLoaded) {
-			if (glu_detId_branch != 0) {
-				glu_detId_branch->GetEntry(index);
+		if (not simhit_pz_isLoaded) {
+			if (simhit_pz_branch != 0) {
+				simhit_pz_branch->GetEntry(index);
 			} else { 
-				printf("branch glu_detId_branch does not exist!\n");
+				printf("branch simhit_pz_branch does not exist!\n");
 				exit(1);
 			}
-			glu_detId_isLoaded = true;
+			simhit_pz_isLoaded = true;
 		}
-		return *glu_detId_;
+		return *simhit_pz_;
 	}
-	vector<int> &glu_monoIdx()
+	vector<int> &simhit_particle()
 	{
-		if (not glu_monoIdx_isLoaded) {
-			if (glu_monoIdx_branch != 0) {
-				glu_monoIdx_branch->GetEntry(index);
+		if (not simhit_particle_isLoaded) {
+			if (simhit_particle_branch != 0) {
+				simhit_particle_branch->GetEntry(index);
 			} else { 
-				printf("branch glu_monoIdx_branch does not exist!\n");
+				printf("branch simhit_particle_branch does not exist!\n");
 				exit(1);
 			}
-			glu_monoIdx_isLoaded = true;
+			simhit_particle_isLoaded = true;
 		}
-		return *glu_monoIdx_;
+		return *simhit_particle_;
 	}
-	vector<int> &glu_stereoIdx()
+	vector<short> &simhit_process()
 	{
-		if (not glu_stereoIdx_isLoaded) {
-			if (glu_stereoIdx_branch != 0) {
-				glu_stereoIdx_branch->GetEntry(index);
+		if (not simhit_process_isLoaded) {
+			if (simhit_process_branch != 0) {
+				simhit_process_branch->GetEntry(index);
 			} else { 
-				printf("branch glu_stereoIdx_branch does not exist!\n");
+				printf("branch simhit_process_branch does not exist!\n");
 				exit(1);
 			}
-			glu_stereoIdx_isLoaded = true;
+			simhit_process_isLoaded = true;
 		}
-		return *glu_stereoIdx_;
+		return *simhit_process_;
 	}
-	vector<float> &glu_x()
+	vector<float> &simhit_eloss()
 	{
-		if (not glu_x_isLoaded) {
-			if (glu_x_branch != 0) {
-				glu_x_branch->GetEntry(index);
+		if (not simhit_eloss_isLoaded) {
+			if (simhit_eloss_branch != 0) {
+				simhit_eloss_branch->GetEntry(index);
 			} else { 
-				printf("branch glu_x_branch does not exist!\n");
+				printf("branch simhit_eloss_branch does not exist!\n");
 				exit(1);
 			}
-			glu_x_isLoaded = true;
+			simhit_eloss_isLoaded = true;
 		}
-		return *glu_x_;
+		return *simhit_eloss_;
 	}
-	vector<float> &glu_y()
+	vector<float> &simhit_tof()
 	{
-		if (not glu_y_isLoaded) {
-			if (glu_y_branch != 0) {
-				glu_y_branch->GetEntry(index);
+		if (not simhit_tof_isLoaded) {
+			if (simhit_tof_branch != 0) {
+				simhit_tof_branch->GetEntry(index);
 			} else { 
-				printf("branch glu_y_branch does not exist!\n");
+				printf("branch simhit_tof_branch does not exist!\n");
 				exit(1);
 			}
-			glu_y_isLoaded = true;
+			simhit_tof_isLoaded = true;
 		}
-		return *glu_y_;
+		return *simhit_tof_;
 	}
-	vector<float> &glu_z()
+	vector<int> &simhit_simTrkIdx()
 	{
-		if (not glu_z_isLoaded) {
-			if (glu_z_branch != 0) {
-				glu_z_branch->GetEntry(index);
+		if (not simhit_simTrkIdx_isLoaded) {
+			if (simhit_simTrkIdx_branch != 0) {
+				simhit_simTrkIdx_branch->GetEntry(index);
 			} else { 
-				printf("branch glu_z_branch does not exist!\n");
+				printf("branch simhit_simTrkIdx_branch does not exist!\n");
 				exit(1);
 			}
-			glu_z_isLoaded = true;
+			simhit_simTrkIdx_isLoaded = true;
 		}
-		return *glu_z_;
+		return *simhit_simTrkIdx_;
 	}
-	vector<float> &glu_xx()
+	vector<vector<int> > &simhit_hitIdx()
 	{
-		if (not glu_xx_isLoaded) {
-			if (glu_xx_branch != 0) {
-				glu_xx_branch->GetEntry(index);
+		if (not simhit_hitIdx_isLoaded) {
+			if (simhit_hitIdx_branch != 0) {
+				simhit_hitIdx_branch->GetEntry(index);
 			} else { 
-				printf("branch glu_xx_branch does not exist!\n");
+				printf("branch simhit_hitIdx_branch does not exist!\n");
 				exit(1);
 			}
-			glu_xx_isLoaded = true;
+			simhit_hitIdx_isLoaded = true;
 		}
-		return *glu_xx_;
+		return *simhit_hitIdx_;
 	}
-	vector<float> &glu_xy()
+	vector<vector<int> > &simhit_hitType()
 	{
-		if (not glu_xy_isLoaded) {
-			if (glu_xy_branch != 0) {
-				glu_xy_branch->GetEntry(index);
+		if (not simhit_hitType_isLoaded) {
+			if (simhit_hitType_branch != 0) {
+				simhit_hitType_branch->GetEntry(index);
 			} else { 
-				printf("branch glu_xy_branch does not exist!\n");
+				printf("branch simhit_hitType_branch does not exist!\n");
 				exit(1);
 			}
-			glu_xy_isLoaded = true;
+			simhit_hitType_isLoaded = true;
 		}
-		return *glu_xy_;
-	}
-	vector<float> &glu_yy()
-	{
-		if (not glu_yy_isLoaded) {
-			if (glu_yy_branch != 0) {
-				glu_yy_branch->GetEntry(index);
-			} else { 
-				printf("branch glu_yy_branch does not exist!\n");
-				exit(1);
-			}
-			glu_yy_isLoaded = true;
-		}
-		return *glu_yy_;
-	}
-	vector<float> &glu_yz()
-	{
-		if (not glu_yz_isLoaded) {
-			if (glu_yz_branch != 0) {
-				glu_yz_branch->GetEntry(index);
-			} else { 
-				printf("branch glu_yz_branch does not exist!\n");
-				exit(1);
-			}
-			glu_yz_isLoaded = true;
-		}
-		return *glu_yz_;
-	}
-	vector<float> &glu_zz()
-	{
-		if (not glu_zz_isLoaded) {
-			if (glu_zz_branch != 0) {
-				glu_zz_branch->GetEntry(index);
-			} else { 
-				printf("branch glu_zz_branch does not exist!\n");
-				exit(1);
-			}
-			glu_zz_isLoaded = true;
-		}
-		return *glu_zz_;
-	}
-	vector<float> &glu_zx()
-	{
-		if (not glu_zx_isLoaded) {
-			if (glu_zx_branch != 0) {
-				glu_zx_branch->GetEntry(index);
-			} else { 
-				printf("branch glu_zx_branch does not exist!\n");
-				exit(1);
-			}
-			glu_zx_isLoaded = true;
-		}
-		return *glu_zx_;
-	}
-	vector<float> &glu_radL()
-	{
-		if (not glu_radL_isLoaded) {
-			if (glu_radL_branch != 0) {
-				glu_radL_branch->GetEntry(index);
-			} else { 
-				printf("branch glu_radL_branch does not exist!\n");
-				exit(1);
-			}
-			glu_radL_isLoaded = true;
-		}
-		return *glu_radL_;
-	}
-	vector<float> &glu_bbxi()
-	{
-		if (not glu_bbxi_isLoaded) {
-			if (glu_bbxi_branch != 0) {
-				glu_bbxi_branch->GetEntry(index);
-			} else { 
-				printf("branch glu_bbxi_branch does not exist!\n");
-				exit(1);
-			}
-			glu_bbxi_isLoaded = true;
-		}
-		return *glu_bbxi_;
+		return *simhit_hitType_;
 	}
 	float &bsp_x()
 	{
@@ -3958,330 +4620,187 @@ void LoadAllBranches()
 		}
 		return bsp_sigmaz_;
 	}
-	vector<float> &see_lh_px()
+	vector<short> &see_fitok()
 	{
-		if (not see_lh_px_isLoaded) {
-			if (see_lh_px_branch != 0) {
-				see_lh_px_branch->GetEntry(index);
+		if (not see_fitok_isLoaded) {
+			if (see_fitok_branch != 0) {
+				see_fitok_branch->GetEntry(index);
 			} else { 
-				printf("branch see_lh_px_branch does not exist!\n");
+				printf("branch see_fitok_branch does not exist!\n");
 				exit(1);
 			}
-			see_lh_px_isLoaded = true;
+			see_fitok_isLoaded = true;
 		}
-		return *see_lh_px_;
+		return *see_fitok_;
 	}
-	vector<float> &see_lh_py()
+	vector<float> &see_px()
 	{
-		if (not see_lh_py_isLoaded) {
-			if (see_lh_py_branch != 0) {
-				see_lh_py_branch->GetEntry(index);
+		if (not see_px_isLoaded) {
+			if (see_px_branch != 0) {
+				see_px_branch->GetEntry(index);
 			} else { 
-				printf("branch see_lh_py_branch does not exist!\n");
+				printf("branch see_px_branch does not exist!\n");
 				exit(1);
 			}
-			see_lh_py_isLoaded = true;
+			see_px_isLoaded = true;
 		}
-		return *see_lh_py_;
+		return *see_px_;
 	}
-	vector<float> &see_lh_pz()
+	vector<float> &see_py()
 	{
-		if (not see_lh_pz_isLoaded) {
-			if (see_lh_pz_branch != 0) {
-				see_lh_pz_branch->GetEntry(index);
+		if (not see_py_isLoaded) {
+			if (see_py_branch != 0) {
+				see_py_branch->GetEntry(index);
 			} else { 
-				printf("branch see_lh_pz_branch does not exist!\n");
+				printf("branch see_py_branch does not exist!\n");
 				exit(1);
 			}
-			see_lh_pz_isLoaded = true;
+			see_py_isLoaded = true;
 		}
-		return *see_lh_pz_;
+		return *see_py_;
 	}
-	vector<float> &see_lh_pt()
+	vector<float> &see_pz()
 	{
-		if (not see_lh_pt_isLoaded) {
-			if (see_lh_pt_branch != 0) {
-				see_lh_pt_branch->GetEntry(index);
+		if (not see_pz_isLoaded) {
+			if (see_pz_branch != 0) {
+				see_pz_branch->GetEntry(index);
 			} else { 
-				printf("branch see_lh_pt_branch does not exist!\n");
+				printf("branch see_pz_branch does not exist!\n");
 				exit(1);
 			}
-			see_lh_pt_isLoaded = true;
+			see_pz_isLoaded = true;
 		}
-		return *see_lh_pt_;
+		return *see_pz_;
 	}
-	vector<float> &see_lh_eta()
+	vector<float> &see_pt()
 	{
-		if (not see_lh_eta_isLoaded) {
-			if (see_lh_eta_branch != 0) {
-				see_lh_eta_branch->GetEntry(index);
+		if (not see_pt_isLoaded) {
+			if (see_pt_branch != 0) {
+				see_pt_branch->GetEntry(index);
 			} else { 
-				printf("branch see_lh_eta_branch does not exist!\n");
+				printf("branch see_pt_branch does not exist!\n");
 				exit(1);
 			}
-			see_lh_eta_isLoaded = true;
+			see_pt_isLoaded = true;
 		}
-		return *see_lh_eta_;
+		return *see_pt_;
 	}
-	vector<float> &see_lh_phi()
+	vector<float> &see_eta()
 	{
-		if (not see_lh_phi_isLoaded) {
-			if (see_lh_phi_branch != 0) {
-				see_lh_phi_branch->GetEntry(index);
+		if (not see_eta_isLoaded) {
+			if (see_eta_branch != 0) {
+				see_eta_branch->GetEntry(index);
 			} else { 
-				printf("branch see_lh_phi_branch does not exist!\n");
+				printf("branch see_eta_branch does not exist!\n");
 				exit(1);
 			}
-			see_lh_phi_isLoaded = true;
+			see_eta_isLoaded = true;
 		}
-		return *see_lh_phi_;
+		return *see_eta_;
 	}
-	vector<float> &see_lh_x()
+	vector<float> &see_phi()
 	{
-		if (not see_lh_x_isLoaded) {
-			if (see_lh_x_branch != 0) {
-				see_lh_x_branch->GetEntry(index);
+		if (not see_phi_isLoaded) {
+			if (see_phi_branch != 0) {
+				see_phi_branch->GetEntry(index);
 			} else { 
-				printf("branch see_lh_x_branch does not exist!\n");
+				printf("branch see_phi_branch does not exist!\n");
 				exit(1);
 			}
-			see_lh_x_isLoaded = true;
+			see_phi_isLoaded = true;
 		}
-		return *see_lh_x_;
+		return *see_phi_;
 	}
-	vector<float> &see_lh_y()
+	vector<float> &see_dxy()
 	{
-		if (not see_lh_y_isLoaded) {
-			if (see_lh_y_branch != 0) {
-				see_lh_y_branch->GetEntry(index);
+		if (not see_dxy_isLoaded) {
+			if (see_dxy_branch != 0) {
+				see_dxy_branch->GetEntry(index);
 			} else { 
-				printf("branch see_lh_y_branch does not exist!\n");
+				printf("branch see_dxy_branch does not exist!\n");
 				exit(1);
 			}
-			see_lh_y_isLoaded = true;
+			see_dxy_isLoaded = true;
 		}
-		return *see_lh_y_;
+		return *see_dxy_;
 	}
-	vector<float> &see_lh_z()
+	vector<float> &see_dz()
 	{
-		if (not see_lh_z_isLoaded) {
-			if (see_lh_z_branch != 0) {
-				see_lh_z_branch->GetEntry(index);
+		if (not see_dz_isLoaded) {
+			if (see_dz_branch != 0) {
+				see_dz_branch->GetEntry(index);
 			} else { 
-				printf("branch see_lh_z_branch does not exist!\n");
+				printf("branch see_dz_branch does not exist!\n");
 				exit(1);
 			}
-			see_lh_z_isLoaded = true;
+			see_dz_isLoaded = true;
 		}
-		return *see_lh_z_;
+		return *see_dz_;
 	}
-	vector<float> &see_pca_px()
+	vector<float> &see_ptErr()
 	{
-		if (not see_pca_px_isLoaded) {
-			if (see_pca_px_branch != 0) {
-				see_pca_px_branch->GetEntry(index);
+		if (not see_ptErr_isLoaded) {
+			if (see_ptErr_branch != 0) {
+				see_ptErr_branch->GetEntry(index);
 			} else { 
-				printf("branch see_pca_px_branch does not exist!\n");
+				printf("branch see_ptErr_branch does not exist!\n");
 				exit(1);
 			}
-			see_pca_px_isLoaded = true;
+			see_ptErr_isLoaded = true;
 		}
-		return *see_pca_px_;
+		return *see_ptErr_;
 	}
-	vector<float> &see_pca_py()
+	vector<float> &see_etaErr()
 	{
-		if (not see_pca_py_isLoaded) {
-			if (see_pca_py_branch != 0) {
-				see_pca_py_branch->GetEntry(index);
+		if (not see_etaErr_isLoaded) {
+			if (see_etaErr_branch != 0) {
+				see_etaErr_branch->GetEntry(index);
 			} else { 
-				printf("branch see_pca_py_branch does not exist!\n");
+				printf("branch see_etaErr_branch does not exist!\n");
 				exit(1);
 			}
-			see_pca_py_isLoaded = true;
+			see_etaErr_isLoaded = true;
 		}
-		return *see_pca_py_;
+		return *see_etaErr_;
 	}
-	vector<float> &see_pca_pz()
+	vector<float> &see_phiErr()
 	{
-		if (not see_pca_pz_isLoaded) {
-			if (see_pca_pz_branch != 0) {
-				see_pca_pz_branch->GetEntry(index);
+		if (not see_phiErr_isLoaded) {
+			if (see_phiErr_branch != 0) {
+				see_phiErr_branch->GetEntry(index);
 			} else { 
-				printf("branch see_pca_pz_branch does not exist!\n");
+				printf("branch see_phiErr_branch does not exist!\n");
 				exit(1);
 			}
-			see_pca_pz_isLoaded = true;
+			see_phiErr_isLoaded = true;
 		}
-		return *see_pca_pz_;
+		return *see_phiErr_;
 	}
-	vector<float> &see_pca_pt()
+	vector<float> &see_dxyErr()
 	{
-		if (not see_pca_pt_isLoaded) {
-			if (see_pca_pt_branch != 0) {
-				see_pca_pt_branch->GetEntry(index);
+		if (not see_dxyErr_isLoaded) {
+			if (see_dxyErr_branch != 0) {
+				see_dxyErr_branch->GetEntry(index);
 			} else { 
-				printf("branch see_pca_pt_branch does not exist!\n");
+				printf("branch see_dxyErr_branch does not exist!\n");
 				exit(1);
 			}
-			see_pca_pt_isLoaded = true;
+			see_dxyErr_isLoaded = true;
 		}
-		return *see_pca_pt_;
+		return *see_dxyErr_;
 	}
-	vector<float> &see_pca_eta()
+	vector<float> &see_dzErr()
 	{
-		if (not see_pca_eta_isLoaded) {
-			if (see_pca_eta_branch != 0) {
-				see_pca_eta_branch->GetEntry(index);
+		if (not see_dzErr_isLoaded) {
+			if (see_dzErr_branch != 0) {
+				see_dzErr_branch->GetEntry(index);
 			} else { 
-				printf("branch see_pca_eta_branch does not exist!\n");
+				printf("branch see_dzErr_branch does not exist!\n");
 				exit(1);
 			}
-			see_pca_eta_isLoaded = true;
+			see_dzErr_isLoaded = true;
 		}
-		return *see_pca_eta_;
-	}
-	vector<float> &see_pca_phi()
-	{
-		if (not see_pca_phi_isLoaded) {
-			if (see_pca_phi_branch != 0) {
-				see_pca_phi_branch->GetEntry(index);
-			} else { 
-				printf("branch see_pca_phi_branch does not exist!\n");
-				exit(1);
-			}
-			see_pca_phi_isLoaded = true;
-		}
-		return *see_pca_phi_;
-	}
-	vector<float> &see_pca_x()
-	{
-		if (not see_pca_x_isLoaded) {
-			if (see_pca_x_branch != 0) {
-				see_pca_x_branch->GetEntry(index);
-			} else { 
-				printf("branch see_pca_x_branch does not exist!\n");
-				exit(1);
-			}
-			see_pca_x_isLoaded = true;
-		}
-		return *see_pca_x_;
-	}
-	vector<float> &see_pca_y()
-	{
-		if (not see_pca_y_isLoaded) {
-			if (see_pca_y_branch != 0) {
-				see_pca_y_branch->GetEntry(index);
-			} else { 
-				printf("branch see_pca_y_branch does not exist!\n");
-				exit(1);
-			}
-			see_pca_y_isLoaded = true;
-		}
-		return *see_pca_y_;
-	}
-	vector<float> &see_pca_z()
-	{
-		if (not see_pca_z_isLoaded) {
-			if (see_pca_z_branch != 0) {
-				see_pca_z_branch->GetEntry(index);
-			} else { 
-				printf("branch see_pca_z_branch does not exist!\n");
-				exit(1);
-			}
-			see_pca_z_isLoaded = true;
-		}
-		return *see_pca_z_;
-	}
-	vector<float> &see_pca_dxy()
-	{
-		if (not see_pca_dxy_isLoaded) {
-			if (see_pca_dxy_branch != 0) {
-				see_pca_dxy_branch->GetEntry(index);
-			} else { 
-				printf("branch see_pca_dxy_branch does not exist!\n");
-				exit(1);
-			}
-			see_pca_dxy_isLoaded = true;
-		}
-		return *see_pca_dxy_;
-	}
-	vector<float> &see_pca_dz()
-	{
-		if (not see_pca_dz_isLoaded) {
-			if (see_pca_dz_branch != 0) {
-				see_pca_dz_branch->GetEntry(index);
-			} else { 
-				printf("branch see_pca_dz_branch does not exist!\n");
-				exit(1);
-			}
-			see_pca_dz_isLoaded = true;
-		}
-		return *see_pca_dz_;
-	}
-	vector<float> &see_pca_ptErr()
-	{
-		if (not see_pca_ptErr_isLoaded) {
-			if (see_pca_ptErr_branch != 0) {
-				see_pca_ptErr_branch->GetEntry(index);
-			} else { 
-				printf("branch see_pca_ptErr_branch does not exist!\n");
-				exit(1);
-			}
-			see_pca_ptErr_isLoaded = true;
-		}
-		return *see_pca_ptErr_;
-	}
-	vector<float> &see_pca_etaErr()
-	{
-		if (not see_pca_etaErr_isLoaded) {
-			if (see_pca_etaErr_branch != 0) {
-				see_pca_etaErr_branch->GetEntry(index);
-			} else { 
-				printf("branch see_pca_etaErr_branch does not exist!\n");
-				exit(1);
-			}
-			see_pca_etaErr_isLoaded = true;
-		}
-		return *see_pca_etaErr_;
-	}
-	vector<float> &see_pca_phiErr()
-	{
-		if (not see_pca_phiErr_isLoaded) {
-			if (see_pca_phiErr_branch != 0) {
-				see_pca_phiErr_branch->GetEntry(index);
-			} else { 
-				printf("branch see_pca_phiErr_branch does not exist!\n");
-				exit(1);
-			}
-			see_pca_phiErr_isLoaded = true;
-		}
-		return *see_pca_phiErr_;
-	}
-	vector<float> &see_pca_dxyErr()
-	{
-		if (not see_pca_dxyErr_isLoaded) {
-			if (see_pca_dxyErr_branch != 0) {
-				see_pca_dxyErr_branch->GetEntry(index);
-			} else { 
-				printf("branch see_pca_dxyErr_branch does not exist!\n");
-				exit(1);
-			}
-			see_pca_dxyErr_isLoaded = true;
-		}
-		return *see_pca_dxyErr_;
-	}
-	vector<float> &see_pca_dzErr()
-	{
-		if (not see_pca_dzErr_isLoaded) {
-			if (see_pca_dzErr_branch != 0) {
-				see_pca_dzErr_branch->GetEntry(index);
-			} else { 
-				printf("branch see_pca_dzErr_branch does not exist!\n");
-				exit(1);
-			}
-			see_pca_dzErr_isLoaded = true;
-		}
-		return *see_pca_dzErr_;
+		return *see_dzErr_;
 	}
 	vector<float> &see_chi2()
 	{
@@ -4296,6 +4815,84 @@ void LoadAllBranches()
 		}
 		return *see_chi2_;
 	}
+	vector<float> &see_statePt()
+	{
+		if (not see_statePt_isLoaded) {
+			if (see_statePt_branch != 0) {
+				see_statePt_branch->GetEntry(index);
+			} else { 
+				printf("branch see_statePt_branch does not exist!\n");
+				exit(1);
+			}
+			see_statePt_isLoaded = true;
+		}
+		return *see_statePt_;
+	}
+	vector<float> &see_stateTrajX()
+	{
+		if (not see_stateTrajX_isLoaded) {
+			if (see_stateTrajX_branch != 0) {
+				see_stateTrajX_branch->GetEntry(index);
+			} else { 
+				printf("branch see_stateTrajX_branch does not exist!\n");
+				exit(1);
+			}
+			see_stateTrajX_isLoaded = true;
+		}
+		return *see_stateTrajX_;
+	}
+	vector<float> &see_stateTrajY()
+	{
+		if (not see_stateTrajY_isLoaded) {
+			if (see_stateTrajY_branch != 0) {
+				see_stateTrajY_branch->GetEntry(index);
+			} else { 
+				printf("branch see_stateTrajY_branch does not exist!\n");
+				exit(1);
+			}
+			see_stateTrajY_isLoaded = true;
+		}
+		return *see_stateTrajY_;
+	}
+	vector<float> &see_stateTrajPx()
+	{
+		if (not see_stateTrajPx_isLoaded) {
+			if (see_stateTrajPx_branch != 0) {
+				see_stateTrajPx_branch->GetEntry(index);
+			} else { 
+				printf("branch see_stateTrajPx_branch does not exist!\n");
+				exit(1);
+			}
+			see_stateTrajPx_isLoaded = true;
+		}
+		return *see_stateTrajPx_;
+	}
+	vector<float> &see_stateTrajPy()
+	{
+		if (not see_stateTrajPy_isLoaded) {
+			if (see_stateTrajPy_branch != 0) {
+				see_stateTrajPy_branch->GetEntry(index);
+			} else { 
+				printf("branch see_stateTrajPy_branch does not exist!\n");
+				exit(1);
+			}
+			see_stateTrajPy_isLoaded = true;
+		}
+		return *see_stateTrajPy_;
+	}
+	vector<float> &see_stateTrajPz()
+	{
+		if (not see_stateTrajPz_isLoaded) {
+			if (see_stateTrajPz_branch != 0) {
+				see_stateTrajPz_branch->GetEntry(index);
+			} else { 
+				printf("branch see_stateTrajPz_branch does not exist!\n");
+				exit(1);
+			}
+			see_stateTrajPz_isLoaded = true;
+		}
+		return *see_stateTrajPz_;
+	}
 	vector<int> &see_q()
 	{
 		if (not see_q_isLoaded) {
@@ -4309,7 +4906,7 @@ void LoadAllBranches()
 		}
 		return *see_q_;
 	}
-	vector<int> &see_nValid()
+	vector<unsigned int> &see_nValid()
 	{
 		if (not see_nValid_isLoaded) {
 			if (see_nValid_branch != 0) {
@@ -4322,7 +4919,7 @@ void LoadAllBranches()
 		}
 		return *see_nValid_;
 	}
-	vector<int> &see_nPixel()
+	vector<unsigned int> &see_nPixel()
 	{
 		if (not see_nPixel_isLoaded) {
 			if (see_nPixel_branch != 0) {
@@ -4335,7 +4932,7 @@ void LoadAllBranches()
 		}
 		return *see_nPixel_;
 	}
-	vector<int> &see_nGlued()
+	vector<unsigned int> &see_nGlued()
 	{
 		if (not see_nGlued_isLoaded) {
 			if (see_nGlued_branch != 0) {
@@ -4348,7 +4945,7 @@ void LoadAllBranches()
 		}
 		return *see_nGlued_;
 	}
-	vector<int> &see_nStrip()
+	vector<unsigned int> &see_nStrip()
 	{
 		if (not see_nStrip_isLoaded) {
 			if (see_nStrip_branch != 0) {
@@ -4361,7 +4958,20 @@ void LoadAllBranches()
 		}
 		return *see_nStrip_;
 	}
-	vector<int> &see_algo()
+	vector<unsigned int> &see_nPhase2OT()
+	{
+		if (not see_nPhase2OT_isLoaded) {
+			if (see_nPhase2OT_branch != 0) {
+				see_nPhase2OT_branch->GetEntry(index);
+			} else { 
+				printf("branch see_nPhase2OT_branch does not exist!\n");
+				exit(1);
+			}
+			see_nPhase2OT_isLoaded = true;
+		}
+		return *see_nPhase2OT_;
+	}
+	vector<unsigned int> &see_algo()
 	{
 		if (not see_algo_isLoaded) {
 			if (see_algo_branch != 0) {
@@ -4374,57 +4984,356 @@ void LoadAllBranches()
 		}
 		return *see_algo_;
 	}
-	vector<vector<int> > &see_pixelIdx()
+	vector<unsigned short> &see_stopReason()
 	{
-		if (not see_pixelIdx_isLoaded) {
-			if (see_pixelIdx_branch != 0) {
-				see_pixelIdx_branch->GetEntry(index);
+		if (not see_stopReason_isLoaded) {
+			if (see_stopReason_branch != 0) {
+				see_stopReason_branch->GetEntry(index);
 			} else { 
-				printf("branch see_pixelIdx_branch does not exist!\n");
+				printf("branch see_stopReason_branch does not exist!\n");
 				exit(1);
 			}
-			see_pixelIdx_isLoaded = true;
+			see_stopReason_isLoaded = true;
 		}
-		return *see_pixelIdx_;
+		return *see_stopReason_;
 	}
-	vector<vector<int> > &see_gluedIdx()
+	vector<int> &see_trkIdx()
 	{
-		if (not see_gluedIdx_isLoaded) {
-			if (see_gluedIdx_branch != 0) {
-				see_gluedIdx_branch->GetEntry(index);
+		if (not see_trkIdx_isLoaded) {
+			if (see_trkIdx_branch != 0) {
+				see_trkIdx_branch->GetEntry(index);
 			} else { 
-				printf("branch see_gluedIdx_branch does not exist!\n");
+				printf("branch see_trkIdx_branch does not exist!\n");
 				exit(1);
 			}
-			see_gluedIdx_isLoaded = true;
+			see_trkIdx_isLoaded = true;
 		}
-		return *see_gluedIdx_;
+		return *see_trkIdx_;
 	}
-	vector<vector<int> > &see_stripIdx()
+	vector<vector<float> > &see_shareFrac()
 	{
-		if (not see_stripIdx_isLoaded) {
-			if (see_stripIdx_branch != 0) {
-				see_stripIdx_branch->GetEntry(index);
+		if (not see_shareFrac_isLoaded) {
+			if (see_shareFrac_branch != 0) {
+				see_shareFrac_branch->GetEntry(index);
 			} else { 
-				printf("branch see_stripIdx_branch does not exist!\n");
+				printf("branch see_shareFrac_branch does not exist!\n");
 				exit(1);
 			}
-			see_stripIdx_isLoaded = true;
+			see_shareFrac_isLoaded = true;
 		}
-		return *see_stripIdx_;
+		return *see_shareFrac_;
 	}
-	vector<int> &algo_offset()
+	vector<vector<int> > &see_simTrkIdx()
 	{
-		if (not algo_offset_isLoaded) {
-			if (algo_offset_branch != 0) {
-				algo_offset_branch->GetEntry(index);
+		if (not see_simTrkIdx_isLoaded) {
+			if (see_simTrkIdx_branch != 0) {
+				see_simTrkIdx_branch->GetEntry(index);
 			} else { 
-				printf("branch algo_offset_branch does not exist!\n");
+				printf("branch see_simTrkIdx_branch does not exist!\n");
 				exit(1);
 			}
-			algo_offset_isLoaded = true;
+			see_simTrkIdx_isLoaded = true;
 		}
-		return *algo_offset_;
+		return *see_simTrkIdx_;
+	}
+	vector<vector<int> > &see_hitIdx()
+	{
+		if (not see_hitIdx_isLoaded) {
+			if (see_hitIdx_branch != 0) {
+				see_hitIdx_branch->GetEntry(index);
+			} else { 
+				printf("branch see_hitIdx_branch does not exist!\n");
+				exit(1);
+			}
+			see_hitIdx_isLoaded = true;
+		}
+		return *see_hitIdx_;
+	}
+	vector<vector<int> > &see_hitType()
+	{
+		if (not see_hitType_isLoaded) {
+			if (see_hitType_branch != 0) {
+				see_hitType_branch->GetEntry(index);
+			} else { 
+				printf("branch see_hitType_branch does not exist!\n");
+				exit(1);
+			}
+			see_hitType_isLoaded = true;
+		}
+		return *see_hitType_;
+	}
+	vector<unsigned int> &see_offset()
+	{
+		if (not see_offset_isLoaded) {
+			if (see_offset_branch != 0) {
+				see_offset_branch->GetEntry(index);
+			} else { 
+				printf("branch see_offset_branch does not exist!\n");
+				exit(1);
+			}
+			see_offset_isLoaded = true;
+		}
+		return *see_offset_;
+	}
+	vector<float> &vtx_x()
+	{
+		if (not vtx_x_isLoaded) {
+			if (vtx_x_branch != 0) {
+				vtx_x_branch->GetEntry(index);
+			} else { 
+				printf("branch vtx_x_branch does not exist!\n");
+				exit(1);
+			}
+			vtx_x_isLoaded = true;
+		}
+		return *vtx_x_;
+	}
+	vector<float> &vtx_y()
+	{
+		if (not vtx_y_isLoaded) {
+			if (vtx_y_branch != 0) {
+				vtx_y_branch->GetEntry(index);
+			} else { 
+				printf("branch vtx_y_branch does not exist!\n");
+				exit(1);
+			}
+			vtx_y_isLoaded = true;
+		}
+		return *vtx_y_;
+	}
+	vector<float> &vtx_z()
+	{
+		if (not vtx_z_isLoaded) {
+			if (vtx_z_branch != 0) {
+				vtx_z_branch->GetEntry(index);
+			} else { 
+				printf("branch vtx_z_branch does not exist!\n");
+				exit(1);
+			}
+			vtx_z_isLoaded = true;
+		}
+		return *vtx_z_;
+	}
+	vector<float> &vtx_xErr()
+	{
+		if (not vtx_xErr_isLoaded) {
+			if (vtx_xErr_branch != 0) {
+				vtx_xErr_branch->GetEntry(index);
+			} else { 
+				printf("branch vtx_xErr_branch does not exist!\n");
+				exit(1);
+			}
+			vtx_xErr_isLoaded = true;
+		}
+		return *vtx_xErr_;
+	}
+	vector<float> &vtx_yErr()
+	{
+		if (not vtx_yErr_isLoaded) {
+			if (vtx_yErr_branch != 0) {
+				vtx_yErr_branch->GetEntry(index);
+			} else { 
+				printf("branch vtx_yErr_branch does not exist!\n");
+				exit(1);
+			}
+			vtx_yErr_isLoaded = true;
+		}
+		return *vtx_yErr_;
+	}
+	vector<float> &vtx_zErr()
+	{
+		if (not vtx_zErr_isLoaded) {
+			if (vtx_zErr_branch != 0) {
+				vtx_zErr_branch->GetEntry(index);
+			} else { 
+				printf("branch vtx_zErr_branch does not exist!\n");
+				exit(1);
+			}
+			vtx_zErr_isLoaded = true;
+		}
+		return *vtx_zErr_;
+	}
+	vector<float> &vtx_ndof()
+	{
+		if (not vtx_ndof_isLoaded) {
+			if (vtx_ndof_branch != 0) {
+				vtx_ndof_branch->GetEntry(index);
+			} else { 
+				printf("branch vtx_ndof_branch does not exist!\n");
+				exit(1);
+			}
+			vtx_ndof_isLoaded = true;
+		}
+		return *vtx_ndof_;
+	}
+	vector<float> &vtx_chi2()
+	{
+		if (not vtx_chi2_isLoaded) {
+			if (vtx_chi2_branch != 0) {
+				vtx_chi2_branch->GetEntry(index);
+			} else { 
+				printf("branch vtx_chi2_branch does not exist!\n");
+				exit(1);
+			}
+			vtx_chi2_isLoaded = true;
+		}
+		return *vtx_chi2_;
+	}
+	vector<short> &vtx_fake()
+	{
+		if (not vtx_fake_isLoaded) {
+			if (vtx_fake_branch != 0) {
+				vtx_fake_branch->GetEntry(index);
+			} else { 
+				printf("branch vtx_fake_branch does not exist!\n");
+				exit(1);
+			}
+			vtx_fake_isLoaded = true;
+		}
+		return *vtx_fake_;
+	}
+	vector<short> &vtx_valid()
+	{
+		if (not vtx_valid_isLoaded) {
+			if (vtx_valid_branch != 0) {
+				vtx_valid_branch->GetEntry(index);
+			} else { 
+				printf("branch vtx_valid_branch does not exist!\n");
+				exit(1);
+			}
+			vtx_valid_isLoaded = true;
+		}
+		return *vtx_valid_;
+	}
+	vector<vector<int> > &vtx_trkIdx()
+	{
+		if (not vtx_trkIdx_isLoaded) {
+			if (vtx_trkIdx_branch != 0) {
+				vtx_trkIdx_branch->GetEntry(index);
+			} else { 
+				printf("branch vtx_trkIdx_branch does not exist!\n");
+				exit(1);
+			}
+			vtx_trkIdx_isLoaded = true;
+		}
+		return *vtx_trkIdx_;
+	}
+	vector<int> &simvtx_event()
+	{
+		if (not simvtx_event_isLoaded) {
+			if (simvtx_event_branch != 0) {
+				simvtx_event_branch->GetEntry(index);
+			} else { 
+				printf("branch simvtx_event_branch does not exist!\n");
+				exit(1);
+			}
+			simvtx_event_isLoaded = true;
+		}
+		return *simvtx_event_;
+	}
+	vector<int> &simvtx_bunchCrossing()
+	{
+		if (not simvtx_bunchCrossing_isLoaded) {
+			if (simvtx_bunchCrossing_branch != 0) {
+				simvtx_bunchCrossing_branch->GetEntry(index);
+			} else { 
+				printf("branch simvtx_bunchCrossing_branch does not exist!\n");
+				exit(1);
+			}
+			simvtx_bunchCrossing_isLoaded = true;
+		}
+		return *simvtx_bunchCrossing_;
+	}
+	vector<unsigned int> &simvtx_processType()
+	{
+		if (not simvtx_processType_isLoaded) {
+			if (simvtx_processType_branch != 0) {
+				simvtx_processType_branch->GetEntry(index);
+			} else { 
+				printf("branch simvtx_processType_branch does not exist!\n");
+				exit(1);
+			}
+			simvtx_processType_isLoaded = true;
+		}
+		return *simvtx_processType_;
+	}
+	vector<float> &simvtx_x()
+	{
+		if (not simvtx_x_isLoaded) {
+			if (simvtx_x_branch != 0) {
+				simvtx_x_branch->GetEntry(index);
+			} else { 
+				printf("branch simvtx_x_branch does not exist!\n");
+				exit(1);
+			}
+			simvtx_x_isLoaded = true;
+		}
+		return *simvtx_x_;
+	}
+	vector<float> &simvtx_y()
+	{
+		if (not simvtx_y_isLoaded) {
+			if (simvtx_y_branch != 0) {
+				simvtx_y_branch->GetEntry(index);
+			} else { 
+				printf("branch simvtx_y_branch does not exist!\n");
+				exit(1);
+			}
+			simvtx_y_isLoaded = true;
+		}
+		return *simvtx_y_;
+	}
+	vector<float> &simvtx_z()
+	{
+		if (not simvtx_z_isLoaded) {
+			if (simvtx_z_branch != 0) {
+				simvtx_z_branch->GetEntry(index);
+			} else { 
+				printf("branch simvtx_z_branch does not exist!\n");
+				exit(1);
+			}
+			simvtx_z_isLoaded = true;
+		}
+		return *simvtx_z_;
+	}
+	vector<vector<int> > &simvtx_sourceSimIdx()
+	{
+		if (not simvtx_sourceSimIdx_isLoaded) {
+			if (simvtx_sourceSimIdx_branch != 0) {
+				simvtx_sourceSimIdx_branch->GetEntry(index);
+			} else { 
+				printf("branch simvtx_sourceSimIdx_branch does not exist!\n");
+				exit(1);
+			}
+			simvtx_sourceSimIdx_isLoaded = true;
+		}
+		return *simvtx_sourceSimIdx_;
+	}
+	vector<vector<int> > &simvtx_daughterSimIdx()
+	{
+		if (not simvtx_daughterSimIdx_isLoaded) {
+			if (simvtx_daughterSimIdx_branch != 0) {
+				simvtx_daughterSimIdx_branch->GetEntry(index);
+			} else { 
+				printf("branch simvtx_daughterSimIdx_branch does not exist!\n");
+				exit(1);
+			}
+			simvtx_daughterSimIdx_isLoaded = true;
+		}
+		return *simvtx_daughterSimIdx_;
+	}
+	vector<int> &simpv_idx()
+	{
+		if (not simpv_idx_isLoaded) {
+			if (simpv_idx_branch != 0) {
+				simpv_idx_branch->GetEntry(index);
+			} else { 
+				printf("branch simpv_idx_branch does not exist!\n");
+				exit(1);
+			}
+			simpv_idx_isLoaded = true;
+		}
+		return *simpv_idx_;
 	}
 };
 
@@ -4433,62 +5342,98 @@ extern tkph2 cms2;
 #endif
 
 namespace tas {
+        unsigned long long &event();
+	unsigned int &lumi();
+	unsigned int &run();
 	vector<float> &trk_px();
 	vector<float> &trk_py();
 	vector<float> &trk_pz();
 	vector<float> &trk_pt();
+	vector<float> &trk_inner_px();
+	vector<float> &trk_inner_py();
+	vector<float> &trk_inner_pz();
+	vector<float> &trk_inner_pt();
+	vector<float> &trk_outer_px();
+	vector<float> &trk_outer_py();
+	vector<float> &trk_outer_pz();
+	vector<float> &trk_outer_pt();
 	vector<float> &trk_eta();
+	vector<float> &trk_lambda();
+	vector<float> &trk_cotTheta();
 	vector<float> &trk_phi();
 	vector<float> &trk_dxy();
 	vector<float> &trk_dz();
 	vector<float> &trk_ptErr();
 	vector<float> &trk_etaErr();
+	vector<float> &trk_lambdaErr();
 	vector<float> &trk_phiErr();
 	vector<float> &trk_dxyErr();
 	vector<float> &trk_dzErr();
+	vector<float> &trk_refpoint_x();
+	vector<float> &trk_refpoint_y();
+	vector<float> &trk_refpoint_z();
 	vector<float> &trk_nChi2();
-	vector<float> &trk_shareFrac();
 	vector<int> &trk_q();
-	vector<int> &trk_nValid();
-	vector<int> &trk_nInvalid();
-	vector<int> &trk_nPixel();
-	vector<int> &trk_nStrip();
-	vector<int> &trk_n3DLay();
-	vector<int> &trk_algo();
-	vector<int> &trk_isHP();
+	vector<unsigned int> &trk_nValid();
+	vector<unsigned int> &trk_nInvalid();
+	vector<unsigned int> &trk_nPixel();
+	vector<unsigned int> &trk_nStrip();
+	vector<unsigned int> &trk_nPixelLay();
+	vector<unsigned int> &trk_nStripLay();
+	vector<unsigned int> &trk_n3DLay();
+	vector<unsigned int> &trk_nOuterLost();
+	vector<unsigned int> &trk_nInnerLost();
+	vector<unsigned int> &trk_algo();
+	vector<unsigned int> &trk_originalAlgo();
+	vector<ULong64_t> &trk_algoMask();
+	vector<unsigned short> &trk_stopReason();
+	vector<short> &trk_isHP();
 	vector<int> &trk_seedIdx();
-	vector<int> &trk_simIdx();
-	vector<vector<int> > &trk_pixelIdx();
-	vector<vector<int> > &trk_stripIdx();
+	vector<int> &trk_vtxIdx();
+	vector<vector<float> > &trk_shareFrac();
+	vector<vector<int> > &trk_simTrkIdx();
+	vector<vector<int> > &trk_hitIdx();
+	vector<vector<int> > &trk_hitType();
+	vector<int> &sim_event();
+	vector<int> &sim_bunchCrossing();
+	vector<int> &sim_pdgId();
+	vector<vector<int> > &sim_genPdgIds();
+	vector<int> &sim_isFromBHadron();
 	vector<float> &sim_px();
 	vector<float> &sim_py();
 	vector<float> &sim_pz();
 	vector<float> &sim_pt();
 	vector<float> &sim_eta();
 	vector<float> &sim_phi();
-	vector<float> &sim_dxy();
-	vector<float> &sim_dz();
-	vector<float> &sim_prodx();
-	vector<float> &sim_prody();
-	vector<float> &sim_prodz();
-	vector<float> &sim_shareFrac();
+	vector<float> &sim_pca_pt();
+	vector<float> &sim_pca_eta();
+	vector<float> &sim_pca_lambda();
+	vector<float> &sim_pca_cotTheta();
+	vector<float> &sim_pca_phi();
+	vector<float> &sim_pca_dxy();
+	vector<float> &sim_pca_dz();
 	vector<int> &sim_q();
-	vector<int> &sim_nValid();
-	vector<int> &sim_nPixel();
-	vector<int> &sim_nStrip();
-	vector<int> &sim_n3DLay();
-	vector<int> &sim_trkIdx();
-	vector<vector<int> > &sim_pixelIdx();
-	vector<vector<int> > &sim_stripIdx();
-	vector<int> &pix_isBarrel();
-	vector<int> &pix_lay();
-	vector<int> &pix_detId();
-	vector<int> &pix_nSimTrk();
-	vector<int> &pix_simTrkIdx();
-	vector<int> &pix_particle();
-	vector<int> &pix_process();
-	vector<int> &pix_bunchXing();
-	vector<int> &pix_event();
+	vector<unsigned int> &sim_nValid();
+	vector<unsigned int> &sim_nPixel();
+	vector<unsigned int> &sim_nStrip();
+	vector<unsigned int> &sim_nLay();
+	vector<unsigned int> &sim_nPixelLay();
+	vector<unsigned int> &sim_n3DLay();
+	vector<vector<int> > &sim_trkIdx();
+	vector<vector<float> > &sim_shareFrac();
+	vector<vector<int> > &sim_seedIdx();
+	vector<int> &sim_parentVtxIdx();
+	vector<vector<int> > &sim_decayVtxIdx();
+	vector<vector<int> > &sim_simHitIdx();
+	vector<short> &pix_isBarrel();
+	vector<unsigned short> &pix_det();
+	vector<unsigned short> &pix_lay();
+	vector<unsigned int> &pix_detId();
+	vector<vector<int> > &pix_trkIdx();
+	vector<vector<int> > &pix_seeIdx();
+	vector<vector<int> > &pix_simHitIdx();
+	vector<vector<float> > &pix_chargeFraction();
+	vector<unsigned short> &pix_simType();
 	vector<float> &pix_x();
 	vector<float> &pix_y();
 	vector<float> &pix_z();
@@ -4498,109 +5443,108 @@ namespace tas {
 	vector<float> &pix_yz();
 	vector<float> &pix_zz();
 	vector<float> &pix_zx();
-	vector<float> &pix_xsim();
-	vector<float> &pix_ysim();
-	vector<float> &pix_zsim();
-	vector<float> &pix_pxsim();
-	vector<float> &pix_pysim();
-	vector<float> &pix_pzsim();
-	vector<float> &pix_pathprop();
-	vector<float> &pix_xsimprop();
-	vector<float> &pix_ysimprop();
-	vector<float> &pix_zsimprop();
-	vector<float> &pix_pxsimprop();
-	vector<float> &pix_pysimprop();
-	vector<float> &pix_pzsimprop();
-	vector<float> &pix_eloss();
 	vector<float> &pix_radL();
 	vector<float> &pix_bbxi();
-	vector<int> &str_isBarrel();
-	vector<int> &str_isStereo();
-	vector<int> &str_det();
-	vector<int> &str_lay();
-	vector<int> &str_detId();
-	vector<int> &str_nSimTrk();
-	vector<int> &str_simTrkIdx();
-	vector<int> &str_particle();
-	vector<int> &str_process();
-	vector<int> &str_bunchXing();
-	vector<int> &str_event();
-	vector<float> &str_x();
-	vector<float> &str_y();
-	vector<float> &str_z();
-	vector<float> &str_xx();
-	vector<float> &str_xy();
-	vector<float> &str_yy();
-	vector<float> &str_yz();
-	vector<float> &str_zz();
-	vector<float> &str_zx();
-	vector<float> &str_xsim();
-	vector<float> &str_ysim();
-	vector<float> &str_zsim();
-	vector<float> &str_pxsim();
-	vector<float> &str_pysim();
-	vector<float> &str_pzsim();
-	vector<float> &str_eloss();
-	vector<float> &str_radL();
-	vector<float> &str_bbxi();
-	vector<int> &glu_isBarrel();
-	vector<int> &glu_det();
-	vector<int> &glu_lay();
-	vector<int> &glu_detId();
-	vector<int> &glu_monoIdx();
-	vector<int> &glu_stereoIdx();
-	vector<float> &glu_x();
-	vector<float> &glu_y();
-	vector<float> &glu_z();
-	vector<float> &glu_xx();
-	vector<float> &glu_xy();
-	vector<float> &glu_yy();
-	vector<float> &glu_yz();
-	vector<float> &glu_zz();
-	vector<float> &glu_zx();
-	vector<float> &glu_radL();
-	vector<float> &glu_bbxi();
+	vector<short> &ph2_isBarrel();
+	vector<unsigned short> &ph2_det();
+	vector<unsigned short> &ph2_lay();
+	vector<unsigned int> &ph2_detId();
+	vector<vector<int> > &ph2_trkIdx();
+	vector<vector<int> > &ph2_seeIdx();
+	vector<vector<int> > &ph2_simHitIdx();
+	vector<unsigned short> &ph2_simType();
+	vector<float> &ph2_x();
+	vector<float> &ph2_y();
+	vector<float> &ph2_z();
+	vector<float> &ph2_xx();
+	vector<float> &ph2_xy();
+	vector<float> &ph2_yy();
+	vector<float> &ph2_yz();
+	vector<float> &ph2_zz();
+	vector<float> &ph2_zx();
+	vector<float> &ph2_radL();
+	vector<float> &ph2_bbxi();
+	vector<short> &inv_isBarrel();
+	vector<unsigned short> &inv_det();
+	vector<unsigned short> &inv_lay();
+	vector<unsigned int> &inv_detId();
+	vector<unsigned short> &inv_type();
+	vector<unsigned short> &simhit_det();
+	vector<unsigned short> &simhit_lay();
+	vector<unsigned int> &simhit_detId();
+	vector<float> &simhit_x();
+	vector<float> &simhit_y();
+	vector<float> &simhit_z();
+	vector<float> &simhit_px();
+	vector<float> &simhit_py();
+	vector<float> &simhit_pz();
+	vector<int> &simhit_particle();
+	vector<short> &simhit_process();
+	vector<float> &simhit_eloss();
+	vector<float> &simhit_tof();
+	vector<int> &simhit_simTrkIdx();
+	vector<vector<int> > &simhit_hitIdx();
+	vector<vector<int> > &simhit_hitType();
 	float &bsp_x();
 	float &bsp_y();
 	float &bsp_z();
 	float &bsp_sigmax();
 	float &bsp_sigmay();
 	float &bsp_sigmaz();
-	vector<float> &see_lh_px();
-	vector<float> &see_lh_py();
-	vector<float> &see_lh_pz();
-	vector<float> &see_lh_pt();
-	vector<float> &see_lh_eta();
-	vector<float> &see_lh_phi();
-	vector<float> &see_lh_x();
-	vector<float> &see_lh_y();
-	vector<float> &see_lh_z();
-	vector<float> &see_pca_px();
-	vector<float> &see_pca_py();
-	vector<float> &see_pca_pz();
-	vector<float> &see_pca_pt();
-	vector<float> &see_pca_eta();
-	vector<float> &see_pca_phi();
-	vector<float> &see_pca_x();
-	vector<float> &see_pca_y();
-	vector<float> &see_pca_z();
-	vector<float> &see_pca_dxy();
-	vector<float> &see_pca_dz();
-	vector<float> &see_pca_ptErr();
-	vector<float> &see_pca_etaErr();
-	vector<float> &see_pca_phiErr();
-	vector<float> &see_pca_dxyErr();
-	vector<float> &see_pca_dzErr();
+	vector<short> &see_fitok();
+	vector<float> &see_px();
+	vector<float> &see_py();
+	vector<float> &see_pz();
+	vector<float> &see_pt();
+	vector<float> &see_eta();
+	vector<float> &see_phi();
+	vector<float> &see_dxy();
+	vector<float> &see_dz();
+	vector<float> &see_ptErr();
+	vector<float> &see_etaErr();
+	vector<float> &see_phiErr();
+	vector<float> &see_dxyErr();
+	vector<float> &see_dzErr();
 	vector<float> &see_chi2();
+	vector<float> &see_statePt();
+	vector<float> &see_stateTrajX();
+	vector<float> &see_stateTrajY();
+	vector<float> &see_stateTrajPx();
+	vector<float> &see_stateTrajPy();
+	vector<float> &see_stateTrajPz();
 	vector<int> &see_q();
-	vector<int> &see_nValid();
-	vector<int> &see_nPixel();
-	vector<int> &see_nGlued();
-	vector<int> &see_nStrip();
-	vector<int> &see_algo();
-	vector<vector<int> > &see_pixelIdx();
-	vector<vector<int> > &see_gluedIdx();
-	vector<vector<int> > &see_stripIdx();
-	vector<int> &algo_offset();
+	vector<unsigned int> &see_nValid();
+	vector<unsigned int> &see_nPixel();
+	vector<unsigned int> &see_nGlued();
+	vector<unsigned int> &see_nStrip();
+	vector<unsigned int> &see_nPhase2OT();
+	vector<unsigned int> &see_algo();
+	vector<unsigned short> &see_stopReason();
+	vector<int> &see_trkIdx();
+	vector<vector<float> > &see_shareFrac();
+	vector<vector<int> > &see_simTrkIdx();
+	vector<vector<int> > &see_hitIdx();
+	vector<vector<int> > &see_hitType();
+	vector<unsigned int> &see_offset();
+	vector<float> &vtx_x();
+	vector<float> &vtx_y();
+	vector<float> &vtx_z();
+	vector<float> &vtx_xErr();
+	vector<float> &vtx_yErr();
+	vector<float> &vtx_zErr();
+	vector<float> &vtx_ndof();
+	vector<float> &vtx_chi2();
+	vector<short> &vtx_fake();
+	vector<short> &vtx_valid();
+	vector<vector<int> > &vtx_trkIdx();
+	vector<int> &simvtx_event();
+	vector<int> &simvtx_bunchCrossing();
+	vector<unsigned int> &simvtx_processType();
+	vector<float> &simvtx_x();
+	vector<float> &simvtx_y();
+	vector<float> &simvtx_z();
+	vector<vector<int> > &simvtx_sourceSimIdx();
+	vector<vector<int> > &simvtx_daughterSimIdx();
+	vector<int> &simpv_idx();
 }
 #endif
