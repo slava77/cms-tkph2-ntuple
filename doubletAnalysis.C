@@ -2788,15 +2788,15 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		const float miniLum = useFullR3Endcap ? 0.f : deltaZLum/std::abs(hL.second.r3.z());
 		const float miniCutE = miniSlope + sqrt(miniMuls*miniMuls + miniPVoff*miniPVoff + miniLum*miniLum);
 		if (iL==11&& n_dPhi<10){
-		  float simPtL = itpRL > 0 ? sqrt(sim_px()[itpRL-1]*sim_px()[itpRL-1]+sim_py()[itpRL-1]*sim_py()[itpRL-1]) : 0;
-		  float simPtU = itpRU > 0 ? sqrt(sim_px()[itpRU-1]*sim_px()[itpRU-1]+sim_py()[itpRU-1]*sim_py()[itpRU-1]) : 0;
-		  float simDxyL = itpRL > 0 ? sim_pca_dxy()[itpRL-1] : 99;
-		  float simDxyU = itpRU > 0 ? sim_pca_dxy()[itpRU-1] : 99;
+		  float simPtL = itpRL > 0 ? sqrt(sim_px()[itpRL]*sim_px()[itpRL]+sim_py()[itpRL]*sim_py()[itpRL]) : 0;
+		  float simPtU = itpRU > 0 ? sqrt(sim_px()[itpRU]*sim_px()[itpRU]+sim_py()[itpRU]*sim_py()[itpRU]) : 0;
+		  float simDxyL = itpRL > 0 ? sim_pca_dxy()[itpRL] : 99;
+		  float simDxyU = itpRU > 0 ? sim_pca_dxy()[itpRU] : 99;
 
 
 		  std::cout<<"MD on "<<iL<<" i "<<mDs.size()
 			   <<" "<<md.pixL<<" : "<<md.pixU
-			   <<" "<<itpRL-1<<" : "<<itpRU-1
+			   <<" "<<itpRL<<" : "<<itpRU
 			   <<" pt "<<simPtL<<" "<<simPtU
 			   <<" dxy "<<simDxyL<<" "<<simDxyU
 			   <<" r "<<hL.second.rt<<" "<<hU.second.rt
