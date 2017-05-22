@@ -1,7 +1,7 @@
 #include "tkph2.h"
 tkph2 cms2;
 namespace tas {
-        unsigned long long &event() { return cms2.event(); }
+	unsigned long long &event() { return cms2.event(); }
 	unsigned int &lumi() { return cms2.lumi(); }
 	unsigned int &run() { return cms2.run(); }
 	vector<float> &trk_px() { return cms2.trk_px(); }
@@ -91,6 +91,7 @@ namespace tas {
 	vector<vector<int> > &pix_trkIdx() { return cms2.pix_trkIdx(); }
 	vector<vector<int> > &pix_seeIdx() { return cms2.pix_seeIdx(); }
 	vector<vector<int> > &pix_simHitIdx() { return cms2.pix_simHitIdx(); }
+	vector<vector<float> > &pix_xySignificance() { return cms2.pix_xySignificance(); }
 	vector<vector<float> > &pix_chargeFraction() { return cms2.pix_chargeFraction(); }
 	vector<unsigned short> &pix_simType() { return cms2.pix_simType(); }
 	vector<float> &pix_x() { return cms2.pix_x(); }
@@ -111,6 +112,7 @@ namespace tas {
 	vector<vector<int> > &ph2_trkIdx() { return cms2.ph2_trkIdx(); }
 	vector<vector<int> > &ph2_seeIdx() { return cms2.ph2_seeIdx(); }
 	vector<vector<int> > &ph2_simHitIdx() { return cms2.ph2_simHitIdx(); }
+	vector<vector<float> > &ph2_xySignificance() { return cms2.ph2_xySignificance(); }
 	vector<unsigned short> &ph2_simType() { return cms2.ph2_simType(); }
 	vector<float> &ph2_x() { return cms2.ph2_x(); }
 	vector<float> &ph2_y() { return cms2.ph2_y(); }
@@ -171,6 +173,33 @@ namespace tas {
 	vector<float> &see_stateTrajPx() { return cms2.see_stateTrajPx(); }
 	vector<float> &see_stateTrajPy() { return cms2.see_stateTrajPy(); }
 	vector<float> &see_stateTrajPz() { return cms2.see_stateTrajPz(); }
+	vector<float> &see_stateTrajGlbX() { return cms2.see_stateTrajGlbX(); }
+	vector<float> &see_stateTrajGlbY() { return cms2.see_stateTrajGlbY(); }
+	vector<float> &see_stateTrajGlbZ() { return cms2.see_stateTrajGlbZ(); }
+	vector<float> &see_stateTrajGlbPx() { return cms2.see_stateTrajGlbPx(); }
+	vector<float> &see_stateTrajGlbPy() { return cms2.see_stateTrajGlbPy(); }
+	vector<float> &see_stateTrajGlbPz() { return cms2.see_stateTrajGlbPz(); }
+	vector<float> &see_stateCcov00() { return cms2.see_stateCcov00(); }
+	vector<float> &see_stateCcov01() { return cms2.see_stateCcov01(); }
+	vector<float> &see_stateCcov02() { return cms2.see_stateCcov02(); }
+	vector<float> &see_stateCcov03() { return cms2.see_stateCcov03(); }
+	vector<float> &see_stateCcov04() { return cms2.see_stateCcov04(); }
+	vector<float> &see_stateCcov05() { return cms2.see_stateCcov05(); }
+	vector<float> &see_stateCcov11() { return cms2.see_stateCcov11(); }
+	vector<float> &see_stateCcov12() { return cms2.see_stateCcov12(); }
+	vector<float> &see_stateCcov13() { return cms2.see_stateCcov13(); }
+	vector<float> &see_stateCcov14() { return cms2.see_stateCcov14(); }
+	vector<float> &see_stateCcov15() { return cms2.see_stateCcov15(); }
+	vector<float> &see_stateCcov22() { return cms2.see_stateCcov22(); }
+	vector<float> &see_stateCcov23() { return cms2.see_stateCcov23(); }
+	vector<float> &see_stateCcov24() { return cms2.see_stateCcov24(); }
+	vector<float> &see_stateCcov25() { return cms2.see_stateCcov25(); }
+	vector<float> &see_stateCcov33() { return cms2.see_stateCcov33(); }
+	vector<float> &see_stateCcov34() { return cms2.see_stateCcov34(); }
+	vector<float> &see_stateCcov35() { return cms2.see_stateCcov35(); }
+	vector<float> &see_stateCcov44() { return cms2.see_stateCcov44(); }
+	vector<float> &see_stateCcov45() { return cms2.see_stateCcov45(); }
+	vector<float> &see_stateCcov55() { return cms2.see_stateCcov55(); }
 	vector<int> &see_q() { return cms2.see_q(); }
 	vector<unsigned int> &see_nValid() { return cms2.see_nValid(); }
 	vector<unsigned int> &see_nPixel() { return cms2.see_nPixel(); }
