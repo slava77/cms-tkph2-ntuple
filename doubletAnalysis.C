@@ -74,6 +74,62 @@ inline float deltaPhi(float phi1, float phi2) {
   return reduceRange(phi1 - phi2);
 }
 
+//check if this is the same as in the release
+enum class HitType {
+  Pixel = 0,
+  Strip = 1,
+  Glued = 2,
+  Invalid = 3,
+  Phase2OT = 4,
+  Unknown = 99
+};
+
+/// track algorithm; partial copy from TrackBase.h
+enum class TrackAlgorithm {
+  undefAlgorithm = 0,
+  ctf = 1, 
+  duplicateMerge = 2,
+  cosmics = 3,
+  initialStep = 4,
+  lowPtTripletStep = 5,
+  pixelPairStep = 6,
+  detachedTripletStep = 7,
+  mixedTripletStep = 8,
+  pixelLessStep = 9,
+  tobTecStep = 10,
+  jetCoreRegionalStep = 11,
+  conversionStep = 12,
+  muonSeededStepInOut = 13,
+  muonSeededStepOutIn = 14,
+  outInEcalSeededConv = 15, inOutEcalSeededConv = 16,
+  nuclInter = 17,
+  standAloneMuon = 18, globalMuon = 19, cosmicStandAloneMuon = 20, cosmicGlobalMuon = 21,
+  // Phase1
+  highPtTripletStep = 22, lowPtQuadStep = 23, detachedQuadStep = 24,
+  reservedForUpgrades1 = 25, reservedForUpgrades2 = 26,
+  bTagGhostTracks = 27,
+  beamhalo = 28,
+  gsf = 29
+};
+
+struct HitIndexWithType {
+  HitIndexWithType(): indexWithType(((int(HitType::Unknown) & indexMask) << typeOffset)) {}
+  HitIndexWithType(const int index, HitType htype): indexWithType(((int(htype) & indexMask) << typeOffset)
+								  | (index & indexMask)) {}
+  int index() const {return indexWithType & indexMask;}
+  int type() const {return (indexWithType >> typeOffset) & typeMask;}
+
+  static int index(const int indexWT) {return indexWT & indexMask;}
+  static int typeInt(const int indexWT) {return (indexWT >> typeOffset) & typeMask;}
+  static HitType type(const int indexWT) {return HitType(typeInt(indexWT));}
+  static constexpr int indexOffset = 0;
+  static constexpr int indexMask = 0x7FFFFF;
+  static constexpr int typeOffset = 23;
+  static constexpr int typeMask = 0x7F;
+
+  const int indexWithType;
+
+};
 
 //histograms for occupancy and non-zero occupancy vs value-X
 struct Hists2DProfWNZ {
@@ -111,6 +167,16 @@ struct Hists2DProfWNZ {
     if (profileNZ) profileNZ->Fill(x, occ > 0);
   }
 };
+
+TVector3 r3FromPCA(const TVector3& p3, const float dxy, const float dz){
+  const float pt = p3.Pt();
+  const float p = p3.Mag();
+  const float vz = dz*pt*pt/p/p;
+
+  const float vx = dxy*p3.x()/pt - p3.y()/p*p3.z()/p*dz;
+  const float vy = -dxy*p3.y()/pt - p3.x()/p*p3.z()/p*dz;
+  return TVector3(vx, vy, vz);
+}
 
 //a set of variables and efficiencies as a function of 1D variable
 struct HistoSet1D {
@@ -446,29 +512,46 @@ struct MDStats {
   int pdgId;
 };
 
-struct PixelHit {
-  PixelHit(int i):
-    r3s(pix_xsim()[i], pix_ysim()[i], pix_zsim()[i]),
-    p3s(pix_pxsim()[i], pix_pysim()[i], pix_pzsim()[i]),
+struct SimHit {
+  SimHit() {}
+  SimHit(int i):
+    r3s(simhit_x()[i], simhit_y()[i], simhit_z()[i]),
+    p3s(simhit_px()[i], simhit_py()[i], simhit_pz()[i]),
     ind(i),
-    lay(pix_lay()[i]),
-    pdgId(pix_particle()[i]),
-    process(pix_process()[i]),
-    bx(pix_bunchXing()[i]),
-    evt(pix_event()[i]),
-    isBarrel(pix_isBarrel()[i])
-  {}
+    lay(simhit_lay()[i]),
+    pdgId(simhit_particle()[i]),
+    process(simhit_process()[i]),
+    bx(999),
+    evt(999),
+    isBarrel(false)
+  {
+    simTkIdx = simhit_simTrkIdx()[i];
+    if (simTkIdx >= 0){
+      bx = sim_bunchCrossing()[simTkIdx];
+      evt = sim_event()[simTkIdx];
+    }
+    auto det = simhit_det()[i];
+    isBarrel = (det == 1 || det == 3 || det == 5);//Magically, it works for phase-0/1
+
+    hitType = HitType::Unknown;
+    for (auto rht : simhit_hitType()[i]){
+      hitType = HitType(rht);
+      break;
+    }
+  }
   TVector3 r3s;
   TVector3 p3s;
-  int ind;
+  int ind = -1;
   int lay;
   int pdgId;
   int process;
   int bx;
   int evt;
+  int simTkIdx = -1;
+  HitType hitType = HitType::Unknown;
   bool isBarrel;
   void print(const std::string& pfx){
-    std::cout<<pfx<<" "<<ind<<" L"<<lay<<(isBarrel? "b ": "e ")<<evt<<":"<<bx<<" "<<pdgId<<":"<<process
+    std::cout<<pfx<<" "<<ind<<" L"<<lay<<(isBarrel? "b ": "e ")<<evt<<":"<<bx<<" "<<pdgId<<":"<<process<<":"<<simTkIdx
 	     <<" ("<<r3s.Pt()<<", "<<r3s.Eta()<<","<<r3s.Phi()<<","<<r3s.Z() <<") "
 	     <<" ("<<p3s.Pt()<<", "<<p3s.Eta()<<","<<p3s.Phi()<<") "
 	     <<std::endl;
@@ -746,7 +829,7 @@ int ScanChainMiniDoublets( TChain* chain, int nEvents = -1, bool drawPlots = fal
     
     while (( currentFile = (TFile*)fileIter.Next() )) {
       TFile f(currentFile->GetTitle());
-      TTree *tree = (TTree*)f.Get("trkTree/tree");
+      TTree *tree = (TTree*)f.Get("trackingNtuple/tree");
       cms2.Init(tree);
       
       //Event Loop
@@ -758,13 +841,13 @@ int ScanChainMiniDoublets( TChain* chain, int nEvents = -1, bool drawPlots = fal
 	int iidOld = -1;
 
 	std::array<int, nLayersB+1> hitsBarrelLayer {};
-	auto nPix = pix_isBarrel().size();
-	for (auto ipix = 0U; ipix < nPix; ++ipix){
-	  if (pix_isBarrel()[ipix] == false) continue;
-	  int lay = pix_lay()[ipix];
+	auto nPh2 = ph2_isBarrel().size();
+	for (auto iph2 = 0U; iph2 < nPh2; ++iph2){
+	  if (ph2_isBarrel()[iph2] == false) continue;
+	  int lay = ph2_lay()[iph2];
 
 	  hitsBarrelLayer[lay]++;
-	  int iid = pix_detId()[ipix];
+	  int iid = ph2_detId()[iph2];
 	  if (iidOld != iid){
 	    iidOld = iid;
 	    if (modulePopulation.find(iid) == modulePopulation.end()){
@@ -774,20 +857,25 @@ int ScanChainMiniDoublets( TChain* chain, int nEvents = -1, bool drawPlots = fal
 	    cpop = &modulePopulation[iid];
 	    cbound = &moduleBoundaries[iid];
 	  }
-	  
-	  float z = pix_zsim()[ipix];
-	  if (z==0) continue;
-	  float phi = atan2(pix_ysim()[ipix], pix_xsim()[ipix]);
-	  if ((*cbound)[0] > z) (*cbound)[0] = z;
-	  if ((*cbound)[1] < z) (*cbound)[1] = z;
-	  if (*cpop ==0){
-	    (*cbound)[2] = phi;
-	    (*cbound)[3] = phi;
-	  } else {
-	    if (sin((*cbound)[2]-phi) > 0) (*cbound)[2] = phi;
-	    if (sin((*cbound)[3]-phi) < 0) (*cbound)[3] = phi;
+
+	  //look at all associated simhits, ignoring double-counting
+	  auto const& ph2shV = ph2_simHitIdx()[iph2];
+	  auto nPh2sh = ph2shV.size();
+	  for (auto iph2sh = 0U; iph2sh < nPh2sh; ++iph2sh){
+	    float z = simhit_z()[ph2shV[iph2sh]];
+	    if (z==0) continue;
+	    float phi = atan2(simhit_y()[ph2shV[iph2sh]], simhit_x()[ph2shV[iph2sh]]);
+	    if ((*cbound)[0] > z) (*cbound)[0] = z;
+	    if ((*cbound)[1] < z) (*cbound)[1] = z;
+	    if (*cpop ==0){
+	      (*cbound)[2] = phi;
+	      (*cbound)[3] = phi;
+	    } else {
+	      if (sin((*cbound)[2]-phi) > 0) (*cbound)[2] = phi;
+	      if (sin((*cbound)[3]-phi) < 0) (*cbound)[3] = phi;
+	    }
+	    (*cpop)++;
 	  }
-	  (*cpop)++;
 	}
 
 	for (int i = 0; i<= nLayersB; ++i){
@@ -827,15 +915,15 @@ int ScanChainMiniDoublets( TChain* chain, int nEvents = -1, bool drawPlots = fal
       int iidStart = -1;
       int iidEnd = -1;
       int iidOld = -1;
-      auto nPix = pix_isBarrel().size();
-      for (auto ipix = 0U; ipix < nPix; ++ipix){
-	if (pix_isBarrel()[ipix] == false) continue;
-	int lay = pix_lay()[ipix];
+      auto nPh2 = ph2_isBarrel().size();
+      for (auto iph2 = 0U; iph2 < nPh2; ++iph2){
+	if (ph2_isBarrel()[iph2] == false) continue;
+	int lay = ph2_lay()[iph2];
 	if (lay < 5 ) continue;
 
-	int iid = pix_detId()[ipix];
+	int iid = ph2_detId()[iph2];
 	if (iidOld != iid){
-	  iidStart = ipix;
+	  iidStart = iph2;
 	  iidOld = iid;
 	  cboundC = &moduleBoundaries[iid];
 	  if ((iid & 0x4)== 4){
@@ -845,33 +933,52 @@ int ScanChainMiniDoublets( TChain* chain, int nEvents = -1, bool drawPlots = fal
 	}
 	if ((iid & 0x4)!= 4) continue; //only lower module
 
-	TVector3 r3Rec(pix_x()[ipix], pix_y()[ipix], pix_z()[ipix]);
+	TVector3 r3Rec(ph2_x()[iph2], ph2_y()[iph2], ph2_z()[iph2]);
 
-	TVector3 r3Sim(pix_xsim()[ipix], pix_ysim()[ipix], pix_zsim()[ipix]);
-	float rs = r3Sim.Pt();
-	TVector3 p3Sim(pix_pxsim()[ipix], pix_pysim()[ipix], pix_pzsim()[ipix]);
-	float pts = p3Sim.Pt();
-	float ps = p3Sim.Mag();
+	TVector3 r3Sim, p3Sim;
+	int iProcess = 999; int iParticle = 0;
+	int ibx = 999; int iev = 999;
+	float rs = 0; float ps = 0; float pts = 0;
+	int iph2sh = -1;//keep track of this rec-hit simhit
+	int iSimIdx = -1;
+	auto const& iph2shV = ph2_simHitIdx()[iph2];
+	for (auto ph2sh : iph2shV){//look for the first good simhit from a sim-track which was not used yet
+	  SimHit sh(ph2sh);
+	  float ars = sh.r3s.Pt();
+	  float apts = sh.p3s.Pt();
+	  float aps = sh.p3s.Mag();
+	  if (ars == 0 || aps == 0 ) continue;
+	  if (apts < 0.8*ptMinGlobal )  continue;
+	  iSimIdx = sh.simTkIdx;
+	  
+	  r3Sim = sh.r3s;
+	  p3Sim = sh.p3s;
+	  rs = ars;
+	  ps = aps;
+	  pts = apts;
+	  iProcess = sh.process;
+	  iParticle = sh.pdgId;
+	  ibx = sh.bx;
+	  iev = sh.evt;
+	  iph2sh = ph2sh;
+	  if (simIdxInLayer[lay].find(iSimIdx) != simIdxInLayer[lay].end()) continue; //only one hit per layer per track
+	  else break;
+	}
 	if (rs == 0 || ps == 0 ) continue;
 	if (pts < 0.8*ptMinGlobal )  continue;
-	
-	//	std::cout<<__LINE__<<" "<<ipix<<std::endl;
-	int iSimIdx = pix_simTrkIdx()[ipix]; //tp index in ntuple (not a g4 trackId)
-	if (simIdxInLayer[lay].find(iSimIdx) != simIdxInLayer[lay].end()) continue; //only one hit per layer per track
+
+	//	std::cout<<__LINE__<<" "<<iph2<<std::endl;
+	if (simIdxInLayer[lay].find(iSimIdx) != simIdxInLayer[lay].end()) continue; //redundant check wrt the one above?
 	else {
 	  simIdxInLayer[lay].insert(iSimIdx);
 	}
 
 	MDStats md;
 
-	int iProcess = pix_process()[ipix];
-	int ibx = pix_bunchXing()[ipix];
-	int iev = pix_event()[ipix];
 	bool isPrimaryAny = (iProcess == 2 && ibx == 0);
 	bool isPrimaryTT = (isPrimaryAny && iev == 0);
-	int iParticle = pix_particle()[ipix];
 	md.pdgId = iParticle;
-	md.lowerNTP = pix_nSimTrk()[ipix];
+	md.lowerNTP = iph2shV.size();//FIXME: SHOULD THIS BE RECOMPUTED WITH SOME THRESHOLD?
 
 	double dotPR2Ds = r3Sim.x()*p3Sim.x() + r3Sim.y()*p3Sim.y();
 	double dir = dotPR2Ds > 0 ? 1. : -1.;
@@ -914,75 +1021,98 @@ int ScanChainMiniDoublets( TChain* chain, int nEvents = -1, bool drawPlots = fal
 	std::vector<TVector3> otherR3Rec;        otherR3Rec.reserve(128);
 	std::vector<TVector3> nextOtherR3SimAct; nextOtherR3SimAct.reserve(128);
 	std::vector<TVector3> nextOtherR3Rec;    nextOtherR3Rec.reserve(128);
-	//	std::cout<<__LINE__<<" "<<ipix<<std::endl;
+	//	std::cout<<__LINE__<<" "<<iph2<<std::endl;
 
-	for (auto jpix = iidStart; jpix < static_cast<int>(nPix); ++jpix){
-	  if (jpix == static_cast<int>(ipix)) continue;
-	  int jid = pix_detId()[jpix];
+	for (auto jph2 = iidStart; jph2 < static_cast<int>(nPh2); ++jph2){
+	  if (jph2 == static_cast<int>(iph2)) continue;
+	  int jid = ph2_detId()[jph2];
+	  TVector3 ar3(ph2_x()[jph2], ph2_y()[jph2], ph2_z()[jph2]);
 	  if (iid == jid){
-	    TVector3 ar3(pix_x()[jpix], pix_y()[jpix], pix_z()[jpix]);
 	    otherR3Rec.emplace_back(ar3);
 	    
-	    TVector3 ar3s(pix_xsim()[jpix], pix_ysim()[jpix], pix_zsim()[jpix]);
-	    double ars = ar3s.Pt();
-	    if (ars == 0) continue; //use just sim for sim-based predictions
-	    TVector3 ap3s(pix_pxsim()[jpix], pix_pysim()[jpix], pix_pzsim()[jpix]);
-	    double aps = ap3s.Mag();
-	    double apts = ap3s.Pt();
-	    
-	    double dotOPR2Ds = ar3s.x()*ap3s.x() + ar3s.y()*ap3s.y();
-	    double odir = dotOPR2Ds > 0 ? 1. : -1.;
-	    bbs = std::abs(dotOPR2Ds/apts/0.2);
-	    xxs = (aps/apts)*( sqrt(bbs*bbs + (2.*ars/0.2 + 1.)) - bbs);
-	    TVector3 nr3s2mm = ar3s + ap3s*(dir*0.2/aps)*xxs;
-	    bbs = std::abs(dotOPR2Ds/apts/miniDelta[lay]);
-	    xxs = (aps/apts)*( sqrt(bbs*bbs + (2.*ars/miniDelta[lay] + 1.)) - bbs);	    
-	    TVector3 nr3sDes = ar3s + ap3s*(dir*miniDelta[lay]/aps)*xxs;
-	    
-	    otherR3Sim.emplace_back(ar3s);
-	    nextOtherR3Sim2mm.emplace_back(nr3s2mm);
-	    nextOtherR3SimDes.emplace_back(nr3sDes);
-	  } else if (iid+4 == jid && lay>=5) {//upper module in the doublet pairs
-	    int jSimIdx = pix_simTrkIdx()[jpix];
-	    if (iSimIdx == jSimIdx){
-	      int jProcess = pix_process()[jpix];
-	      int jParticle = pix_particle()[jpix];
-	      md.upperMatchToTP = true;
-	      if (jSimIdx >= 0 && iProcess == jProcess && iParticle == jParticle){
-		nextR3SimAct.SetXYZ(pix_xsim()[jpix], pix_ysim()[jpix], pix_zsim()[jpix]);
-		nextR3SimAct_isValid = true;
-		nextR3Rec.SetXYZ(pix_x()[jpix], pix_y()[jpix], pix_z()[jpix]);
-		nextR3Rec_isValid = true;
-		md.upperMatchFull = true;
-		// if (pts > 10 && lay == 5 && isPrimaryTT){
-		//   const float amdDir = (nextR3SimAct-r3Sim).DeltaPhi(r3Sim);
-		//   TVector3 op3(pix_pxsim()[jpix], pix_pysim()[jpix], pix_pzsim()[jpix]);
-		//   std::cout<<__LINE__<<":"<<nEventsTotal<<" L:"<<lay
-		// 	   <<" ptI:"<<pts<<" ptJ:"<<op3.Pt()
-		// 	   <<" idx:"<<iSimIdx<<" dir:"<<amdDir
-		// 	   <<" procI:"<<iProcess<<" procJ:"<<pix_process()[jpix]
-		// 	   <<" bxI:"<<ibx<<" bxJ:"<<pix_bunchXing()[jpix]
-		// 	   <<" evI:"<<iev<<" evJ:"<<pix_event()[jpix]
-		// 	   <<" typeI:"<<iParticle<<" typeJ:"<<pix_particle()[jpix]
-		// 	   <<std::endl;
-		// }
-	      }
-	    } else {
-	      TVector3 ar3(pix_x()[jpix], pix_y()[jpix], pix_z()[jpix]);
-	      nextOtherR3Rec.emplace_back(ar3);
+	    TVector3 ar3s;
+	    TVector3 ap3s;
+	    auto const& jph2shV = ph2_simHitIdx()[jph2];
+	    for (auto jph2sh : jph2shV){
+	      if (jph2sh == iph2sh ) continue;
+	      SimHit sh(jph2sh);
+	      float ars = sh.r3s.Pt();
+	      if (ars == 0) continue;
 
-	      TVector3 ar3s(pix_xsim()[jpix], pix_ysim()[jpix], pix_zsim()[jpix]);
-	      //keep only valid sims
-	      if (ar3s.Pt() != 0) nextOtherR3SimAct.emplace_back(ar3s);
+	      ar3s = sh.r3s;
+	      ap3s = sh.p3s;
+	    
+	      double aps = ap3s.Mag();
+	      double apts = ap3s.Pt();
+	      
+	      double dotOPR2Ds = ar3s.x()*ap3s.x() + ar3s.y()*ap3s.y();
+	      double odir = dotOPR2Ds > 0 ? 1. : -1.;
+	      bbs = std::abs(dotOPR2Ds/apts/0.2);
+	      xxs = (aps/apts)*( sqrt(bbs*bbs + (2.*ars/0.2 + 1.)) - bbs);
+	      TVector3 nr3s2mm = ar3s + ap3s*(dir*0.2/aps)*xxs;
+	      bbs = std::abs(dotOPR2Ds/apts/miniDelta[lay]);
+	      xxs = (aps/apts)*( sqrt(bbs*bbs + (2.*ars/miniDelta[lay] + 1.)) - bbs);	    
+	      TVector3 nr3sDes = ar3s + ap3s*(dir*miniDelta[lay]/aps)*xxs;
+	      
+	      otherR3Sim.emplace_back(ar3s);
+	      if (aps > 0.001){//line-propagate the others only with p > 1 MeV
+		nextOtherR3Sim2mm.emplace_back(nr3s2mm);
+		nextOtherR3SimDes.emplace_back(nr3sDes);
+	      }
+	    }
+	  } else if (iid+4 == jid && lay>=5) {//upper module in the doublet pairs
+	    auto const& jph2shV = ph2_simHitIdx()[jph2];
+	    for (auto jph2sh : jph2shV){
+	      if (jph2sh == iph2sh ) continue;//can really happen .. assert instead?
+	      SimHit sh(jph2sh);
+	      float ars = sh.r3s.Pt();
+	      if (ars == 0) continue;
+
+	      if (sh.simTkIdx == iSimIdx){
+		if (md.upperMatchFull) continue;//match only once
+		//pick the first hit consistent in p with iph2sh
+		auto jp3s = sh.p3s;
+		if (jp3s.Pt() > 0.5*p3Sim.Pt() ){
+		  int jProcess = sh.process;
+		  int jParticle = sh.pdgId;
+		  
+		  md.upperMatchToTP = true;
+		  if (iSimIdx >= 0 && iProcess == jProcess && iParticle == jParticle){
+		    nextR3SimAct = sh.r3s;
+		    nextR3SimAct_isValid = true;
+		    nextR3Rec = ar3;
+		    nextR3Rec_isValid = true;
+		    md.upperMatchFull = true;
+		    // if (pts > 10 && lay == 5 && isPrimaryTT){
+		    //   const float amdDir = (nextR3SimAct-r3Sim).DeltaPhi(r3Sim);
+		    //   TVector3 op3(sh.p3s);
+		    //   std::cout<<__LINE__<<":"<<nEventsTotal<<" L:"<<lay
+		    // 	   <<" ptI:"<<pts<<" ptJ:"<<op3.Pt()
+		    // 	   <<" idx:"<<iSimIdx<<" dir:"<<amdDir
+		    // 	   <<" procI:"<<iProcess<<" procJ:"<<jProcess
+		    // 	   <<" bxI:"<<ibx<<" bxJ:"<<sh.bx
+		    // 	   <<" evI:"<<iev<<" evJ:"<<sh.event
+		    // 	   <<" typeI:"<<iParticle<<" typeJ:"<<jParticle
+		    // 	   <<std::endl;
+		    // }
+		  }//same process as well
+		}//momentum is consistent with p3Sim
+	      } else {
+		if (ars != 0) nextOtherR3SimAct.emplace_back(sh.r3s);
+	      }//not matching to the lower level sim
+	    }//end of or (auto jph2sh : jph2shV){
+
+	    if (! md.upperMatchToTP){
+	      nextOtherR3Rec.emplace_back(ar3);
 	    }
 	    
 	  } else {
 	    //once it's not equal to current or upper(+4), we never expect another entry in the same module
 	    break;
-	  }
-	}//loop over the other pix hits jpix
+	  }//end of module ids to check
+	}//loop over the other ph2 hits jph2
 
-	//	std::cout<<__LINE__<<" "<<ipix<<std::endl;
+	//	std::cout<<__LINE__<<" "<<iph2<<std::endl;
 	
 	//these two are the same for all layers
 	const float ptCut = 1.0;
@@ -1115,7 +1245,7 @@ int ScanChainMiniDoublets( TChain* chain, int nEvents = -1, bool drawPlots = fal
 	  }
 	}
 
-	//	std::cout<<__LINE__<<" "<<ipix<<std::endl;
+	//	std::cout<<__LINE__<<" "<<iph2<<std::endl;
 
 	md.nOthers = otherR3Sim.size();
 	md.nOthersRec = otherR3Rec.size();
@@ -1127,8 +1257,8 @@ int ScanChainMiniDoublets( TChain* chain, int nEvents = -1, bool drawPlots = fal
 	  fillLayerMD_pt(layerMD_pt_prim_tt[lay], pts, md);
 	}
 	
-	//	std::cout<<__LINE__<<" "<<ipix<<std::endl;
-      }//loop over ipix
+	//	std::cout<<__LINE__<<" "<<iph2<<std::endl;
+      }//loop over iph2
 
 
       // Progress feedback to the user
@@ -2015,13 +2145,13 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	int iidOld = -1;
 
 	std::array<int, nLayersB+1> hitsBarrelLayer {};
-	auto nPix = pix_isBarrel().size();
-	for (auto ipix = 0U; ipix < nPix; ++ipix){
-	  bool isBarrel = pix_isBarrel()[ipix];
-	  int lay = pix_lay()[ipix];
+	auto nPh2 = ph2_isBarrel().size();
+	for (auto iph2 = 0U; iph2 < nPh2; ++iph2){
+	  bool isBarrel = ph2_isBarrel()[iph2];
+	  int lay = ph2_lay()[iph2];
 
 	  hitsBarrelLayer[lay]++;
-	  int iid = pix_detId()[ipix];
+	  int iid = ph2_detId()[iph2];
 	  if (iidOld != iid){
 	    iidOld = iid;
 	    if (modulePopulation.find(iid) == modulePopulation.end()){
@@ -2032,26 +2162,31 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    cbound = &moduleBoundaries[iid];
 	  }
 
-	  const float x = pix_xsim()[ipix];
-	  const float y = pix_ysim()[ipix];
-	  const float z = isBarrel ? pix_zsim()[ipix] : sqrt(x*x + y*y);
-	  if (z==0) continue;
-	  float phi = atan2(y, x);
-	  if ((*cbound)[0] > z) (*cbound)[0] = z;
-	  if ((*cbound)[1] < z) (*cbound)[1] = z;
-	  if (*cpop ==0){
-	    (*cbound)[2] = phi;
-	    (*cbound)[3] = phi;
-	  } else {
-	    if (sin((*cbound)[2]-phi) > 0) (*cbound)[2] = phi;
-	    if (sin((*cbound)[3]-phi) < 0) (*cbound)[3] = phi;
-	  }
-	  (*cpop)++;
-	}
+	  //look at all associated simhits, ignoring double-counting
+	  auto const& ph2shV = ph2_simHitIdx()[iph2];
+	  auto nPh2sh = ph2shV.size();
+	  for (auto iph2sh = 0U; iph2sh < nPh2sh; ++iph2sh){
+	    const float x = simhit_x()[ph2shV[iph2sh]];
+	    const float y = simhit_y()[ph2shV[iph2sh]];
+	    const float z = isBarrel ? simhit_z()[ph2shV[iph2sh]] : sqrt(x*x + y*y);
+	    if (z==0) continue;
+	    float phi = atan2(y, x);
+	    if ((*cbound)[0] > z) (*cbound)[0] = z;
+	    if ((*cbound)[1] < z) (*cbound)[1] = z;
+	    if (*cpop ==0){
+	      (*cbound)[2] = phi;
+	      (*cbound)[3] = phi;
+	    } else {
+	      if (sin((*cbound)[2]-phi) > 0) (*cbound)[2] = phi;
+	      if (sin((*cbound)[3]-phi) < 0) (*cbound)[3] = phi;
+	    }
+	    (*cpop)++;
+	  }//simhits for a given ph2
+	}//for (auto iph2 = 0U; iph2 < nPh2; ++iph2){
 
-      }
-    }
-  }//geom range map loop
+      }//for( unsigned int event = 0
+    }//files in chain
+  }//geom range map loop scope
   
   //  cout<<__LINE__<<endl;
   TObjArray *listOfFiles = chain->GetListOfFiles();
@@ -2094,40 +2229,128 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	mockLayerMDfwDNcmUpper[iL].reserve(maxHitsInLayer);
       }
 
-      auto nPix = pix_isBarrel().size();
-      int nSim = sim_nPixel().size();
-      
-      // This works uniquely for <=v2 of the ntuples ==> good
-      std::vector<int> simsPerHit(nPix,0);
-      std::vector<int> simsPerHitAll(nPix,0);
-      for (int i = 0; i<nSim; ++i){
-	int nPix_i = sim_nPixel()[i];
+      auto const nSimhit = simhit_lay().size();
+      assert(nSimhit < HitIndexWithType::indexMask);
+      auto const nSim = sim_nPixel().size();
+
+      // extract TP index per simhit .. not very useful
+      std::vector<int> simsPerSimHit(nSimhit,-1);
+      std::vector<int> simsPerSimHitAll(nSimhit,1);
+
+      for (auto i = 0U; i<nSim; ++i){
 	TVector3 p3(sim_px()[i], sim_py()[i], sim_pz()[i]);
 	float tpPt = p3.Pt();
 
-	for (int j = 0; j< nPix_i; ++j){
-	  int iipix = sim_pixelIdx()[i][j];
-	  PixelHit pixH(iipix);
+	auto const& simHitIdxV = sim_simHitIdx()[i];
+	for (auto ishIdx : simHitIdxV){	  
+	  SimHit simH(ishIdx);
 
-	  if (pixH.p3s.Pt()>=0.8*tpPt){
-	    int& iSim = simsPerHit[iipix];
+	  if (simH.p3s.Pt()>=0.8*tpPt){
+	    int& iSim = simsPerSimHit[ishIdx];
 	    
-	    if (iSim == 0 ) iSim = i+1;//offset to not confuse i=0
-	    else if (iSim != i+1){
-	      std::cout<<"ERROR: repeated hit-tp "<<iipix<<" has tp "<<iSim-1<<" and "<<i<<std::endl;
+	    if (iSim == -1 ) iSim = i;
+	    else if (iSim != int(i)){
+	      std::cout<<"ERROR: repeated hit-tp "<<ishIdx<<" has tp "<<iSim<<" and "<<i<<std::endl;
 	    }
 	  }
-	  int& iSimAll = simsPerHitAll[iipix];
+	  int& iSimAll = simsPerSimHitAll[ishIdx];
 	  
-	  if (iSimAll == 0 ) iSimAll = i+1;//offset to not confuse i=0
-	  else if (iSimAll != i+1){
-	    std::cout<<"ERROR: repeated hit-tp "<<iipix<<" has tp "<<iSimAll-1<<" and "<<i<<std::endl;
+	  if (iSimAll == -1 ) iSimAll = i;
+	  else if (iSimAll != int(i)){
+	    std::cout<<"ERROR: repeated hit-tp "<<ishIdx<<" has tp "<<iSimAll<<" and "<<i<<std::endl;
 	  }
-	  
+	}//simhits for a given TP
+      }//TPs
+      
+      auto const nPh2 = ph2_lay().size();
+      std::vector<int> simsPerPh2Hit(nPh2,-1);
+      std::vector<int> simsPerPh2HitAll(nPh2,-1);
+      std::vector<int> simHitsPerPh2Hit(nPh2,-1);
+      std::vector<int> simHitsPerPh2HitAll(nPh2,-1);
+      for (auto iPh2 = 0U; iPh2 < nPh2; ++iPh2){
+	auto const& r2sV = ph2_simHitIdx()[iPh2];//reco->sim vector
+	if (r2sV.empty()) continue;
+	SimHit bestSH;
+	for (auto r2s : r2sV){
+	  SimHit r2sSH(r2s);
+	  //FIXME: check if it makes sense to pick also by charge fraction
+	  if (r2sSH.p3s.Mag() > bestSH.p3s.Mag()) bestSH = r2sSH;
+	}
+	if (bestSH.ind >= 0){
+	  simsPerPh2HitAll[iPh2] = bestSH.simTkIdx;
+	  simHitsPerPh2HitAll[iPh2] = bestSH.ind;
+	  if (simsPerSimHit[bestSH.ind] >= 0){//well-matching to TP
+	    simsPerPh2Hit[iPh2] = bestSH.simTkIdx;
+	    simHitsPerPh2Hit[iPh2] = bestSH.ind;
+	  }
 	}
       }
-      
-      
+
+      auto const nPix = pix_lay().size();
+      std::vector<int> simsPerPixHit(nPix,-1);
+      std::vector<int> simsPerPixHitAll(nPix,-1);
+      std::vector<int> simHitsPerPixHit(nPix,-1);
+      std::vector<int> simHitsPerPixHitAll(nPix,-1);
+      for (auto iPix = 0U; iPix < nPix; ++iPix){
+	auto const& r2sV = pix_simHitIdx()[iPix];//reco->sim vector
+	if (r2sV.empty()) continue;
+	SimHit bestSH;
+	for (auto r2s : r2sV){
+	  SimHit r2sSH(r2s);
+	  //FIXME: check if it makes sense to pick also by charge fraction
+	  if (r2sSH.p3s.Mag() > bestSH.p3s.Mag()) bestSH = r2sSH;
+	}
+	if (bestSH.ind >= 0){
+	  simsPerPixHitAll[iPix] = bestSH.simTkIdx;
+	  simHitsPerPixHitAll[iPix] = bestSH.ind;
+	  if (simsPerSimHit[bestSH.ind] >= 0){//well-matching to TP
+	    simsPerPixHit[iPix] = bestSH.simTkIdx;
+	    simHitsPerPixHit[iPix] = bestSH.ind;
+	  }
+	}
+      }
+
+      auto simsPerHit = [&](const int iwt){
+	HitType htype = HitIndexWithType::type(iwt);
+	int index = HitIndexWithType::index(iwt);
+	switch (htype){
+	case HitType::Pixel: return simsPerPixHit[index]; break;
+	case HitType::Phase2OT: return simsPerPh2Hit[index]; break;
+	default: assert(0);//should not happen
+	}
+	return -1;
+      };
+      auto simsPerHitAll = [&](const int iwt){
+	HitType htype = HitIndexWithType::type(iwt);
+	int index = HitIndexWithType::index(iwt);
+	switch (htype){
+	case HitType::Pixel: return simsPerPixHitAll[index]; break;
+	case HitType::Phase2OT: return simsPerPh2HitAll[index]; break;
+	default: assert(0);//should not happen
+	}
+	return -1;
+      };
+
+      auto simHitsPerHit = [&](const int iwt){
+	HitType htype = HitIndexWithType::type(iwt);
+	int index = HitIndexWithType::index(iwt);
+	switch (htype){
+	case HitType::Pixel: return simHitsPerPixHit[index]; break;
+	case HitType::Phase2OT: return simHitsPerPh2Hit[index]; break;
+	default: assert(0);//should not happen
+	}
+	return -1;
+      };
+      auto simHitsPerHitAll = [&](const int iwt){
+	HitType htype = HitIndexWithType::type(iwt);
+	int index = HitIndexWithType::index(iwt);
+	switch (htype){
+	case HitType::Pixel: return simHitsPerPixHitAll[index]; break;
+	case HitType::Phase2OT: return simHitsPerPh2HitAll[index]; break;
+	default: assert(0);//should not happen
+	}
+	return -1;
+      };
 
       std::array<int, nLayersA+1> nHitsLayer1GeV {};
       std::array<int, nLayersA+1> nHitsLayer2GeV {};
@@ -2140,15 +2363,15 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       int iidStart = -1;
       int iidEnd = -1;
       int iidOld = -1;
-      for (auto ipix = 0U; ipix < nPix; ++ipix){
-	bool isBarrel = pix_isBarrel()[ipix];
+      for (auto iph2 = 0U; iph2 < nPh2; ++iph2){
+	bool isBarrel = ph2_isBarrel()[iph2];
 	if (!addEndcaps &&  !isBarrel) continue;
-	int lay = pix_lay()[ipix];
+	int lay = ph2_lay()[iph2];
 	if (addEndcaps && !isBarrel && (lay < 11 || lay > nLayersA) ) continue;
 
-	int iid = pix_detId()[ipix];
+	int iid = ph2_detId()[iph2];
 	if (iidOld != iid){
-	  iidStart = ipix;
+	  iidStart = iph2;
 	  iidOld = iid;
 	  cboundC = &moduleBoundaries[iid];
 	  if ((iid & 0x4)== 4){
@@ -2159,26 +2382,23 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 
 	//Too restrictive for reverse TP matching??//	if ((iid & 0x4)!= 4) continue; 
 		
-	TVector3 r3Rec(pix_x()[ipix], pix_y()[ipix], pix_z()[ipix]);
+	TVector3 r3Rec(ph2_x()[iph2], ph2_y()[iph2], ph2_z()[iph2]);
 
-	TVector3 r3Sim(pix_xsim()[ipix], pix_ysim()[ipix], pix_zsim()[ipix]);
-	if (r3Sim.x() == 0 && r3Sim.y() == 0) continue; //use only hits with sim info
-
-	if (lay < 5 ){//fill pixel barrel plot
-	  h2_hitsXY_ITrec_OTmockLL->Fill(r3Rec.X(), r3Rec.Y());
-	  h2_hitsRZ_ITrec_OTmockLL->Fill(std::abs(r3Rec.Z()), r3Rec.Pt());
-	  h2_hitsRZ_ITrec_OTmockLL_BE->Fill(std::abs(r3Rec.Z()), r3Rec.Pt());
-	}
-	if (lay < 5 ) continue;
-
+	auto iSHAll = simHitsPerPh2HitAll[iph2];
+	auto iSH = simHitsPerPh2Hit[iph2];
+	if (iSHAll) continue; //use only hits with sim info
+	SimHit simHit(iSHAll);
+	
+	TVector3 r3Sim(simHit.r3s);
 	float rs = r3Sim.Pt();
-	TVector3 p3Sim(pix_pxsim()[ipix], pix_pysim()[ipix], pix_pzsim()[ipix]);
+
+	TVector3 p3Sim(simHit.p3s);
 	float pts = p3Sim.Pt();
 	float ps = p3Sim.Mag();
 
-	int iParticle = pix_particle()[ipix];
+	int iParticle = simHit.pdgId;
 
-	int iSimIdx = pix_simTrkIdx()[ipix]; //tp index in ntuple (not a g4 trackId)
+	int iSimIdx = simHit.simTkIdx; //tp index in ntuple (not a g4 trackId)
 
 	//FIXME: consider to improve to allow multiple deltas
 	if (iParticle == -11 && ps < 0.1){
@@ -2263,7 +2483,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    }
 	  }
 	}
-        if (pstat == 0) mockLayerMDfwRefLower[lay].push_back(std::make_pair(ipix,V3WithCache(r3RefLowerMock)));
+        if (pstat == 0) mockLayerMDfwRefLower[lay].push_back(std::make_pair(iph2,V3WithCache(r3RefLowerMock)));
 
 	auto r3RefUpper = propagateMH(rRefUpper);
 	if (mockMode == 3 && lay >= 11 && r3Rec.Pt() > disks2SMaxRadius){
@@ -2281,16 +2501,16 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	}
 	//FIXME: put more appropriate limits
 	const bool r3RefUpperIsGood = (isBarrel && std::abs(r3RefUpper.z()) < 120.f) || (!isBarrel && r3RefUpper.Pt() > 23.f && r3RefUpper.Pt() < 110.f);
-	if (pstat == 0 && r3RefUpperIsGood) mockLayerMDfwRefUpper[lay].push_back(std::make_pair(ipix, V3WithCache(r3RefUpper)));
+	if (pstat == 0 && r3RefUpperIsGood) mockLayerMDfwRefUpper[lay].push_back(std::make_pair(iph2, V3WithCache(r3RefUpper)));
 
 	//keep the mock outer doublet at its SIM state
 	auto r3SDfwLower = propagateMH(rSDfwLower);
 	const bool r3SDfwLowerIsGood = (isBarrel && std::abs(r3SDfwLower.z()) < 120.f) || (!isBarrel && r3SDfwLower.Pt() > 23.f && r3SDfwLower.Pt() < 110.f);
-	if (pstat == 0 && r3SDfwLowerIsGood) mockLayerMDfwDNcmLower[lay].push_back(std::make_pair(ipix, V3WithCache(r3SDfwLower)));
+	if (pstat == 0 && r3SDfwLowerIsGood) mockLayerMDfwDNcmLower[lay].push_back(std::make_pair(iph2, V3WithCache(r3SDfwLower)));
 	auto r3SDfwUpper = propagateMH(rSDfwUpper);
 	const bool r3SDfwUpperIsGood = (isBarrel && std::abs(r3SDfwUpper.z()) < 120.f) || (!isBarrel && r3SDfwUpper.Pt() > 23.f && r3SDfwUpper.Pt() < 110.f);
 	if (pstat == 0 && r3SDfwUpperIsGood)
-	  mockLayerMDfwDNcmUpper[lay].push_back(std::make_pair(ipix, V3WithCache(r3SDfwUpper)));
+	  mockLayerMDfwDNcmUpper[lay].push_back(std::make_pair(iph2, V3WithCache(r3SDfwUpper)));
 
 	if (pstat == 0 && q != 0 && pts>0.8){
 	  if (lay == 5 || lay == 7 || lay == 9){
@@ -2304,7 +2524,19 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    if (lay != 15 && r3SDfwLowerIsGood) h2_hitsRZ_ITrec_OTmockLL_BE->Fill(std::abs(r3SDfwLower.Z()), r3SDfwLower.Pt());
 	  }
 	}
-      }//nPix: filling mock MDs
+      }//nPh2: filling mock MDs
+
+      for (auto iPix = 0U; iPix < nPix; ++iPix){
+	int lay = pix_lay()[iPix];
+	bool isBarrel = pix_isBarrel()[iPix];
+	TVector3 r3Rec(pix_x()[iPix], pix_y()[iPix], pix_z()[iPix]);
+	if (lay < 5 && isBarrel){//fill pixel barrel plot	  
+	  h2_hitsXY_ITrec_OTmockLL->Fill(r3Rec.X(), r3Rec.Y());
+	  h2_hitsRZ_ITrec_OTmockLL->Fill(std::abs(r3Rec.Z()), r3Rec.Pt());
+	  h2_hitsRZ_ITrec_OTmockLL_BE->Fill(std::abs(r3Rec.Z()), r3Rec.Pt());
+	}
+      }
+
       timerA[T_timeLayout].Stop();
 
       if (layoutOnly ) continue;
@@ -2328,41 +2560,56 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       
       if (useSeeds == 1){
 	std::cout<<"Convert seeds to SuperDoublets"<<std::endl;
-	auto const nSeeds = see_lh_px().size();
+	auto const nSeeds = see_px().size();
 	for (auto iSeed = 0U; iSeed < nSeeds; ++iSeed){
-	  TVector3 p3LH(see_lh_px()[iSeed], see_lh_py()[iSeed], see_lh_pz()[iSeed]);
+	  TVector3 p3LH(see_stateTrajGlbPx()[iSeed], see_stateTrajGlbPy()[iSeed], see_stateTrajGlbPz()[iSeed]);
 	  float ptLH = p3LH.Pt();
 	  float etaLH = p3LH.Eta();
 	  if (ptLH < ptCutAll) continue;
 	  if (std::abs(etaLH) > (addEndcaps ? 3.0f : 1.6f)) continue;
-	  TVector3 r3LH(see_lh_x()[iSeed], see_lh_y()[iSeed], see_lh_z()[iSeed]);
+	  TVector3 r3LH(see_stateTrajGlbX()[iSeed], see_stateTrajGlbY()[iSeed], see_stateTrajGlbZ()[iSeed]);
 
-	  TVector3 p3PCA(see_pca_px()[iSeed], see_pca_py()[iSeed], see_pca_pz()[iSeed]);
-	  TVector3 r3PCA(see_pca_x()[iSeed], see_pca_y()[iSeed], see_pca_z()[iSeed]);
+	  TVector3 p3PCA(see_px()[iSeed], see_py()[iSeed], see_pz()[iSeed]);
+	  TVector3 r3PCA(r3FromPCA(p3PCA, see_dxy()[iSeed], see_dz()[iSeed]));
 
-	  auto nPix = see_nPixel()[iSeed];
+	  auto const& seedHitsV = see_hitIdx()[iSeed];
+	  auto const& seedHitTypesV = see_hitType()[iSeed];
+	  auto seedAlgo = TrackAlgorithm(see_algo()[iSeed]);
+	  if (seedAlgo != TrackAlgorithm::initialStep) continue;//FIXME: make configurable
+	  int nHits = seedHitsV.size();
 	  if (debugReco){
-	    std::cout<<"Seed with nHits "<<nPix<<std::endl;
-	    for (int ip = 0U; ip < nPix; ++ip){
-	      auto ipix = see_pixelIdx()[iSeed][ip];
-	      std::cout<<" "<<ipix<<"\t ";
-	      PixelHit(ipix).print("");
+	    std::cout<<"Seed with nHits "<<nHits<<" algo "<<int(seedAlgo)<<std::endl;
+	    for (int iH = 0U; iH < nHits; ++iH){
+	      int simIdx = -1;
+	      if (HitType(seedHitTypesV[iH]) == HitType::Pixel){
+		auto ipix = seedHitsV[iH];
+		simIdx = simHitsPerPixHitAll[ipix];
+		std::cout<<" isPixel "<<"\t ";
+	      }
+	      if (simIdx >= 0 ) SimHit(simIdx).print("");
+	      else std::cout<<std::endl;
 	    }
 	  }
+	  
+	  assert(nHits == 4);
+	  for (int iH = 0; iH < nHits; ++iH){
+	    //FIXME: make this configurable
+	    assert(HitType(seedHitTypesV[iH]) == HitType::Pixel);
+	  }
 	  SuperDoublet seedSD;
-	  seedSD.mdRef.pixL = see_pixelIdx()[iSeed][0];
-	  seedSD.mdRef.pixU = see_pixelIdx()[iSeed][1];
+	  seedSD.mdRef.pixL = HitIndexWithType(see_hitIdx()[iSeed][0], HitType(see_hitType()[iSeed][0])).indexWithType;
+	  seedSD.mdRef.pixU = HitIndexWithType(see_hitIdx()[iSeed][1], HitType(see_hitType()[iSeed][1])).indexWithType;
 	  seedSD.mdRef.r3 = r3PCA;
 	  seedSD.mdRef.rt = r3PCA.Pt();	  
 	  seedSD.mdRef.z = r3PCA.Z();	  
 	  seedSD.mdRef.r = r3PCA.Mag();	  
 	  seedSD.mdRef.phi = r3PCA.Phi();	  
 	  seedSD.mdRef.alpha = r3PCA.DeltaPhi(p3PCA);
-	  const int itpRL = simsPerHitAll[seedSD.mdRef.pixL];
-	  const int itpRU = simsPerHitAll[seedSD.mdRef.pixU];
-	  seedSD.mdRef.itp = itpRL - 1;
+	  const int itpRL = simsPerHitAll(seedSD.mdRef.pixL);
+	  const int itpRU = simsPerHitAll(seedSD.mdRef.pixU);
+	  seedSD.mdRef.itp = itpRL;
 	  seedSD.mdRef.ntp = 1;
-	  seedSD.mdRef.itpLL = itpRL - 1;
+	  seedSD.mdRef.itpLL = itpRL;
 	  if (itpRL > 0 && itpRU > 0){
 	    if (itpRL == itpRU ){
 	      seedSD.mdRef.ntp = 2;
@@ -2370,21 +2617,21 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	  } else if (itpRL == 0 && itpRU == 0){
 	    seedSD.mdRef.ntp = 0;
 	  } else if (itpRU > 0){
-	    seedSD.mdRef.itp = itpRU - 1;
+	    seedSD.mdRef.itp = itpRU;
 	  }
-	  seedSD.mdOut.pixL = see_pixelIdx()[iSeed][2];
-	  if (nPix >= 4) seedSD.mdOut.pixU = see_pixelIdx()[iSeed][3];
+	  seedSD.mdOut.pixL = HitIndexWithType(see_hitIdx()[iSeed][2], HitType(see_hitType()[iSeed][2])).indexWithType;
+	  if (nPix >= 4) seedSD.mdOut.pixU = HitIndexWithType(see_hitIdx()[iSeed][3], HitType(see_hitType()[iSeed][3])).indexWithType;
 	  seedSD.mdOut.r3 = r3LH;
 	  seedSD.mdOut.rt = r3LH.Pt();
 	  seedSD.mdOut.z = r3LH.Z();
 	  seedSD.mdOut.r = r3LH.Mag();
 	  seedSD.mdOut.phi = r3LH.Phi();
 	  seedSD.mdOut.alpha = r3LH.DeltaPhi(p3LH);	  
-	  const int itpOL = simsPerHitAll[seedSD.mdOut.pixL];
-	  const int itpOU = simsPerHitAll[seedSD.mdOut.pixU];
-	  seedSD.mdOut.itp = itpOL - 1;
+	  const int itpOL = simsPerHitAll(seedSD.mdOut.pixL);
+	  const int itpOU = simsPerHitAll(seedSD.mdOut.pixU);
+	  seedSD.mdOut.itp = itpOL;
 	  seedSD.mdOut.ntp = 1;
-	  seedSD.mdOut.itpLL = itpOL - 1;
+	  seedSD.mdOut.itpLL = itpOL;
 	  if (itpOL > 0 && itpOU > 0){
 	    if (itpOL == itpOU ){
 	      seedSD.mdOut.ntp = 2;
@@ -2392,7 +2639,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	  } else if (itpOL == 0 && itpOU == 0){
 	    seedSD.mdOut.ntp = 0;
 	  } else if (itpOU > 0){
-	    seedSD.mdOut.itp = itpOU - 1;
+	    seedSD.mdOut.itp = itpOU;
 	  }
 	  seedSD.iRef = iSeed;
 	  seedSD.iOut = iSeed;
@@ -2412,7 +2659,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	  tps[itpRL]++;  tps[itpRU]++;  tps[itpOL]++;  tps[itpOU]++;
 	  for ( auto m : tps){
 	    if (m.first > 0 && m.second > seedSD.ntp){
-	      seedSD.itp = m.first - 1;
+	      seedSD.itp = m.first;
 	      seedSD.ntp = m.second;
 	    }
 	  }
@@ -2423,7 +2670,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	  tps[itpRL]++;  tps[itpOL]++;
 	  for ( auto m : tps){
 	    if (m.first > 0 && m.second > seedSD.ntpLL){
-	      seedSD.itpLL = m.first - 1;
+	      seedSD.itpLL = m.first;
 	      seedSD.ntpLL = m.second;
 	    }
 	  }
@@ -2521,11 +2768,11 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      md.r = hL.second.r;
 	      md.phi = hL.second.phi;
 	      md.alpha = dPhi;
-	      const int itpRL = simsPerHit[md.pixL];
-	      const int itpRU = simsPerHit[md.pixU];
-	      md.itp = itpRL - 1;
+	      const int itpRL = simsPerHit(md.pixL);
+	      const int itpRU = simsPerHit(md.pixU);
+	      md.itp = itpRL;
 	      md.ntp = 1;
-	      md.itpLL = itpRL - 1;
+	      md.itpLL = itpRL;
 	      if (itpRL > 0 && itpRU > 0){
 		if (itpRL == itpRU ){
 		  md.ntp = 2;
@@ -2533,7 +2780,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      } else if (itpRL == 0 && itpRU == 0){
 		md.ntp = 0;
 	      } else if (itpRU > 0){
-		md.itp = itpRU - 1;
+		md.itp = itpRU;
 	      }
 
 	      
@@ -2543,8 +2790,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		if (iL==11&& n_dPhi<10){
 		  float simPtL = itpRL > 0 ? sqrt(sim_px()[itpRL-1]*sim_px()[itpRL-1]+sim_py()[itpRL-1]*sim_py()[itpRL-1]) : 0;
 		  float simPtU = itpRU > 0 ? sqrt(sim_px()[itpRU-1]*sim_px()[itpRU-1]+sim_py()[itpRU-1]*sim_py()[itpRU-1]) : 0;
-		  float simDxyL = itpRL > 0 ? sim_dxy()[itpRL-1] : 99;
-		  float simDxyU = itpRU > 0 ? sim_dxy()[itpRU-1] : 99;
+		  float simDxyL = itpRL > 0 ? sim_pca_dxy()[itpRL-1] : 99;
+		  float simDxyU = itpRU > 0 ? sim_pca_dxy()[itpRU-1] : 99;
 
 
 		  std::cout<<"MD on "<<iL<<" i "<<mDs.size()
@@ -2755,10 +3002,10 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    sd.mdOut = mdOut;
 	    sd.alphaOut = dPhiOut;
 
-	    const int itpRL = simsPerHit[sd.mdRef.pixL];
-	    const int itpRU = simsPerHit[sd.mdRef.pixU];
-	    const int itpOL = simsPerHit[sd.mdOut.pixL];
-	    const int itpOU = simsPerHit[sd.mdOut.pixU];
+	    const int itpRL = simsPerHit(sd.mdRef.pixL);
+	    const int itpRU = simsPerHit(sd.mdRef.pixU);
+	    const int itpOL = simsPerHit(sd.mdOut.pixL);
+	    const int itpOU = simsPerHit(sd.mdOut.pixU);
 	    //
 	    std::map<int, int> tps;
 	    sd.itp = -1;
@@ -2766,7 +3013,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    tps[itpRL]++;  tps[itpRU]++;  tps[itpOL]++;  tps[itpOU]++;
 	    for ( auto m : tps){
 	      if (m.first > 0 && m.second > sd.ntp){
-		sd.itp = m.first - 1;
+		sd.itp = m.first;
 		sd.ntp = m.second;
 	      }
 	    }
@@ -2776,7 +3023,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    tps[itpRL]++;  tps[itpOL]++;
 	    for ( auto m : tps){
 	      if (m.first > 0 && m.second > sd.ntpLL){
-		sd.itpLL = m.first - 1;
+		sd.itpLL = m.first;
 		sd.ntpLL = m.second;
 	      }
 	    }
@@ -2871,7 +3118,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	  if (lIn == 0){
 	    //try to use seed pt: the lower bound is good
 	    ptSLo = ptIn;
-	    float ptErr = see_pca_ptErr()[sdIn.iRef];
+	    float ptErr = see_ptErr()[sdIn.iRef];
 	    ptSLo = std::max(ptCutAll, ptSLo - 10.0f*std::max(ptErr, 0.005f*ptSLo));//FIXME: check high-pt behavior
 	    ptSLo = std::min(10.0f, ptSLo); //don't let this run away either
 	  }
@@ -2943,9 +3190,9 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    const float drOutIn = (rtOut - rtIn);
 	    
 	    if (lIn == 0){
-	      const float etaErr = see_pca_etaErr()[sdIn.iRef];
-	      const float eta = see_lh_eta()[sdIn.iRef];
-	      const float coshEta = std::cosh(eta);
+	      const float etaErr = see_etaErr()[sdIn.iRef];
+	      const float seedPtOut = std::hypot(see_stateTrajGlbPx()[sdIn.iRef], see_stateTrajGlbPy()[sdIn.iRef]);
+	      const float coshEta = std::hypot(seedPtOut, see_stateTrajGlbPz()[sdIn.iRef])/seedPtOut;
 
 	      if (lOut < 11){//barrel
 		float dzErr = drOutIn*etaErr*coshEta; //FIXME: check with the calc in the endcap
@@ -3242,14 +3489,14 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    sdl.ptIn = pt_betaIn;
 	    sdl.ptOut = pt_betaOut;
 
-	    const int itpIRL = lIn == 0 ? simsPerHitAll[sdl.sdIn.mdRef.pixL] : simsPerHit[sdl.sdIn.mdRef.pixL];
-	    const int itpIRU = lIn == 0 ? simsPerHitAll[sdl.sdIn.mdRef.pixU] : simsPerHit[sdl.sdIn.mdRef.pixU];
-	    const int itpIOL = lIn == 0 ? simsPerHitAll[sdl.sdIn.mdOut.pixL] : simsPerHit[sdl.sdIn.mdOut.pixL];
-	    const int itpIOU = lIn == 0 ? simsPerHitAll[sdl.sdIn.mdOut.pixU] : simsPerHit[sdl.sdIn.mdOut.pixU];
-	    const int itpORL = simsPerHit[sdl.sdOut.mdRef.pixL];
-	    const int itpORU = simsPerHit[sdl.sdOut.mdRef.pixU];
-	    const int itpOOL = simsPerHit[sdl.sdOut.mdOut.pixL];
-	    const int itpOOU = simsPerHit[sdl.sdOut.mdOut.pixU];
+	    const int itpIRL = lIn == 0 ? simsPerHitAll(sdl.sdIn.mdRef.pixL) : simsPerHit(sdl.sdIn.mdRef.pixL);
+	    const int itpIRU = lIn == 0 ? simsPerHitAll(sdl.sdIn.mdRef.pixU) : simsPerHit(sdl.sdIn.mdRef.pixU);
+	    const int itpIOL = lIn == 0 ? simsPerHitAll(sdl.sdIn.mdOut.pixL) : simsPerHit(sdl.sdIn.mdOut.pixL);
+	    const int itpIOU = lIn == 0 ? simsPerHitAll(sdl.sdIn.mdOut.pixU) : simsPerHit(sdl.sdIn.mdOut.pixU);
+	    const int itpORL = simsPerHit(sdl.sdOut.mdRef.pixL);
+	    const int itpORU = simsPerHit(sdl.sdOut.mdRef.pixU);
+	    const int itpOOL = simsPerHit(sdl.sdOut.mdOut.pixL);
+	    const int itpOOU = simsPerHit(sdl.sdOut.mdOut.pixU);
 	    //
 	    std::map<int, int> tps;
 	    sdl.itp = -1;
@@ -3258,7 +3505,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    tps[itpORL]++;  tps[itpORU]++;  tps[itpOOL]++;  tps[itpOOU]++;
 	    for ( auto m : tps){
 	      if (m.first > 0 && m.second > sdl.ntp){
-		sdl.itp = m.first - 1;
+		sdl.itp = m.first;
 		sdl.ntp = m.second;
 	      }
 	    }
@@ -3271,7 +3518,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    tps[itpORL]++;  tps[itpOOL]++;
 	    for ( auto m : tps){
 	      if (m.first > 0 && m.second > sdl.ntpLL){
-		sdl.itpLL = m.first - 1;
+		sdl.itpLL = m.first;
 		sdl.ntpLL = m.second;
 	      }
 	    }
@@ -3486,7 +3733,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       std::map<int, int> nHitsStatCntMap;
 
       timerA[T_timeValidation].Start(kFALSE);
-      for (int iSim = 0; iSim < nSim; ++iSim){
+      for (int iSim = 0; iSim < int(nSim); ++iSim){
 	TVector3 p3(sim_px()[iSim], sim_py()[iSim], sim_pz()[iSim]);
 	bool debug = false;
 	auto tpPt = p3.Pt();
@@ -3495,9 +3742,9 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	auto tpEta = p3.Eta();
 	auto tpPhi = p3.Phi();
 
-	auto tpDxy = sim_dxy()[iSim];
-	auto prodX = sim_prodx()[iSim];
-	auto prodY = sim_prody()[iSim];
+	auto tpDxy = sim_pca_dxy()[iSim];
+	auto prodX = simvtx_x()[sim_parentVtxIdx()[iSim]];
+	auto prodY = simvtx_y()[sim_parentVtxIdx()[iSim]];
 	auto prodR2 = prodX*prodX + prodY*prodY;
 	if (effForPromptTracks){
 	  if (std::abs(tpDxy) > 0.05) continue;
@@ -3512,8 +3759,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	  if (prodR2 < minTPdxy*minTPdxy) continue;
 	}
 	
-	auto tpDz = sim_dz()[iSim];
-	auto prodZ = sim_prodz()[iSim];
+	auto tpDz = sim_pca_dz()[iSim];
+	auto prodZ = simvtx_z()[sim_parentVtxIdx()[iSim]];
 	if (maxTPdz > 0){
 	  if (std::abs(tpDz) > maxTPdz) continue;
 	  if (std::abs(prodZ) > maxTPdz) continue;
@@ -3533,26 +3780,27 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	
 	if (runDetailedTimers) timerA[T_timeVal_SHLoad].Start(kFALSE);
 
-	int nPix = sim_nPixel()[iSim];
-	for (int iPix = 0; iPix< nPix; ++iPix){
-	  
-	  int iipix = sim_pixelIdx()[iSim][iPix];
-	  PixelHit pixH(iipix);
-	  int lay = pixH.lay;
+	auto const& simhitIdxV = sim_simHitIdx()[iSim];
+	int iPix = -1;
+	for (auto ish : simhitIdxV){
+	  iPix++;
 
-	  // int iProcess = pix_process()[iPix];
-	  // int ibx = pix_bunchXing()[iPix];	  
+	  SimHit simH(ish);
+	  int lay = simH.lay;
+
+	  // int iProcess = simH.iProcess;
+	  // int ibx = simH.bx;	  
 	  // bool isPrimaryAny = (iProcess == 2 && ibx == 0);
 	  
-	  if ((pixH.isBarrel && lay >= minLayer) || lay < minLayer
-	      || (addEndcaps && !pixH.isBarrel && lay > 10)){
-	    if (debug) std::cout<<" "<<lay<<" "<<iipix;
-	    if (pixH.p3s.Pt()>0.8*tpPt){
+	  if ((simH.isBarrel && lay >= minLayer) || lay < minLayer
+	      || (addEndcaps && !simH.isBarrel && lay > 10)){
+	    if (debug) std::cout<<" "<<lay<<" "<<ish;
+	    if (simH.p3s.Pt()>0.8*tpPt){
 	      nHitsMap[lay]++;
-	      simHits[lay].emplace(iipix);
+	      simHits[lay].emplace(ish);
 	      if (lay < minLayer){//this goes to the seeds list
 		nHitsMap[0]++;
-		simHits[0].emplace(iipix);		
+		simHits[0].emplace(ish);		
 	      }
 	    }
 	  }
@@ -3609,24 +3857,24 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      if (debugHitLevel){
 		if (lIn == 0){
 		  for (int iL = 1; iL < minLayer; ++iL){
-		    for (auto i : simHits[iL]){ auto ph = PixelHit(i); ph.print("\t");}
+		    for (auto i : simHits[iL]){ auto ph = SimHit(i); ph.print("\t");}
 		  }
 		} else {
-		  for (auto i : simHits[lIn]){ auto ph = PixelHit(i); ph.print("\t");}
+		  for (auto i : simHits[lIn]){ auto ph = SimHit(i); ph.print("\t");}
 		}
-		for (auto i : simHits[lOut]){ auto ph = PixelHit(i); ph.print("\t");}
+		for (auto i : simHits[lOut]){ auto ph = SimHit(i); ph.print("\t");}
 	      }
 	    }
 	    //match the 8 layers of hits
 	    auto matchMH = [&](decltype(mockLayerMDfwRefLower)::const_reference mhs){
-	      for (auto const& mh : mhs) if (iSim == simsPerHit[mh.first] - 1) return true;
+	      for (auto const& mh : mhs) if (iSim == simsPerHit(mh.first)) return true;
 	      return false;
 	    };
 	    auto matchIPix = [&](int ipix){
-	      return (iSim == simsPerHit[ipix] - 1);
+	      return (iSim == simsPerHit(ipix));
 	    };
 	    auto matchIPixAll = [&](int ipix){
-	      return (iSim == simsPerHitAll[ipix] - 1);
+	      return (iSim == simsPerHitAll(ipix));
 	    };
 
 	    const bool matchAllCombinations = false;
@@ -3634,21 +3882,21 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    if (runDetailedTimers) timerA[T_timeVal_MHMDSDMatch].Start(kFALSE);	    
 	    if (lIn == 0){
 	      for (auto const& sd: mockLayerSDfwDNcm[lIn]){
-		if (!hasMHRefInL) hasMHRefInL = iSim == simsPerHit[sd.mdRef.pixL] - 1;
+		if (!hasMHRefInL) hasMHRefInL = iSim == simsPerHit(sd.mdRef.pixL);
 	      }
 	      if (hasMHRefInL || matchAllCombinations){
 		for (auto const& sd: mockLayerSDfwDNcm[lIn]){
-		  if (!hasMHRefInU) hasMHRefInU = iSim == simsPerHit[sd.mdRef.pixU] - 1;
+		  if (!hasMHRefInU) hasMHRefInU = iSim == simsPerHit(sd.mdRef.pixU);
 		}
 	      }
 	      if (hasMHRefInU || matchAllCombinations){
 		for (auto const& sd: mockLayerSDfwDNcm[lIn]){
-		  if (!hasMHOutInL) hasMHOutInL = iSim == simsPerHit[sd.mdOut.pixL] - 1;
+		  if (!hasMHOutInL) hasMHOutInL = iSim == simsPerHit(sd.mdOut.pixL);
 		}
 	      }
 	      if (hasMHOutInL || matchAllCombinations){
 		for (auto const& sd: mockLayerSDfwDNcm[lIn]){
-		  if (!hasMHOutInU) hasMHOutInU = iSim == simsPerHit[sd.mdOut.pixU] - 1;
+		  if (!hasMHOutInU) hasMHOutInU = iSim == simsPerHit(sd.mdOut.pixU);
 		}
 	      }
 	    } else {
@@ -3724,17 +3972,17 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    }//SD matching Inner
 	    if (not hasSDIn_4of4 && debug2SD){
 	      std::cout<<"missing/poor SDI match on L"<< lIn<<" for tpPt "<<tpPt<<" tpEta "<<tpEta<<std::endl;
-	      for (int iPix = 0; iPix< nPix; ++iPix){
+	      const auto& simhitIdxV = sim_simHitIdx()[iSim];
+	      for (auto ish : simhitIdxV){
 		
-		int iipix = sim_pixelIdx()[iSim][iPix];
-		PixelHit pixH(iipix);
-		int lay = pixH.lay;
+		SimHit simH(ish);
+		int lay = simH.lay;
 		
-		std::cout<<" "<<lay<<" "<<iipix<<std::endl;		      
-		if (pixH.p3s.Pt()>-1.0f){
-		  pixH.print("\t");
+		std::cout<<" "<<lay<<" "<<ish<<std::endl;		      
+		if (simH.p3s.Pt()>-1.0f){
+		  simH.print("\t");
 		}
-	      }//iPix; pixelhits
+	      }//simhitIdxV
 	      
 	      for (auto const& sd : mockLayerSDfwDNcm[lIn]){
 		int score = sd.itp == iSim ? sd.ntp : 0;
@@ -3743,10 +3991,10 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 			   <<" tpPt "<<tpPt<<" tpEta "<<tpEta
 			   <<" ptIn "<<sd.p3.Pt()<<" EtaIn "<<sd.p3.Eta()
 			   <<std::endl;
-		  PixelHit pRL(sd.mdRef.pixL); pRL.print("\tRL \t");
-		  PixelHit pRU(sd.mdRef.pixU); pRU.print("\tRU \t");
-		  PixelHit pOL(sd.mdOut.pixL); pOL.print("\tOL \t");
-		  PixelHit pOU(sd.mdOut.pixU); pOU.print("\tOU \t");
+		  SimHit pRL(sd.mdRef.pixL); pRL.print("\tRL \t");
+		  SimHit pRU(sd.mdRef.pixU); pRU.print("\tRU \t");
+		  SimHit pOL(sd.mdOut.pixL); pOL.print("\tOL \t");
+		  SimHit pOU(sd.mdOut.pixU); pOU.print("\tOU \t");
 		}
 	      }//SD matching Inner
 	    }
@@ -3810,7 +4058,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      if (lIn == 0){
 		//try to use seed pt: the lower bound is good
 		ptSLo = ptIn;
-		float ptErr = see_pca_ptErr()[sdIn.iRef];
+		float ptErr = see_ptErr()[sdIn.iRef];
 		ptSLo = std::max(ptCutAll, ptSLo - 10.0f*std::max(ptErr, 0.005f*ptSLo));//FIXME: check high-pt behavior
 		ptSLo = std::min(10.0f, ptSLo); //don't let this run away either
 	      }
@@ -3863,15 +4111,15 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 			       <<" ptIn "<<ptIn<<" ptCut "<<ptCut
 			       <<" rtIn "<<rtIn<<" zO "<<zOut<<" zI "<<zIn<<" zG1 "<<zGeom1<<" rtG1 "<<rtGeom1
 			       <<std::endl;
-		      for (int iPix = 0; iPix< nPix; ++iPix){
+		      auto const& simhitIdxV = sim_simHitIdx()[iSim];
+		      for (auto ish : simhitIdxV){
+
+			SimHit simH(ish);
+			int lay = simH.lay;
 			
-			int iipix = sim_pixelIdx()[iSim][iPix];
-			PixelHit pixH(iipix);
-			int lay = pixH.lay;
-			
-			std::cout<<" "<<lay<<" "<<iipix<<std::endl;		      
-			if (pixH.p3s.Pt()>0.8*tpPt){
-			  pixH.print("\t");
+			std::cout<<" "<<lay<<" "<<ish<<std::endl;		      
+			if (simH.p3s.Pt()>0.8*tpPt){
+			  simH.print("\t");
 			}
 		      }//iPix; pixelhits
 		    }
@@ -3896,9 +4144,9 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		const float drOutIn = (rtOut - rtIn);
 
 		if (lIn == 0){
-		  const float etaErr = see_pca_etaErr()[sdIn.iRef];
-		  const float eta = see_lh_eta()[sdIn.iRef];
-		  const float coshEta = std::cosh(eta);
+		  const float etaErr = see_etaErr()[sdIn.iRef];
+		  const float seedPtOut = std::hypot(see_stateTrajGlbPx()[sdIn.iRef], see_stateTrajGlbPy()[sdIn.iRef]);
+		  const float coshEta = std::hypot(seedPtOut, see_stateTrajGlbPz()[sdIn.iRef])/seedPtOut;
 
 		  if (lOut < 11){//barrel
 		    float dzErr = drOutIn*etaErr*coshEta;
@@ -4131,20 +4379,19 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		  if (std::abs(betaOut) > betaOut_cut){
 		    std::cout<<"betaOut failed pt "<<tpPt<<" eta "<<tpEta
 			     <<" bo "<<betaOut<<" boCut "<<betaOut_cut<<" bOutPt "<<std::asin(std::min(dr*k2Rinv1GeVf/ptCut, sinAlphaMax))
-			     <<" dr "<<dr<<" ptCut "<<ptCut<<" ptIn "<<ptIn<<" ptErr "<<see_pca_ptErr()[sdIn.iRef]
+			     <<" dr "<<dr<<" ptCut "<<ptCut<<" ptIn "<<ptIn<<" ptErr "<<see_ptErr()[sdIn.iRef]
 			     <<" bPt "<<pt_beta<<" dr "<<dr<<" bAv "<<betaAv<<" bI "<<betaIn<<" bO "<<betaOut
 			     <<" dRI "<<sdIn.dr<<" dRO "<<sdOut.dr
 			     <<" aI "<<sdIn.alpha<<" aO "<<sdOut.alpha
 			     <<std::endl;
-		    for (int iPix = 0; iPix< nPix; ++iPix){
+		    auto const& simhitIdxV = sim_simHitIdx()[iSim];
+		    for (auto ish : simhitIdxV){
+		      SimHit simH(ish);
+		      int lay = simH.lay;
 		      
-		      int iipix = sim_pixelIdx()[iSim][iPix];
-		      PixelHit pixH(iipix);
-		      int lay = pixH.lay;
-		      
-		      std::cout<<" "<<lay<<" "<<iipix<<std::endl;		      
-		      if (pixH.p3s.Pt()>0.8*tpPt){
-			pixH.print("\t");
+		      std::cout<<" "<<lay<<" "<<ish<<std::endl;		      
+		      if (simH.p3s.Pt()>0.8*tpPt){
+			simH.print("\t");
 		      }
 		    }//iPix; pixelhits
 
@@ -4260,31 +4507,32 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		  std::vector<TVector3> p3Ins;
 		  std::vector<TVector3> p3Outs;
 		  
-		  for (int iPix = 0; iPix< nPix; ++iPix){
+
+		  auto const& simhitIdxV = sim_simHitIdx()[iSim];
+		  for (auto ish : simhitIdxV){
 		    
-		    int iipix = sim_pixelIdx()[iSim][iPix];
-		    PixelHit pixH(iipix);
-		    int lay = pixH.lay;
+		    SimHit simH(ish);
+		    int lay = simH.lay;
 		    
-		    // int iProcess = pix_process()[iPix];
-		    // int ibx = pix_bunchXing()[iPix];	  
+		    // int iProcess = simH.iProcess;
+		    // int ibx = simH.bx;	  
 		    // bool isPrimaryAny = (iProcess == 2 && ibx == 0);
 		    
 		    if (lay >= minLayer){
-		      std::cout<<" "<<lay<<" "<<iipix<<std::endl;
+		      std::cout<<" "<<lay<<" "<<ish<<std::endl;
 		      
-		      if (pixH.p3s.Pt()>0.8*tpPt){
+		      if (simH.p3s.Pt()>0.8*tpPt){
 			if (lay == layersSDL[iSDLL][0] || lay == layersSDL[iSDLL][0]+1){
-			  r3Ins.push_back(pixH.r3s);
-			  p3Ins.push_back(pixH.p3s);
+			  r3Ins.push_back(simH.r3s);
+			  p3Ins.push_back(simH.p3s);
 			} else if (lay == layersSDL[iSDLL][1] || lay == layersSDL[iSDLL][1]+1){
-			  r3Outs.push_back(pixH.r3s);
-			  p3Outs.push_back(pixH.p3s);			    
+			  r3Outs.push_back(simH.r3s);
+			  p3Outs.push_back(simH.p3s);			    
 			}
-			pixH.print("\t");
+			simH.print("\t");
 		      }
 		    }		    
-		  }//iPix; pixelhits
+		  }//simhitIdxV
 
 		  //get true values
 		  int nIns = r3Ins.size();
@@ -4376,8 +4624,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    }
 	    
 	    if (debug && ! hasMatch && iSDLL != SDL_L5to9){
-	      for (auto i : simHits[lIn]){ auto ph = PixelHit(i); ph.print("\tNM for: ");}
-	      for (auto i : simHits[lOut]){ auto ph = PixelHit(i); ph.print("\tNM for: ");}
+	      for (auto i : simHits[lIn]){ auto ph = SimHit(i); ph.print("\tNM for: ");}
+	      for (auto i : simHits[lOut]){ auto ph = SimHit(i); ph.print("\tNM for: ");}
 	    }
 
 	  }// TP has hits in SDL layers	 	  
@@ -4417,14 +4665,14 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	int nSDs2GeV = 0;
 	int nSDs2GeVMatch4 = 0;
 	for (auto sd : mockLayerSDfwDNcm[iL]){
-	  int ipix = sd.mdRef.pixL;
-	  TVector3 p3RL(pix_pxsim()[ipix], pix_pysim()[ipix], pix_pzsim()[ipix]);
-	  ipix = sd.mdRef.pixU;
-	  TVector3 p3RU(pix_pxsim()[ipix], pix_pysim()[ipix], pix_pzsim()[ipix]);
-	  ipix = sd.mdOut.pixL;
-	  TVector3 p3OL(pix_pxsim()[ipix], pix_pysim()[ipix], pix_pzsim()[ipix]);
-	  ipix = sd.mdOut.pixU;
-	  TVector3 p3OU(pix_pxsim()[ipix], pix_pysim()[ipix], pix_pzsim()[ipix]);
+	  int ish = simHitsPerHitAll(sd.mdRef.pixL);
+	  TVector3 p3RL(simhit_px()[ish], simhit_py()[ish], simhit_pz()[ish]);
+	  ish = simHitsPerHitAll(sd.mdRef.pixU);
+	  TVector3 p3RU(simhit_px()[ish], simhit_py()[ish], simhit_pz()[ish]);
+	  ish = simHitsPerHitAll(sd.mdOut.pixL);
+	  TVector3 p3OL(simhit_px()[ish], simhit_py()[ish], simhit_pz()[ish]);
+	  ish = simHitsPerHitAll(sd.mdOut.pixU);
+	  TVector3 p3OU(simhit_px()[ish], simhit_py()[ish], simhit_pz()[ish]);
 
 	  if (p3RL.Pt() > 1 || p3RU.Pt() > 1 || p3OL.Pt() > 1 || p3OU.Pt() > 1){
 	    nSDs1GeV++;
