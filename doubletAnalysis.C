@@ -512,13 +512,28 @@ struct MDStats {
   int pdgId;
 };
 
+int layer(int lay, int det){
+  //try to restore the SLHC indexing:
+  // barrel: 5-10 OT
+  // endcap: 11-15 OT disks
+  // IT is not handled: "4" layers are filled from seed layer counting (no geometry ref)
+  if (det == 4) return 10+lay;//OT endcap
+  if (det == 5) return 4+lay;//OT barrel
+  
+  return lay;
+}
+
+int ph2_isBarrel(int iph2){
+  return ph2_det()[iph2] == 5;
+}
+
 struct SimHit {
   SimHit() {}
   SimHit(int i):
     r3s(simhit_x()[i], simhit_y()[i], simhit_z()[i]),
     p3s(simhit_px()[i], simhit_py()[i], simhit_pz()[i]),
     ind(i),
-    lay(simhit_lay()[i]),
+    lay(layer(simhit_lay()[i], simhit_det()[i])),
     pdgId(simhit_particle()[i]),
     process(simhit_process()[i]),
     bx(999),
@@ -843,8 +858,8 @@ int ScanChainMiniDoublets( TChain* chain, int nEvents = -1, bool drawPlots = fal
 	std::array<int, nLayersB+1> hitsBarrelLayer {};
 	auto nPh2 = ph2_isBarrel().size();
 	for (auto iph2 = 0U; iph2 < nPh2; ++iph2){
-	  if (ph2_isBarrel()[iph2] == false) continue;
-	  int lay = ph2_lay()[iph2];
+	  if (ph2_isBarrel(iph2) == false) continue;
+	  int lay = layer(ph2_lay()[iph2], ph2_det()[iph2]);
 
 	  hitsBarrelLayer[lay]++;
 	  int iid = ph2_detId()[iph2];
@@ -917,8 +932,8 @@ int ScanChainMiniDoublets( TChain* chain, int nEvents = -1, bool drawPlots = fal
       int iidOld = -1;
       auto nPh2 = ph2_isBarrel().size();
       for (auto iph2 = 0U; iph2 < nPh2; ++iph2){
-	if (ph2_isBarrel()[iph2] == false) continue;
-	int lay = ph2_lay()[iph2];
+	if (ph2_isBarrel(iph2) == false) continue;
+	int lay = layer(ph2_lay()[iph2], ph2_det()[iph2]);
 	if (lay < 5 ) continue;
 
 	int iid = ph2_detId()[iph2];
@@ -2147,8 +2162,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	std::array<int, nLayersB+1> hitsBarrelLayer {};
 	auto nPh2 = ph2_isBarrel().size();
 	for (auto iph2 = 0U; iph2 < nPh2; ++iph2){
-	  bool isBarrel = ph2_isBarrel()[iph2];
-	  int lay = ph2_lay()[iph2];
+	  bool isBarrel = ph2_isBarrel(iph2);
+	  int lay = layer(ph2_lay()[iph2], ph2_det()[iph2]);
 
 	  hitsBarrelLayer[lay]++;
 	  int iid = ph2_detId()[iph2];
@@ -2367,9 +2382,9 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       int iidEnd = -1;
       int iidOld = -1;
       for (auto iph2 = 0U; iph2 < nPh2; ++iph2){
-	bool isBarrel = ph2_isBarrel()[iph2];
+	bool isBarrel = ph2_isBarrel(iph2);
 	if (!addEndcaps &&  !isBarrel) continue;
-	int lay = ph2_lay()[iph2];
+	int lay = layer(ph2_lay()[iph2], ph2_det()[iph2]);
 	if (addEndcaps && !isBarrel && (lay < 11 || lay > nLayersA) ) continue;
 
 	int iid = ph2_detId()[iph2];
@@ -2389,7 +2404,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 
 	auto iSHAll = simHitsPerPh2HitAll[iph2];
 	auto iSH = simHitsPerPh2Hit[iph2];
-	if (iSHAll) continue; //use only hits with sim info
+	if (iSHAll == -1) continue; //use only hits with sim info
 	SimHit simHit(iSHAll);
 	
 	TVector3 r3Sim(simHit.r3s);
@@ -2527,10 +2542,19 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    if (lay != 15 && r3SDfwLowerIsGood) h2_hitsRZ_ITrec_OTmockLL_BE->Fill(std::abs(r3SDfwLower.Z()), r3SDfwLower.Pt());
 	  }
 	}
-      }//nPh2: filling mock MDs
+      }//nPh2: filling mock hits
+      std::cout<<"MH stat: nPh2 "<<nPh2<<std::endl;
+      for (int iL = 0; iL < nLayersA+1; ++iL){
+	std::cout<<" L "<<iL
+		 <<" RfL "<<mockLayerMDfwRefLower[iL].size()
+		 <<" RfL "<<mockLayerMDfwRefUpper[iL].size()
+		 <<" RfL "<<mockLayerMDfwDNcmLower[iL].size()
+		 <<" RfL "<<mockLayerMDfwDNcmUpper[iL].size()
+		 <<std::endl;	  
+      }
 
       for (auto iPix = 0U; iPix < nPix; ++iPix){
-	int lay = pix_lay()[iPix];
+	int lay = layer(pix_lay()[iPix], pix_det()[iPix]);
 	bool isBarrel = pix_isBarrel()[iPix];
 	TVector3 r3Rec(pix_x()[iPix], pix_y()[iPix], pix_z()[iPix]);
 	if (lay < 5 && isBarrel){//fill pixel barrel plot	  
