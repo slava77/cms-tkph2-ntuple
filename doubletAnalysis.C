@@ -2501,7 +2501,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    }
 	  }
 	}
-        if (pstat == 0) mockLayerMDfwRefLower[lay].push_back(std::make_pair(iph2,V3WithCache(r3RefLowerMock)));
+        if (pstat == 0) mockLayerMDfwRefLower[lay].push_back(std::make_pair(HitIndexWithType(iph2, HitType::Phase2OT).indexWithType,
+									    V3WithCache(r3RefLowerMock)));
 
 	auto r3RefUpper = propagateMH(rRefUpper);
 	if (mockMode == 3 && lay >= 11 && r3Rec.Pt() > disks2SMaxRadius){
@@ -2519,16 +2520,19 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	}
 	//FIXME: put more appropriate limits
 	const bool r3RefUpperIsGood = (isBarrel && std::abs(r3RefUpper.z()) < 120.f) || (!isBarrel && r3RefUpper.Pt() > 23.f && r3RefUpper.Pt() < 110.f);
-	if (pstat == 0 && r3RefUpperIsGood) mockLayerMDfwRefUpper[lay].push_back(std::make_pair(iph2, V3WithCache(r3RefUpper)));
+	if (pstat == 0 && r3RefUpperIsGood) mockLayerMDfwRefUpper[lay].push_back(std::make_pair(HitIndexWithType(iph2, HitType::Phase2OT).indexWithType,
+												V3WithCache(r3RefUpper)));
 
 	//keep the mock outer doublet at its SIM state
 	auto r3SDfwLower = propagateMH(rSDfwLower);
 	const bool r3SDfwLowerIsGood = (isBarrel && std::abs(r3SDfwLower.z()) < 120.f) || (!isBarrel && r3SDfwLower.Pt() > 23.f && r3SDfwLower.Pt() < 110.f);
-	if (pstat == 0 && r3SDfwLowerIsGood) mockLayerMDfwDNcmLower[lay].push_back(std::make_pair(iph2, V3WithCache(r3SDfwLower)));
+	if (pstat == 0 && r3SDfwLowerIsGood) mockLayerMDfwDNcmLower[lay].push_back(std::make_pair(HitIndexWithType(iph2, HitType::Phase2OT).indexWithType,
+												  V3WithCache(r3SDfwLower)));
 	auto r3SDfwUpper = propagateMH(rSDfwUpper);
 	const bool r3SDfwUpperIsGood = (isBarrel && std::abs(r3SDfwUpper.z()) < 120.f) || (!isBarrel && r3SDfwUpper.Pt() > 23.f && r3SDfwUpper.Pt() < 110.f);
 	if (pstat == 0 && r3SDfwUpperIsGood)
-	  mockLayerMDfwDNcmUpper[lay].push_back(std::make_pair(iph2, V3WithCache(r3SDfwUpper)));
+	  mockLayerMDfwDNcmUpper[lay].push_back(std::make_pair(HitIndexWithType(iph2, HitType::Phase2OT).indexWithType,
+							       V3WithCache(r3SDfwUpper)));
 
 	if (pstat == 0 && q != 0 && pts>0.8){
 	  if (lay == 5 || lay == 7 || lay == 9){
@@ -2811,7 +2815,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      }
 
 	      
-	      if (iL>10 && debugReco){
+	      if (debugReco){
 		const float miniLum = useFullR3Endcap ? 0.f : deltaZLum/std::abs(hL.second.r3.z());
 		const float miniCutE = miniSlope + sqrt(miniMuls*miniMuls + miniPVoff*miniPVoff + miniLum*miniLum);
 		if (iL==11&& n_dPhi<10){
