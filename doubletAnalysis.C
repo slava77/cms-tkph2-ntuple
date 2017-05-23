@@ -2133,7 +2133,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
     
     while (( currentFile = (TFile*)fileIter.Next() )) {
       TFile f(currentFile->GetTitle());
-      TTree *tree = (TTree*)f.Get("trkTree/tree");
+      TTree *tree = (TTree*)f.Get("trackingNtuple/tree");
       cms2.Init(tree);
       
       //Event Loop
@@ -2188,7 +2188,6 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
     }//files in chain
   }//geom range map loop scope
   
-  //  cout<<__LINE__<<endl;
   TObjArray *listOfFiles = chain->GetListOfFiles();
 
   unsigned int nEventsChain=0;
@@ -2204,7 +2203,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
   TFile *currentFile = 0;
   while (( currentFile = (TFile*)fileIter.Next() )) {
     TFile f(currentFile->GetTitle());
-    TTree *tree = (TTree*)f.Get("trkTree/tree");
+    TTree *tree = (TTree*)f.Get("trackingNtuple/tree");
     cms2.Init(tree);
     
     //Event Loop
@@ -2235,8 +2234,9 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 
       // extract TP index per simhit .. not very useful
       std::vector<int> simsPerSimHit(nSimhit,-1);
-      std::vector<int> simsPerSimHitAll(nSimhit,1);
+      std::vector<int> simsPerSimHitAll(nSimhit,-1);
 
+      int errCount = 0;
       for (auto i = 0U; i<nSim; ++i){
 	TVector3 p3(sim_px()[i], sim_py()[i], sim_pz()[i]);
 	float tpPt = p3.Pt();
@@ -2251,6 +2251,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    if (iSim == -1 ) iSim = i;
 	    else if (iSim != int(i)){
 	      std::cout<<"ERROR: repeated hit-tp "<<ishIdx<<" has tp "<<iSim<<" and "<<i<<std::endl;
+	      errCount++;
 	    }
 	  }
 	  int& iSimAll = simsPerSimHitAll[ishIdx];
@@ -2258,8 +2259,10 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	  if (iSimAll == -1 ) iSimAll = i;
 	  else if (iSimAll != int(i)){
 	    std::cout<<"ERROR: repeated hit-tp "<<ishIdx<<" has tp "<<iSimAll<<" and "<<i<<std::endl;
+	    errCount++;
 	  }
 	}//simhits for a given TP
+	if (errCount > 1000) return 1;
       }//TPs
       
       auto const nPh2 = ph2_lay().size();
