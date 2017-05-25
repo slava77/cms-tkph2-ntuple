@@ -3799,8 +3799,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 
 	bool isLowProdXY = prodR2 < 4.0;
 	
-	if (tpPt < 1.5 && std::abs(p3.Eta())< 1) debug = false;
-	if (debug) std::cout<<"TP: "<<p3.Pt()<<" "<<p3.Eta()<<" "<<p3.Phi();
+	if (std::abs(tpPt-1) < 0.005 && std::abs(p3.Eta())< 1 && isLowProdXY) debug = false;
+	if (debug) std::cout<<"TP "<< iSim<<" : "<<p3.Pt()<<" "<<p3.Eta()<<" "<<p3.Phi();
 	
 	std::map<int, int> nHitsMap;
 	std::array<std::vector<SDLink>, SDL_LMAX > matchingSDLs_byHit3of4 {};
@@ -3826,7 +3826,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	  if ((simH.isBarrel && lay >= minLayer) || lay < minLayer
 	      || (addEndcaps && !simH.isBarrel && lay > 10)){
 	    if (debug) std::cout<<" "<<lay<<" "<<ish;
-	    if (simH.p3s.Pt()>0.8*tpPt){
+	    //require pt consistency and a presence of an associated rechit
+	    if (simH.p3s.Pt()>0.8*tpPt && !simhit_hitIdx()[ish].empty()){//FIXME: opt/configure for BX=0 requirement instead
 	      nHitsMap[lay]++;
 	      simHits[lay].emplace(ish);
 	      if (lay < minLayer){//this goes to the seeds list
@@ -3882,7 +3883,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      nHitsStatSumMap[lOut] += nHitsMap[lOut];
 	    }
 	    
-	    bool debugHitLevel = false;
+	    bool debugHitLevel = true;
 	    if (debug){
 	      std::cout<<"\tTP is good for denSDL in L"<<lIn<<"-L"<<lOut<<std::endl;
 	      if (debugHitLevel){
