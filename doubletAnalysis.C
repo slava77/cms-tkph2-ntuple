@@ -2641,13 +2641,13 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	  seedSD.mdRef.itp = itpRL;
 	  seedSD.mdRef.ntp = 1;
 	  seedSD.mdRef.itpLL = itpRL;
-	  if (itpRL > 0 && itpRU > 0){
+	  if (itpRL >= 0 && itpRU >= 0){
 	    if (itpRL == itpRU ){
 	      seedSD.mdRef.ntp = 2;
 	    }
-	  } else if (itpRL == 0 && itpRU == 0){
+	  } else if (itpRL == -1 && itpRU == -1){
 	    seedSD.mdRef.ntp = 0;
-	  } else if (itpRU > 0){
+	  } else if (itpRU >= 0){
 	    seedSD.mdRef.itp = itpRU;
 	  }
 	  seedSD.mdOut.pixL = HitIndexWithType(see_hitIdx()[iSeed][2], HitType(see_hitType()[iSeed][2])).indexWithType;
@@ -2663,13 +2663,13 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	  seedSD.mdOut.itp = itpOL;
 	  seedSD.mdOut.ntp = 1;
 	  seedSD.mdOut.itpLL = itpOL;
-	  if (itpOL > 0 && itpOU > 0){
+	  if (itpOL >= 0 && itpOU >= 0){
 	    if (itpOL == itpOU ){
 	      seedSD.mdOut.ntp = 2;
 	    }
-	  } else if (itpOL == 0 && itpOU == 0){
+	  } else if (itpOL == -1 && itpOU == -1){
 	    seedSD.mdOut.ntp = 0;
-	  } else if (itpOU > 0){
+	  } else if (itpOU >= 0){
 	    seedSD.mdOut.itp = itpOU;
 	  }
 	  seedSD.iRef = iSeed;
@@ -2689,7 +2689,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	  seedSD.ntp = 0;
 	  tps[itpRL]++;  tps[itpRU]++;  tps[itpOL]++;  tps[itpOU]++;
 	  for ( auto m : tps){
-	    if (m.first > 0 && m.second > seedSD.ntp){
+	    if (m.first >= 0 && m.second > seedSD.ntp){
 	      seedSD.itp = m.first;
 	      seedSD.ntp = m.second;
 	    }
@@ -2700,7 +2700,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	  tps.clear();
 	  tps[itpRL]++;  tps[itpOL]++;
 	  for ( auto m : tps){
-	    if (m.first > 0 && m.second > seedSD.ntpLL){
+	    if (m.first >= 0 && m.second > seedSD.ntpLL){
 	      seedSD.itpLL = m.first;
 	      seedSD.ntpLL = m.second;
 	    }
@@ -2804,13 +2804,13 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      md.itp = itpRL;
 	      md.ntp = 1;
 	      md.itpLL = itpRL;
-	      if (itpRL > 0 && itpRU > 0){
+	      if (itpRL >= 0 && itpRU >= 0){
 		if (itpRL == itpRU ){
 		  md.ntp = 2;
 		}
-	      } else if (itpRL == 0 && itpRU == 0){
+	      } else if (itpRL == -1 && itpRU == -1){
 		md.ntp = 0;
-	      } else if (itpRU > 0){
+	      } else if (itpRU >= 0){
 		md.itp = itpRU;
 	      }
 
@@ -2819,10 +2819,10 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		const float miniLum = useFullR3Endcap ? 0.f : deltaZLum/std::abs(hL.second.r3.z());
 		const float miniCutE = miniSlope + sqrt(miniMuls*miniMuls + miniPVoff*miniPVoff + miniLum*miniLum);
 		if (iL==11&& n_dPhi<10){
-		  float simPtL = itpRL > 0 ? sqrt(sim_px()[itpRL]*sim_px()[itpRL]+sim_py()[itpRL]*sim_py()[itpRL]) : 0;
-		  float simPtU = itpRU > 0 ? sqrt(sim_px()[itpRU]*sim_px()[itpRU]+sim_py()[itpRU]*sim_py()[itpRU]) : 0;
-		  float simDxyL = itpRL > 0 ? sim_pca_dxy()[itpRL] : 99;
-		  float simDxyU = itpRU > 0 ? sim_pca_dxy()[itpRU] : 99;
+		  float simPtL = itpRL >= 0 ? sqrt(sim_px()[itpRL]*sim_px()[itpRL]+sim_py()[itpRL]*sim_py()[itpRL]) : 0;
+		  float simPtU = itpRU >= 0 ? sqrt(sim_px()[itpRU]*sim_px()[itpRU]+sim_py()[itpRU]*sim_py()[itpRU]) : 0;
+		  float simDxyL = itpRL >= 0 ? sim_pca_dxy()[itpRL] : 99;
+		  float simDxyU = itpRU >= 0 ? sim_pca_dxy()[itpRU] : 99;
 
 
 		  std::cout<<"MD on "<<iL<<" i "<<mDs.size()
@@ -3043,7 +3043,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    sd.ntp = 0;
 	    tps[itpRL]++;  tps[itpRU]++;  tps[itpOL]++;  tps[itpOU]++;
 	    for ( auto m : tps){
-	      if (m.first > 0 && m.second > sd.ntp){
+	      if (m.first >= 0 && m.second > sd.ntp){
 		sd.itp = m.first;
 		sd.ntp = m.second;
 	      }
@@ -3053,7 +3053,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    tps.clear();
 	    tps[itpRL]++;  tps[itpOL]++;
 	    for ( auto m : tps){
-	      if (m.first > 0 && m.second > sd.ntpLL){
+	      if (m.first >= 0 && m.second > sd.ntpLL){
 		sd.itpLL = m.first;
 		sd.ntpLL = m.second;
 	      }
@@ -3535,7 +3535,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    tps[itpIRL]++;  tps[itpIRU]++;  tps[itpIOL]++;  tps[itpIOU]++;
 	    tps[itpORL]++;  tps[itpORU]++;  tps[itpOOL]++;  tps[itpOOU]++;
 	    for ( auto m : tps){
-	      if (m.first > 0 && m.second > sdl.ntp){
+	      if (m.first >= 0 && m.second > sdl.ntp){
 		sdl.itp = m.first;
 		sdl.ntp = m.second;
 	      }
@@ -3548,7 +3548,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    tps[itpIRL]++;  tps[itpIOL]++;
 	    tps[itpORL]++;  tps[itpOOL]++;
 	    for ( auto m : tps){
-	      if (m.first > 0 && m.second > sdl.ntpLL){
+	      if (m.first >= 0 && m.second > sdl.ntpLL){
 		sdl.itpLL = m.first;
 		sdl.ntpLL = m.second;
 	      }
@@ -3799,7 +3799,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 
 	bool isLowProdXY = prodR2 < 4.0;
 	
-	if (std::abs(tpPt-1) < 0.005 && std::abs(p3.Eta())< 1 && isLowProdXY) debug = false;
+	if (tpPt > 25 && std::abs(p3.Eta())< 1 && isLowProdXY && sim_bunchCrossing()[iSim] == 0) debug = false;
 	if (debug) std::cout<<"TP "<< iSim<<" : "<<p3.Pt()<<" "<<p3.Eta()<<" "<<p3.Phi();
 	
 	std::map<int, int> nHitsMap;
@@ -3958,7 +3958,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    
 	    //match the 4 layer mini-doublets
 	    auto matchMD = [&](decltype(mockLayerMDfwRef)::const_reference mds){	      
-	      for (auto const& md : mds) if (md.itp == iSim && md.ntp ==2 ) return true;
+	      for (auto const& md : mds) if (md.itp == iSim && md.ntp == 2 ) return true;
 	      return false;
 	    };
 	    if (lIn == 0){
@@ -4034,7 +4034,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    for (auto const& sd : mockLayerSDfwDNcm[lOut]){
 	      int score = sd.itp == iSim ? sd.ntp : 0;
 	      if (debug && score > 2){
-		std::cout<<"SDI: match on L"<< lIn <<": Have "<<score<<" matches"<<std::endl;
+		std::cout<<"SDO: match on L"<< lOut <<": Have "<<score<<" matches"<<std::endl;
 	      }
 
 	      if (score >= 3) hasSDOut_3of4 = true;
