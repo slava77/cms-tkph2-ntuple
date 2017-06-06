@@ -48,6 +48,11 @@ namespace tkph2consts{
   constexpr int nLayersB = 10; //barrel layers
   constexpr float kRinv1GeVf = (2.99792458e-3*3.8);
   constexpr float k2Rinv1GeVf = kRinv1GeVf/2.;
+
+  constexpr int miniMask = 0x3;
+  constexpr int lowerId = 1;
+  constexpr int upperIdDelta = 1;
+  //in SLHC these were 0x4, 4, 4
 }
 using namespace tas;
 using namespace tkph2consts;
@@ -941,12 +946,12 @@ int ScanChainMiniDoublets( TChain* chain, int nEvents = -1, bool drawPlots = fal
 	  iidStart = iph2;
 	  iidOld = iid;
 	  cboundC = &moduleBoundaries[iid];
-	  if ((iid & 0x4)== 4){
+	  if ((iid & miniMask)== lowerId){
 	    cboundL = cboundC;
-	    cboundH = &moduleBoundaries[iid+4];
+	    cboundH = &moduleBoundaries[iid+upperIdDelta];
 	  }
 	}
-	if ((iid & 0x4)!= 4) continue; //only lower module
+	if ((iid & miniMask)!= lowerId) continue; //only lower module
 
 	TVector3 r3Rec(ph2_x()[iph2], ph2_y()[iph2], ph2_z()[iph2]);
 
@@ -1075,7 +1080,7 @@ int ScanChainMiniDoublets( TChain* chain, int nEvents = -1, bool drawPlots = fal
 		nextOtherR3SimDes.emplace_back(nr3sDes);
 	      }
 	    }
-	  } else if (iid+4 == jid && lay>=5) {//upper module in the doublet pairs
+	  } else if (iid+upperIdDelta == jid && lay>=5) {//upper module in the doublet pairs
 	    auto const& jph2shV = ph2_simHitIdx()[jph2];
 	    for (auto jph2sh : jph2shV){
 	      if (jph2sh == iph2sh ) continue;//can really happen .. assert instead?
@@ -1122,7 +1127,7 @@ int ScanChainMiniDoublets( TChain* chain, int nEvents = -1, bool drawPlots = fal
 	    }
 	    
 	  } else {
-	    //once it's not equal to current or upper(+4), we never expect another entry in the same module
+	    //once it's not equal to current or upper(+upperIdDelta), we never expect another entry in the same module
 	    break;
 	  }//end of module ids to check
 	}//loop over the other ph2 hits jph2
@@ -2392,13 +2397,13 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	  iidStart = iph2;
 	  iidOld = iid;
 	  cboundC = &moduleBoundaries[iid];
-	  if ((iid & 0x4)== 4){
+	  if ((iid & miniMask)== lowerId){
 	    cboundL = cboundC;
-	    cboundH = &moduleBoundaries[iid+4];
+	    cboundH = &moduleBoundaries[iid+upperIdDelta];
 	  }
 	}
 
-	//Too restrictive for reverse TP matching??//	if ((iid & 0x4)!= 4) continue; 
+	//Too restrictive for reverse TP matching??//	if ((iid & miniMask)!= lowerId) continue; 
 		
 	TVector3 r3Rec(ph2_x()[iph2], ph2_y()[iph2], ph2_z()[iph2]);
 
@@ -2479,7 +2484,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 
 	if (mockMode == 3){
 	  r3RefLowerMock += (r3Rec - r3Sim);
-	  if ((iid & 0x4)!= 4){	      //there was no simhit on the pixel layer; make up z or r by roundoff of sim
+	  if ((iid & miniMask)!= lowerId){//there was no simhit on the pixel layer; make up z or r by roundoff of sim
 	    //this mitigates the issue coming from recovery of inefficiency in simHit-rec matching done by using outer mini-layers as well
 	    //if the outer mini-layer is used in place of the inner one, the rec-sim shift is too large in the coarse direction
 	    //2S layers are not affected because both mini-layers have the same segmentation
