@@ -423,7 +423,12 @@ struct V3WithCache {
   float rt;
   float r;
   float phi;
-  V3WithCache(TVector3 const& o3) : r3(o3), rt(r3.Pt()), r(r3.Mag()), phi(r3.Phi()) {}
+  float rtRHin;
+  float rtRHout;
+  float phiRHin;
+  float phiRHout;
+  V3WithCache(TVector3 const& o3) : r3(o3), rt(r3.Pt()), r(r3.Mag()), phi(r3.Phi()),
+				    rtRHin(0), rtRHout(0), phiRHin(0), phiRHout(0) {}
 };
 
 struct MiniDoublet {
@@ -431,10 +436,16 @@ struct MiniDoublet {
   int pixU;
   TVector3 r3;
   float alpha;
+  float alphaRHmin = 0.f;
+  float alphaRHmax = 0.f;
   float rt;
   float z;
   float r;
   float phi;
+  float rtRHin = 0.f;
+  float rtRHout = 0.f;
+  float phiRHin = 0.f;
+  float phiRHout = 0.f;
   int itp;//tp with most hits
   int ntp;//n hits with itp
   int itpLL;//the lower layer iTP
@@ -452,6 +463,10 @@ struct SuperDoublet {
   TVector3 p3; //makes sense mostly for seed-based
   float alpha;
   float alphaOut;
+  float alphaRHmin;
+  float alphaOutRHmin;
+  float alphaRHmax;
+  float alphaOutRHmax;
   float dr;
   float d;
   float zeta;
@@ -469,8 +484,14 @@ struct SDLink {
   int lOut;//layer
   int iOut;
   float alpha; //point-to-point wrt radial
+  float alphaRHmin;
+  float alphaRHmax;
   float betaIn;//SD angle wrt point-to-point
   float betaOut;
+  float betaInRHmin;
+  float betaInRHmax;
+  float betaOutRHmin;
+  float betaOutRHmax;
   float pt;
   float ptIn;
   float ptOut;
@@ -2506,8 +2527,31 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    }
 	  }
 	}
-        if (pstat == 0) mockLayerMDfwRefLower[lay].push_back(std::make_pair(HitIndexWithType(iph2, HitType::Phase2OT).indexWithType,
-									    V3WithCache(r3RefLowerMock)));
+	V3WithCache v3RefLowerMock(r3RefLowerMock);
+
+	//set the strip edges
+	if (mockMode == 3 && lay >= 11 && r3Rec.Pt() > disks2SMaxRadius){
+	  const float phiAv = 0.5f*((*cboundC)[2] + (*cboundC)[3]);
+	  const float sinPhiAv = sin(phiAv);
+	  const float cosPhiAv = cos(phiAv);
+	  const float xLocRecMock = r3RefLowerMock.y()*cosPhiAv - r3RefLowerMock.x()*sinPhiAv;//keep this fixed
+
+	  //this is supposedly the middle of the strip (not necessarily the case in SLHC setup)
+	  const float yLocRecMock = r3RefLower.y()*sinPhiAv + r3RefLower.x()*cosPhiAv;
+	  const float yLocRecMockIn = yLocRecMock - 0.5f*strip2SZpitch;
+	  const float yLocRecMockOut = yLocRecMock + 0.5f*strip2SZpitch;
+	  
+	  TVector2  r2In(yLocRecMockIn*cosPhiAv - xLocRecMock*sinPhiAv, yLocRecMockIn*sinPhiAv + xLocRecMock*cosPhiAv);
+	  TVector2  r2Out(yLocRecMockOut*cosPhiAv - xLocRecMock*sinPhiAv, yLocRecMockOut*sinPhiAv + xLocRecMock*cosPhiAv);
+
+	  v3RefLowerMock.rtRHin = r2In.Mod();
+	  v3RefLowerMock.phiRHin = r2In.Phi();
+	  v3RefLowerMock.rtRHout = r2Out.Mod();
+	  v3RefLowerMock.phiRHout = r2Out.Phi();
+	}
+	
+	if (pstat == 0) mockLayerMDfwRefLower[lay].push_back(std::make_pair(HitIndexWithType(iph2, HitType::Phase2OT).indexWithType,
+									    v3RefLowerMock));
 
 	auto r3RefUpper = propagateMH(rRefUpper);
 	if (mockMode == 3 && lay >= 11 && r3Rec.Pt() > disks2SMaxRadius){
@@ -2787,7 +2831,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		n_dPhiPos++;
 
 		const float dzFrac = dz/hL.second.r3.z();
-		dPhi = dPhiPos/dzFrac*(1.f + dzFrac);
+		dPhi = dPhiPos/dzFrac*(1.f + dzFrac);		
 		if (useFullR3Endcap){
 		  dPhi = hL.second.r3.DeltaPhi(hU.second.r3-hL.second.r3);//NOTE: this changes combinatorial component. Use only for efficiency studies
 		}
@@ -2803,7 +2847,20 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      md.z = hL.second.r3.Z();
 	      md.r = hL.second.r;
 	      md.phi = hL.second.phi;
+	      if (hL.second.rtRHin > 0){
+		md.rtRHin = hL.second.rtRHin;
+		md.rtRHout = hL.second.rtRHout;
+		md.phiRHin = hL.second.phiRHin;
+		md.phiRHout = hL.second.phiRHout;
+	      } else {
+		md.rtRHin = hL.second.rt;
+		md.rtRHout = hL.second.rt;
+		md.phiRHin = hL.second.phi;
+		md.phiRHout = hL.second.phi;
+	      }
 	      md.alpha = dPhi;
+	      md.alphaRHmin = md.alpha;//FIXME: make this better (when it matters)
+	      md.alphaRHmax = md.alpha;
 	      const int itpRL = simsPerHit(md.pixL);
 	      const int itpRU = simsPerHit(md.pixU);
 	      md.itp = itpRL;
@@ -2838,6 +2895,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 			   <<" r "<<hL.second.rt<<" "<<hU.second.rt
 			   <<" z "<<hL.second.r3.z()<<" "<<hU.second.r3.z()
 			   <<" phi "<<hL.second.phi<<" "<<hU.second.phi
+			   <<" phi in out "<<md.phiRHin<<" "<<md.phiRHout
 			   <<" alpha "<<md.alpha<<" cutM "<<miniCutE
 			   <<" alphaR3 "<<hL.second.r3.DeltaPhi(hU.second.r3-hL.second.r3)
 			   <<std::endl;
@@ -2905,6 +2963,11 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    unsigned int iFlag;
 	    const float ptCut = ptCutAll;
 	    float dPhiOut;
+
+	    float dPhiRHmin;
+	    float dPhiRHmax;
+	    float dPhiOutRHmin;
+	    float dPhiOutRHmax;
 	    
 	    if (iL < 11){//barrel
 	      float rt = rtOut; //FIXME: should be different for mockMode = 0
@@ -2933,13 +2996,17 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      dr3 = mdOut.r3; dr3 -= mdRef.r3;
 	      //plain SD bend cut
 	      dPhi = mdRef.r3.DeltaPhi(dr3);
-	    
+	      dPhiRHmin = dPhi;
+	      dPhiRHmax = dPhi;
+	      
 	      iFlag = SDSelectFlags::slope;
 	      if (!(std::abs(dPhi) > sdCut)) sdFlag |= 1 << iFlag;
 	      else if (cumulativeCuts ) continue;	    
 	      if (sdFlag == sdMasksCumulative[iFlag]) nPass[iFlag]++;
 
 	      dPhiOut = mdOut.r3.DeltaPhi(dr3);
+	      dPhiOutRHmin = dPhiOut;
+	      dPhiOutRHmax = dPhiOut;
 	    } else {//endcap
 	      const float rtGeom = mockMode == 3 ?
 		(rtRef < disks2SMaxRadius && rtOut < disks2SMaxRadius ? 2.f*pixelPSZpitch
@@ -2970,6 +3037,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      const float sdCut = sdSlope + sqrt(sdMuls*sdMuls + sdPVoff*sdPVoff + sdLum*sdLum);
 
 	      const float dPhiPos = deltaPhi(mdRef.phi, mdOut.phi);
+	      const float dPhiPosRHin = deltaPhi(mdRef.phiRHin, mdOut.phi);
+	      const float dPhiPosRHout = deltaPhi(mdRef.phiRHout, mdOut.phi);
 	      iFlag = SDSelectFlags::deltaPhiPos;
 	      //FIXME: should be tighter than the local sdCut
 	      if (!(std::abs(dPhiPos) > sdCut )) sdFlag |= 1 << iFlag;
@@ -2979,7 +3048,17 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      //equivalent SD bend cut
 	      const float dzFrac = dz/mdRef.r3.z();
 	      dPhi = dPhiPos/dzFrac*(1.f + dzFrac);
+	      const float dPhiRHin = dPhiPosRHin/dzFrac*(1.f + dzFrac);
+	      const float dPhiRHout = dPhiPosRHout/dzFrac*(1.f + dzFrac);
+	      dPhiRHmin = dPhi;
+	      dPhiRHmax = dPhi;
 
+	      if (mdRef.rtRHin > 0){assert(mockMode == 3);//complete range check is needed for full RH use
+		dPhiRHmin = dPhiRHin;
+		dPhiRHmax = dPhiRHout;
+		if (std::abs(dPhiRHmin) > std::abs(dPhiRHmax)) std::swap(dPhiRHmax, dPhiRHmin);
+	      }
+	      
 	      dr3 = mdOut.r3; dr3 -= mdRef.r3;//not needed for cuts but needed below
 	      if (useFullR3Endcap) dPhi = mdRef.r3.DeltaPhi(dr3);
 
@@ -2993,6 +3072,15 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 
 	      dPhiOut = deltaPhi(dPhi, dPhiPos);
 	      if (useFullR3Endcap) dPhiOut = mdOut.r3.DeltaPhi(dr3);
+
+	      dPhiOutRHmin = dPhiOut;
+	      dPhiOutRHmax = dPhiOut;
+
+	      if (mdRef.rtRHin > 0){assert(mockMode == 3);//complete range check is needed for full RH use
+		dPhiOutRHmin = deltaPhi(dPhiRHin, dPhiPosRHin);
+		dPhiOutRHmax = deltaPhi(dPhiRHout, dPhiPosRHout);
+		if (std::abs(dPhiOutRHmin) > std::abs(dPhiOutRHmax)) std::swap(dPhiOutRHmax, dPhiOutRHmin);
+	      }
 	    }
 	      
 	    
@@ -3005,6 +3093,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    sd.rtInv = 1.f/mdRef.rt;
 	    sd.z = sd.r3.Z();
 	    sd.alpha = dPhi;
+	    sd.alphaRHmin = dPhiRHmin;
+	    sd.alphaRHmax = dPhiRHmax;
 	    sd.dr = dr3.Pt();//FIXME: get a better estimator for endcap
 	    sd.d = mdOut.rt - sd.rt; //FIXME: get a better estimator for endcap
 	    sd.zeta = sd.d/(mdOut.r3.Z() - sd.z);
@@ -3015,13 +3105,15 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    float dAlpha_compat = dAlpha_Bfield + dAlpha_res;
 
 	    iFlag = SDSelectFlags::alphaRef;
-	    if (!(std::abs(mdRef.alpha- sd.alpha) > dAlpha_compat)) sdFlag |= 1 << iFlag;
+	    if (!((std::abs(mdRef.alpha- sd.alphaRHmax) > dAlpha_compat)
+		  && (std::abs(mdRef.alpha- sd.alphaRHmin) > dAlpha_compat)) ) sdFlag |= 1 << iFlag;
 	    else if (cumulativeCuts ) continue;
 
 	    if (sdFlag == sdMasksCumulative[iFlag]) nPass[iFlag]++;
 	      
 	    iFlag = SDSelectFlags::alphaOut;
-	    if (!(std::abs(mdOut.alpha- sd.alpha) > dAlpha_compat)) sdFlag |= 1 << iFlag;//FIXME: this could be more restrictive: dBfiled cancels out
+	    if (!((std::abs(mdOut.alpha- sd.alphaRHmax) > dAlpha_compat)
+		  && (std::abs(mdOut.alpha- sd.alphaRHmin) > dAlpha_compat)) ) sdFlag |= 1 << iFlag;//FIXME: this could be more restrictive: dBfiled cancels out
 	    else if (cumulativeCuts ) continue;
 
 	    if (sdFlag == sdMasksCumulative[iFlag]) nPass[iFlag]++;
@@ -3037,6 +3129,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    sd.mdRef = mdRef;
 	    sd.mdOut = mdOut;
 	    sd.alphaOut = dPhiOut;
+	    sd.alphaOutRHmin = dPhiOutRHmin;
+	    sd.alphaOutRHmax = dPhiOutRHmax;
 
 	    const int itpRL = simsPerHit(sd.mdRef.pixL);
 	    const int itpRU = simsPerHit(sd.mdRef.pixU);
@@ -3064,7 +3158,14 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      }
 	    }
 	    
-
+	    if (debugReco && iL == 11 && sd.ntp == 4){
+	      TVector3 p3TP(sim_px()[sd.itp], sim_py()[sd.itp], sim_pz()[sd.itp]);
+	      if (p3TP.Pt() > 2){
+		std::cout<<" TP "<<p3TP.Pt()<<" "<<p3TP.Eta()<<" "<<p3TP.Phi()
+			 <<" a "<<sd.alpha<<" aMin "<<sd.alphaRHmin<<" aMax "<<sd.alphaRHmax
+			 <<" mrA "<<mdRef.alpha<<" moA "<<mdOut.alpha<<" aCompat "<<dAlpha_compat<<std::endl;
+	      }
+	    }
 	    
 	    if ( sd.dr > 4.0f*(rtOut - rtRef) && iL < 11){
 	      //problem in matching
@@ -3350,10 +3451,20 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    
 	    float betaIn;
 	    float betaOut;
+	    float betaInRHmin;
+	    float betaInRHmax;
+	    float betaOutRHmin;
+	    float betaOutRHmax;
+
 	    auto const dr3 = mockMode == 0 ? sdOut.r3 - sdIn.r3 : sdOut.mdOut.r3 - sdIn.r3;
 	    if (mockMode == 0){
 	      betaIn = sdIn.alpha - sdIn.r3.DeltaPhi(dr3);
-	      betaOut = - sdOut.alpha + sdOut.r3.DeltaPhi(dr3); //to match sign for correct match	      
+	      betaOut = - sdOut.alpha + sdOut.r3.DeltaPhi(dr3); //to match sign for correct match
+
+	      betaInRHmin = betaIn;
+	      betaInRHmax = betaIn;
+	      betaOutRHmin = betaOut;
+	      betaOutRHmax = betaOut;
 	    }
 	    else if (mockMode == 1 || mockMode == 3){
 	      //plain segment-level definitions; uneven rotation corrections are applied later using a better estimate of pt
@@ -3365,10 +3476,38 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		betaIn  = sdIn.alpha - sdIn.r3.DeltaPhi(dr3);
 		betaOut = -sdOut.alphaOut + sdOut.mdOut.r3.DeltaPhi(dr3);
 	      }
+	      if (mockMode == 1 || lOut < 11){
+		betaInRHmin = betaIn;
+		betaInRHmax = betaIn;
+		betaOutRHmin = betaOut;
+		betaOutRHmax = betaOut;
+	      } else {
+		//FIXME: dr3 part should be varied as well
+		if (lIn < 11){
+		  betaInRHmin = betaIn;
+		  betaInRHmax = betaIn;		  
+		} else {
+		  betaInRHmin = betaIn + sdIn.alphaRHmin - sdIn.alpha;
+		  betaInRHmax = betaIn + sdIn.alphaRHmax - sdIn.alpha;
+		  if (std::abs(betaInRHmin) > std::abs(betaInRHmax)) std::swap(betaInRHmax, betaInRHmin);
+		}
+		if (lOut < 11){
+		  betaOutRHmin = betaOut;
+		  betaOutRHmax = betaOut;		  
+		} else {
+		  betaOutRHmin = betaOut - sdOut.alphaOutRHmin + sdOut.alphaOut;
+		  betaOutRHmax = betaOut - sdOut.alphaOutRHmax + sdOut.alphaOut;
+		  if (std::abs(betaOutRHmin) > std::abs(betaOutRHmax)) std::swap(betaOutRHmax, betaOutRHmin);
+		}
+	      }
 	    }
 	    else{
 	      betaIn = -99;
 	      betaOut = 999;
+	      betaInRHmin = betaIn;
+	      betaInRHmax = betaIn;
+	      betaOutRHmin = betaOut;
+	      betaOutRHmax = betaOut;
 	    }
 	    
 	    const float dr = dr3.Perp();
@@ -3377,11 +3516,13 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    bool pass_betaIn_cut = lIn == 0;//pixel seeds were already selected
 	    if (lIn != 0){
 	      const float betaIn_cut = (-sdIn.dr*corrF + dr)*k2Rinv1GeVf/ptCut + (mockMode == 3 ? 0.02f/sdIn.d : 0.f);
-	      pass_betaIn_cut = std::abs(betaIn) < betaIn_cut;
+	      pass_betaIn_cut = std::abs(betaInRHmin) < betaIn_cut;
 	    }
 	    if (pass_betaIn_cut) sdlFlag |=  1 << SDLSelectFlags::dAlphaIn;
 	    else if (cumulativeCuts ) continue;
 	    if (sdlFlag == sdlMasksCumulative[SDLSelectFlags::dAlphaIn]) nInAlphaCompat++;
+
+	    
 	    
 	    //now the actual segment linking magic
 	    float betaAv = 0.5f*(betaIn + betaOut);
@@ -3399,7 +3540,9 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      } else {
 		const float diffDr = std::abs(sdIn.dr - sdOut.dr)/std::abs(sdIn.dr + sdOut.dr);
 		if (true //do it for all//diffDr > 0.05 //only if segment length is different significantly
-		    && betaIn*betaOut > 0.f && std::abs(pt_beta) < 4.f*pt_betaMax ){ //and the pt_beta is well-defined
+		    && betaIn*betaOut > 0.f
+		    && (std::abs(pt_beta) < 4.f*pt_betaMax
+			|| (lIn >= 11 && std::abs(pt_beta) < 8.f*pt_betaMax) )){ //and the pt_beta is well-defined; less strict for endcap-endcap
 		  const float betaInUpd  = betaIn + copysign(std::asin(std::min(sdIn.dr*k2Rinv1GeVf/std::abs(pt_beta), sinAlphaMax)), betaIn);//FIXME: need a faster version
 		  const float betaOutUpd = betaOut + copysign(std::asin(std::min(sdOut.dr*k2Rinv1GeVf/std::abs(pt_beta), sinAlphaMax)), betaOut);//FIXME: need a faster version
 		  betaAv = 0.5f*(betaInUpd + betaOutUpd);
@@ -3409,13 +3552,23 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		  //update the av and pt
 		  betaAv = 0.5f*(betaIn + betaOut);
 		  pt_beta = dr*k2Rinv1GeVf/sin(betaAv);//get a better pt estimate		  
+		}  else if (lIn < 11 && std::abs(betaOut) < 0.2* std::abs(betaIn) && std::abs(pt_beta) < 12.f*pt_betaMax){//use betaIn sign as ref
+		  const float pt_betaIn = dr*k2Rinv1GeVf/sin(betaIn);
+		  const float betaInUpd  = betaIn + copysign(std::asin(std::min(sdIn.dr*k2Rinv1GeVf/std::abs(pt_betaIn), sinAlphaMax)), betaIn);//FIXME: need a faster version
+		  const float betaOutUpd = betaOut + copysign(std::asin(std::min(sdOut.dr*k2Rinv1GeVf/std::abs(pt_betaIn), sinAlphaMax)), betaIn);//FIXME: need a faster version
+		  betaAv = std::abs(betaOut) > 0.2f*std::abs(betaIn) ? 0.5f*(betaInUpd + betaOutUpd) : betaInUpd;
+		  pt_beta = dr*k2Rinv1GeVf/sin(betaAv);//get a better pt estimate
+		  betaIn  += copysign(std::asin(std::min(sdIn.dr*k2Rinv1GeVf/std::abs(pt_beta), sinAlphaMax)), betaIn);//FIXME: need a faster version
+		  betaOut += copysign(std::asin(std::min(sdOut.dr*k2Rinv1GeVf/std::abs(pt_beta), sinAlphaMax)), betaIn);//FIXME: need a faster version
+		  //update the av and pt
+		  betaAv = 0.5f*(betaIn + betaOut);
+		  pt_beta = dr*k2Rinv1GeVf/sin(betaAv);//get a better pt estimate		  		      
 		}
 	      }
 	    }
 
 	    const float dBetaMuls = sdlThetaMulsF*4.f/std::min(std::abs(pt_beta), pt_betaMax);//need to confirm the range-out value of 7 GeV
 	    
-	    const float alphaAbs = std::max(std::max(std::abs(sdIn.alpha), std::abs(sdOut.alpha)), 0.01f);
 	    //regularize to alpha of pt_betaMax .. review may want to add resolution
 	    const float alphaInAbsReg = useFullR3Endcap ? 0.f : std::max(std::abs(sdIn.alpha), std::asin(std::min(sdIn.rt*k2Rinv1GeVf/3.0f, sinAlphaMax)));
 	    const float alphaOutAbsReg = useFullR3Endcap ? 0.f : std::max(std::abs(sdOut.alpha), std::asin(std::min(sdOut.rt*k2Rinv1GeVf/3.0f, sinAlphaMax)));
@@ -3434,14 +3587,9 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 
 	    const float dBetaRes = mockMode == 3 ? 0.02f/std::min(sdOut.d,sdIn.d) : 0.f;
 
-	    const float dBetaCut2 = (dBetaRes*dBetaRes*2.0f + dBetaMuls*dBetaMuls)
-	      + (mockMode == 3 ?
-		 (lIn < 11 && lOut < 11 ? 0.0f
-		  : lIn >= 11 && lOut >= 11 ? std::max(0.06f*alphaAbs*alphaAbs, 0.0009f)
-		  : std::max(0.06f*alphaAbs*alphaAbs, 0.0002f) )
-		 ://mockMode=1 case is most relevant here
-		 dBetaLum2
-		 );//FIXME: derive a better estimator for this fudge factor
+	    const float dBetaCut2 = (dBetaRes*dBetaRes*2.0f + dBetaMuls*dBetaMuls + dBetaLum2
+				     + 0.25*std::pow(std::abs(betaInRHmin - betaInRHmax) + std::abs(betaOutRHmin - betaOutRHmax),2));
+
 	    const float dBeta = betaIn - betaOut;
 
 	    const float dZeta = sdIn.zeta - sdOut.zeta;
@@ -4080,7 +4228,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      (lOut == 0 ? 0.05f : ( (lOut >= 5 && lOut <= 7) ? pixelPSZpitch : ( (lOut >= 8 && lOut <= 10) ? strip2SZpitch : 0.f)))	      
 	      : 0.f;//precise hits otherwise
 
-	    bool debugSimMatching = tpPt < 2 && hasSDIn_4of4 && hasSDOut_4of4 && has8MHs && has4MDs && debug;
+	    bool debugSimMatching = tpPt < 2 && tpPt > 1.5 && hasSDIn_4of4 && hasSDOut_4of4 && has8MHs && has4MDs && lIn == 11 && lOut == 13 && debug;
 	    for (auto const& sdIn : vSDIn_4of4){
 	      const float rtIn = sdIn.rt;
 	      const float rtInvIn = sdIn.rtInv;
@@ -4142,7 +4290,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		    const float rtHi = rtIn*(1.f + (zOut - zIn + zGeom1)/zInForHi) + rtGeom1;
 
 		    if (rtOut > rtLo && rtOut < rtHi) sdlFlag |= 1 << SDLSelectFlags::deltaZ;
-		    if (debugSimMatching && lIn == 0 && lOut == 11 && tpPt >0.8 && tpPt < 1.0 && std::sqrt(prodR2)<0.05 && !(sdlFlag & 1 << SDLSelectFlags::deltaZ) ){
+		    if (debugSimMatching && !(sdlFlag & 1 << SDLSelectFlags::deltaZ) ){
 		      std::cout<<"Lum region failed: tpPt "<<tpPt<<" tpEta "<<tpEta<<" tpZ "<<prodZ
 			       <<" lIn "<<lIn <<" rtLo "<<rtLo<<" rtHi "<<rtHi<<" vs rtOut "<<rtOut
 			       <<" ptIn "<<ptIn<<" ptCut "<<ptCut
@@ -4321,10 +4469,20 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 
 		float betaIn;
 		float betaOut;
+		float betaInRHmin;
+		float betaInRHmax;
+		float betaOutRHmin;
+		float betaOutRHmax;
+
 		auto const dr3 = mockMode == 0 ? sdOut.r3 - sdIn.r3 : sdOut.mdOut.r3 - sdIn.r3;
 		if (mockMode == 0){
 		  betaIn = sdIn.alpha - sdIn.r3.DeltaPhi(dr3);
 		  betaOut = - sdOut.alpha + sdOut.r3.DeltaPhi(dr3); //to match sign for correct match	      
+
+		  betaInRHmin = betaIn;
+		  betaInRHmax = betaIn;
+		  betaOutRHmin = betaOut;
+		  betaOutRHmax = betaOut;
 		}
 		else if (mockMode == 1 || mockMode == 3){
 		  //plain segment-level definitions; uneven rotation corrections are applied later using a better estimate of pt
@@ -4336,19 +4494,50 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		    betaIn  = sdIn.alpha - sdIn.r3.DeltaPhi(dr3);
 		    betaOut = -sdOut.alphaOut + sdOut.mdOut.r3.DeltaPhi(dr3);
 		  }
+		  if (mockMode == 1 || lOut < 11){
+		    betaInRHmin = betaIn;
+		    betaInRHmax = betaIn;
+		    betaOutRHmin = betaOut;
+		    betaOutRHmax = betaOut;
+		  } else {
+		    //FIXME: dr3 part should be varied as well
+		    if (lIn < 11){
+		      betaInRHmin = betaIn;
+		      betaInRHmax = betaIn;		  
+		    } else {
+		      betaInRHmin = betaIn + sdIn.alphaRHmin - sdIn.alpha;
+		      betaInRHmax = betaIn + sdIn.alphaRHmax - sdIn.alpha;
+		      if (std::abs(betaInRHmin) > std::abs(betaInRHmax)) std::swap(betaInRHmax, betaInRHmin);
+		    }
+		    if (lOut < 11){
+		      betaOutRHmin = betaOut;
+		      betaOutRHmax = betaOut;		  
+		    } else {
+		      betaOutRHmin = betaOut - sdOut.alphaOutRHmin + sdOut.alphaOut;
+		      betaOutRHmax = betaOut - sdOut.alphaOutRHmax + sdOut.alphaOut;
+		      if (std::abs(betaOutRHmin) > std::abs(betaOutRHmax)) std::swap(betaOutRHmax, betaOutRHmin);
+		    }
+		  }
 		}
 		else{
 		  betaIn = -99;
 		  betaOut = 999;
+		  betaInRHmin = betaIn;
+		  betaInRHmax = betaIn;
+		  betaOutRHmin = betaOut;
+		  betaOutRHmax = betaOut;
 		}
-		
+
+		if (debugSimMatching){
+		  std::cout<<"beta initial: tpPt "<<tpPt<<" eta "<<tpEta<<" bI "<<betaIn<<" bO "<<betaOut<<std::endl;
+		}
 		const float dr = dr3.Perp();
 		//beta upper cuts: 2-strip difference for direction resolution
 		const float corrF = mockMode == 0 ? 0.f : 1.f;
 		bool pass_betaIn_cut = lIn == 0;//pixel seeds were already selected
 		if (lIn != 0){
 		  const float betaIn_cut = (-sdIn.dr*corrF + dr)*k2Rinv1GeVf/ptCut + (mockMode == 3 ? 0.02f/sdIn.d : 0.f);
-		  pass_betaIn_cut = std::abs(betaIn) < betaIn_cut;
+		  pass_betaIn_cut = std::abs(betaInRHmin) < betaIn_cut;
 		}
 		if (pass_betaIn_cut) sdlFlag |=  1 << SDLSelectFlags::dAlphaIn;
 		
@@ -4368,9 +4557,14 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		  } else {
 		    const float diffDr = std::abs(sdIn.dr - sdOut.dr)/std::abs(sdIn.dr + sdOut.dr);
 		    if (true //do it for all//diffDr > 0.05 //only if segment length is different significantly
-			&& betaIn*betaOut > 0.f && std::abs(pt_beta) < 4.f*pt_betaMax ){ //and the pt_beta is well-defined
+			&& betaIn*betaOut > 0.f
+			&& (std::abs(pt_beta) < 4.f*pt_betaMax
+			    || (lIn >= 11 && std::abs(pt_beta) < 8.f*pt_betaMax) )){ //and the pt_beta is well-defined; less strict for endcap-endcap
 		      const float betaInUpd  = betaIn + copysign(std::asin(std::min(sdIn.dr*k2Rinv1GeVf/std::abs(pt_beta), sinAlphaMax)), betaIn);//FIXME: need a faster version
 		      const float betaOutUpd = betaOut + copysign(std::asin(std::min(sdOut.dr*k2Rinv1GeVf/std::abs(pt_beta), sinAlphaMax)), betaOut);//FIXME: need a faster version
+		      if (debugSimMatching){
+			std::cout<<"beta update Opt1: tpPt "<<tpPt<<" eta "<<tpEta<<" bIu "<<betaInUpd<<" bOu "<<betaOutUpd<<std::endl;
+		      }
 		      betaAv = 0.5f*(betaInUpd + betaOutUpd);
 		      pt_beta = dr*k2Rinv1GeVf/sin(betaAv);//get a better pt estimate
 		      betaIn  += copysign(std::asin(std::min(sdIn.dr*k2Rinv1GeVf/std::abs(pt_beta), sinAlphaMax)), betaIn);//FIXME: need a faster version
@@ -4378,13 +4572,29 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		      //update the av and pt
 		      betaAv = 0.5f*(betaIn + betaOut);
 		      pt_beta = dr*k2Rinv1GeVf/sin(betaAv);//get a better pt estimate		  
+		    } else if (lIn < 11 && std::abs(betaOut) < 0.2f* std::abs(betaIn) && std::abs(pt_beta) < 12.f*pt_betaMax){//use betaIn sign as ref
+		      const float pt_betaIn = dr*k2Rinv1GeVf/sin(betaIn);
+		      const float betaInUpd  = betaIn + copysign(std::asin(std::min(sdIn.dr*k2Rinv1GeVf/std::abs(pt_betaIn), sinAlphaMax)), betaIn);//FIXME: need a faster version
+		      const float betaOutUpd = betaOut + copysign(std::asin(std::min(sdOut.dr*k2Rinv1GeVf/std::abs(pt_betaIn), sinAlphaMax)), betaIn);//FIXME: need a faster version
+		      if (debugSimMatching){
+			std::cout<<"beta update Opt2: tpPt "<<tpPt<<" eta "<<tpEta<<" bIu "<<betaInUpd<<" bOu "<<betaOutUpd<<std::endl;
+		      }
+		      betaAv = std::abs(betaOut) > 0.2f*std::abs(betaIn) ? 0.5f*(betaInUpd + betaOutUpd) : betaInUpd;
+		      pt_beta = dr*k2Rinv1GeVf/sin(betaAv);//get a better pt estimate
+		      betaIn  += copysign(std::asin(std::min(sdIn.dr*k2Rinv1GeVf/std::abs(pt_beta), sinAlphaMax)), betaIn);//FIXME: need a faster version
+		      betaOut += copysign(std::asin(std::min(sdOut.dr*k2Rinv1GeVf/std::abs(pt_beta), sinAlphaMax)), betaIn);//FIXME: need a faster version
+		      //update the av and pt
+		      betaAv = 0.5f*(betaIn + betaOut);
+		      pt_beta = dr*k2Rinv1GeVf/sin(betaAv);//get a better pt estimate		  		      
 		    }
 		  }
+		}
+		if (debugSimMatching){
+		  std::cout<<"beta corrF: tpPt "<<tpPt<<" eta "<<tpEta<<" bI "<<betaIn<<" bO "<<betaOut<<std::endl;
 		}
 		
 		const float dBetaMuls = sdlThetaMulsF*4.f/std::min(std::abs(pt_beta), pt_betaMax); //need to confirm the range-out value of 7 GeV
 
-		const float alphaAbs = std::max(std::max(std::abs(sdIn.alpha), std::abs(sdOut.alpha)), 0.01f);
 		//regularize to alpha of pt_betaMax .. review may want to add resolution
 		const float alphaInAbsReg = useFullR3Endcap ? 0.f : std::max(std::abs(sdIn.alpha), std::asin(std::min(sdIn.rt*k2Rinv1GeVf/3.0f, sinAlphaMax)));
 		const float alphaOutAbsReg = useFullR3Endcap ? 0.f : std::max(std::abs(sdOut.alpha), std::asin(std::min(sdOut.rt*k2Rinv1GeVf/3.0f, sinAlphaMax)));
@@ -4401,18 +4611,13 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		
 		const float dBetaRes = mockMode == 3 ? 0.02f/std::min(sdIn.d, sdOut.d) : 0.f;
 
-		const float dBetaCut2 = (dBetaRes*dBetaRes*2.0f + dBetaMuls*dBetaMuls)
-		  + (mockMode == 3 ?
-		     (lIn < 11 && lOut < 11 ? 0.0f
-		      : lIn >= 11 && lOut >= 11 ? std::max(0.06f*alphaAbs*alphaAbs, 0.0009f)
-		      : std::max(0.06f*alphaAbs*alphaAbs, 0.0002f) )
-		     ://mockMode=1 case is most relevant here
-		     dBetaLum2
-		     );//FIXME: derive a better estimator for this fudge factor
+		const float dBetaCut2 = (dBetaRes*dBetaRes*2.0f + dBetaMuls*dBetaMuls + dBetaLum2
+					 + 0.25*std::pow(std::abs(betaInRHmin - betaInRHmax) + std::abs(betaOutRHmin - betaOutRHmax),2));
+
 		const float dBeta = betaIn - betaOut;
 		
 		if (dBeta*dBeta < dBetaCut2) sdlFlag |= 1 << SDLSelectFlags::dBeta;
-		if (debugSimMatching && lIn == 0 && lOut == 11 && tpPt > 2 && tpPt < 3){
+		if (debugSimMatching ){
 		  if (std::abs(betaOut) > betaOut_cut){
 		    std::cout<<"betaOut failed pt "<<tpPt<<" eta "<<tpEta
 			     <<" bo "<<betaOut<<" boCut "<<betaOut_cut<<" bOutPt "<<std::asin(std::min(dr*k2Rinv1GeVf/ptCut, sinAlphaMax))
@@ -4434,8 +4639,10 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 
 		  }
 		  if (dBeta*dBeta >= dBetaCut2){
-		  std::cout<<"dB failed pt "<<tpPt<<" dbCut "<<sqrt(dBetaCut2)<<" res "<<dBetaRes<<" muls "<<dBetaMuls
+		  std::cout<<"dB failed pt "<<tpPt<<" dbCut "<<sqrt(dBetaCut2)<<" res "<<dBetaRes<<" muls "<<dBetaMuls		    
 			   <<" mulPt "<<std::min(std::abs(pt_beta), pt_betaMax)<<" thetaM "<<sdlThetaMulsF
+			   <<" dbLum "<<sqrt(dBetaLum2)
+			   <<" dBInMM "<<std::abs(betaInRHmin - betaInRHmax)<<" dBOutMM "<<std::abs(betaOutRHmin - betaOutRHmax)
 			   <<" bPt "<<pt_beta<<" dr "<<dr<<" bAv "<<betaAv<<" bI "<<betaIn<<" bO "<<betaOut
 			   <<" dRI "<<sdIn.dr<<" dRO "<<sdOut.dr
 			   <<" aI "<<sdIn.alpha<<" aO "<<sdOut.alpha
@@ -4523,7 +4730,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		ha_SDL_dBeta_betaIn_zoom_NM1dBeta_8MH[iSDLL]->Fill(sdl.betaIn, dBeta);
 		ha_SDL_dBeta_betaOut_zoom_NM1dBeta_8MH[iSDLL]->Fill(sdl.betaOut, dBeta);
 		
-		if (debugMatchingSim && tpPt > 9.f && iSDLL == SDL_L5to11 && !h_0123456){ //&& !h_0123456 && std::abs(sdl.betaIn - sdl.betaOut)> 0.01){
+		//		if (std::abs(tpPt-18.0172) < 0.0001 && iSDLL == SDL_L5to11 && !h_0123456){
+		if (debugSimMatching && std::abs(tpPt-18.0172) < 0.0001 && iSDLL == SDL_L5to11){ //&& !h_0123456 && std::abs(sdl.betaIn - sdl.betaOut)> 0.01){
 		  std::cout<<"dB-fail tPt "<<tpPt
 			   <<" tEta " << tpEta<<" tPhi "<<tpPhi
 			   <<" dB "<<sdl.betaIn - sdl.betaOut
