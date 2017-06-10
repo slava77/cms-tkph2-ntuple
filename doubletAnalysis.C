@@ -2537,7 +2537,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	  const float xLocRecMock = r3RefLowerMock.y()*cosPhiAv - r3RefLowerMock.x()*sinPhiAv;//keep this fixed
 
 	  //this is supposedly the middle of the strip (not necessarily the case in SLHC setup)
-	  const float yLocRecMock = r3RefLower.y()*sinPhiAv + r3RefLower.x()*cosPhiAv;
+	  const float yLocRecMock = r3RefLowerMock.y()*sinPhiAv + r3RefLowerMock.x()*cosPhiAv;
 	  const float yLocRecMockIn = yLocRecMock - 0.5f*strip2SZpitch;
 	  const float yLocRecMockOut = yLocRecMock + 0.5f*strip2SZpitch;
 	  
@@ -2962,7 +2962,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    bool debug_mdCombine = false;
 	    if (mdRef.itp == mdOut.itp && mdRef.itp >= 0 && mdRef.ntp == 2 && mdOut.ntp == 2){
 	      TVector3 p3TP(sim_px()[mdRef.itp], sim_py()[mdRef.itp], sim_pz()[mdRef.itp]);
-	      if (std::abs(p3TP.Pt()-1.52163) < 1e-5 && (iL == 11 || iL == 13)){
+	      if (std::abs(p3TP.Pt()-1.65171) < 1e-5 && (iL == 11 || iL == 13)){
 		debug_mdCombine = true;
 		std::cout<<"Debug for  "<<p3TP.Pt()<<" "<<p3TP.Eta()<<" "<<p3TP.Phi()<<" "<<iL<<std::endl;
 	      }
@@ -3108,8 +3108,21 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		dPhiOutRHmax = deltaPhi(dPhiRHout, dPhiPosRHout);
 		if (std::abs(dPhiOutRHmin) > std::abs(dPhiOutRHmax)) std::swap(dPhiOutRHmax, dPhiOutRHmin);
 	      }
+	      if (debug_mdCombine){
+		std::cout<<"mdCombine mdRef "<<mdRef.phi<<" "<<mdRef.phiRHin<<" "<<mdRef.phiRHout<<" r "<<mdRef.rt<<" "<<mdRef.rtRHin<<" "<<mdRef.rtRHout
+			 <<std::endl;
+		std::cout<<"mdCombine range: "<<dPhiPos<<" "<<dPhi<<" "<<deltaPhi(dPhi, dPhiPos)
+			 <<" in: "<<dPhiPosRHin<<" "<<dPhiRHin<<" "<<deltaPhi(dPhiRHin, dPhiPosRHin)
+			 <<" out: "<<dPhiPosRHout<<" "<<dPhiRHout<<" "<<deltaPhi(dPhiRHout, dPhiPosRHout)
+			 <<std::endl;
+	      }
 	    }
-	      
+	    if (debug_mdCombine){
+	      std::cout<<" mdCombine dPhis: "<<dPhi<<" "<<dPhiRHmin<<" "<<dPhiRHmax
+		       <<" dPhiOut "<<dPhiOut<<" "<<dPhiOutRHmin<<" "<<dPhiOutRHmax
+		       <<std::endl;
+	    }
+
 	    
 	    SuperDoublet sd;
 	    sd.iRef = iRef;
@@ -3603,15 +3616,22 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		}
 	      }
 	    }
+	    //rescale the ranges proportionally
+	    const float betaInMMSF = 2.f*betaIn/std::abs(betaInRHmin+betaInRHmax);//mean value of min,max is the old betaIn
+	    const float betaOutMMSF = 2.f*betaOut/std::abs(betaOutRHmin+betaOutRHmax);
+	    betaInRHmin*= betaInMMSF;
+	    betaInRHmax*= betaInMMSF;
+	    betaOutRHmin*= betaOutMMSF;
+	    betaOutRHmax*= betaOutMMSF;
 
 	    const float dBetaMuls = sdlThetaMulsF*4.f/std::min(std::abs(pt_beta), pt_betaMax);//need to confirm the range-out value of 7 GeV
 	    
 	    //regularize to alpha of pt_betaMax .. review may want to add resolution
 	    const float alphaInAbsReg = useFullR3Endcap ? 0.f : std::max(std::abs(sdIn.alpha), std::asin(std::min(sdIn.rt*k2Rinv1GeVf/3.0f, sinAlphaMax)));
 	    const float alphaOutAbsReg = useFullR3Endcap ? 0.f : std::max(std::abs(sdOut.alpha), std::asin(std::min(sdOut.rt*k2Rinv1GeVf/3.0f, sinAlphaMax)));
-	    const float dBetaInLum2 = lIn < 11 ? 0.0f : alphaInAbsReg*alphaInAbsReg*deltaZLum*deltaZLum/sdIn.z/sdIn.z;
-	    const float dBetaOutLum2 = lOut < 11 ? 0.0f : alphaOutAbsReg*alphaOutAbsReg*deltaZLum*deltaZLum/sdOut.z/sdOut.z;
-	    const float dBetaLum2 = dBetaInLum2 + dBetaOutLum2;//FIXME: E-E are supposed to be correlated
+	    const float dBetaInLum = lIn < 11 ? 0.0f : std::abs(alphaInAbsReg*deltaZLum/sdIn.z);
+	    const float dBetaOutLum = lOut < 11 ? 0.0f : std::abs(alphaOutAbsReg*deltaZLum/sdOut.z);
+	    const float dBetaLum2 = (dBetaInLum + dBetaOutLum)*(dBetaInLum + dBetaOutLum);
 
 	    const float sinDPhi = std::sin(dPhi);
 	    const float dBetaRIn2 = std::pow((sdIn.mdRef.rtRHout - sdIn.mdRef.rtRHin)*sinDPhi/dr, 2);
@@ -4270,10 +4290,11 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      (lOut == 0 ? 0.05f : ( (lOut >= 5 && lOut <= 7) ? pixelPSZpitch : ( (lOut >= 8 && lOut <= 10) ? strip2SZpitch : 0.f)))	      
 	      : 0.f;//precise hits otherwise
 
-	    bool debugSimMatching = tpPt < 1.52164 && tpPt > 1.52162 && hasSDIn_4of4 && hasSDOut_4of4 && has8MHs && has4MDs && lIn == 11 && lOut == 13;// && debug;
-	    if (tpPt < 1.52164 && tpPt > 1.52162 && tpEta > -1.48797 && tpEta < -1.48795){
+	    bool debugSimMatching = tpPt < 2 && tpPt > 1.5 && hasSDIn_4of4 && hasSDOut_4of4 && has8MHs && has4MDs && lIn == 11 && lOut == 13 && debug;
+	    if (tpPt < 1.65172 && tpPt > 1.65170 && tpEta > 1.51427 && tpEta < 1.51429){
 	      std::cout<<"debugSimMatching "<<debugSimMatching<<" "<<hasSDIn_4of4<<" "<<hasSDOut_4of4<<" "<<has8MHs<<" "<<has4MDs<<" "<<lIn<<" "<<lOut<<std::endl;
 	    }
+	    bool debugAllDbeta = true;
 	    for (auto const& sdIn : vSDIn_4of4){
 	      const float rtIn = sdIn.rt;
 	      const float rtInvIn = sdIn.rtInv;
@@ -4637,15 +4658,26 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		if (debugSimMatching){
 		  std::cout<<"beta corrF: tpPt "<<tpPt<<" eta "<<tpEta<<" bI "<<betaIn<<" bO "<<betaOut<<std::endl;
 		}
+		//rescale the ranges proportionally
+		const float betaInMMSF = 2.f*betaIn/std::abs(betaInRHmin+betaInRHmax);//mean value of min,max is the old betaIn
+		const float betaOutMMSF = 2.f*betaOut/std::abs(betaOutRHmin+betaOutRHmax);
+		if (debugSimMatching){
+		  std::cout<<"Scale betaMM. Before "<<betaInRHmin<<" "<<betaInRHmax<<" "<<betaOutRHmin<<" "<<betaOutRHmax
+			   <<" SF "<<betaInMMSF<<" "<<betaOutMMSF <<std::endl;
+		}
+		betaInRHmin*= betaInMMSF;
+		betaInRHmax*= betaInMMSF;
+		betaOutRHmin*= betaOutMMSF;
+		betaOutRHmax*= betaOutMMSF;
 		
 		const float dBetaMuls = sdlThetaMulsF*4.f/std::min(std::abs(pt_beta), pt_betaMax); //need to confirm the range-out value of 7 GeV
 
 		//regularize to alpha of pt_betaMax .. review may want to add resolution
 		const float alphaInAbsReg = useFullR3Endcap ? 0.f : std::max(std::abs(sdIn.alpha), std::asin(std::min(sdIn.rt*k2Rinv1GeVf/3.0f, sinAlphaMax)));
 		const float alphaOutAbsReg = useFullR3Endcap ? 0.f : std::max(std::abs(sdOut.alpha), std::asin(std::min(sdOut.rt*k2Rinv1GeVf/3.0f, sinAlphaMax)));
-		const float dBetaInLum2 = lIn < 11 ? 0.0f : alphaInAbsReg*alphaInAbsReg*deltaZLum*deltaZLum/sdIn.z/sdIn.z;
-		const float dBetaOutLum2 = lOut < 11 ? 0.0f : alphaOutAbsReg*alphaOutAbsReg*deltaZLum*deltaZLum/sdOut.z/sdOut.z;
-		const float dBetaLum2 = dBetaInLum2 + dBetaOutLum2;//FIXME: E-E are supposed to be correlated
+		const float dBetaInLum = lIn < 11 ? 0.0f : std::abs(alphaInAbsReg*deltaZLum/sdIn.z);
+		const float dBetaOutLum = lOut < 11 ? 0.0f : std::abs(alphaOutAbsReg*deltaZLum/sdOut.z);
+		const float dBetaLum2 = (dBetaInLum + dBetaOutLum)*(dBetaInLum + dBetaOutLum);
 
 		const float sinDPhi = std::sin(dPhi);
 		const float dBetaRIn2 = std::pow((sdIn.mdRef.rtRHout - sdIn.mdRef.rtRHin)*sinDPhi/dr, 2);
@@ -4688,12 +4720,12 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		    }//iPix; pixelhits
 
 		  }
-		  if (dBeta*dBeta >= dBetaCut2 || true){
+		  if (dBeta*dBeta >= dBetaCut2 || debugAllDbeta){
 		    std::cout<<"dB failed pt "<<tpPt<<" "<<tpEta<<" "<<tpPhi<<" rz "<<tpDxy<<" "<<tpDz
 			     <<" tpProd "<<prodX<<" "<<prodY<<" "<<prodZ
 			     <<" dbCut "<<sqrt(dBetaCut2)<<" res "<<dBetaRes<<" muls "<<dBetaMuls		    
 			     <<" mulPt "<<std::min(std::abs(pt_beta), pt_betaMax)<<" thetaM "<<sdlThetaMulsF
-			     <<" dbLum "<<sqrt(dBetaLum2)<<" dbILum "<<sqrt(dBetaInLum2)<<" dbOLum "<<sqrt(dBetaOutLum2)
+			     <<" dbLum "<<sqrt(dBetaLum2)<<" dbILum "<<dBetaInLum<<" dbOLum "<<dBetaOutLum
 			     <<" dBInMM "<<std::abs(betaInRHmin - betaInRHmax)<<" dBOutMM "<<std::abs(betaOutRHmin - betaOutRHmax)
 			     <<" bPt "<<pt_beta<<" dr "<<dr<<" bAv "<<betaAv<<" bI "<<betaIn<<" bO "<<betaOut
 			     <<" dRI "<<sdIn.dr<<" dRO "<<sdOut.dr
@@ -4784,7 +4816,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		ha_SDL_dBeta_betaOut_zoom_NM1dBeta_8MH[iSDLL]->Fill(sdl.betaOut, dBeta);
 		
 		//		if (std::abs(tpPt-18.0172) < 0.0001 && iSDLL == SDL_L5to11 && !h_0123456){
-		if (debugSimMatching && (!h_0123456 || true)){ //&& !h_0123456 && std::abs(sdl.betaIn - sdl.betaOut)> 0.01){
+		if (debugSimMatching && (!h_0123456 || debugAllDbeta)){ //&& !h_0123456 && std::abs(sdl.betaIn - sdl.betaOut)> 0.01){
 		  std::cout<<"dB-fail tPt "<<tpPt
 			   <<" tEta " << tpEta<<" tPhi "<<tpPhi
 			   <<" dB "<<sdl.betaIn - sdl.betaOut
