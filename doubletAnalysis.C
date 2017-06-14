@@ -2959,11 +2959,11 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    float rtOut = mdOut.rt;
 	    float zOut = mdOut.z;
 
-	    bool debug_mdCombine = false;
+	    bool debug_sdBuild = false;
 	    if (mdRef.itp == mdOut.itp && mdRef.itp >= 0 && mdRef.ntp == 2 && mdOut.ntp == 2){
 	      TVector3 p3TP(sim_px()[mdRef.itp], sim_py()[mdRef.itp], sim_pz()[mdRef.itp]);
 	      if (std::abs(p3TP.Pt()-1.65171) < 1e-5 && (iL == 5 || iL == 11)){
-		debug_mdCombine = true;
+		debug_sdBuild = true;
 		std::cout<<"Debug for  "<<p3TP.Pt()<<" "<<p3TP.Eta()<<" "<<p3TP.Phi()<<" "<<iL<<std::endl;
 	      }
 	    }
@@ -2989,7 +2989,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      iFlag = SDSelectFlags::deltaZ;
 	      if (!(zOut < zLo || zOut > zHi)) sdFlag |= 1 << iFlag;
 	      else if (cumulativeCuts ){
-		if (debug_mdCombine) std::cout<<"Failed SDSelectFlags::deltaZ "<<zOut<<" "<<zLo<<" "<<zHi<<std::endl;
+		if (debug_sdBuild) std::cout<<"Failed SDSelectFlags::deltaZ "<<zOut<<" "<<zLo<<" "<<zHi<<std::endl;
 		continue;
 	      }
 	      
@@ -3003,7 +3003,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      //FIXME: should be tighter than the local sdCut
 	      if (!(std::abs(deltaPhi(mdRef.phi, mdOut.phi)) > sdCut )) sdFlag |= 1 << iFlag;
 	      else if (cumulativeCuts ){
-		if (debug_mdCombine) std::cout<<"Failed SelectFlags::deltaPhiPos "<<mdRef.phi<<" "<<mdOut.phi<<" "<<sdCut<<std::endl;
+		if (debug_sdBuild) std::cout<<"Failed SelectFlags::deltaPhiPos "<<mdRef.phi<<" "<<mdOut.phi<<" "<<sdCut<<std::endl;
 		continue;
 	      }
 	      if (sdFlag == sdMasksCumulative[iFlag]) nPass[iFlag]++;
@@ -3017,7 +3017,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      iFlag = SDSelectFlags::slope;
 	      if (!(std::abs(dPhi) > sdCut)) sdFlag |= 1 << iFlag;
 	      else if (cumulativeCuts ){
-		if (debug_mdCombine) std::cout<<"Failed SelectFlags::slope "<<dPhi<<" "<<sdCut<<std::endl;
+		if (debug_sdBuild) std::cout<<"Failed SelectFlags::slope "<<dPhi<<" "<<sdCut<<std::endl;
 		continue;
 	      }
 	      if (sdFlag == sdMasksCumulative[iFlag]) nPass[iFlag]++;
@@ -3046,7 +3046,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      iFlag = SDSelectFlags::deltaZ; //some unfortunate naming
 	      if (!(rtOut < rtLo || rtOut > rtHi)) sdFlag |= 1 << iFlag;
 	      else if (cumulativeCuts ){
-		if (debug_mdCombine) std::cout<<"Failed SelectFlags::deltaZ "<<rtOut<<" "<<rtLo<<" "<<rtHi<<std::endl;
+		if (debug_sdBuild) std::cout<<"Failed SelectFlags::deltaZ "<<rtOut<<" "<<rtLo<<" "<<rtHi<<std::endl;
 		continue;
 	      }
 	      
@@ -3064,7 +3064,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      //FIXME: should be tighter than the local sdCut
 	      if (!(std::abs(dPhiPos) > sdCut )) sdFlag |= 1 << iFlag;
 	      else if (cumulativeCuts ){
-		if (debug_mdCombine) std::cout<<"Failed SelectFlags::deltaPhiPos "<<mdRef.phi<<" "<<mdOut.phi<<" "<<sdCut<<std::endl;
+		if (debug_sdBuild) std::cout<<"Failed SelectFlags::deltaPhiPos "<<mdRef.phi<<" "<<mdOut.phi<<" "<<sdCut<<std::endl;
 		continue;
 	      }
 	      if (sdFlag == sdMasksCumulative[iFlag]) nPass[iFlag]++;
@@ -3089,7 +3089,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      iFlag = SDSelectFlags::slope;
 	      if (!(std::abs(dPhi) > sdCut )) sdFlag |= 1 << iFlag;
 	      else if (cumulativeCuts ){
-		if (debug_mdCombine) std::cout<<"Failed SelectFlags::slope "<<dPhi<<" "<<dPhiPos<<" "<<dzFrac<<" "<<sdCut<<std::endl;
+		if (debug_sdBuild) std::cout<<"Failed SelectFlags::slope "<<dPhi<<" "<<dPhiPos<<" "<<dzFrac<<" "<<sdCut<<std::endl;
 		continue;
 	      }
 	      if (sdFlag == sdMasksCumulative[iFlag]) nPass[iFlag]++;
@@ -3108,17 +3108,17 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		dPhiOutRHmax = deltaPhi(dPhiRHout, dPhiPosRHout);
 		if (std::abs(dPhiOutRHmin) > std::abs(dPhiOutRHmax)) std::swap(dPhiOutRHmax, dPhiOutRHmin);
 	      }
-	      if (debug_mdCombine){
-		std::cout<<"mdCombine mdRef "<<mdRef.phi<<" "<<mdRef.phiRHin<<" "<<mdRef.phiRHout<<" r "<<mdRef.rt<<" "<<mdRef.rtRHin<<" "<<mdRef.rtRHout
+	      if (debug_sdBuild){
+		std::cout<<"sdBuild mdRef "<<mdRef.phi<<" "<<mdRef.phiRHin<<" "<<mdRef.phiRHout<<" r "<<mdRef.rt<<" "<<mdRef.rtRHin<<" "<<mdRef.rtRHout
 			 <<std::endl;
-		std::cout<<"mdCombine range: "<<dPhiPos<<" "<<dPhi<<" "<<deltaPhi(dPhi, dPhiPos)
+		std::cout<<"sdBuild range: "<<dPhiPos<<" "<<dPhi<<" "<<deltaPhi(dPhi, dPhiPos)
 			 <<" in: "<<dPhiPosRHin<<" "<<dPhiRHin<<" "<<deltaPhi(dPhiRHin, dPhiPosRHin)
 			 <<" out: "<<dPhiPosRHout<<" "<<dPhiRHout<<" "<<deltaPhi(dPhiRHout, dPhiPosRHout)
 			 <<std::endl;
 	      }
 	    }
-	    if (debug_mdCombine){
-	      std::cout<<" mdCombine dPhis: "<<dPhi<<" "<<dPhiRHmin<<" "<<dPhiRHmax
+	    if (debug_sdBuild){
+	      std::cout<<" sdBuild dPhis: "<<dPhi<<" "<<dPhiRHmin<<" "<<dPhiRHmax
 		       <<" dPhiOut "<<dPhiOut<<" "<<dPhiOutRHmin<<" "<<dPhiOutRHmax
 		       <<std::endl;
 	    }
@@ -3143,12 +3143,12 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    float dAlpha_Bfield = std::asin(std::min(sd.dr*k2Rinv1GeVf/ptCut, sinAlphaMax));
 	    float dAlpha_res = 0.04f/miniDelta[iL] * (iL < 11 ? 1.0f : std::abs(sd.z/sd.rt) )*(mockMode == 3 ? 1.0f : 0.0f);//4-strip difference
 	    float dAlpha_compat = dAlpha_Bfield + dAlpha_res;
-	    if (debug_mdCombine) dAlpha_compat *= 2;
+	    if (debug_sdBuild) dAlpha_compat *= 2;
 	    iFlag = SDSelectFlags::alphaRef;
 	    if (!((std::abs(mdRef.alpha- sd.alphaRHmax) > dAlpha_compat)
 		  && (std::abs(mdRef.alpha- sd.alphaRHmin) > dAlpha_compat)) ) sdFlag |= 1 << iFlag;
 	    else if (cumulativeCuts ){
-	      if (debug_mdCombine) std::cout<<"Failed SelectFlags::alphaRef "<<mdRef.alpha<<" "<<sd.alphaRHmax<<" "<<sd.alphaRHmin<<" "<<dAlpha_compat<<std::endl;
+	      if (debug_sdBuild) std::cout<<"Failed SelectFlags::alphaRef "<<mdRef.alpha<<" "<<sd.alphaRHmax<<" "<<sd.alphaRHmin<<" "<<dAlpha_compat<<std::endl;
 	      continue;
 	    }
 
@@ -3158,7 +3158,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    if (!((std::abs(mdOut.alpha- sd.alphaRHmax) > dAlpha_compat)
 		  && (std::abs(mdOut.alpha- sd.alphaRHmin) > dAlpha_compat)) ) sdFlag |= 1 << iFlag;//FIXME: this could be more restrictive: dBfiled cancels out
 	    else if (cumulativeCuts ){
-	      if (debug_mdCombine) std::cout<<"Failed SelectFlags::alphaOut "<<mdOut.alpha<<" "<<sd.alphaRHmax<<" "<<sd.alphaRHmin<<" "<<dAlpha_compat<<std::endl;
+	      if (debug_sdBuild) std::cout<<"Failed SelectFlags::alphaOut "<<mdOut.alpha<<" "<<sd.alphaRHmax<<" "<<sd.alphaRHmin<<" "<<dAlpha_compat<<std::endl;
 	      continue;
 	    }
 
@@ -3167,14 +3167,14 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    iFlag = SDSelectFlags::alphaRefOut;
 	    if (!(std::abs(mdOut.alpha- mdRef.alpha) > dAlpha_compat)) sdFlag |= 1 << iFlag;
 	    else if (cumulativeCuts ){
-	      if (debug_mdCombine) std::cout<<"Failed SelectFlags::alphaRefOut "<<mdRef.alpha<<" "<<mdOut.alpha<<" "<<dAlpha_compat<<std::endl;
+	      if (debug_sdBuild) std::cout<<"Failed SelectFlags::alphaRefOut "<<mdRef.alpha<<" "<<mdOut.alpha<<" "<<dAlpha_compat<<std::endl;
 	      continue;
 	    }
 
 	    if (sdFlag == sdMasksCumulative[iFlag]) nPass[iFlag]++;
 
 	    if (sdFlag != sdMasksCumulative[SDSelectFlags::max-1]) continue; //apply all cuts
-	    if (debug_mdCombine) std::cout<<"Passed all selections! "<<std::endl;
+	    if (debug_sdBuild) std::cout<<"Passed all selections! "<<std::endl;
 
 	    sd.mdRef = mdRef;
 	    sd.mdOut = mdOut;
