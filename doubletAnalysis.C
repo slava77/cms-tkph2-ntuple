@@ -2271,16 +2271,16 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       //this could be filled on-demand and in some regions of interest at some point
       //assume somewhat hermetic tracker and the only hits in the barrel to be from the barrel
       //reference layer minidoublet
-      std::array<std::vector<std::pair<int, const V3WithCache> >, nLayersA+1 > mockLayerMDfwRefLower;
-      std::array<std::vector<std::pair<int, const V3WithCache> >, nLayersA+1 > mockLayerMDfwRefUpper;
+      std::array<std::vector<std::pair<int, const V3WithCache> >, nLayersA+1 > layerMDRefLower;
+      std::array<std::vector<std::pair<int, const V3WithCache> >, nLayersA+1 > layerMDRefUpper;
       //offset layer minidoublet (Ncm hardcode for now)
-      std::array<std::vector<std::pair<int, const V3WithCache> >, nLayersA+1 > mockLayerMDfwDNcmLower;
-      std::array<std::vector<std::pair<int, const V3WithCache> >, nLayersA+1 > mockLayerMDfwDNcmUpper;
+      std::array<std::vector<std::pair<int, const V3WithCache> >, nLayersA+1 > layerMDOutLower;
+      std::array<std::vector<std::pair<int, const V3WithCache> >, nLayersA+1 > layerMDOutUpper;
       for (int iL = 1; iL <=nLayersA; ++iL){
-	mockLayerMDfwRefLower[iL].reserve(maxHitsInLayer);
-	mockLayerMDfwRefUpper[iL].reserve(maxHitsInLayer);
-	mockLayerMDfwDNcmLower[iL].reserve(maxHitsInLayer);
-	mockLayerMDfwDNcmUpper[iL].reserve(maxHitsInLayer);
+	layerMDRefLower[iL].reserve(maxHitsInLayer);
+	layerMDRefUpper[iL].reserve(maxHitsInLayer);
+	layerMDOutLower[iL].reserve(maxHitsInLayer);
+	layerMDOutUpper[iL].reserve(maxHitsInLayer);
       }
 
       auto const nSimhit = simhit_lay().size();
@@ -2478,20 +2478,22 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	}
 	
 	//FIXME: consider to improve to allow multiple deltas
-	if (iParticle == -11 && ps < 0.1){
-	  if (simIdxDeltaInLayer[lay].find(iSimIdx) != simIdxDeltaInLayer[lay].end()) continue; //only one hit per layer per track
-	  else {
-	    simIdxDeltaInLayer[lay].insert(iSimIdx);
-	  }
-	} else if (iParticle == 11 && ps < 0.1) {
-	  if (simIdxPositronLowPInLayer[lay].find(iSimIdx) != simIdxPositronLowPInLayer[lay].end()) continue; //only one hit per layer per track
-	  else {
-	    simIdxPositronLowPInLayer[lay].insert(iSimIdx);
-	  }	  
-	} else {
-	  if (simIdxInLayer[lay].find(iSimIdx) != simIdxInLayer[lay].end()) continue; //only one hit per layer per track
-	  else {
-	    simIdxInLayer[lay].insert(iSimIdx);
+	if (mockMode <= 3){
+	  if (iParticle == -11 && ps < 0.1){
+	    if (simIdxDeltaInLayer[lay].find(iSimIdx) != simIdxDeltaInLayer[lay].end()) continue; //only one hit per layer per track
+	    else {
+	      simIdxDeltaInLayer[lay].insert(iSimIdx);
+	    }
+	  } else if (iParticle == 11 && ps < 0.1) {
+	    if (simIdxPositronLowPInLayer[lay].find(iSimIdx) != simIdxPositronLowPInLayer[lay].end()) continue; //only one hit per layer per track
+	    else {
+	      simIdxPositronLowPInLayer[lay].insert(iSimIdx);
+	    }	  
+	  } else {
+	    if (simIdxInLayer[lay].find(iSimIdx) != simIdxInLayer[lay].end()) continue; //only one hit per layer per track
+	    else {
+	      simIdxInLayer[lay].insert(iSimIdx);
+	    }
 	  }
 	}
 
@@ -2514,16 +2516,21 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	int pstat = 0;
 	TVector3 r3RefLower;
 	TVector3 p3RefLower;
-	if (q == 0){
-	  r3RefLower = isBarrel ? linePropagateR(r3Sim, p3Sim, rRefLower, pstat)
-	    : linePropagateZ(r3Sim, p3Sim, rRefLower, pstat);
-	  p3RefLower = p3Sim;
+	if (mockMode <= 3){
+	  if (q == 0){
+	    r3RefLower = isBarrel ? linePropagateR(r3Sim, p3Sim, rRefLower, pstat)
+	      : linePropagateZ(r3Sim, p3Sim, rRefLower, pstat);
+	    p3RefLower = p3Sim;
+	  } else {
+	    auto resProp = isBarrel ? helixPropagateApproxR(r3Sim, p3Sim, rRefLower, q, pstat)
+	      :  helixPropagateApproxZ(r3Sim, p3Sim, rRefLower, q, pstat);
+	    r3RefLower = resProp.first;
+	    p3RefLower = resProp.second;
+	    
+	  }
 	} else {
-	  auto resProp = isBarrel ? helixPropagateApproxR(r3Sim, p3Sim, rRefLower, q, pstat)
-	    :  helixPropagateApproxZ(r3Sim, p3Sim, rRefLower, q, pstat);
-	  r3RefLower = resProp.first;
-	  p3RefLower = resProp.second;
-	  
+	  r3RefLower = r3Sim;
+	  p3RefLower = p3Sim;
 	}
 
 	if (debug_mockHit){
@@ -2621,7 +2628,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		   <<" phiIO "<<v3RefLowerMock.phiRHin<<" "<<v3RefLowerMock.phiRHout
 		   <<std::endl;
 	}
-	if (pstat == 0) mockLayerMDfwRefLower[lay].push_back(std::make_pair(iph2WithType, v3RefLowerMock));
+	if (pstat == 0) layerMDRefLower[lay].push_back(std::make_pair(iph2WithType, v3RefLowerMock));
 
 	auto r3RefUpper = propagateMH(rRefUpper);
 	if (mockMode == 3 && lay >= 11 && r3Rec.Pt() > disks2SMinRadius){
@@ -2652,16 +2659,16 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	
 	//FIXME: put more appropriate limits
 	const bool r3RefUpperIsGood = (isBarrel && std::abs(r3RefUpper.z()) < 120.f) || (!isBarrel && r3RefUpper.Pt() > 23.f && r3RefUpper.Pt() < 110.f);
-	if (pstat == 0 && r3RefUpperIsGood) mockLayerMDfwRefUpper[lay].push_back(std::make_pair(iph2WithType, V3WithCache(r3RefUpper, drdz, isTilted)));
+	if (pstat == 0 && r3RefUpperIsGood) layerMDRefUpper[lay].push_back(std::make_pair(iph2WithType, V3WithCache(r3RefUpper, drdz, isTilted)));
 
 	//keep the mock outer doublet at its SIM state
 	auto r3SDfwLower = propagateMH(rSDfwLower);
 	const bool r3SDfwLowerIsGood = (isBarrel && std::abs(r3SDfwLower.z()) < 120.f) || (!isBarrel && r3SDfwLower.Pt() > 23.f && r3SDfwLower.Pt() < 110.f);
-	if (pstat == 0 && r3SDfwLowerIsGood) mockLayerMDfwDNcmLower[lay].push_back(std::make_pair(iph2WithType, V3WithCache(r3SDfwLower, drdz, isTilted)));
+	if (pstat == 0 && r3SDfwLowerIsGood) layerMDOutLower[lay].push_back(std::make_pair(iph2WithType, V3WithCache(r3SDfwLower, drdz, isTilted)));
 	auto r3SDfwUpper = propagateMH(rSDfwUpper);
 	const bool r3SDfwUpperIsGood = (isBarrel && std::abs(r3SDfwUpper.z()) < 120.f) || (!isBarrel && r3SDfwUpper.Pt() > 23.f && r3SDfwUpper.Pt() < 110.f);
 	if (pstat == 0 && r3SDfwUpperIsGood)
-	  mockLayerMDfwDNcmUpper[lay].push_back(std::make_pair(iph2WithType, V3WithCache(r3SDfwUpper, drdz, isTilted)));
+	  layerMDOutUpper[lay].push_back(std::make_pair(iph2WithType, V3WithCache(r3SDfwUpper, drdz, isTilted)));
 
 	if (pstat == 0 && q != 0 && pts>0.8){
 	  if (lay == 5 || lay == 7 || lay == 9){
@@ -2679,10 +2686,10 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       std::cout<<"MH stat: nPh2 "<<nPh2<<std::endl;
       for (int iL = 0; iL < nLayersA+1; ++iL){
 	std::cout<<" L "<<iL
-		 <<" RfL "<<mockLayerMDfwRefLower[iL].size()
-		 <<" RfL "<<mockLayerMDfwRefUpper[iL].size()
-		 <<" RfL "<<mockLayerMDfwDNcmLower[iL].size()
-		 <<" RfL "<<mockLayerMDfwDNcmUpper[iL].size()
+		 <<" RfL "<<layerMDRefLower[iL].size()
+		 <<" RfL "<<layerMDRefUpper[iL].size()
+		 <<" RfL "<<layerMDOutLower[iL].size()
+		 <<" RfL "<<layerMDOutUpper[iL].size()
 		 <<std::endl;	  
       }
 
@@ -2703,19 +2710,19 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 
       timerA[T_timeReco].Start(kFALSE);
       constexpr int maxMDexpected = 100;
-      std::array<std::vector<MiniDoublet>, nLayersA+1> mockLayerMDfwRef;
-      for (auto& m : mockLayerMDfwRef ) m.reserve(100000);
-      std::array<std::vector<MiniDoublet>, nLayersA+1> mockLayerMDfwDNcm;
-      for (auto& m : mockLayerMDfwDNcm ) m.reserve(100000);      
+      std::array<std::vector<MiniDoublet>, nLayersA+1> layerMDRef;
+      for (auto& m : layerMDRef ) m.reserve(100000);
+      std::array<std::vector<MiniDoublet>, nLayersA+1> layerMDOut;
+      for (auto& m : layerMDOut ) m.reserve(100000);      
 
-      std::array<std::vector<SuperDoublet>, nLayersA+1> mockLayerSDfwDNcm;
-      for (auto& m : mockLayerSDfwDNcm ) m.reserve(1000000);      
+      std::array<std::vector<SuperDoublet>, nLayersA+1> layerSD;
+      for (auto& m : layerSD ) m.reserve(1000000);      
 
-      std::array<std::vector<bool>, nLayersA+1> mockLayerSDfwDNcm_isSecondaryGhost;
-      for (auto& m : mockLayerSDfwDNcm_isSecondaryGhost ) m.reserve(1000000);  
+      std::array<std::vector<bool>, nLayersA+1> layerSD_isSecondaryGhost;
+      for (auto& m : layerSD_isSecondaryGhost ) m.reserve(1000000);  
       
-      std::array<std::vector<SDLink>, SDL_LMAX> mockLayerSDLsDNcm;
-      for (auto& m : mockLayerSDLsDNcm) m.reserve(1000000);
+      std::array<std::vector<SDLink>, SDL_LMAX> layerSDL;
+      for (auto& m : layerSDL) m.reserve(1000000);
 
       
       if (useSeeds == 1){
@@ -2834,9 +2841,9 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      seedSD.ntpLL = m.second;
 	    }
 	  }
-	  mockLayerSDfwDNcm[0].emplace_back(seedSD);
+	  layerSD[0].emplace_back(seedSD);
 	}
-	std::cout<<"Loaded nSeeds (pt>1 and |eta|<1.6) "<<mockLayerSDfwDNcm[0].size()<<std::endl;
+	std::cout<<"Loaded nSeeds (pt>1 and |eta|<1.6) "<<layerSD[0].size()<<std::endl;
       }      
       
       std::cout<<"Combine MDs "<<std::endl;
@@ -2844,12 +2851,12 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       for (int iL = minLayer; iL <= nLayersA; ++iL){
 	if (!addEndcaps && iL > 10) continue;
 
-	auto const&  hitsRefLower = mockLayerMDfwRefLower[iL];
-	auto const&  hitsRefUpper = mockLayerMDfwRefUpper[iL];
-	auto const&  hitsOutLower = mockLayerMDfwDNcmLower[iL];
-	auto const&  hitsOutUpper = mockLayerMDfwDNcmUpper[iL];
+	auto const&  hitsRefLower = layerMDRefLower[iL];
+	auto const&  hitsRefUpper = layerMDRefUpper[iL];
+	auto const&  hitsOutLower = layerMDOutLower[iL];
+	auto const&  hitsOutUpper = layerMDOutUpper[iL];
 	
-	auto& mockMDfwRef = mockLayerMDfwRef[iL];
+	auto& mockMDfwRef = layerMDRef[iL];
 
 	int n_all = 0;
 	int n_dz = 0;
@@ -3055,7 +3062,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		 <<" dPhi "<<n_dPhi
 		 <<std::endl;
 
-	auto& mockMDfwDNcm = mockLayerMDfwDNcm[iL];
+	auto& mockMDfwDNcm = layerMDOut[iL];
 	mdCombine(hitsOutLower, hitsOutUpper, mockMDfwDNcm);
 	std::cout<<"MD out stat "<<iL<<" "<<mockMDfwDNcm.size()
 		 <<" all "<<n_all
@@ -3066,7 +3073,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		 <<std::endl;
 	
 	//now make super-doublets
-	auto& mockSDfwDNcm = mockLayerSDfwDNcm[iL];
+	auto& mockSDfwDNcm = layerSD[iL];
 	
 	enum SDSelectFlags {deltaZ = 0, deltaPhiPos, slope, alphaRef, alphaOut, alphaRefOut, max};
 	std::array<string, SDSelectFlags::max> sdFlagString {"deltaZ", "deltaPhiPos",
@@ -3370,18 +3377,18 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	}//mdRef : mockMDfwRef
 
 	int nSDs = mockSDfwDNcm.size();
-	mockLayerSDfwDNcm_isSecondaryGhost[iL].resize(nSDs);
-	for (int i = 0; i< nSDs; ++i) mockLayerSDfwDNcm_isSecondaryGhost[iL][i] = false;
+	layerSD_isSecondaryGhost[iL].resize(nSDs);
+	for (int i = 0; i< nSDs; ++i) layerSD_isSecondaryGhost[iL][i] = false;
 
 	//fill isSecondaryGhost flags such that the first encounter is "false"
 	for (int i = 0; i< nSDs; ++i){
-	  bool isSecondaryGhost = mockLayerSDfwDNcm_isSecondaryGhost[iL][i];
+	  bool isSecondaryGhost = layerSD_isSecondaryGhost[iL][i];
 	  if (! isSecondaryGhost){
 	    auto const& iSD = mockSDfwDNcm[i];
 	    for (int j = i+1; j < nSDs; ++j){
 	      auto const& jSD = mockSDfwDNcm[j];
 	      if (sameLowerLayerID(iSD, jSD)){
-		mockLayerSDfwDNcm_isSecondaryGhost[iL][j] = true;
+		layerSD_isSecondaryGhost[iL][j] = true;
 		break;
 	      }
 	    }
@@ -3407,9 +3414,9 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 
       
       //try to link segments: (special cases for L=0 where needed)
-      auto sdLink = [&] (int lIn, int lOut, typename decltype(mockLayerSDLsDNcm)::value_type& sdlV){
-	auto const& sdInV  = mockLayerSDfwDNcm[lIn];
-	auto const& sdOutV = mockLayerSDfwDNcm[lOut];	
+      auto sdLink = [&] (int lIn, int lOut, typename decltype(layerSDL)::value_type& sdlV){
+	auto const& sdInV  = layerSD[lIn];
+	auto const& sdOutV = layerSD[lOut];	
 	
 	int iSDL = sdlFromLayers[lIn][lOut];
 	assert(iSDL != SDL_LMAX);// "Layer pair is not mapped");
@@ -3898,8 +3905,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		sdl.ntp = m.second;
 	      }
 	    }
-	    sdl.sdInGhost  = lIn != 0 && mockLayerSDfwDNcm_isSecondaryGhost[lIn][iIn];
-	    sdl.sdOutGhost = mockLayerSDfwDNcm_isSecondaryGhost[lOut][iOut];
+	    sdl.sdInGhost  = lIn != 0 && layerSD_isSecondaryGhost[lIn][iIn];
+	    sdl.sdOutGhost = layerSD_isSecondaryGhost[lOut][iOut];
 	    sdl.itpLL = -1;
 	    sdl.ntpLL = 0;
 	    tps.clear();
@@ -3917,8 +3924,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      ha_SDL_dBeta_betaIn_NM1dBeta_all[iSDL]->Fill(betaIn, dBeta);
 	      
 	      ha_SDL_dBeta_zoom_NM1dBeta_all[iSDL]->Fill(dBeta);
-	      if (! ( (lIn != 0 && mockLayerSDfwDNcm_isSecondaryGhost[lIn][iIn])
-		      || mockLayerSDfwDNcm_isSecondaryGhost[lOut][iOut])
+	      if (! ( (lIn != 0 && layerSD_isSecondaryGhost[lIn][iIn])
+		      || layerSD_isSecondaryGhost[lOut][iOut])
 		  ){
 		//		if (!(lOut >= 11 && sdl.sdOut.mdRef.rt < disks2SMinRadius))
 		  {
@@ -3980,18 +3987,18 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	         <<std::endl;
       };//auto sdLink
 
-      auto isdll = SDL_L0to5; sdLink(layersSDL[isdll][0], layersSDL[isdll][1], mockLayerSDLsDNcm[isdll]);
-      isdll = SDL_L0to7; sdLink(layersSDL[isdll][0], layersSDL[isdll][1], mockLayerSDLsDNcm[isdll]);
-      isdll = SDL_L0to11; sdLink(layersSDL[isdll][0], layersSDL[isdll][1], mockLayerSDLsDNcm[isdll]);
+      auto isdll = SDL_L0to5; sdLink(layersSDL[isdll][0], layersSDL[isdll][1], layerSDL[isdll]);
+      isdll = SDL_L0to7; sdLink(layersSDL[isdll][0], layersSDL[isdll][1], layerSDL[isdll]);
+      isdll = SDL_L0to11; sdLink(layersSDL[isdll][0], layersSDL[isdll][1], layerSDL[isdll]);
       if (ptCutAll >= 1.0f || (sdOffsetB <= 6.0f && sdOffsetE <= 6.0f)){//FIXME: NEED A MORE OPTIMAL SOLUTION
-	isdll = SDL_L5to7; sdLink(layersSDL[isdll][0], layersSDL[isdll][1], mockLayerSDLsDNcm[isdll]);
-	isdll = SDL_L7to9; sdLink(layersSDL[isdll][0], layersSDL[isdll][1], mockLayerSDLsDNcm[isdll]);
+	isdll = SDL_L5to7; sdLink(layersSDL[isdll][0], layersSDL[isdll][1], layerSDL[isdll]);
+	isdll = SDL_L7to9; sdLink(layersSDL[isdll][0], layersSDL[isdll][1], layerSDL[isdll]);
 	
-	isdll = SDL_L5to11; sdLink(layersSDL[isdll][0], layersSDL[isdll][1], mockLayerSDLsDNcm[isdll]);
-	isdll = SDL_L5to13; sdLink(layersSDL[isdll][0], layersSDL[isdll][1], mockLayerSDLsDNcm[isdll]);
-	isdll = SDL_L7to11; sdLink(layersSDL[isdll][0], layersSDL[isdll][1], mockLayerSDLsDNcm[isdll]);
-	isdll = SDL_L7to13; sdLink(layersSDL[isdll][0], layersSDL[isdll][1], mockLayerSDLsDNcm[isdll]);
-	isdll = SDL_L11to13; sdLink(layersSDL[isdll][0], layersSDL[isdll][1], mockLayerSDLsDNcm[isdll]);
+	isdll = SDL_L5to11; sdLink(layersSDL[isdll][0], layersSDL[isdll][1], layerSDL[isdll]);
+	isdll = SDL_L5to13; sdLink(layersSDL[isdll][0], layersSDL[isdll][1], layerSDL[isdll]);
+	isdll = SDL_L7to11; sdLink(layersSDL[isdll][0], layersSDL[isdll][1], layerSDL[isdll]);
+	isdll = SDL_L7to13; sdLink(layersSDL[isdll][0], layersSDL[isdll][1], layerSDL[isdll]);
+	isdll = SDL_L11to13; sdLink(layersSDL[isdll][0], layersSDL[isdll][1], layerSDL[isdll]);
       }
       
       //link the links to TrackLinks
@@ -4002,12 +4009,12 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
       int nSDLL_pass = 0;
       int isdlIn = -1;
       if (ptCutAll >= 1.0f){//FIXME: NEED A MORE OPTIMAL SOLUTION
-	for (auto const& sdlIn : mockLayerSDLsDNcm[SDL_L5to7] ){
+	for (auto const& sdlIn : layerSDL[SDL_L5to7] ){
 	  bool hasOuter = false;
 	  isdlIn++;
 	  
 	  int isdlOut = -1;
-	  for (auto const& sdlOut : mockLayerSDLsDNcm[SDL_L7to9]){
+	  for (auto const& sdlOut : layerSDL[SDL_L7to9]){
 	    isdlOut++;
 	    if (sdlIn.lOut == sdlOut.lIn && sdlIn.iOut == sdlOut.iIn){
 	      //shared mid-point
@@ -4256,7 +4263,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      }
 	    }
 	    //match the 8 layers of hits
-	    auto matchMH = [&](decltype(mockLayerMDfwRefLower)::const_reference mhs){
+	    auto matchMH = [&](decltype(layerMDRefLower)::const_reference mhs){
 	      for (auto const& mh : mhs) if (iSim == simsPerHit(mh.first)) return true;
 	      return false;
 	    };
@@ -4271,35 +4278,35 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 
 	    if (runDetailedTimers) timerA[T_timeVal_MHMDSDMatch].Start(kFALSE);	    
 	    if (lIn == 0){
-	      for (auto const& sd: mockLayerSDfwDNcm[lIn]){
+	      for (auto const& sd: layerSD[lIn]){
 		if (!hasMHRefInL) hasMHRefInL = iSim == simsPerHit(sd.mdRef.pixL);
 	      }
 	      if (hasMHRefInL || matchAllCombinations){
-		for (auto const& sd: mockLayerSDfwDNcm[lIn]){
+		for (auto const& sd: layerSD[lIn]){
 		  if (!hasMHRefInU) hasMHRefInU = iSim == simsPerHit(sd.mdRef.pixU);
 		}
 	      }
 	      if (hasMHRefInU || matchAllCombinations){
-		for (auto const& sd: mockLayerSDfwDNcm[lIn]){
+		for (auto const& sd: layerSD[lIn]){
 		  if (!hasMHOutInL) hasMHOutInL = iSim == simsPerHit(sd.mdOut.pixL);
 		}
 	      }
 	      if (hasMHOutInL || matchAllCombinations){
-		for (auto const& sd: mockLayerSDfwDNcm[lIn]){
+		for (auto const& sd: layerSD[lIn]){
 		  if (!hasMHOutInU) hasMHOutInU = iSim == simsPerHit(sd.mdOut.pixU);
 		}
 	      }
 	    } else {
-	      hasMHRefInL = matchMH(mockLayerMDfwRefLower[lIn]);
-	      if (hasMHRefInL || matchAllCombinations) hasMHRefInU = matchMH(mockLayerMDfwRefUpper[lIn]);
-	      if (hasMHRefInU || matchAllCombinations) hasMHOutInL = matchMH(mockLayerMDfwDNcmLower[lIn]);
-	      if (hasMHOutInL || matchAllCombinations) hasMHOutInU = matchMH(mockLayerMDfwDNcmUpper[lIn]);
+	      hasMHRefInL = matchMH(layerMDRefLower[lIn]);
+	      if (hasMHRefInL || matchAllCombinations) hasMHRefInU = matchMH(layerMDRefUpper[lIn]);
+	      if (hasMHRefInU || matchAllCombinations) hasMHOutInL = matchMH(layerMDOutLower[lIn]);
+	      if (hasMHOutInL || matchAllCombinations) hasMHOutInU = matchMH(layerMDOutUpper[lIn]);
 	    }
 
-	    if (hasMHOutInU || matchAllCombinations) hasMHRefOutL = matchMH(mockLayerMDfwRefLower[lOut]);
-	    if (hasMHRefOutL || matchAllCombinations) hasMHRefOutU = matchMH(mockLayerMDfwRefUpper[lOut]);
-	    if (hasMHRefOutU || matchAllCombinations) hasMHOutOutL = matchMH(mockLayerMDfwDNcmLower[lOut]);
-	    if (hasMHOutOutL || matchAllCombinations) hasMHOutOutU = matchMH(mockLayerMDfwDNcmUpper[lOut]);
+	    if (hasMHOutInU || matchAllCombinations) hasMHRefOutL = matchMH(layerMDRefLower[lOut]);
+	    if (hasMHRefOutL || matchAllCombinations) hasMHRefOutU = matchMH(layerMDRefUpper[lOut]);
+	    if (hasMHRefOutU || matchAllCombinations) hasMHOutOutL = matchMH(layerMDOutLower[lOut]);
+	    if (hasMHOutOutL || matchAllCombinations) hasMHOutOutU = matchMH(layerMDOutUpper[lOut]);
 
 	    has8MHs = hasMHRefInL & hasMHRefInU & hasMHOutInL & hasMHOutInU
 	      & hasMHRefOutL & hasMHRefOutU & hasMHOutOutL & hasMHOutOutU;
@@ -4315,22 +4322,22 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    }
 	    
 	    //match the 4 layer mini-doublets
-	    auto matchMD = [&](decltype(mockLayerMDfwRef)::const_reference mds){	      
+	    auto matchMD = [&](decltype(layerMDRef)::const_reference mds){	      
 	      for (auto const& md : mds) if (md.itp == iSim && md.ntp == 2 ) return true;
 	      return false;
 	    };
 	    if (lIn == 0){
-	      for (auto const& sd: mockLayerSDfwDNcm[lIn]){
+	      for (auto const& sd: layerSD[lIn]){
 		if (!hasMDRefIn) hasMDRefIn = matchIPixAll(sd.mdRef.pixL) & matchIPixAll(sd.mdRef.pixU);
 		if (!hasMDOutIn) hasMDOutIn = matchIPixAll(sd.mdOut.pixL) & matchIPixAll(sd.mdOut.pixU);
 	      }
 	    } else {
-	      hasMDRefIn = matchMD(mockLayerMDfwRef[lIn]);
-	      hasMDOutIn = matchMD(mockLayerMDfwDNcm[lIn]);
+	      hasMDRefIn = matchMD(layerMDRef[lIn]);
+	      hasMDOutIn = matchMD(layerMDOut[lIn]);
 	    }
 
-	    hasMDRefOut = matchMD(mockLayerMDfwRef[lOut]);
-	    hasMDOutOut = matchMD(mockLayerMDfwDNcm[lOut]);
+	    hasMDRefOut = matchMD(layerMDRef[lOut]);
+	    hasMDOutOut = matchMD(layerMDOut[lOut]);
 
 	    has4MDs = hasMDRefIn & hasMDOutIn & hasMDRefOut & hasMDOutOut & has8MHs;
 	    if (debug){
@@ -4349,7 +4356,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    //	    if (tpPt>1.5 && tpPt< 2.0 && has4MDs && lIn == 0 && lOut == 11) debug2SD = true;
 	    
 	    //match inner and outer layer super-doublets
-	    for (auto const& sd : mockLayerSDfwDNcm[lIn]){
+	    for (auto const& sd : layerSD[lIn]){
 	      int score = sd.itp == iSim ? sd.ntp : 0;
 	      if (debug && score > 2){
 		std::cout<<"SDI: match on L"<< lIn <<": Have "<<score<<" matches"<<std::endl;
@@ -4374,7 +4381,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		}
 	      }//simhitIdxV
 	      
-	      for (auto const& sd : mockLayerSDfwDNcm[lIn]){
+	      for (auto const& sd : layerSD[lIn]){
 		int score = sd.itp == iSim ? sd.ntp : 0;
 		if (score >= 2){
 		  std::cout<<"            Have "<<score<<" matches"
@@ -4389,7 +4396,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      }//SD matching Inner
 	    }
 	    
-	    for (auto const& sd : mockLayerSDfwDNcm[lOut]){
+	    for (auto const& sd : layerSD[lOut]){
 	      int score = sd.itp == iSim ? sd.ntp : 0;
 	      if (debug && score > 2){
 		std::cout<<"SDO: match on L"<< lOut <<": Have "<<score<<" matches"<<std::endl;
@@ -5059,8 +5066,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    }
 	    
 	    if (runDetailedTimers) timerA[T_timeVal_SDLMatch].Start(kFALSE);
-	    if (!mockLayerSDLsDNcm[iSDLL].empty()){
-	      for (auto& sdl : mockLayerSDLsDNcm[iSDLL]){
+	    if (!layerSDL[iSDLL].empty()){
+	      for (auto& sdl : layerSDL[iSDLL]){
 		if (! (sdl.lIn == lIn && sdl.lOut == lOut )) continue;
 
 		int scoreIn = sdl.sdIn.itp == iSim ? sdl.sdIn.ntp : 0;
@@ -5079,8 +5086,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		    sdl.hasMatch_byHit4of4 = true;
 		  }
 		}
-	      }//for (auto sdl : mockLayerSDLsDNcm[iSDLL]){
-	    }//	if (!mockLayerSDLsDNcm[iSDLL].empty()){
+	      }//for (auto sdl : layerSDL[iSDLL]){
+	    }//	if (!layerSDL[iSDLL].empty()){
 	    if (runDetailedTimers) timerA[T_timeVal_SDLMatch].Stop();
 
 	    bool hasMatch = false;
@@ -5110,7 +5117,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 
       //fake rates
       for (int iSDL = 0; iSDL < SDL_LMAX; ++iSDL){
-	auto const& mSDLs = mockLayerSDLsDNcm[iSDL];
+	auto const& mSDLs = layerSDL[iSDL];
 	if (mSDLs.empty() ) continue;
 	for (auto const& sdl : mSDLs){
 	  auto pt = sdl.pt;
@@ -5139,7 +5146,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	int nSDs1GeVMatch4 = 0;
 	int nSDs2GeV = 0;
 	int nSDs2GeVMatch4 = 0;
-	for (auto sd : mockLayerSDfwDNcm[iL]){
+	for (auto sd : layerSD[iL]){
 	  int ish = simHitsPerHitAll(sd.mdRef.pixL);
 	  TVector3 p3RL(simhit_px()[ish], simhit_py()[ish], simhit_pz()[ish]);
 	  ish = simHitsPerHitAll(sd.mdRef.pixU);
@@ -5163,27 +5170,27 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	  }
 	}
 	int nSDNGs = 0;
-	for (unsigned int i = 0; i< mockLayerSDfwDNcm_isSecondaryGhost[iL].size(); ++i) if (not mockLayerSDfwDNcm_isSecondaryGhost[iL][i]) nSDNGs++;
+	for (unsigned int i = 0; i< layerSD_isSecondaryGhost[iL].size(); ++i) if (not layerSD_isSecondaryGhost[iL][i]) nSDNGs++;
 	std::cout<<"Summary for layer "<<iL
 		 <<" h1GeV "<<nHitsLayer1GeV[iL]
 		 <<" h2GeV "<<nHitsLayer2GeV[iL]
-		 <<" refLos "<<mockLayerMDfwRefLower[iL].size()
-		 <<" refUps "<<mockLayerMDfwRefUpper[iL].size()
-		 <<" refMDs " <<mockLayerMDfwRef[iL].size()
-		 <<" outLos " <<mockLayerMDfwDNcmLower[iL].size()
-		 <<" outUps " <<mockLayerMDfwDNcmUpper[iL].size()
-		 <<" outMDs " <<mockLayerMDfwDNcm[iL].size()
-		 <<" SDs "<< mockLayerSDfwDNcm[iL].size()
+		 <<" refLos "<<layerMDRefLower[iL].size()
+		 <<" refUps "<<layerMDRefUpper[iL].size()
+		 <<" refMDs " <<layerMDRef[iL].size()
+		 <<" outLos " <<layerMDOutLower[iL].size()
+		 <<" outUps " <<layerMDOutUpper[iL].size()
+		 <<" outMDs " <<layerMDOut[iL].size()
+		 <<" SDs "<< layerSD[iL].size()
 		 <<" SDNGs "<< nSDNGs
 		 <<" n1Any "<<nSDs1GeV<<" n1All "<<nSDs1GeVMatch4
 		 <<" n2Any "<<nSDs2GeV<<" n2All "<<nSDs2GeVMatch4
 		 <<std::endl;
       }//iL
-      std::cout<<"\t\tsdl5-7 "<<mockLayerSDLsDNcm[SDL_L5to7].size()
-	       <<" sdl7-9 "<<mockLayerSDLsDNcm[SDL_L7to9].size()
-	       <<" sdl5-11 "<<mockLayerSDLsDNcm[SDL_L5to11].size()
-	       <<" sdl7-11 "<<mockLayerSDLsDNcm[SDL_L7to11].size()
-	       <<" sdl11-13 "<<mockLayerSDLsDNcm[SDL_L11to13].size()
+      std::cout<<"\t\tsdl5-7 "<<layerSDL[SDL_L5to7].size()
+	       <<" sdl7-9 "<<layerSDL[SDL_L7to9].size()
+	       <<" sdl5-11 "<<layerSDL[SDL_L5to11].size()
+	       <<" sdl7-11 "<<layerSDL[SDL_L7to11].size()
+	       <<" sdl11-13 "<<layerSDL[SDL_L11to13].size()
 	       <<std::endl;
       
       // Progress feedback to the user
