@@ -426,11 +426,14 @@ struct V3WithCache {
   float rtRHin;
   float rtRHout;
   float phiRHin;
+  float zRHout;
+  float zRHin;
   float phiRHout;
   float drdz;//only for tilted
   bool isTilted;
   V3WithCache(TVector3 const& o3, float d, bool isT) : r3(o3), rt(r3.Pt()), r(r3.Mag()), phi(r3.Phi()),
-						       rtRHin(0), rtRHout(0), phiRHin(0), phiRHout(0), drdz(d), isTilted(isT) {}
+						       rtRHin(0), rtRHout(0), phiRHin(0), phiRHout(0), zRHin(0), zRHout(0),
+						       drdz(d), isTilted(isT) {}
 };
 
 struct MiniDoublet {
@@ -2439,13 +2442,16 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	}
 
 	//Too restrictive for reverse TP matching??//	if ((iid & miniMask)!= lowerId) continue; 
-		
 	TVector3 r3Rec(ph2_x()[iph2], ph2_y()[iph2], ph2_z()[iph2]);
+
+	bool isTilted =  (tiltedOT123 && lay >= 5 && lay <= 7 && ((iid>>18)&0x3) != 3 );
+	const float drdz = isTilted ? ((*cboundC)[5] - (*cboundC)[4])/((*cboundC)[1] - (*cboundC)[0]): 0.f;
 
 	auto iSHAll = simHitsPerPh2HitAll[iph2];
 	auto iSH = simHitsPerPh2Hit[iph2];
-	if (iSHAll == -1) continue; //use only hits with sim info
-	SimHit simHit(iSHAll);
+	SimHit simHit;
+	if (mockMode <= 11 && iSHAll == -1) continue; //use only hits with sim info
+	if (iSHAll != -1) simHit = SimHit(iSHAll);
 	
 	TVector3 r3Sim(simHit.r3s);
 	float rs = r3Sim.Pt();
@@ -2478,7 +2484,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	}
 	
 	//FIXME: consider to improve to allow multiple deltas
-	if (mockMode <= 3){
+	if (mockMode < 10){
 	  if (iParticle == -11 && ps < 0.1){
 	    if (simIdxDeltaInLayer[lay].find(iSimIdx) != simIdxDeltaInLayer[lay].end()) continue; //only one hit per layer per track
 	    else {
@@ -2503,10 +2509,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	const float mdOffset = miniDelta[lay];
 	const float rNominal = miniRminMean[lay];
 
-	const float rRefLower = rNominal;
+	const float rRef = rNominal;
 	const float rRefUpper = rNominal+mdOffset;
-	const float rSDfwLower = rRefLower + (isBarrel ? sdOffsetB : sdOffsetE);
-	const float rSDfwUpper = rRefUpper + (isBarrel ? sdOffsetB : sdOffsetE);
 
 	int q = 0;
 	if (iParticle == -11 || iParticle == -13 || iParticle == 211 || iParticle == 321 || iParticle == 2212
@@ -2514,43 +2518,45 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	else if (iParticle == 11 || iParticle == 13 || iParticle == -211 || iParticle == -321 || iParticle == -2212
 		 || iParticle == 3112 || iParticle == -3222 || iParticle == 3312 ) q = -1;
 	int pstat = 0;
-	TVector3 r3RefLower;
-	TVector3 p3RefLower;
-	if (mockMode <= 3){
+
+	TVector3 r3Ref;
+	TVector3 p3Ref;
+	if (mockMode < 10){
 	  if (q == 0){
-	    r3RefLower = isBarrel ? linePropagateR(r3Sim, p3Sim, rRefLower, pstat)
-	      : linePropagateZ(r3Sim, p3Sim, rRefLower, pstat);
-	    p3RefLower = p3Sim;
+	    r3Ref = isBarrel ? linePropagateR(r3Sim, p3Sim, rRef, pstat)
+	      : linePropagateZ(r3Sim, p3Sim, rRef, pstat);
+	    p3Ref = p3Sim;
 	  } else {
-	    auto resProp = isBarrel ? helixPropagateApproxR(r3Sim, p3Sim, rRefLower, q, pstat)
-	      :  helixPropagateApproxZ(r3Sim, p3Sim, rRefLower, q, pstat);
-	    r3RefLower = resProp.first;
-	    p3RefLower = resProp.second;
+	    auto resProp = isBarrel ? helixPropagateApproxR(r3Sim, p3Sim, rRef, q, pstat)
+	      :  helixPropagateApproxZ(r3Sim, p3Sim, rRef, q, pstat);
+	    r3Ref = resProp.first;
+	    p3Ref = resProp.second;
 	    
 	  }
-	} else {
-	  r3RefLower = r3Sim;
-	  p3RefLower = p3Sim;
+	} else if (mockMode == 11) {//sim hit true positions
+	  r3Ref = r3Sim;
+	  p3Ref = p3Sim;
+	} else if (mockMode == 13){//full rechit positions
+	  r3Ref = r3Rec;
+	  p3Ref = p3Sim;//useful for debugging
 	}
 
 	if (debug_mockHit){
-	  std::cout<<"debug_mockHit propagated refLower r3 "<<r3RefLower.Pt()<<" "<<r3RefLower.Phi()<<" "<<r3RefLower.z()
-		   <<" p3 "<<p3RefLower.Pt()<<" "<<p3RefLower.Eta()<<" "<<p3RefLower.Phi()
+	  std::cout<<"debug_mockHit propagated refLower r3 "<<r3Ref.Pt()<<" "<<r3Ref.Phi()<<" "<<r3Ref.z()
+		   <<" p3 "<<p3Ref.Pt()<<" "<<p3Ref.Eta()<<" "<<p3Ref.Phi()
 		   <<std::endl;
 	}
 	auto propagateMH = [&](float rDest){
-	  if (mockMode == 0) return isBarrel ? linePropagateR(r3RefLower, p3RefLower, rDest, pstat)
-			       : linePropagateZ(r3RefLower, p3RefLower, rDest, pstat) ;
-	  else if (mockMode == 1 || mockMode == 3) return isBarrel ? helixPropagateApproxR(r3RefLower, p3RefLower, rDest, q, pstat).first
-						     : helixPropagateApproxZ(r3RefLower, p3RefLower, rDest, q, pstat).first;
+	  if (mockMode == 0) return isBarrel ? linePropagateR(r3Ref, p3Ref, rDest, pstat)
+			       : linePropagateZ(r3Ref, p3Ref, rDest, pstat) ;
+	  else if (mockMode == 1 || mockMode == 3) return isBarrel ? helixPropagateApproxR(r3Ref, p3Ref, rDest, q, pstat).first
+						     : helixPropagateApproxZ(r3Ref, p3Ref, rDest, q, pstat).first;
 	  else {pstat = 99; return TVector3();}
 	};
 
-	auto r3RefLowerMock = r3RefLower;
-	bool isTilted =  (tiltedOT123 && lay >= 5 && lay <= 7 && ((iid>>18)&0x3) != 3 );
-	const float drdz = isTilted ? ((*cboundC)[5] - (*cboundC)[4])/((*cboundC)[1] - (*cboundC)[0]): 0.f;
+	auto r3RefMock = r3Ref;
 	if (mockMode == 3){
-	  r3RefLowerMock += (r3Rec - r3Sim);
+	  r3RefMock += (r3Rec - r3Sim);
 	  if ((iid & miniMask)!= lowerId){//there was no simhit on the pixel layer; make up z or r by roundoff of sim
 	    //this mitigates the issue coming from recovery of inefficiency in simHit-rec matching done by using outer mini-layers as well
 	    //if the outer mini-layer is used in place of the inner one, the rec-sim shift is too large in the coarse direction
@@ -2558,138 +2564,176 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    //the implementation is "GOOD ENOUGH"
 	    if (lay >=5 && lay <=7){
 	      if (! tiltedOT123 || (tiltedOT123 && ((iid>>18)&0x3) == 3 ) ){//flat layout rings
-		r3RefLowerMock.SetZ(r3RefLowerMock.z() - r3Rec.z() + r3Sim.z());// undo the rec-sim shift in the coarse (bad) direction
+		r3RefMock.SetZ(r3RefMock.z() - r3Rec.z() + r3Sim.z());// undo the rec-sim shift in the coarse (bad) direction
 		float binnedZshift = std::round(r3Sim.z()/pixelPSZpitch)*pixelPSZpitch - r3Sim.z();
-		r3RefLowerMock.SetZ(r3RefLowerMock.z() + binnedZshift);
+		r3RefMock.SetZ(r3RefMock.z() + binnedZshift);
 	      } else {//tilted modules
 		const float phiAv = 0.5f*((*cboundC)[2] + (*cboundC)[3]);
 		const float sinPhiAv = sin(phiAv);
 		const float cosPhiAv = cos(phiAv);
-		const float xLocRecMock = r3RefLowerMock.y()*cosPhiAv - r3RefLowerMock.x()*sinPhiAv;//keep this fixed
+		const float xLocRecMock = r3RefMock.y()*cosPhiAv - r3RefMock.x()*sinPhiAv;//keep this fixed
 
 		//FIXME: delta-R for full sensor; not delta-R at fixed phiAv
 		const float yPitch = pixelPSZpitch*drdz/sqrt(1.f + drdz*drdz);
 		const float zPitch = pixelPSZpitch/sqrt(1.f + drdz*drdz);
-		const float yLocRecMock = std::round((r3RefLower.y()*sinPhiAv + r3RefLower.x()*cosPhiAv)/yPitch)*yPitch;//round-off the sim
-		const float zLocRecMock = std::round(r3RefLower.z()/zPitch)*zPitch;
+		const float yLocRecMock = std::round((r3Ref.y()*sinPhiAv + r3Ref.x()*cosPhiAv)/yPitch)*yPitch;//round-off the sim
+		const float zLocRecMock = std::round(r3Ref.z()/zPitch)*zPitch;
 		
-		r3RefLowerMock.SetX(yLocRecMock*cosPhiAv -  xLocRecMock*sinPhiAv);
-		r3RefLowerMock.SetY(yLocRecMock*sinPhiAv +  xLocRecMock*cosPhiAv);
-		r3RefLowerMock.SetZ(zLocRecMock);
+		r3RefMock.SetX(yLocRecMock*cosPhiAv -  xLocRecMock*sinPhiAv);
+		r3RefMock.SetY(yLocRecMock*sinPhiAv +  xLocRecMock*cosPhiAv);
+		r3RefMock.SetZ(zLocRecMock);
 	      }
 	    } else if (lay >= 11 && r3Rec.Pt() < disks2SMinRadius){
 	      const float phiAv = 0.5f*((*cboundC)[2] + (*cboundC)[3]);
 	      const float sinPhiAv = sin(phiAv);
 	      const float cosPhiAv = cos(phiAv);
-	      const float xLocRecMock = r3RefLowerMock.y()*cosPhiAv - r3RefLowerMock.x()*sinPhiAv;//keep this fixed
+	      const float xLocRecMock = r3RefMock.y()*cosPhiAv - r3RefMock.x()*sinPhiAv;//keep this fixed
 
-	      const float yLocRecMock = std::round((r3RefLower.y()*sinPhiAv + r3RefLower.x()*cosPhiAv)/pixelPSZpitch)*pixelPSZpitch;//round-off the sim
+	      const float yLocRecMock = std::round((r3Ref.y()*sinPhiAv + r3Ref.x()*cosPhiAv)/pixelPSZpitch)*pixelPSZpitch;//round-off the sim
 	      
-	      r3RefLowerMock.SetX(yLocRecMock*cosPhiAv -  xLocRecMock*sinPhiAv);
-	      r3RefLowerMock.SetY(yLocRecMock*sinPhiAv +  xLocRecMock*cosPhiAv);
+	      r3RefMock.SetX(yLocRecMock*cosPhiAv -  xLocRecMock*sinPhiAv);
+	      r3RefMock.SetY(yLocRecMock*sinPhiAv +  xLocRecMock*cosPhiAv);
 
 	    }
 	  }
 	}
 	if (debug_mockHit){
-	  std::cout<<"debug_mockHit defined  r3RefLowerMock "<<r3RefLowerMock.Pt()<<" "<<r3RefLowerMock.Phi()<<" "<<r3RefLowerMock.z()
-		   <<" ini3 "<<r3RefLower.x()<<" "<<r3RefLower.y()<<" "<<r3RefLower.z()
-		   <<" mock3 "<<r3RefLowerMock.x()<<" "<<r3RefLowerMock.y()<<" "<<r3RefLowerMock.z()
+	  std::cout<<"debug_mockHit defined  r3RefMock "<<r3RefMock.Pt()<<" "<<r3RefMock.Phi()<<" "<<r3RefMock.z()
+		   <<" ini3 "<<r3Ref.x()<<" "<<r3Ref.y()<<" "<<r3Ref.z()
+		   <<" mock3 "<<r3RefMock.x()<<" "<<r3RefMock.y()<<" "<<r3RefMock.z()
 		   <<std::endl;
 	}
-	V3WithCache v3RefLowerMock(r3RefLowerMock, drdz, isTilted);
+	V3WithCache v3RefMock(r3RefMock, drdz, isTilted);
 
 	//set the strip edges
-	if (mockMode == 3 && lay >= 11 && r3Rec.Pt() > disks2SMinRadius){
+	if ((mockMode == 3 || mockMode == 13) && lay >= 5){
 	  const float phiAv = 0.5f*((*cboundC)[2] + (*cboundC)[3]);
 	  const float sinPhiAv = sin(phiAv);
 	  const float cosPhiAv = cos(phiAv);
-	  const float xLocRecMock = r3RefLowerMock.y()*cosPhiAv - r3RefLowerMock.x()*sinPhiAv;//keep this fixed
+	  const float xLoc = r3RefMock.y()*cosPhiAv - r3RefMock.x()*sinPhiAv;//keep this fixed
 
 	  //this is supposedly the middle of the strip (not necessarily the case in SLHC setup)
-	  const float yLocRecMock = r3RefLowerMock.y()*sinPhiAv + r3RefLowerMock.x()*cosPhiAv;
-	  const float yLocRecMockIn = yLocRecMock - 0.5f*strip2SZpitch;
-	  const float yLocRecMockOut = yLocRecMock + 0.5f*strip2SZpitch;
+	  float pitch = strip2SZpitch;
+	  if ( (lay <= 7 ) //PS part of the barrel
+	       || (lay >= 11 && lay <= 12 && ((iid>>12)&0x3F) <=9 )//endcaps PS longer disks
+	       || (lay >= 13 && lay <= 15 && ((iid>>12)&0x3F) <=7 )//endcaps PS shorter disks
+	       ){
+	    pitch = (iid & miniMask) == lowerId ? pixelPSZpitch : stripPSZpitch;
+	  }
+	  const float yPitch = lay >= 11 ? pitch
+	    : (tiltedOT123 && lay <= 7 && ((iid>>18)&0x3) != 3) ? pitch*drdz/sqrt(1.f + drdz*drdz) : 0;
+	  const float zPitch = (tiltedOT123 && lay <= 7 && ((iid>>18)&0x3) != 3) ? pitch/sqrt(1.f + drdz*drdz)
+	    : lay < 11 ? pitch : 0;
+	  const float yLocRecMock = r3RefMock.y()*sinPhiAv + r3RefMock.x()*cosPhiAv;
+	  const float yLocIn = yLocRecMock - 0.5f*yPitch;
+	  const float yLocOut = yLocRecMock + 0.5f*yPitch;
+	  //for tilted it is important to match the edge for in and out
+	  const float zInOutSign = (tiltedOT123 && lay <= 7 && ((iid>>18)&0x3) != 3) ? -1.f : 1.f;
+	  const float zIn = r3RefMock.z() - 0.5*zInOutSign*std::copysign(zPitch, r3RefMock.z());
+	  const float zOut = r3RefMock.z() + 0.5*zInOutSign*std::copysign(zPitch, r3RefMock.z());
 	  
-	  TVector2  r2In(yLocRecMockIn*cosPhiAv - xLocRecMock*sinPhiAv, yLocRecMockIn*sinPhiAv + xLocRecMock*cosPhiAv);
-	  TVector2  r2Out(yLocRecMockOut*cosPhiAv - xLocRecMock*sinPhiAv, yLocRecMockOut*sinPhiAv + xLocRecMock*cosPhiAv);
+	  TVector3  r3In(yLocIn*cosPhiAv - xLoc*sinPhiAv, yLocIn*sinPhiAv + xLoc*cosPhiAv, zIn);
+	  TVector3  r3Out(yLocOut*cosPhiAv - xLoc*sinPhiAv, yLocOut*sinPhiAv + xLoc*cosPhiAv, zOut);
 
-	  v3RefLowerMock.rtRHin = r2In.Mod();
-	  v3RefLowerMock.phiRHin = r2In.Phi();
-	  v3RefLowerMock.rtRHout = r2Out.Mod();
-	  v3RefLowerMock.phiRHout = r2Out.Phi();
+	  v3RefMock.rtRHin   = r3In.Pt();
+	  v3RefMock.phiRHin  = r3In.Phi();
+	  v3RefMock.zRHin    = r3In.z();
+	  v3RefMock.rtRHout  = r3Out.Pt();
+	  v3RefMock.phiRHout = r3Out.Phi();
+	  v3RefMock.zRHout   = r3Out.z();
 	}
 	
 	if (debug_mockHit && pstat == 0){
-	  std::cout<<"debug_mockHit ready to save  r3RefLowerMock "<<v3RefLowerMock.r3.Pt()<<" "<<v3RefLowerMock.r3.Phi()<<" "<<v3RefLowerMock.r3.z()
-		   <<" ini3 "<<r3RefLower.x()<<" "<<r3RefLower.y()<<" "<<r3RefLower.z()
-		   <<" mock3 "<<r3RefLowerMock.x()<<" "<<r3RefLowerMock.y()<<" "<<r3RefLowerMock.z()
-		   <<" rtIO "<<v3RefLowerMock.rtRHin<<" "<<v3RefLowerMock.rtRHout
-		   <<" phiIO "<<v3RefLowerMock.phiRHin<<" "<<v3RefLowerMock.phiRHout
+	  std::cout<<"debug_mockHit ready to save  r3RefMock "<<v3RefMock.r3.Pt()<<" "<<v3RefMock.r3.Phi()<<" "<<v3RefMock.r3.z()
+		   <<" ini3 "<<r3Ref.x()<<" "<<r3Ref.y()<<" "<<r3Ref.z()
+		   <<" mock3 "<<r3RefMock.x()<<" "<<r3RefMock.y()<<" "<<r3RefMock.z()
+		   <<" rtIO "<<v3RefMock.rtRHin<<" "<<v3RefMock.rtRHout
+		   <<" phiIO "<<v3RefMock.phiRHin<<" "<<v3RefMock.phiRHout
 		   <<std::endl;
 	}
-	if (pstat == 0) layerMDRefLower[lay].push_back(std::make_pair(iph2WithType, v3RefLowerMock));
 
-	auto r3RefUpper = propagateMH(rRefUpper);
-	if (mockMode == 3 && lay >= 11 && r3Rec.Pt() > disks2SMinRadius){
-	  //place r3RefUpper on the same local y as the r3RefLowerMock to emulate geometry more appropriately
-	  const float phiAv = 0.5f*((*cboundC)[2] + (*cboundC)[3]);
-	  const float sinPhiAv = sin(phiAv);
-	  const float cosPhiAv = cos(phiAv);
-	  
-	  const float yLocRecLower = r3RefLowerMock.y()*sinPhiAv + r3RefLowerMock.x()*cosPhiAv;
-	  const float xLocRecUpper = r3RefUpper.y()*cosPhiAv - r3RefUpper.x()*sinPhiAv;
-	  
-	  r3RefUpper.SetX(yLocRecLower*cosPhiAv -  xLocRecUpper*sinPhiAv);
-	  r3RefUpper.SetY(yLocRecLower*sinPhiAv +  xLocRecUpper*cosPhiAv);
-	  
-	}
-	// if (mockMode == 3 && tiltedOT123 && lay >= 5 && lay <= 7 && ((iid>>18)&0x3) != 3 ){//tilted rings
-	//   //place r3RefUpper on the same local y as the r3RefLowerMock to emulate geometry more appropriately
-	//   const float phiAv = 0.5f*((*cboundC)[2] + (*cboundC)[3]);
-	//   const float sinPhiAv = sin(phiAv);
-	//   const float cosPhiAv = cos(phiAv);
-	  
-	//   const float yLocRecLower = r3RefLowerMock.y()*sinPhiAv + r3RefLowerMock.x()*cosPhiAv;
-	//   const float xLocRecUpper = r3RefUpper.y()*cosPhiAv - r3RefUpper.x()*sinPhiAv;
-	  
-	//   r3RefUpper.SetX(yLocRecLower*cosPhiAv -  xLocRecUpper*sinPhiAv);
-	//   r3RefUpper.SetY(yLocRecLower*sinPhiAv +  xLocRecUpper*cosPhiAv);	  
-	// }
+	V3WithCache v3Ref = v3RefMock;
 	
-	//FIXME: put more appropriate limits
-	const bool r3RefUpperIsGood = (isBarrel && std::abs(r3RefUpper.z()) < 120.f) || (!isBarrel && r3RefUpper.Pt() > 23.f && r3RefUpper.Pt() < 110.f);
-	if (pstat == 0 && r3RefUpperIsGood) layerMDRefUpper[lay].push_back(std::make_pair(iph2WithType, V3WithCache(r3RefUpper, drdz, isTilted)));
-
-	//keep the mock outer doublet at its SIM state
-	auto r3SDfwLower = propagateMH(rSDfwLower);
-	const bool r3SDfwLowerIsGood = (isBarrel && std::abs(r3SDfwLower.z()) < 120.f) || (!isBarrel && r3SDfwLower.Pt() > 23.f && r3SDfwLower.Pt() < 110.f);
-	if (pstat == 0 && r3SDfwLowerIsGood) layerMDOutLower[lay].push_back(std::make_pair(iph2WithType, V3WithCache(r3SDfwLower, drdz, isTilted)));
-	auto r3SDfwUpper = propagateMH(rSDfwUpper);
-	const bool r3SDfwUpperIsGood = (isBarrel && std::abs(r3SDfwUpper.z()) < 120.f) || (!isBarrel && r3SDfwUpper.Pt() > 23.f && r3SDfwUpper.Pt() < 110.f);
-	if (pstat == 0 && r3SDfwUpperIsGood)
-	  layerMDOutUpper[lay].push_back(std::make_pair(iph2WithType, V3WithCache(r3SDfwUpper, drdz, isTilted)));
-
-	if (pstat == 0 && q != 0 && pts>0.8){
-	  if (lay == 5 || lay == 7 || lay == 9){
-	    h2_hitsXY_ITrec_OTmockLL->Fill(r3RefLowerMock.X(), r3RefLowerMock.Y());
-	    if (r3SDfwLowerIsGood) h2_hitsXY_ITrec_OTmockLL->Fill(r3SDfwLower.X(), r3SDfwLower.Y());
-	    h2_hitsRZ_ITrec_OTmockLL->Fill(std::abs(r3RefLowerMock.Z()), r3RefLowerMock.Pt());
-	    if (r3SDfwLowerIsGood) h2_hitsRZ_ITrec_OTmockLL->Fill(std::abs(r3SDfwLower.Z()), r3SDfwLower.Pt());
+	if (mockMode < 10){
+	  auto r3RefUpper = propagateMH(rRefUpper);
+	  if (mockMode == 3 && lay >= 11 && r3Rec.Pt() > disks2SMinRadius){
+	    //place r3RefUpper on the same local y as the r3RefMock to emulate geometry more appropriately
+	    const float phiAv = 0.5f*((*cboundC)[2] + (*cboundC)[3]);
+	    const float sinPhiAv = sin(phiAv);
+	    const float cosPhiAv = cos(phiAv);
+	    
+	    const float yLocRecLower = r3RefMock.y()*sinPhiAv + r3RefMock.x()*cosPhiAv;
+	    const float xLocRecUpper = r3RefUpper.y()*cosPhiAv - r3RefUpper.x()*sinPhiAv;
+	    
+	    r3RefUpper.SetX(yLocRecLower*cosPhiAv -  xLocRecUpper*sinPhiAv);
+	    r3RefUpper.SetY(yLocRecLower*sinPhiAv +  xLocRecUpper*cosPhiAv);
+	    
 	  }
-	  if (lay == 5 || lay == 7 || lay == 9 || lay == 11 || lay == 13 || lay == 15){
-	    h2_hitsRZ_ITrec_OTmockLL_BE->Fill(std::abs(r3RefLowerMock.Z()), r3RefLowerMock.Pt());
-	    if (lay != 15 && r3SDfwLowerIsGood) h2_hitsRZ_ITrec_OTmockLL_BE->Fill(std::abs(r3SDfwLower.Z()), r3SDfwLower.Pt());
+	  // if (mockMode == 3 && tiltedOT123 && lay >= 5 && lay <= 7 && ((iid>>18)&0x3) != 3 ){//tilted rings
+	  //   //place r3RefUpper on the same local y as the r3RefMock to emulate geometry more appropriately
+	  //   const float phiAv = 0.5f*((*cboundC)[2] + (*cboundC)[3]);
+	  //   const float sinPhiAv = sin(phiAv);
+	  //   const float cosPhiAv = cos(phiAv);
+	  
+	  //   const float yLocRecLower = r3RefMock.y()*sinPhiAv + r3RefMock.x()*cosPhiAv;
+	  //   const float xLocRecUpper = r3RefUpper.y()*cosPhiAv - r3RefUpper.x()*sinPhiAv;
+	  
+	  //   r3RefUpper.SetX(yLocRecLower*cosPhiAv -  xLocRecUpper*sinPhiAv);
+	  //   r3RefUpper.SetY(yLocRecLower*sinPhiAv +  xLocRecUpper*cosPhiAv);	  
+	  // }
+	  
+	  auto v3RefUpper = V3WithCache(r3RefUpper, drdz, isTilted);
+	  if (pstat == 0) layerMDRefLower[lay].push_back(std::make_pair(iph2WithType, v3Ref));
+	  //FIXME: put more appropriate limits
+	  const bool r3RefUpperIsGood = (isBarrel && std::abs(r3RefUpper.z()) < 120.f) || (!isBarrel && r3RefUpper.Pt() > 23.f && r3RefUpper.Pt() < 110.f);
+	  if (pstat == 0 && r3RefUpperIsGood) layerMDRefUpper[lay].push_back(std::make_pair(iph2WithType, v3RefUpper));
+	  
+	  //keep the mock outer doublet at its SIM state
+	  const float rSDLower = rRef + (isBarrel ? sdOffsetB : sdOffsetE);
+	  const float rSDUpper = rRefUpper + (isBarrel ? sdOffsetB : sdOffsetE);
+
+	  auto r3SDLower = propagateMH(rSDLower);
+	  auto v3OutLower = V3WithCache(r3SDLower, drdz, isTilted);
+	  const bool r3SDLowerIsGood = (isBarrel && std::abs(r3SDLower.z()) < 120.f) || (!isBarrel && r3SDLower.Pt() > 23.f && r3SDLower.Pt() < 110.f);
+	  if (pstat == 0 && r3SDLowerIsGood) layerMDOutLower[lay].push_back(std::make_pair(iph2WithType, v3OutLower));
+
+	  auto r3SDUpper = propagateMH(rSDUpper);
+	  auto v3OutUpper = V3WithCache(r3SDUpper, drdz, isTilted);
+	  const bool r3SDUpperIsGood = (isBarrel && std::abs(r3SDUpper.z()) < 120.f) || (!isBarrel && r3SDUpper.Pt() > 23.f && r3SDUpper.Pt() < 110.f);
+	  if (pstat == 0 && r3SDUpperIsGood)
+	    layerMDOutUpper[lay].push_back(std::make_pair(iph2WithType, v3OutUpper));
+	  
+	  if (pstat == 0 && q != 0 && pts>0.8){
+	    if (lay == 5 || lay == 7 || lay == 9){
+	      h2_hitsXY_ITrec_OTmockLL->Fill(r3RefMock.X(), r3RefMock.Y());
+	      if (r3SDLowerIsGood) h2_hitsXY_ITrec_OTmockLL->Fill(r3SDLower.X(), r3SDLower.Y());
+	      h2_hitsRZ_ITrec_OTmockLL->Fill(std::abs(r3RefMock.Z()), r3RefMock.Pt());
+	      if (r3SDLowerIsGood) h2_hitsRZ_ITrec_OTmockLL->Fill(std::abs(r3SDLower.Z()), r3SDLower.Pt());
+	    }
+	    if (lay == 5 || lay == 7 || lay == 9 || lay == 11 || lay == 13 || lay == 15){
+	      h2_hitsRZ_ITrec_OTmockLL_BE->Fill(std::abs(r3RefMock.Z()), r3RefMock.Pt());
+	      if (lay != 15 && r3SDLowerIsGood) h2_hitsRZ_ITrec_OTmockLL_BE->Fill(std::abs(r3SDLower.Z()), r3SDLower.Pt());
+	    }
+	  }
+	} else {
+	  //pseudo-mock: no propagation, take hits as is
+	  //place them into the vectors referring to the odd layers as it was done for the mock
+	  if ( (iid & miniMask) == lowerId){
+	    if (lay >= 5 && lay%2 == 1) layerMDRefLower[lay].push_back(std::make_pair(iph2WithType, v3Ref));
+	    else if (lay >= 5 ) layerMDOutLower[lay-1].push_back(std::make_pair(iph2WithType, v3Ref));
+	  } else {
+	    if (lay >= 5 && lay%2 == 1) layerMDRefUpper[lay].push_back(std::make_pair(iph2WithType, v3Ref));
+	    else if (lay >= 5 ) layerMDOutUpper[lay-1].push_back(std::make_pair(iph2WithType, v3Ref));
 	  }
 	}
       }//nPh2: filling mock hits
       std::cout<<"MH stat: nPh2 "<<nPh2<<std::endl;
       for (int iL = 0; iL < nLayersA+1; ++iL){
 	std::cout<<" L "<<iL
-		 <<" RfL "<<layerMDRefLower[iL].size()
-		 <<" RfL "<<layerMDRefUpper[iL].size()
-		 <<" RfL "<<layerMDOutLower[iL].size()
-		 <<" RfL "<<layerMDOutUpper[iL].size()
+		 <<" RL "<<layerMDRefLower[iL].size()
+		 <<" RU "<<layerMDRefUpper[iL].size()
+		 <<" OL "<<layerMDOutLower[iL].size()
+		 <<" OU "<<layerMDOutUpper[iL].size()
 		 <<std::endl;	  
       }
 
@@ -3062,9 +3106,9 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		 <<" dPhi "<<n_dPhi
 		 <<std::endl;
 
-	auto& mockMDfwDNcm = layerMDOut[iL];
-	mdCombine(hitsOutLower, hitsOutUpper, mockMDfwDNcm);
-	std::cout<<"MD out stat "<<iL<<" "<<mockMDfwDNcm.size()
+	auto& mockMDOut = layerMDOut[iL];
+	mdCombine(hitsOutLower, hitsOutUpper, mockMDOut);
+	std::cout<<"MD out stat "<<iL<<" "<<mockMDOut.size()
 		 <<" all "<<n_all
 		 <<" dz "<<n_dz
 		 <<" dr "<<n_dr
@@ -3073,7 +3117,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		 <<std::endl;
 	
 	//now make super-doublets
-	auto& mockSDfwDNcm = layerSD[iL];
+	auto& mockSDOut = layerSD[iL];
 	
 	enum SDSelectFlags {deltaZ = 0, deltaPhiPos, slope, alphaRef, alphaOut, alphaRefOut, max};
 	std::array<string, SDSelectFlags::max> sdFlagString {"deltaZ", "deltaPhiPos",
@@ -3100,7 +3144,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	  //
 	  int iOut = -1;
 	  auto dr3 = mdRef.r3;
-	  for (auto const& mdOut : mockMDfwDNcm){
+	  for (auto const& mdOut : mockMDOut){
 	    nAll++;
 	    int sdFlag = 0;
 	    iOut++;
@@ -3372,11 +3416,11 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		       <<" "<<sd.mdOut.r3.Pt()<<" "<<sd.mdOut.r3.Phi()
 		       <<std::endl;
 	    }
-	    mockSDfwDNcm.emplace_back(sd);
-	  }//mdOut : mockMDfwDNcm
+	    mockSDOut.emplace_back(sd);
+	  }//mdOut : mockMDOut
 	}//mdRef : mockMDfwRef
 
-	int nSDs = mockSDfwDNcm.size();
+	int nSDs = mockSDOut.size();
 	layerSD_isSecondaryGhost[iL].resize(nSDs);
 	for (int i = 0; i< nSDs; ++i) layerSD_isSecondaryGhost[iL][i] = false;
 
@@ -3384,9 +3428,9 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	for (int i = 0; i< nSDs; ++i){
 	  bool isSecondaryGhost = layerSD_isSecondaryGhost[iL][i];
 	  if (! isSecondaryGhost){
-	    auto const& iSD = mockSDfwDNcm[i];
+	    auto const& iSD = mockSDOut[i];
 	    for (int j = i+1; j < nSDs; ++j){
-	      auto const& jSD = mockSDfwDNcm[j];
+	      auto const& jSD = mockSDOut[j];
 	      if (sameLowerLayerID(iSD, jSD)){
 		layerSD_isSecondaryGhost[iL][j] = true;
 		break;
