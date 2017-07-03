@@ -3043,7 +3043,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      if (itpL >= 0 && itpL == itpU){
 		TVector3 p3TP(sim_px()[itpU], sim_py()[itpU], sim_pz()[itpU]);
 		auto const tpPt = p3TP.Pt();
-		if (tpPt > 2 && tpPt < 3 && iL < 9 && tiltedOT123 && isTilted && debugReco){
+		if (tpPt > 1.5 && tpPt < 2 && iL == 5){// && tiltedOT123 && isTilted && debugReco){
 		  auto const tpEta = p3TP.Eta();
 		  auto const tpPhi = p3TP.Phi();
 		  auto tpDxy = sim_pca_dxy()[itpU];
@@ -3052,12 +3052,14 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		  auto prodY = simvtx_y()[sim_parentVtxIdx()[itpU]];
 		  auto prodZ = simvtx_z()[sim_parentVtxIdx()[itpU]];
 		
-		  debug_mdCombine = true;
-		  std::cout<<"debug_mdCombine on iL "<<iL <<" for "<<tpPt<<" "<<tpEta<<" "<<tpPhi
-			   <<" pca "<<tpDxy<<" "<<tpDz<<" prod "<<prodX<<" "<<prodY<<" "<<prodZ
-			   <<std::endl;
-		  std::cout<<" iL "<<hL.first<<" r3 "<<hL.second.rt<<" "<<hL.second.phi<<" "<<hL.second.r3.z()<<std::endl;
-		  std::cout<<" iU "<<hU.first<<" r3 "<<hU.second.rt<<" "<<hU.second.phi<<" "<<hU.second.r3.z()<<std::endl;
+		  if ((hL.first == 33631911 && hU.first == 33631938) || (hL.first == 33662844 && hU.first == 33662848)){
+		    debug_mdCombine = true;
+		    std::cout<<"debug_mdCombine on iL "<<iL <<" for "<<tpPt<<" "<<tpEta<<" "<<tpPhi
+			     <<" pca "<<tpDxy<<" "<<tpDz<<" prod "<<prodX<<" "<<prodY<<" "<<prodZ
+			     <<std::endl;
+		    std::cout<<" iL "<<hL.first<<" r3 "<<hL.second.rt<<" "<<hL.second.phi<<" "<<hL.second.r3.z()<<std::endl;
+		    std::cout<<" iU "<<hU.first<<" r3 "<<hU.second.rt<<" "<<hU.second.phi<<" "<<hU.second.r3.z()<<std::endl;
+		  }
 		}
 	      }
 	      if (iL< 11){ //barrel
@@ -3253,7 +3255,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    std::string debugPrefix;
 	    if (mdRef.itp == mdOut.itp && mdRef.itp >= 0 && mdRef.ntp > 0 && mdOut.ntp > 0){
 	      TVector3 p3TP(sim_px()[mdRef.itp], sim_py()[mdRef.itp], sim_pz()[mdRef.itp]);
-	      if (p3TP.Pt() > 1.2 && p3TP.Pt() < 1.5 && (iL == 5 || iL == 7) ){
+	      if (p3TP.Pt() > 1.5 && p3TP.Pt() < 2 && (iL == 5 || iL == 77) && mdRef.itp == 29959){
 		float prodZ = simvtx_z()[sim_parentVtxIdx()[mdRef.itp]];
 		auto prodX = simvtx_x()[sim_parentVtxIdx()[mdRef.itp]];
 		auto prodY = simvtx_y()[sim_parentVtxIdx()[mdRef.itp]];
@@ -3261,13 +3263,16 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		bool isLowProdXY = prodR2 < 4.0;
 
 		if (isLowProdXY) debug_sdBuild = false;
-		debugPrefix = "Debug for  "+std::to_string(mdRef.itp)+" "+std::to_string(p3TP.Pt())
-		  +" "+std::to_string(p3TP.Eta())+" "+std::to_string(p3TP.Phi())+" "+std::to_string(prodZ)+" "+std::to_string(iL);
+		debugPrefix = "Debug for  " +std::to_string(mdRef.itp)+" "+std::to_string(p3TP.Pt())
+					    +" "+std::to_string(p3TP.Eta())+" "+std::to_string(p3TP.Phi())+" "+std::to_string(prodZ)
+					    +" "+std::to_string(iL)
+					    +" "+std::to_string(mdRef.pixL)+" "+std::to_string(mdRef.pixU)
+					    +" "+std::to_string(mdOut.pixL)+" "+std::to_string(mdOut.pixU);
 	      }
 	    }
 	    if (mdRef.pixL == 33631911 && mdRef.pixU == 33631938 && mdOut.pixL == 33662844 && mdOut.pixU == 33662848){
-	      std::cout<<"Details for R: "<<mdRef.itp<<" "<<mdRef.ntp<<" O: "<<mdOut.itp<<" "<<mdOut.ntp<<std::endl;
 	      debug_sdBuild = false;
+	      if (debug_sdBuild) std::cout<<"Details for R: "<<mdRef.itp<<" "<<mdRef.ntp<<" O: "<<mdOut.itp<<" "<<mdOut.ntp<<std::endl;
 	      debugPrefix = "Cherry-picked 33631911:33631938-33662844:33662848 ";
 	    }
 	    
@@ -3281,8 +3286,11 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    float dPhiOutRHmin;
 	    float dPhiOutRHmax;
 	    
+	    const float sdMuls = miniMulsPtScale[iL]*3.f/ptCut*2.f;//will need a better guess than x2?
+	    float rt = rtOut; //FIXME: should be different for mockMode = 0
+	    const float sdPVoff = 0.1f/rt;
+
 	    if (iL < 11){//barrel
-	      float rt = rtOut; //FIXME: should be different for mockMode = 0
 	      const float sdSlope = std::asin(std::min(rt*k2Rinv1GeVf/ptCut, sinAlphaMax));
 	      const float dzDrtScale = tan(sdSlope)/sdSlope;//FIXME: need approximate value
 
@@ -3299,8 +3307,6 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      
 	      if (sdFlag == sdMasksCumulative[iFlag]) nPass[iFlag]++;
 	      
-	      const float sdMuls = miniMulsPtScale[iL]*3.f/ptCut*2.f;//will need a better guess than x2?
-	      const float sdPVoff = 0.1f/rt;
 	      const float sdCut = sdSlope + sqrt(sdMuls*sdMuls + sdPVoff*sdPVoff);
 	      
 	      iFlag = SDSelectFlags::deltaPhiPos;
@@ -3339,7 +3345,6 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      if (zRef*zOut < 0) continue; //do not even accumulate stats for wrong side combinations
 	      
 	      const float dz = zOut - zRef;
-	      const float rt = rtOut; //FIXME: should be different for mockMode = 0
 	      const float sdSlope = std::asin(std::min(rt*k2Rinv1GeVf/ptCut, sinAlphaMax));
 
 	      //apply some loose Z compatibility
@@ -3356,8 +3361,6 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	      
 	      if (sdFlag == sdMasksCumulative[iFlag]) nPass[iFlag]++;
 
-	      const float sdMuls = miniMulsPtScale[iL]*3.f/ptCut*2.f;//will need a better guess than x2?
-	      const float sdPVoff = 0.1f/rt;
 	      const float sdLum = useFullR3Endcap ? 0.f : deltaZLum/std::abs(zRef);
 	      const float sdCut = sdSlope + sqrt(sdMuls*sdMuls + sdPVoff*sdPVoff + sdLum*sdLum);
 
@@ -3447,8 +3450,7 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    //loose angle compatibility
 	    float dAlpha_Bfield = std::asin(std::min(sd.dr*k2Rinv1GeVf/ptCut, sinAlphaMax));
 	    float dAlpha_res = 0.04f/miniDelta[iL] * (iL < 11 ? 1.0f : std::abs(sd.z/sd.rt) )*(mockMode == 3 ? 1.0f : 0.0f);//4-strip difference
-	    float dAlpha_compat = dAlpha_Bfield + dAlpha_res;
-	    if (debug_sdBuild) dAlpha_compat *= 2;
+	    float dAlpha_compat = dAlpha_Bfield + sqrt(dAlpha_res*dAlpha_res + sdMuls*sdMuls);
 	    iFlag = SDSelectFlags::alphaRef;
 	    if (!((std::abs(mdRef.alpha- sd.alphaRHmax) > dAlpha_compat)
 		  && (std::abs(mdRef.alpha- sd.alphaRHmin) > dAlpha_compat)) ) sdFlag |= 1 << iFlag;
@@ -4535,7 +4537,8 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 	    std::vector<SuperDoublet> vSDOut_4of4; vSDOut_4of4.reserve(2);
 
 	    bool debug2SD = false;
-	    if (tpPt>1.5 && tpPt< 2.0 && has4MDs && lIn == 5 && lOut == 7) debug2SD = false;
+	    if (tpPt>1.5 && tpPt< 2.0 && has8MHs && has4MDs && lIn == 5 && lOut == 7
+		&& isLowProdXY && sim_bunchCrossing()[iSim] == 0) debug2SD = false;
 	    
 	    //match inner and outer layer super-doublets
 	    for (auto const& sd : layerSD[lIn]){
@@ -4549,35 +4552,6 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		vSDIn_4of4.push_back(sd);
 	      }
 	    }//SD matching Inner
-	    if (not hasSDIn_4of4 && debug2SD){
-	      std::cout<<"missing/poor SDI match on L"<< lIn<<" for tpPt "<<tpPt<<" tpEta "<<tpEta<<std::endl;
-	      const auto& simhitIdxV = sim_simHitIdx()[iSim];
-	      for (auto ish : simhitIdxV){
-		
-		SimHit simH(ish);
-		int lay = simH.lay;
-		
-		std::cout<<" "<<lay<<" "<<ish<<std::endl;		      
-		if (simH.p3s.Pt()>-1.0f){
-		  simH.print("\t");
-		}
-	      }//simhitIdxV
-	      
-	      for (auto const& sd : layerSD[lIn]){
-		int score = sd.itp == iSim ? sd.ntp : 0;
-		if (score >= 2){
-		  std::cout<<"            Have "<<score<<" matches"
-			   <<" tpPt "<<tpPt<<" tpEta "<<tpEta
-			   <<" ptIn "<<sd.p3.Pt()<<" EtaIn "<<sd.p3.Eta()
-			   <<std::endl;
-		  int ish = -1;
-		  ish = simHitsPerHitAll(sd.mdRef.pixL); if (ish>=0){ SimHit sh(ish); sh.print("\tRL "+std::to_string(sd.mdRef.pixL)+" \t");}
-		  ish = simHitsPerHitAll(sd.mdRef.pixU); if (ish>=0){ SimHit sh(ish); sh.print("\tRU "+std::to_string(sd.mdRef.pixU)+"\t");}
-		  ish = simHitsPerHitAll(sd.mdOut.pixL); if (ish>=0){ SimHit sh(ish); sh.print("\tOL "+std::to_string(sd.mdOut.pixL)+"\t");}
-		  ish = simHitsPerHitAll(sd.mdOut.pixU); if (ish>=0){ SimHit sh(ish); sh.print("\tOU "+std::to_string(sd.mdOut.pixU)+"\t");}
-		}
-	      }//SD matching Inner
-	    }
 	    
 	    for (auto const& sd : layerSD[lOut]){
 	      int score = sd.itp == iSim ? sd.ntp : 0;
@@ -4591,6 +4565,45 @@ int ScanChainMockSuperDoublets( TChain* chain, int nEvents = -1, const bool draw
 		vSDOut_4of4.push_back(sd);
 	      }
 	    }//SD matching Outer
+
+	    if ((not hasSDIn_4of4 or not hasSDOut_4of4) && debug2SD){
+	      std::cout<<"Missing SD TP "<<iSim<<" "<<tpPt<<" "<<tpEta<<" "<<tpPhi<<" prod "<<sqrt(prodR2)<<" "<<prodZ<<std::endl;
+	      if (not hasSDIn_4of4) std::cout<<"missing/poor SDI match on L"<< lIn<<std::endl;
+	      if (not hasSDOut_4of4) std::cout<<"missing/poor SDO match on L"<< lOut<<std::endl;
+	      const auto& simhitIdxV = sim_simHitIdx()[iSim];
+	      for (auto ish : simhitIdxV){
+		
+		SimHit simH(ish);
+		int lay = simH.lay;
+		
+		std::cout<<" "<<lay<<" "<<ish<<std::endl;		      
+		if (simH.p3s.Pt()>-1.0f){
+		  simH.print("\t");
+		}
+	      }//simhitIdxV
+	      std::array<int, 2> lays {lIn, lOut};
+	      std::array<bool, 2> matches {hasSDIn_4of4, hasSDOut_4of4};
+	      int ix = -1;
+	      for (auto il : lays){ix++;
+		if (matches[ix]) continue;
+		for (auto const& sd : layerSD[il]){
+		  int score = sd.itp == iSim ? sd.ntp : 0;
+		  if (score >= 2){
+		    std::cout<<"            Have "<<score<<" matches"
+			     <<" tpPt "<<tpPt<<" tpEta "<<tpEta
+			     <<" ptIn "<<sd.p3.Pt()<<" EtaIn "<<sd.p3.Eta()
+			     <<std::endl;
+		    int ish = -1;
+		    ish = simHitsPerHitAll(sd.mdRef.pixL); if (ish>=0){ SimHit sh(ish); sh.print("\tRL "+std::to_string(sd.mdRef.pixL)+" \t");}
+		    ish = simHitsPerHitAll(sd.mdRef.pixU); if (ish>=0){ SimHit sh(ish); sh.print("\tRU "+std::to_string(sd.mdRef.pixU)+"\t");}
+		    ish = simHitsPerHitAll(sd.mdOut.pixL); if (ish>=0){ SimHit sh(ish); sh.print("\tOL "+std::to_string(sd.mdOut.pixL)+"\t");}
+		    ish = simHitsPerHitAll(sd.mdOut.pixU); if (ish>=0){ SimHit sh(ish); sh.print("\tOU "+std::to_string(sd.mdOut.pixU)+"\t");}
+		  }
+		}//inner-outer loop
+	      }//SD matching Inner
+	    }
+
+
 	    if (runDetailedTimers) timerA[T_timeVal_MHMDSDMatch].Stop();
 
 	    //inner SD numerator
