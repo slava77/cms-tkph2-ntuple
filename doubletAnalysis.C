@@ -178,8 +178,8 @@ TVector3 r3FromPCA(const TVector3& p3, const float dxy, const float dz){
   const float p = p3.Mag();
   const float vz = dz*pt*pt/p/p;
 
-  const float vx = dxy*p3.x()/pt - p3.y()/p*p3.z()/p*dz;
-  const float vy = -dxy*p3.y()/pt - p3.x()/p*p3.z()/p*dz;
+  const float vx = -dxy*p3.y()/pt - p3.x()/p*p3.z()/p*dz;
+  const float vy =  dxy*p3.x()/pt - p3.y()/p*p3.z()/p*dz;
   return TVector3(vx, vy, vz);
 }
 
